@@ -1,15 +1,14 @@
-/// \Author Y.Fisyak, fisyak@bnl.gov
-/// \date
-// doxygen info here
-/*
-  The maker's algorithms and formulae based on
-  http://www.inst.bnl.gov/programs/gasnobledet/publications/Mathieson's_Book.pdf,
-  and  Photo Absorption Model
-  "Ionization energy loss in very thin absorbers.", V.M. Grishin, V.K. Ermilova, S.K. Kotelnikov Nucl.Instrum.Meth.A309:476-484,1991
-  "A method to improve tracking and particle identification in TPC's and silicon detectors.", Hans Bichsel, Nucl.Instrum.Meth.A562:154-197,2006
-  HEED: "Modeling of ionization produced by fast charged particles in gases", I.B. Smirnov, Nucl.Instrum.Meth.A55(2005) 747-493.
+/**
+ *  The maker's algorithms and formulae based on
+ *  http://www.inst.bnl.gov/programs/gasnobledet/publications/Mathieson's_Book.pdf,
+ *  and  Photo Absorption Model
+ *  "Ionization energy loss in very thin absorbers.", V.M. Grishin, V.K. Ermilova, S.K. Kotelnikov Nucl.Instrum.Meth.A309:476-484,1991
+ *  "A method to improve tracking and particle identification in TPC's and silicon detectors.", Hans Bichsel, Nucl.Instrum.Meth.A562:154-197,2006
+ *  HEED: "Modeling of ionization produced by fast charged particles in gases", I.B. Smirnov, Nucl.Instrum.Meth.A55(2005) 747-493.
+ *
+ *  \Author Y.Fisyak, fisyak@bnl.gov
+ */
 
-*/
 #include <assert.h>
 #include "StTpcRSMaker.h"
 #include "Stiostream.h"
