@@ -65,8 +65,4 @@ TF1F::TF1F(const char* name, const char* formula, Double_t xmin, Double_t xmax)
   : TF1(name, formula, xmax, xmin) {fNpx = 200;}
 TF1F::TF1F(const char* name, Double_t (*fcn)(Double_t*, Double_t*), Double_t xmin, Double_t xmax, Int_t npar, Int_t ndim)
   : TF1(name, fcn, xmin, xmax, npar, ndim) {fNpx = 200;}
-#if 0
-TF1F::TF1F(const char* name, ROOT::Math::ParamFunctor f, Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax, Int_t npar, Int_t ndim)
-  : TF1(name, f, xmin, xmax, npar, ndim) {fNpx = 200;}
-#endif
 #endif /* ROOT 6 */

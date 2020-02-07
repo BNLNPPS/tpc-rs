@@ -32,7 +32,6 @@
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
 // Dave's Header file
 #include "StDbUtilities/StMagUtilities.h"
-//#include "StDaqLib/TPC/trans_table.hh"
 #include "StDetectorDbMaker/St_tpcAltroParamsC.h"
 #include "StDetectorDbMaker/St_asic_thresholdsC.h"
 #include "StDetectorDbMaker/St_tss_tssparC.h"
@@ -405,16 +404,6 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
         mPadResponseFunction[io][sector - 1]->GetYaxis()->SetTitle("Signal");
         // Cut tails
         Double_t x = 2.5;//cm   xmaxP;
-#if 0
-        Double_t ymax = mPadResponseFunction[io][sector - 1]->Eval(0);
-
-        for (; x > 1.5; x -= 0.05) {
-          Double_t r = mPadResponseFunction[io][sector - 1]->Eval(x) / ymax;
-
-          if (r > 1e-2) break;
-        }
-
-#endif
         mPadResponseFunction[io][sector - 1]->SetRange(-x, x);
         mPadResponseFunction[io][sector - 1]->Save(xminP, xmaxP, 0, 0, 0, 0);
       }
@@ -457,14 +446,6 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
         mChargeFraction[io][sector - 1]->Save(xminP, xmaxP, 0, 0, 0, 0);
       }
 
-#if 0
-      memset(mLocalYDirectionCoupling[io][sector - 1], 0, sizeof(mLocalYDirectionCoupling[io][sector - 1]));
-
-      for (Int_t j = 0; j < 7; j++) {
-        mLocalYDirectionCoupling[io][sector - 1][j] = mChargeFraction[io][sector - 1]->Eval(anodeWirePitch * j);
-      }
-
-#endif
 
       //  TF1F *func = new TF1F("funcP","x*sqrt(x)/exp(2.5*x)",0,10);
       // see http://www4.rcf.bnl.gov/~lebedev/tec/polya.html
@@ -556,10 +537,6 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
   }
 
 #endif /* __ClusterProfile__ */
-#if 0
-  StMagUtilities::SetDoDistortionT(gFile);
-  StMagUtilities::SetUnDoDistortionT(gFile);
-#endif
   mHeed = fEc(St_TpcResponseSimulatorC::instance()->W());
 
   if ( ! ClusterProfile) {
@@ -700,10 +677,6 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
 {
   static Int_t minSector = IAttr("minSector");
   static Int_t maxSector = IAttr("maxSector");
-#if 0
-  static Int_t minRow    = IAttr("minRow");
-  static Int_t maxRow    = IAttr("maxRow");
-#endif
   // constants
   static Int_t iBreak = 0;
 #ifdef __DEBUG__
@@ -809,16 +782,6 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
           mass = particle->mass();
           charge = particle->charge();
         }
-
-#if 0
-
-        if (tpc_track[Id - 1].next_parent_p && ipart == 3) { // delta electrons ?
-          Id = tpc_track[Id - 1].next_parent_p;
-          ipart      = tpc_track[Id - 1].ge_pid;
-        }
-
-#endif
-
       }
 
       if (ipart == Laserino || ipart == Chasrino) {
@@ -1738,13 +1701,6 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector)
         // Digits : gain + ped
         //  GG TF1F *ff = new TF1F("ff","TMath::Sqrt(4.76658e+01*TMath::Exp(-2.87987e-01*(x-1.46222e+01)))",21,56)
         Double_t pRMS = pedRMS;
-#if 0
-
-        if (bin >= 21 && bin <= 56) {
-          pRMS = TMath::Sqrt(pedRMS * pedRMS + 4.76658e+01 * TMath::Exp(-2.87987e-01 * (bin - 1.46222e+01)));
-        }
-
-#endif
 
         if (pRMS > 0) {
           adc = (Int_t) (SignalSum[index].Sum / gain + gRandom->Gaus(ped, pRMS));
@@ -1971,32 +1927,6 @@ Int_t StTpcRSMaker::CompareT(const void** elem1, const void** elem2)
 {
   return SearchT(*elem1, elem2);
 }
-#if 0
-//________________________________________________________________________________
-Double_t StTpcRSMaker::DriftLength(Double_t x, Double_t y)
-{
-  static const Double_t Step = 5e-2;
-  Double_t r = TMath::Sqrt(x * x + y * y);
-
-  if (r < 0.25) return r;
-
-  x = TMath::Abs(x);
-  y = TMath::Abs(y);
-  Int_t Nstep = 0;
-
-  while (x > Step || y > Step) {
-Double_t Slope = TMath: SinH(TMath::Pi() * y / s) / TMath: Sin(TMath::Pi() * x / s);
-    Double_t Co2 = 1. / (1. + Slope * Slope);
-    Double_t Si  = TMath::Sqrt(1. - Co2);
-    Double_t Co  = TMath::Sqrt(Co2);
-    x = TMath::Abs(x - Step * Co);
-    y = TMath::Abs(y - Step * Si);
-    NStep++
-  }
-
-  return NStep * Step;
-}
-#endif
 //________________________________________________________________________________
 Double_t StTpcRSMaker::fei(Double_t t, Double_t t0, Double_t T)
 {
@@ -2543,18 +2473,6 @@ Double_t StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
       CdEdx.edge += 1 - St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
 
     CdEdx.F.dE     = 1;
-#if 0
-    CdEdx.dCharge = tpcHit->chargeModified() - tpcHit->charge();
-    Int_t p1 = tpcHit->minPad();
-    Int_t p2 = tpcHit->maxPad();
-    Int_t t1 = tpcHit->minTmbk();
-    Int_t t2 = tpcHit->maxTmbk();
-    CdEdx.rCharge =  0.5 * m_TpcdEdxCorrection->Adc2GeV() * TMath::Pi() / 4.*(p2 - p1 + 1) * (t2 - t1 + 1);
-
-    if (TESTBIT(m_Mode, kEmbeddingShortCut) &&
-        (tpcHit->idTruth() && tpcHit->qaTruth() > 95)) CdEdx.lSimulated = tpcHit->idTruth();
-
-#endif
     CdEdx.F.dx     = dStep;
     CdEdx.xyz[0] = TrackSegmentHits.coorLS.position().x();
     CdEdx.xyz[1] = TrackSegmentHits.coorLS.position().y();

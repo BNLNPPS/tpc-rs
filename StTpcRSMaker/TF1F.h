@@ -43,11 +43,6 @@ class TF1F : public TF1
   {
     fNpx = 200;
   }
-#if 0
-  // constructor used by CINT
-  TF1F(const char* name, void* ptr,  Double_t xmin, Double_t xmax, Int_t npar, const char* className );
-  TF1F(const char* name, void* ptr, void*, Double_t xmin, Double_t xmax, Int_t npar, const char* className, const char* methodName = 0);
-#endif
 #endif /* ROOT 6 */
   virtual ~TF1F() {}
   virtual void Save(Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax, Double_t zmin, Double_t zmax);
