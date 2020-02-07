@@ -20,8 +20,8 @@
 	double frequency; \
 };"
 typedef struct starClockOnl_st {
-	unsigned int runNumber; /*   run number  */
-	unsigned int time; /*   unix time of entry  */
-	double frequency; /*   frequency in Hz  */
+  unsigned int runNumber; /*   run number  */
+  unsigned int time; /*   unix time of entry  */
+  double frequency; /*   frequency in Hz  */
 } STARCLOCKONL_ST;
 #endif /* STARCLOCKONL_H */

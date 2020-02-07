@@ -17,7 +17,7 @@
 class St_tpcAnodeHVavg : public TTable
 {
  public:
-   ClassDefTable(St_tpcAnodeHVavg,tpcAnodeHVavg_st)
-   ClassDef(St_tpcAnodeHVavg,2) //C++ wrapper for <tpcAnodeHVavg> StAF table
+  ClassDefTable(St_tpcAnodeHVavg, tpcAnodeHVavg_st)
+  ClassDef(St_tpcAnodeHVavg, 2) //C++ wrapper for <tpcAnodeHVavg> StAF table
 };
 #endif

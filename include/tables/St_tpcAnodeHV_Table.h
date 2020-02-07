@@ -17,7 +17,7 @@
 class St_tpcAnodeHV : public TTable
 {
  public:
-   ClassDefTable(St_tpcAnodeHV,tpcAnodeHV_st)
-   ClassDef(St_tpcAnodeHV,2) //C++ wrapper for <tpcAnodeHV> StAF table
+  ClassDefTable(St_tpcAnodeHV, tpcAnodeHV_st)
+  ClassDef(St_tpcAnodeHV, 2) //C++ wrapper for <tpcAnodeHV> StAF table
 };
 #endif

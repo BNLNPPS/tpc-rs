@@ -17,7 +17,7 @@
 class St_TpcAvgCurrent : public TTable
 {
  public:
-   ClassDefTable(St_TpcAvgCurrent,TpcAvgCurrent_st)
-   ClassDef(St_TpcAvgCurrent,2) //C++ wrapper for <TpcAvgCurrent> StAF table
+  ClassDefTable(St_TpcAvgCurrent, TpcAvgCurrent_st)
+  ClassDef(St_TpcAvgCurrent, 2) //C++ wrapper for <TpcAvgCurrent> StAF table
 };
 #endif

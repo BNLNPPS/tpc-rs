@@ -7,7 +7,7 @@
  *         DAQ interface to Offline 12/30/98 (M. Levine, M. Shultz, B. Lasiuk)
  ***************************************************************************
  *
- * Description: 
+ * Description:
  *
  ***************************************************************************
  *
@@ -23,9 +23,9 @@
 #define ST_SEQUENCE_HH
 
 struct StSequence {
-    unsigned short startTimeBin;    // the time of the sequence start
-    unsigned short length;          // in units of time bins
-    unsigned char* firstAdc;        // ptr to the first hit in the sequence
+  unsigned short startTimeBin;    // the time of the sequence start
+  unsigned short length;          // in units of time bins
+  unsigned char* firstAdc;        // ptr to the first hit in the sequence
 };
 
 #endif

@@ -17,7 +17,7 @@
 class St_tpcPadGainT0 : public TTable
 {
  public:
-   ClassDefTable(St_tpcPadGainT0,tpcPadGainT0_st)
-   ClassDef(St_tpcPadGainT0,2) //C++ wrapper for <tpcPadGainT0> StAF table
+  ClassDefTable(St_tpcPadGainT0, tpcPadGainT0_st)
+  ClassDef(St_tpcPadGainT0, 2) //C++ wrapper for <tpcPadGainT0> StAF table
 };
 #endif

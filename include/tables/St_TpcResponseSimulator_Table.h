@@ -17,7 +17,7 @@
 class St_TpcResponseSimulator : public TTable
 {
  public:
-   ClassDefTable(St_TpcResponseSimulator,TpcResponseSimulator_st)
-   ClassDef(St_TpcResponseSimulator,2) //C++ wrapper for <TpcResponseSimulator> StAF table
+  ClassDefTable(St_TpcResponseSimulator, TpcResponseSimulator_st)
+  ClassDef(St_TpcResponseSimulator, 2) //C++ wrapper for <TpcResponseSimulator> StAF table
 };
 #endif

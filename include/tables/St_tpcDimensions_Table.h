@@ -17,7 +17,7 @@
 class St_tpcDimensions : public TTable
 {
  public:
-   ClassDefTable(St_tpcDimensions,tpcDimensions_st)
-   ClassDef(St_tpcDimensions,2) //C++ wrapper for <tpcDimensions> StAF table
+  ClassDefTable(St_tpcDimensions, tpcDimensions_st)
+  ClassDef(St_tpcDimensions, 2) //C++ wrapper for <tpcDimensions> StAF table
 };
 #endif

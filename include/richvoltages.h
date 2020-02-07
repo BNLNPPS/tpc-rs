@@ -21,9 +21,9 @@
 	unsigned long status; \
 };"
 typedef struct richvoltages_st {
-	unsigned int runNumber; /*   */
-	unsigned int startStatusTime; /*   */
-	unsigned int endStatusTime; /*   */
-	unsigned int status; /*   */
+  unsigned int runNumber; /*   */
+  unsigned int startStatusTime; /*   */
+  unsigned int endStatusTime; /*   */
+  unsigned int status; /*   */
 } RICHVOLTAGES_ST;
 #endif /* RICHVOLTAGES_H */

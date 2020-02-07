@@ -20,8 +20,8 @@
 	unsigned long mask; \
 };"
 typedef struct tpcRDOMasks_st {
-	unsigned int runNumber; /*       run number  */
-	unsigned int sector; /*   sector  */
-	unsigned int mask; /*   enable mask  */
+  unsigned int runNumber; /*       run number  */
+  unsigned int sector; /*   sector  */
+  unsigned int mask; /*   enable mask  */
 } TPCRDOMASKS_ST;
 #endif /* TPCRDOMASKS_H */

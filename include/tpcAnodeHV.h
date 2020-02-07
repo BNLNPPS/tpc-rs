@@ -20,8 +20,8 @@
 	float voltage; \
 };"
 typedef struct tpcAnodeHV_st {
-	unsigned short sector; /*  sector 1-24 */
-	unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
-	float voltage; /*   HV setting  */
+  unsigned short sector; /*  sector 1-24 */
+  unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
+  float voltage; /*   HV setting  */
 } TPCANODEHV_ST;
 #endif /* TPCANODEHV_H */

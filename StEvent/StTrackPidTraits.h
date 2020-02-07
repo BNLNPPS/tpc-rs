@@ -1,5 +1,5 @@
 /*!
- * \class StTrackPidTraits 
+ * \class StTrackPidTraits
  * \author Thomas Ullrich, Sep 1999
  */
 /***************************************************************************
@@ -61,18 +61,19 @@ struct dst_dedx_st {
   Int_t ndedx;     /* number of points used in dE/dx calcu. + 100*((int)TrackLength) for fit */
 };
 #endif
-class StTrackPidTraits : public StObject {
-public:
-    StTrackPidTraits();
-    StTrackPidTraits(StDetectorId);
-    StTrackPidTraits(const dst_dedx_st&);
-    virtual ~StTrackPidTraits();
-    
-    Short_t detector() const;
+class StTrackPidTraits : public StObject
+{
+ public:
+  StTrackPidTraits();
+  StTrackPidTraits(StDetectorId);
+  StTrackPidTraits(const dst_dedx_st &);
+  virtual ~StTrackPidTraits();
 
-protected:
-    Short_t mDetectorId;
+  Short_t detector() const;
 
-    ClassDef(StTrackPidTraits,2)
+ protected:
+  Short_t mDetectorId;
+
+  ClassDef(StTrackPidTraits, 2)
 };
 #endif

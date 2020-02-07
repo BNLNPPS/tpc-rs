@@ -17,7 +17,7 @@
 class St_tpcRDOMasks : public TTable
 {
  public:
-   ClassDefTable(St_tpcRDOMasks,tpcRDOMasks_st)
-   ClassDef(St_tpcRDOMasks,2) //C++ wrapper for <tpcRDOMasks> StAF table
+  ClassDefTable(St_tpcRDOMasks, tpcRDOMasks_st)
+  ClassDef(St_tpcRDOMasks, 2) //C++ wrapper for <tpcRDOMasks> StAF table
 };
 #endif

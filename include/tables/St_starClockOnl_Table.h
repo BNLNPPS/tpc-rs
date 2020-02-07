@@ -17,7 +17,7 @@
 class St_starClockOnl : public TTable
 {
  public:
-   ClassDefTable(St_starClockOnl,starClockOnl_st)
-   ClassDef(St_starClockOnl,2) //C++ wrapper for <starClockOnl> StAF table
+  ClassDefTable(St_starClockOnl, starClockOnl_st)
+  ClassDef(St_starClockOnl, 2) //C++ wrapper for <starClockOnl> StAF table
 };
 #endif

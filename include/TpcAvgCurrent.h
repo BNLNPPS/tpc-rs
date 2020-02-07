@@ -14,10 +14,10 @@
 	float AcCharge[192]; \
 };"
 typedef struct TpcAvgCurrent_st {
-	int run; /* run no. used for averaging  */
-	int start_time; /* begin unix time of averaging interval */
-	int stop_time; /* end   unix time of averaging interval */
-	float AvCurrent[192]; /* average current per sector(24) and channel(8) [muA]*/
-	float AcCharge[192]; /* accumulated charge per sector(24) and channel(8) [C]*/
+  int run; /* run no. used for averaging  */
+  int start_time; /* begin unix time of averaging interval */
+  int stop_time; /* end   unix time of averaging interval */
+  float AvCurrent[192]; /* average current per sector(24) and channel(8) [muA]*/
+  float AcCharge[192]; /* accumulated charge per sector(24) and channel(8) [C]*/
 } TPCAVGCURRENT_ST;
 #endif /* TPCAVGCURRENT_H */

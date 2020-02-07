@@ -19,6 +19,6 @@
 	octet itpc[24]; \
 };"
 typedef struct tpcPadConfig_st {
-	unsigned char itpc[24]; 
+  unsigned char itpc[24];
 } TPCPADCONFIG_ST;
 #endif /* TPCPADCONFIG_H */

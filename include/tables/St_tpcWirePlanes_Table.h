@@ -17,7 +17,7 @@
 class St_tpcWirePlanes : public TTable
 {
  public:
-   ClassDefTable(St_tpcWirePlanes,tpcWirePlanes_st)
-   ClassDef(St_tpcWirePlanes,2) //C++ wrapper for <tpcWirePlanes> StAF table
+  ClassDefTable(St_tpcWirePlanes, tpcWirePlanes_st)
+  ClassDef(St_tpcWirePlanes, 2) //C++ wrapper for <tpcWirePlanes> StAF table
 };
 #endif

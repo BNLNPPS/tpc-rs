@@ -239,7 +239,8 @@
 enum StBeamDirection {east   = 0,
                       yellow = 0,    // yellow beam is going west -> east
                       west   = 1,
-                      blue   = 1};   // blue beam is going east -> west
+                      blue   = 1
+                     };   // blue beam is going east -> west
 
 /*!
  * \enum StBeamPolarizationAxis
@@ -287,8 +288,8 @@ enum StDetectorId {kUnknownId   = kUnknownIdentifier,
                    kFgtId       = kFgtIdentifier,
                    kEtrId       = kEtrIdentifier,
                    kFpdWestId   = kFpdWestIdentifier,
-                   kFpdEastId   = kFpdEastIdentifier, 
-                   kFmsId       = kFmsIdentifier,  
+                   kFpdEastId   = kFpdEastIdentifier,
+                   kFmsId       = kFmsIdentifier,
                    kRpsId       = kRpsIdentifier,
                    kMtdId       = kMtdIdentifier,
                    kSstId       = kSstIdentifier,
@@ -296,7 +297,8 @@ enum StDetectorId {kUnknownId   = kUnknownIdentifier,
                    kFtsId       = kFtsIdentifier,
                    kiTpcId      = kiTpcIdentifier,
                    kETofId      = kETofIdentifier,
-                   kMaxDetectorId = 41};
+                   kMaxDetectorId = 41
+                  };
 
 /*!
  * \enum StTrackType
@@ -322,18 +324,19 @@ enum StTrackFinderMethod {svtGrouper    = ksvtGrouperIdentifier,
                           svtTpcEst     = ksvtTpcEstIdentifier,
                           svtTpcPattern = ksvtTpcPatternIdentifier,
                           l3Standard    = kl3StandardIdentifier
-};
+                         };
 
 /*!
  * \enum StDedxMethod
  */
 enum StDedxMethod {kUndefinedMethodId        = kUndefinedMethodIdentifier,
-                  kTruncatedMeanId           = kTruncatedMeanIdentifier,
-                  kEnsembleTruncatedMeanId   = kEnsembleTruncatedMeanIdentifier,
-                  kLikelihoodFitId           = kLikelihoodFitIdentifier,
-                  kWeightedTruncatedMeanId   = kWeightedTruncatedMeanIdentifier,
-		  kOtherMethodId             = kOtherMethodIdentifier,
-                  kOtherMethodId2            = kOtherMethodIdentifier2};
+                   kTruncatedMeanId           = kTruncatedMeanIdentifier,
+                   kEnsembleTruncatedMeanId   = kEnsembleTruncatedMeanIdentifier,
+                   kLikelihoodFitId           = kLikelihoodFitIdentifier,
+                   kWeightedTruncatedMeanId   = kWeightedTruncatedMeanIdentifier,
+                   kOtherMethodId             = kOtherMethodIdentifier,
+                   kOtherMethodId2            = kOtherMethodIdentifier2
+                  };
 
 /*!
  * \enum StTrackFittingMethod
@@ -345,7 +348,8 @@ enum StTrackFittingMethod {kUndefinedFitterId         = kUndefinedFitterIdentifi
                            kLine2StepId               = kLine2StepIdentifier,
                            kLine3DId                  = kLine3DIdentifier,
                            kL3FitId                   = kL3FitIdentifier,
-                           kITKalmanFitId             = kITKalmanFitIdentifier};
+                           kITKalmanFitId             = kITKalmanFitIdentifier
+                          };
 /*!
   ETrackStatusBits
  */
@@ -358,77 +362,80 @@ enum ETrackStatusBits {
   kEemcMatched     = BIT(19),   // track has     Eemc          hit match
   kBemcNotMatched  = BIT(20),   // track has     Bemc          prediction but no hit to match (veto)
   kEemcNotMatched  = BIT(21),   // track has             Eemc  prediction but no hit to match (veto)
-  kDecayTrack      = BIT(22),   // track fit to decay vertex (V0, ...) 
+  kDecayTrack      = BIT(22),   // track fit to decay vertex (V0, ...)
   kPromptTrack     = BIT(23),   // track has prompt TPC hit: |209.4 - |z|| < 3 cm
-  kPostXTrack      = BIT(24),   // Post Crossing Track, track which has >= 2 hit with wrong Z / Sector 
+  kPostXTrack      = BIT(24),   // Post Crossing Track, track which has >= 2 hit with wrong Z / Sector
   kXMembrane       = BIT(25),   // track which has >= 2 hits from both sides of Membrane (z = 0)
   kShortTrack2EMC  = BIT(26),   // Short track pointing to EEMC
   kRejectedTrack   = BIT(27),   // track rejected by small no. of fit points (< 10)
-  kWestTpcOnlyTrack= BIT(28),   // track has hits only from West Tpc (sector <= 12)
-  kEastTpcOnlyTrack= BIT(29),   // track has hits only from East Tpc (sector >  12)
-  kEmcEnergyByte   =       0    // bits  0- 2: 1 ==> 0.3 < energy <=  0.6 Mip	 
-  //                                           2 ==> 0.6 < energy <=  1.0 Hadron 
-  // 	                                       3 ==> 1.0 < energy <=  4.0 Electon
-  // 	                                       4 ==> 4.0 < energy <= 10.0 Tower	 
-  // 	                                       5 ==>10.0 < energy <= 20.0 W	 
-  // 	                                       6 ==>20.0 < energy <=100.0 Z	 
-  // 	                                       7 ==>       energy > 100.0 ?       
-};			     
+  kWestTpcOnlyTrack = BIT(28),  // track has hits only from West Tpc (sector <= 12)
+  kEastTpcOnlyTrack = BIT(29),  // track has hits only from East Tpc (sector >  12)
+  kEmcEnergyByte   =       0    // bits  0- 2: 1 ==> 0.3 < energy <=  0.6 Mip
+                           //                                           2 ==> 0.6 < energy <=  1.0 Hadron
+                           // 	                                       3 ==> 1.0 < energy <=  4.0 Electon
+                           // 	                                       4 ==> 4.0 < energy <= 10.0 Tower
+                           // 	                                       5 ==>10.0 < energy <= 20.0 W
+                           // 	                                       6 ==>20.0 < energy <=100.0 Z
+                           // 	                                       7 ==>       energy > 100.0 ?
+};
 /*!
  * \enum StVertexId
  */
 enum StVertexId {kUndefinedVtxId   = kUndefinedVertexIdentifier,
                  kEventVtxId       = kEventVertexIdentifier,
-		         kPrimaryVtxId     = kEventVertexIdentifier,
+                 kPrimaryVtxId     = kEventVertexIdentifier,
                  kV0VtxId          = kV0DecayIdentifier,
                  kXiVtxId          = kXiDecayIdentifier,
                  kKinkVtxId        = kKinkDecayIdentifier,
                  kOtherVtxId       = kOtherTypeIdentifier,
                  kFtpcEastCalVtxId = kFtpcEastCalibrationVertexIdentifier,
                  kFtpcWestCalVtxId = kFtpcWestCalibrationVertexIdentifier,
-		         kBEAMConstrVtxId,
-                 kRejectedVtxId};
+                 kBEAMConstrVtxId,
+                 kRejectedVtxId
+                };
 
 /*!
  * \enum StRichPidFlag
  */
 enum StRichPidFlag {eNoMip = 1,                                        /**< enum value eNoMip  */
                     eFastEnough = 2,                                   /**< enum value eFastEnough  */
-                    eLightOnPadPlane = 4};
+                    eLightOnPadPlane = 4
+                   };
 
 /*!
  * \enum StRichHitFlag
  */
-enum StRichHitFlag {eDeconvoluted=1,                                   /**< enum value eDeconvoluted */
-                    eMip=2,                                            /**< enum value eMip */
-                    eSaturatedPad=4 ,                                  /**< enum value eSaturatedPad */
-                    ePhotoElectron=8,                                  /**< enum value ePhotoElectron */
-                    eAssociatedMip=16,                                 /**< enum value eAssociatedMip */
-                    eMultiplyAssigned=32,                              /**< enum value eMultiplyAssigned */
-                    eInAreaPi=64,                                      /**< enum value eInAreaPi */
-                    eInAreaK=128,                                      /**< enum value eInAreaK */
-                    eInAreap=256,                                      /**< enum value eInAreap */
-                    eInConstantAnglePi=512,                            /**< enum value eInConstantAnglePi */
-                    eInConstantAngleK=1024,                            /**< enum value eInConstantAngleK */
-                    eInConstantAnglep=2048,                            /**< enum value eInConstantAnglep */
-                    eInConstantAreaPi=4096,                            /**< enum value eInConstantAreaPi */
-                    eInConstantAreaK=8192,                             /**< enum value eInConstantAreaK */
-                    eInConstantAreap=16384,                            /**< enum value eInConstantAreap */
-                    eInMultipleAreaPi=32768,                           /**< enum value eInMultipleAreaPi */
-                    eInMultipleAreaK=65536,                            /**< enum value eInMultipleAreaK */
-                    eInMultipleAreap=131072,                           /**< enum value eInMultipleAreap */
-                    eInMultipleCAnglePi=262144,                        /**< enum value eInMultipleCAnglePi */
-                    eInMultipleCAngleK=524288,                         /**< enum value eInMultipleCAngleK */
-                    eInMultipleCAnglep=1048576,                        /**< enum value eInMultipleCAnglep */
-                    eInMultipleCAreaPi=2097152,                        /**< enum value eInMultipleCAreaPi */
-                    eInMultipleCAreaK=4194304,                         /**< enum value eInMultipleCAreaK */
-                    eInMultipleCAreap=8388608,                         /**< enum value eInMultipleCAreap */
-                    e1SigmaPi=16777216,                                /**< enum value e1SigmaPi */
-                    e1SigmaK=33554432,                                 /**< enum value e1SigmaK */
-                    e1Sigmap=67108864,                                 /**< enum value e1Sigmap */
-                    e2SigmaPi=134217728,                               /**< enum value e2SigmaPi */
-                    e2SigmaK=268435456,                                /**< enum value e2SigmaK */
-                    e2Sigmap=536870912};
+enum StRichHitFlag {eDeconvoluted = 1,                                 /**< enum value eDeconvoluted */
+                    eMip = 2,                                          /**< enum value eMip */
+                    eSaturatedPad = 4,                                 /**< enum value eSaturatedPad */
+                    ePhotoElectron = 8,                                /**< enum value ePhotoElectron */
+                    eAssociatedMip = 16,                               /**< enum value eAssociatedMip */
+                    eMultiplyAssigned = 32,                            /**< enum value eMultiplyAssigned */
+                    eInAreaPi = 64,                                    /**< enum value eInAreaPi */
+                    eInAreaK = 128,                                    /**< enum value eInAreaK */
+                    eInAreap = 256,                                    /**< enum value eInAreap */
+                    eInConstantAnglePi = 512,                          /**< enum value eInConstantAnglePi */
+                    eInConstantAngleK = 1024,                          /**< enum value eInConstantAngleK */
+                    eInConstantAnglep = 2048,                          /**< enum value eInConstantAnglep */
+                    eInConstantAreaPi = 4096,                          /**< enum value eInConstantAreaPi */
+                    eInConstantAreaK = 8192,                           /**< enum value eInConstantAreaK */
+                    eInConstantAreap = 16384,                          /**< enum value eInConstantAreap */
+                    eInMultipleAreaPi = 32768,                         /**< enum value eInMultipleAreaPi */
+                    eInMultipleAreaK = 65536,                          /**< enum value eInMultipleAreaK */
+                    eInMultipleAreap = 131072,                         /**< enum value eInMultipleAreap */
+                    eInMultipleCAnglePi = 262144,                      /**< enum value eInMultipleCAnglePi */
+                    eInMultipleCAngleK = 524288,                       /**< enum value eInMultipleCAngleK */
+                    eInMultipleCAnglep = 1048576,                      /**< enum value eInMultipleCAnglep */
+                    eInMultipleCAreaPi = 2097152,                      /**< enum value eInMultipleCAreaPi */
+                    eInMultipleCAreaK = 4194304,                       /**< enum value eInMultipleCAreaK */
+                    eInMultipleCAreap = 8388608,                       /**< enum value eInMultipleCAreap */
+                    e1SigmaPi = 16777216,                              /**< enum value e1SigmaPi */
+                    e1SigmaK = 33554432,                               /**< enum value e1SigmaK */
+                    e1Sigmap = 67108864,                               /**< enum value e1Sigmap */
+                    e2SigmaPi = 134217728,                             /**< enum value e2SigmaPi */
+                    e2SigmaK = 268435456,                              /**< enum value e2SigmaK */
+                    e2Sigmap = 536870912
+                   };
 
 /*!
  * \enum StPwg
@@ -445,7 +452,8 @@ enum StPwg         {generic,                                           /**< enum
                     heavy,                                             /**< enum value for heavy flavor PWG */
                     bulkcorr,                                          /**< enum value for bulk correlation PWG */
                     jetcorr,                                           /**< enum value for jet correlation PWG */
-                    lfspectra};                                        /**< enum value for light flavor spectra PWG */
+                    lfspectra
+                   };                                        /**< enum value for light flavor spectra PWG */
 
 /*!
  * \enum StEmcCrateStatus
@@ -453,7 +461,8 @@ enum StPwg         {generic,                                           /**< enum
 enum StEmcCrateStatus {crateUnknown       = 0,
                        crateNotPresent    = 1,
                        crateOK            = 2,
-                       crateHeaderCorrupt = 3};
+                       crateHeaderCorrupt = 3
+                      };
 
 /*!
  * \enum StarMaxSize
@@ -461,7 +470,8 @@ enum StEmcCrateStatus {crateUnknown       = 0,
 // maximal sizes of tracking part of STAR in cm (Victor)
 enum StarMaxTrackRangeSize {kStarMaxTrackRangeR =  500, // including MTD
                             kStarMaxTrackRangeZ =  500,
-                            kStarMinTrackRangeZ = -kStarMaxTrackRangeZ};
+                            kStarMinTrackRangeZ = -kStarMaxTrackRangeZ
+                           };
 
 /*!
  * \enum StVertexFinderId
@@ -473,8 +483,9 @@ enum StVertexFinderId { undefinedVertexFinder = 0,
                         minuitVertexFinder,
                         ppvVertexFinder,
                         ppvNoCtbVertexFinder,
-		    	        mcEventVertexFFinder,
-			            KFVertexFinder};
+                        mcEventVertexFFinder,
+                        KFVertexFinder
+                      };
 
 
 /*!
@@ -487,14 +498,15 @@ enum StL2AlgorithmId { l2Diagnostic = 0,
                        l2Dijet,
                        l2EmcPedestal,
                        l2Pi0Gamma,
-                       l2DisplacedVertex};
+                       l2DisplacedVertex
+                     };
 
 /*!
  * \enum StPrimaryVertexOrder
  */
 enum StPrimaryVertexOrder {
-    orderByNumberOfDaughters = 0, /**< enum value for sorting based on NumberOfDaughters (default)  */
-    orderByRanking                /**< enum value to switch ordering based on assigned rank         */
+  orderByNumberOfDaughters = 0, /**< enum value for sorting based on NumberOfDaughters (default)  */
+  orderByRanking                /**< enum value to switch ordering based on assigned rank         */
 };
 
 
@@ -502,30 +514,30 @@ enum StPrimaryVertexOrder {
  * \enum StL2TriggerResultType
  */
 enum StL2TriggerResultType {
-    l2Trg2006BEMCGammaPi = 0,
-    l2Trg2006BEMCGammaPiRandom,
-    l2Trg2006EEMCGammaPi,
-    l2Trg2006EEMCGammaPiRandom,
-    l2Trg2006MonoJet,
-    l2Trg2006DiJet,
-    l2Trg2006RandomJet
+  l2Trg2006BEMCGammaPi = 0,
+  l2Trg2006BEMCGammaPiRandom,
+  l2Trg2006EEMCGammaPi,
+  l2Trg2006EEMCGammaPiRandom,
+  l2Trg2006MonoJet,
+  l2Trg2006DiJet,
+  l2Trg2006RandomJet
 };
 
 /*!
  * \enum StFgtElecConsts
  */
 // constants related to electric coordinates
-enum StFgtElecConsts { 
-    kFgtNumRdos = 2,                    // rdo in {1,2}
-    kFgtNumArms = 6,                    // arm in 0-5, though 5 not used in run12.
-    kFgtNumChannels = 128,              // channel in 0-127
-    kFgtApvsPerAssembly = 12,           //
-    kFgtMaxApvId=kFgtApvsPerAssembly*2, // covers 0-23 
-    kFgtApvGap = 2,                     // i.e. apvs 10 & 11
-    kFgtApvsPerOct = 5,
-    kFgtApvsPerQuad = 10,
-    kFgtApvsPerArm = 20,
-    kFgtNumElecIds = kFgtNumChannels * kFgtApvsPerArm * kFgtNumArms * kFgtNumRdos  // elec id in 0 to kFgtNumElecIds-1
+enum StFgtElecConsts {
+  kFgtNumRdos = 2,                    // rdo in {1,2}
+  kFgtNumArms = 6,                    // arm in 0-5, though 5 not used in run12.
+  kFgtNumChannels = 128,              // channel in 0-127
+  kFgtApvsPerAssembly = 12,           //
+  kFgtMaxApvId = kFgtApvsPerAssembly * 2, // covers 0-23
+  kFgtApvGap = 2,                     // i.e. apvs 10 & 11
+  kFgtApvsPerOct = 5,
+  kFgtApvsPerQuad = 10,
+  kFgtApvsPerArm = 20,
+  kFgtNumElecIds = kFgtNumChannels * kFgtApvsPerArm * kFgtNumArms * kFgtNumRdos  // elec id in 0 to kFgtNumElecIds-1
 };
 
 /*!
@@ -533,19 +545,19 @@ enum StFgtElecConsts {
  */
 // constants related to physical coordinates
 enum StFgtPhysConsts {
-    kFgtNumDiscs = 6,
-    kFgtNumQuads = 4,
-    kFgtNumOctantsPerDisc = 8,
-    kFgtNumOctants = kFgtNumOctantsPerDisc*kFgtNumDiscs,
-    kFgtNumLayers = 2,
-    kFgtNumStrips = 720,
-    kFgtNumGeoIds = kFgtNumQuads * kFgtNumDiscs * kFgtNumLayers * kFgtNumStrips,   // geoId in 0 to kFgtNumGeoIds-1
-    kFgtNumPstripsPerOctant = 360,
-    kFgtNumRstripsPerOctant = 280,
-    kFgtLowerStripOctant = 'L',    // i.e. a strip is in octant "kFgtLowerStripOctant" if
-    kFgtHigherStripOctant = 'S',   // the strip index is below the number of strips per octant
-    // for that layer
-    kFgtNumStripsPerDisc = kFgtNumQuads  * kFgtNumLayers * kFgtNumStrips // includes both planes, geoId for given disc will not exceed this range after common disc-offset is subtracted 
+  kFgtNumDiscs = 6,
+  kFgtNumQuads = 4,
+  kFgtNumOctantsPerDisc = 8,
+  kFgtNumOctants = kFgtNumOctantsPerDisc * kFgtNumDiscs,
+  kFgtNumLayers = 2,
+  kFgtNumStrips = 720,
+  kFgtNumGeoIds = kFgtNumQuads * kFgtNumDiscs * kFgtNumLayers * kFgtNumStrips,   // geoId in 0 to kFgtNumGeoIds-1
+  kFgtNumPstripsPerOctant = 360,
+  kFgtNumRstripsPerOctant = 280,
+  kFgtLowerStripOctant = 'L',    // i.e. a strip is in octant "kFgtLowerStripOctant" if
+  kFgtHigherStripOctant = 'S',   // the strip index is below the number of strips per octant
+  // for that layer
+  kFgtNumStripsPerDisc = kFgtNumQuads  * kFgtNumLayers * kFgtNumStrips // includes both planes, geoId for given disc will not exceed this range after common disc-offset is subtracted
 };
 
 /*!
@@ -553,8 +565,8 @@ enum StFgtPhysConsts {
  */
 // unsorted constants
 enum StFgtGeneralConsts {
-    kFgtNumTimeBins = 15,
-    kFgtMaxAdc = 4096,
+  kFgtNumTimeBins = 15,
+  kFgtMaxAdc = 4096,
 };
 
 /*!
@@ -562,92 +574,92 @@ enum StFgtGeneralConsts {
  */
 // cluster seed types
 enum StFgtClusterSeedType {
-    kFgtSeedTypeNo,
-    kFgtDeadStrip,
-    kFgtSeedType1,
-    kFgtSeedType2,
-    kFgtSeedType3,
-    kFgtSeedType4,
-    kFgtSeedType5,
-    kFgtSeedTypeMax,
-    kFgtClusterPart,
-    kFgtNextToDeadGuy,
-    kFgtClusterEndUp,
-    kFgtClusterEndDown,
-    kFgtStripShared,
-    kFgtClusterTooBig,
-    kFgtClusterSeedInSeaOfNoise,
-    kFgtNextToCluster,
-    kFgtKeepStrip
+  kFgtSeedTypeNo,
+  kFgtDeadStrip,
+  kFgtSeedType1,
+  kFgtSeedType2,
+  kFgtSeedType3,
+  kFgtSeedType4,
+  kFgtSeedType5,
+  kFgtSeedTypeMax,
+  kFgtClusterPart,
+  kFgtNextToDeadGuy,
+  kFgtClusterEndUp,
+  kFgtClusterEndDown,
+  kFgtStripShared,
+  kFgtClusterTooBig,
+  kFgtClusterSeedInSeaOfNoise,
+  kFgtNextToCluster,
+  kFgtKeepStrip
 };
 
 /** FPS/FMS/FHC/FPS/FPost detectorId */
-enum StFmsDetectorId{
-    kFpdNorthDetId=0,
-    kFpdSouthDetId=1,
-    kFpdNorthPrsDetId=2,
-    kFpdSouthPrsDetId=3,
-    kFpdNorthSMDVDetId=4,
-    kFpdSouthSMDVDetId=5,
-    kFpdNorthSMDHDetId=6,
-    kFpdSouthSMDHDetId=7,
-    kFmsNorthLargeDetId=8,
-    kFmsSouthLargeDetId=9,
-    kFmsNorthSmallDetId=10,
-    kFmsSouthSmallDetId=11,
-    kFhcNorthDetId=12,
-    kFhcSouthDetId=13,
-    kFpsDetId=14,
-    kFpostDetId=15
+enum StFmsDetectorId {
+  kFpdNorthDetId = 0,
+  kFpdSouthDetId = 1,
+  kFpdNorthPrsDetId = 2,
+  kFpdSouthPrsDetId = 3,
+  kFpdNorthSMDVDetId = 4,
+  kFpdSouthSMDVDetId = 5,
+  kFpdNorthSMDHDetId = 6,
+  kFpdSouthSMDHDetId = 7,
+  kFmsNorthLargeDetId = 8,
+  kFmsSouthLargeDetId = 9,
+  kFmsNorthSmallDetId = 10,
+  kFmsSouthSmallDetId = 11,
+  kFhcNorthDetId = 12,
+  kFhcSouthDetId = 13,
+  kFpsDetId = 14,
+  kFpostDetId = 15
 };
 
 /** Categorization of a FMS tower cluster as 1- or 2-photon, or "not sure". */
 enum StFmsClusterCategory {
-    kAmbiguousCluster = 0,  ///< Could be 1- or 2-photon, needs to be fitted
-    k1PhotonCluster = 1,  ///< A cluster created by 1 photon
-    k2PhotonCluster = 2,  ///< A cluster created by 2 photons
-    kInvalidClusterCategory  ///< For default/unknown/error value
+  kAmbiguousCluster = 0,  ///< Could be 1- or 2-photon, needs to be fitted
+  k1PhotonCluster = 1,  ///< A cluster created by 1 photon
+  k2PhotonCluster = 2,  ///< A cluster created by 2 photons
+  kInvalidClusterCategory  ///< For default/unknown/error value
 };  // enum StFmsClusterCategory
 
 /** FPS basic constants */
 enum StFpsConstants {
-    kFpsNQuad=4,
-    kFpsNLayer=3,
-    kFpsNSlat=21,
-    kFpsMaxSlat=252,
-    kFpsNCandidate=4
+  kFpsNQuad = 4,
+  kFpsNLayer = 3,
+  kFpsNSlat = 21,
+  kFpsMaxSlat = 252,
+  kFpsNCandidate = 4
 };
 
 /** FPost basic constants */
 enum StFpostConstants {
-    kFpostNQuad=2,
-    kFpostNLayer=5,
-    kFpostNSlat=43,
-    kFpostMaxSlat=241,
-    kFpostNCandidate=6
+  kFpostNQuad = 2,
+  kFpostNLayer = 5,
+  kFpostNSlat = 43,
+  kFpostMaxSlat = 241,
+  kFpostNCandidate = 6
 };
 
-enum StRHICfConstants{
-    kRHICfNtower=2,     // 0=small, 1=large                                                                                    
-    kRHICfNplate=16,    // longitudinal segmentations      
-    kRHICfNlayer=4,     // bar layers (longitudinal)                                                                           
-    kRHICfNxy=2,        // 0=x, 1=y                                                                                            
-    kRHICfNbarSmall=20, // bar# (0-19 for small)                                                                               
-    kRHICfNbarLarge=40, // bar# (0-39 for large)
-    kRHICfNcad=10,      // Local counts for DAQ
-    kRHICfNtdc=256,     // TDC
-    kRHICfNgpio=54      // Flags                                
+enum StRHICfConstants {
+  kRHICfNtower = 2,   // 0=small, 1=large
+  kRHICfNplate = 16,  // longitudinal segmentations
+  kRHICfNlayer = 4,   // bar layers (longitudinal)
+  kRHICfNxy = 2,      // 0=x, 1=y
+  kRHICfNbarSmall = 20, // bar# (0-19 for small)
+  kRHICfNbarLarge = 40, // bar# (0-39 for large)
+  kRHICfNcad = 10,    // Local counts for DAQ
+  kRHICfNtdc = 256,   // TDC
+  kRHICfNgpio = 54    // Flags
 };
 
 /** For more IST related constants see StRoot/StIstUtil/StistConsts.h */
 namespace StIstConsts
 {
-    const int kIstNumLadders = 24;          ///< 24 IST Ladders
-    const int kIstNumSensorsPerLadder = 6;  ///< 6 sensor per one IST Ladder
-    const int kIstNumSensors = 144;         ///< 144 sensors
-    const int kIstNumPadsPerSensor = 768;   ///< 768 pads in each sensor
-    const int kIstNumRowsPerSensor = 64;    ///< 64 rows in r-phi direction per each sensor
-    const int kIstNumColumnsPerSensor = 12; ///< 12 columns in beam direction per each sensor
+const int kIstNumLadders = 24;          ///< 24 IST Ladders
+const int kIstNumSensorsPerLadder = 6;  ///< 6 sensor per one IST Ladder
+const int kIstNumSensors = 144;         ///< 144 sensors
+const int kIstNumPadsPerSensor = 768;   ///< 768 pads in each sensor
+const int kIstNumRowsPerSensor = 64;    ///< 64 rows in r-phi direction per each sensor
+const int kIstNumColumnsPerSensor = 12; ///< 12 columns in beam direction per each sensor
 }
 
 /*!
@@ -655,14 +667,14 @@ namespace StIstConsts
  */
 // constants related to electric coordinates
 enum StGmtElecConsts {
-    kGmtNumRdos = 1,                    // rdo in {1}
-    kGmtNumArms = 2,                    // 1 arm in 2 halves (or groups) {0-1}
-    kGmtNumChannels = 128,              // channel in 0-127
-    kGmtApvsPerAssembly = 2,           //
-    kGmtMaxApvId= 15,                  // we only use ARM channels 0-3 and 12-15
-    kGmtApvGap = 8,                     // i.e. we use 0-3 and then 12-15
-    kGmtApvsPerArm = 24, 
-    kGmtNumElecIds = kGmtNumChannels * kGmtApvsPerArm * kGmtNumArms * kGmtNumRdos  // elec id in 0 to kGmtNumElecIds-1
+  kGmtNumRdos = 1,                    // rdo in {1}
+  kGmtNumArms = 2,                    // 1 arm in 2 halves (or groups) {0-1}
+  kGmtNumChannels = 128,              // channel in 0-127
+  kGmtApvsPerAssembly = 2,           //
+  kGmtMaxApvId = 15,                 // we only use ARM channels 0-3 and 12-15
+  kGmtApvGap = 8,                     // i.e. we use 0-3 and then 12-15
+  kGmtApvsPerArm = 24,
+  kGmtNumElecIds = kGmtNumChannels * kGmtApvsPerArm * kGmtNumArms * kGmtNumRdos  // elec id in 0 to kGmtNumElecIds-1
 };
 
 /*!
@@ -670,16 +682,16 @@ enum StGmtElecConsts {
  */
 // constants related to physical coordinates
 enum StGmtPhysConsts {
-    kGmtNumModules = 8,
-    kGmtNumLayers = 2,
-    kGmtNumStrips = 128,  // one X layer and one Y layer
-    kGmtNumConnectedStripsX = 126,  // 2 missing in X, 3 in Y
-    kGmtNumConnectedStripsY = 125,  // 2 missing in X, 3 in Y
-    kGmtNumGeoIds = kGmtNumModules * kGmtNumLayers * kGmtNumStrips,   // geoId in 0 to kGmtNumGeoIds-1
-    kGmtNumPstripsPerModule = 128,  // "pads" which are the Local Y coordinates
-    kGmtNumSstripsPerModule = 128,  // "strips" which are the Local X coordinates
-    // for that layer
-    kGmtNumStripsPerModule = kGmtNumStrips * kGmtNumLayers // accounts for X (strip) and Y (pad) layers
+  kGmtNumModules = 8,
+  kGmtNumLayers = 2,
+  kGmtNumStrips = 128,  // one X layer and one Y layer
+  kGmtNumConnectedStripsX = 126,  // 2 missing in X, 3 in Y
+  kGmtNumConnectedStripsY = 125,  // 2 missing in X, 3 in Y
+  kGmtNumGeoIds = kGmtNumModules * kGmtNumLayers * kGmtNumStrips,   // geoId in 0 to kGmtNumGeoIds-1
+  kGmtNumPstripsPerModule = 128,  // "pads" which are the Local Y coordinates
+  kGmtNumSstripsPerModule = 128,  // "strips" which are the Local X coordinates
+  // for that layer
+  kGmtNumStripsPerModule = kGmtNumStrips * kGmtNumLayers // accounts for X (strip) and Y (pad) layers
 };
 
 /*!
@@ -687,13 +699,13 @@ enum StGmtPhysConsts {
  */
 // unsorted constants
 enum StGmtGeneralConsts {
-    kGmtNumTimeBins = 15,
-    kGmtNumTimeBinsForPed = 3,  // number of time bins to use for pedestal determination
-    kGmtMaxAdc = 4096,
-    kGmtPedCut = 3,   // pedestal subtracted threshold to temporarily tag a "hit" for 2nd pedestal pass
-    kGmtHitCut = 5 //HERE 5  
+  kGmtNumTimeBins = 15,
+  kGmtNumTimeBinsForPed = 3,  // number of time bins to use for pedestal determination
+  kGmtMaxAdc = 4096,
+  kGmtPedCut = 3,   // pedestal subtracted threshold to temporarily tag a "hit" for 2nd pedestal pass
+  kGmtHitCut = 5 //HERE 5
 };
 
-const char *detectorNameById(StDetectorId id);
-StDetectorId detectorIdByName(const char *name);
+const char* detectorNameById(StDetectorId id);
+StDetectorId detectorIdByName(const char* name);
 #endif

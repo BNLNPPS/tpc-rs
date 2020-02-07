@@ -17,7 +17,7 @@
 class St_tpcGas : public TTable
 {
  public:
-   ClassDefTable(St_tpcGas,tpcGas_st)
-   ClassDef(St_tpcGas,2) //C++ wrapper for <tpcGas> StAF table
+  ClassDefTable(St_tpcGas, tpcGas_st)
+  ClassDef(St_tpcGas, 2) //C++ wrapper for <tpcGas> StAF table
 };
 #endif

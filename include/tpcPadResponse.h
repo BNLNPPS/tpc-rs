@@ -34,21 +34,21 @@
 	float InnerOuterFactor; \
 };"
 typedef struct tpcPadResponse_st {
-	float innerGasGainFluctuation; /*   unitless  */
-	float outerGasGainFluctuation; /*   unitless  */
-	float innerPadResponseSigma; /*   cm  */
-	float outerPadResponseSigma; /*   cm  */
-	float innerWirePadCoupling; /*   cm  */
-	float outerWirePadCoupling; /*   cm  */
-	float innerRowNormalization; /*   unitless  */
-	float outerRowNormalization; /*   unitless  */
-	float BoundaryOfStepFunctions[6]; /*   cm  */
-	float innerChargeFractionConstants[6]; /*   unitless  */
-	float outerChargeFractionConstants[6]; /*   unitless  */
-	float errorFunctionRange; /*   unitless  */
-	int errorFunctionEntry; /*   unitless  */
-	float longitudinalDiffusionConstant; /*   cm/sqrt(cm)  */
-	float transverseDiffusionConstant; /*   cm/sqrt(cm)  */
-	float InnerOuterFactor; /*   dimensionless  */
+  float innerGasGainFluctuation; /*   unitless  */
+  float outerGasGainFluctuation; /*   unitless  */
+  float innerPadResponseSigma; /*   cm  */
+  float outerPadResponseSigma; /*   cm  */
+  float innerWirePadCoupling; /*   cm  */
+  float outerWirePadCoupling; /*   cm  */
+  float innerRowNormalization; /*   unitless  */
+  float outerRowNormalization; /*   unitless  */
+  float BoundaryOfStepFunctions[6]; /*   cm  */
+  float innerChargeFractionConstants[6]; /*   unitless  */
+  float outerChargeFractionConstants[6]; /*   unitless  */
+  float errorFunctionRange; /*   unitless  */
+  int errorFunctionEntry; /*   unitless  */
+  float longitudinalDiffusionConstant; /*   cm/sqrt(cm)  */
+  float transverseDiffusionConstant; /*   cm/sqrt(cm)  */
+  float InnerOuterFactor; /*   dimensionless  */
 } TPCPADRESPONSE_ST;
 #endif /* TPCPADRESPONSE_H */

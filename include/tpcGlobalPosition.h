@@ -32,20 +32,20 @@
 	float ZZ_geom; \
 };"
 typedef struct tpcGlobalPosition_st {
-	float LocalxShift; /* cm : x position of TPC center in magnet frame  */
-	float LocalyShift; /* cm : y position of TPC center in magnet frame  */
-	float LocalzShift; /* cm : z position of TPC center in magnet frame  */
-	float PhiXY; /* radians: rotation angle around z axis  (not used) */
-	float PhiXZ; /* radians: rotation angle around y axis  XTWIST */
-	float PhiYZ; /* radians: rotation angle around x axis  YTWIST */
-	float XX; /* XX element of rotation matrix  (not used) */
-	float YY; /* YY element of rotation matrix  (not used) */
-	float ZZ; /* ZZ element of rotation matrix  (not used) */
-	float PhiXY_geom; /* radians: geometrical rotation angle around z axis psi,  -gamma  (not used) */
-	float PhiXZ_geom; /* radians: geometrical rotation angle around y axis theta,-beta  */
-	float PhiYZ_geom; /* radians: geometrical rotation angle around x axis psi,  -alpha */
-	float XX_geom; /* XX element of geometrical rotation matrix  (not used) */
-	float YY_geom; /* YY element of geometrical rotation matrix  (not used) */
-	float ZZ_geom; /* ZZ element of geometrical rotation matrix  (not used) */
+  float LocalxShift; /* cm : x position of TPC center in magnet frame  */
+  float LocalyShift; /* cm : y position of TPC center in magnet frame  */
+  float LocalzShift; /* cm : z position of TPC center in magnet frame  */
+  float PhiXY; /* radians: rotation angle around z axis  (not used) */
+  float PhiXZ; /* radians: rotation angle around y axis  XTWIST */
+  float PhiYZ; /* radians: rotation angle around x axis  YTWIST */
+  float XX; /* XX element of rotation matrix  (not used) */
+  float YY; /* YY element of rotation matrix  (not used) */
+  float ZZ; /* ZZ element of rotation matrix  (not used) */
+  float PhiXY_geom; /* radians: geometrical rotation angle around z axis psi,  -gamma  (not used) */
+  float PhiXZ_geom; /* radians: geometrical rotation angle around y axis theta,-beta  */
+  float PhiYZ_geom; /* radians: geometrical rotation angle around x axis psi,  -alpha */
+  float XX_geom; /* XX element of geometrical rotation matrix  (not used) */
+  float YY_geom; /* YY element of geometrical rotation matrix  (not used) */
+  float ZZ_geom; /* ZZ element of geometrical rotation matrix  (not used) */
 } TPCGLOBALPOSITION_ST;
 #endif /* TPCGLOBALPOSITION_H */

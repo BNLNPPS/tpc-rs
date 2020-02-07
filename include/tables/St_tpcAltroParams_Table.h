@@ -17,7 +17,7 @@
 class St_tpcAltroParams : public TTable
 {
  public:
-   ClassDefTable(St_tpcAltroParams,tpcAltroParams_st)
-   ClassDef(St_tpcAltroParams,2) //C++ wrapper for <tpcAltroParams> StAF table
+  ClassDefTable(St_tpcAltroParams, tpcAltroParams_st)
+  ClassDef(St_tpcAltroParams, 2) //C++ wrapper for <tpcAltroParams> StAF table
 };
 #endif

@@ -43,31 +43,31 @@
 	double lastOuterSectorAnodeWire; \
 };"
 typedef struct tpcWirePlanes_st {
-	double anodeWireRadius; /*   */
-	double frischGridWireRadius; /*   */
-	double gatingGridWireRadius; /*   */
-	double anodeWirePitch; /*   */
-	double frischGridWirePitch; /*   */
-	double gatingGridWirePitch; /*   */
-	double innerSectorAnodeWirePadSep; /*   AnodeWire-to-PadPlane distance  */
-	double innerSectorFrischGridPadSep; /*   FrischGrid-to-PadPlane distance  */
-	double innerSectorGatingGridPadSep; /*   GatingGrid-to-PadPlane distance  */
-	double outerSectorAnodeWirePadSep; /*   AnodeWire-to-PadPlane distance  */
-	double outerSectorFrischGridPadSep; /*   FrischGrid-to-PadPlane distance  */
-	double outerSectorGatingGridPadSep; /*   GatingGrid-to-PadPlane distance  */
-	int numInnerSectorAnodeWires; /*   */
-	int numInnerSectorFrischGridWires; /*   */
-	int numInnerSectorGatingGridWires; /*   */
-	double firstInnerSectorAnodeWire; /*   */
-	double firstInnerSectorFrischGridWire; /*   */
-	double firstInnerSectorGatingGridWire; /*   */
-	double lastInnerSectorAnodeWire; /*   */
-	int numOuterSectorAnodeWires; /*   */
-	int numOuterSectorFrischGridWires; /*   */
-	int numOuterSectorGatingGridWires; /*   */
-	double firstOuterSectorAnodeWire; /*   */
-	double firstOuterSectorFrischGridWire; /*   */
-	double firstOuterSectorGatingGridWire; /*   */
-	double lastOuterSectorAnodeWire; /*   */
+  double anodeWireRadius; /*   */
+  double frischGridWireRadius; /*   */
+  double gatingGridWireRadius; /*   */
+  double anodeWirePitch; /*   */
+  double frischGridWirePitch; /*   */
+  double gatingGridWirePitch; /*   */
+  double innerSectorAnodeWirePadSep; /*   AnodeWire-to-PadPlane distance  */
+  double innerSectorFrischGridPadSep; /*   FrischGrid-to-PadPlane distance  */
+  double innerSectorGatingGridPadSep; /*   GatingGrid-to-PadPlane distance  */
+  double outerSectorAnodeWirePadSep; /*   AnodeWire-to-PadPlane distance  */
+  double outerSectorFrischGridPadSep; /*   FrischGrid-to-PadPlane distance  */
+  double outerSectorGatingGridPadSep; /*   GatingGrid-to-PadPlane distance  */
+  int numInnerSectorAnodeWires; /*   */
+  int numInnerSectorFrischGridWires; /*   */
+  int numInnerSectorGatingGridWires; /*   */
+  double firstInnerSectorAnodeWire; /*   */
+  double firstInnerSectorFrischGridWire; /*   */
+  double firstInnerSectorGatingGridWire; /*   */
+  double lastInnerSectorAnodeWire; /*   */
+  int numOuterSectorAnodeWires; /*   */
+  int numOuterSectorFrischGridWires; /*   */
+  int numOuterSectorGatingGridWires; /*   */
+  double firstOuterSectorAnodeWire; /*   */
+  double firstOuterSectorFrischGridWire; /*   */
+  double firstOuterSectorGatingGridWire; /*   */
+  double lastOuterSectorAnodeWire; /*   */
 } TPCWIREPLANES_ST;
 #endif /* TPCWIREPLANES_H */

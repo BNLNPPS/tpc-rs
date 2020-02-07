@@ -17,7 +17,7 @@
 class St_g2t_track : public TTable
 {
  public:
-   ClassDefTable(St_g2t_track,g2t_track_st)
-   ClassDef(St_g2t_track,2) //C++ wrapper for <g2t_track> StAF table
+  ClassDefTable(St_g2t_track, g2t_track_st)
+  ClassDef(St_g2t_track, 2) //C++ wrapper for <g2t_track> StAF table
 };
 #endif

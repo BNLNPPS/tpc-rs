@@ -21,8 +21,8 @@
 	float laserOffsetW; \
 };"
 typedef struct trgTimeOffset_st {
-	float offset; /*   standard trigger offset in micro-seconds  */
-	float laserOffset; /*   laser trigger offset in micro-seconds  */
-	float laserOffsetW; /*   laser extra trigger offset for West laser */
+  float offset; /*   standard trigger offset in micro-seconds  */
+  float laserOffset; /*   laser trigger offset in micro-seconds  */
+  float laserOffsetW; /*   laser extra trigger offset for West laser */
 } TRGTIMEOFFSET_ST;
 #endif /* TRGTIMEOFFSET_H */

@@ -17,7 +17,7 @@
 class St_trgTimeOffset : public TTable
 {
  public:
-   ClassDefTable(St_trgTimeOffset,trgTimeOffset_st)
-   ClassDef(St_trgTimeOffset,2) //C++ wrapper for <trgTimeOffset> StAF table
+  ClassDefTable(St_trgTimeOffset, trgTimeOffset_st)
+  ClassDef(St_trgTimeOffset, 2) //C++ wrapper for <trgTimeOffset> StAF table
 };
 #endif

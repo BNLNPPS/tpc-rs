@@ -17,7 +17,7 @@
 class St_tpcCorrection : public TTable
 {
  public:
-   ClassDefTable(St_tpcCorrection,tpcCorrection_st)
-   ClassDef(St_tpcCorrection,2) //C++ wrapper for <tpcCorrection> StAF table
+  ClassDefTable(St_tpcCorrection, tpcCorrection_st)
+  ClassDef(St_tpcCorrection, 2) //C++ wrapper for <tpcCorrection> StAF table
 };
 #endif

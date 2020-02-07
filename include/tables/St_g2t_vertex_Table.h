@@ -17,7 +17,7 @@
 class St_g2t_vertex : public TTable
 {
  public:
-   ClassDefTable(St_g2t_vertex,g2t_vertex_st)
-   ClassDef(St_g2t_vertex,2) //C++ wrapper for <g2t_vertex> StAF table
+  ClassDefTable(St_g2t_vertex, g2t_vertex_st)
+  ClassDef(St_g2t_vertex, 2) //C++ wrapper for <g2t_vertex> StAF table
 };
 #endif

@@ -48,36 +48,36 @@
 	double outerRowRadii[32]; \
 };"
 typedef struct tpcPadPlanes_st {
-	int padRows; /*   */
-	int innerPadRows; /*   */
-	int innerPadRows48; /*   */
-	int innerPadRows52; /*   */
-	int outerPadRows; /*   */
-	int superInnerPadRows; /*   */
-	int superOuterPadRows; /*   */
-	double innerSectorPadWidth; /*   */
-	double innerSectorPadLength; /*   */
-	double innerSectorPadPitch; /*   */
-	double innerSectorRowPitch1; /*   */
-	double innerSectorRowPitch2; /*   */
-	double firstPadRow; /*   */
-	double firstOuterSectorPadRow; /*   */
-	double lastOuterSectorPadRow; /*   */
-	double firstRowWidth; /*   */
-	double lastRowWidth; /*   */
-	double outerSectorPadWidth; /*   */
-	double outerSectorPadLength; /*   */
-	double outerSectorPadPitch; /*   */
-	double outerSectorRowPitch; /*   */
-	double outerSectorLength; /*   */
-	double ioSectorSeparation; /*   */
-	double innerSectorEdge; /*   */
-	double outerSectorEdge; /*   */
-	double innerSectorPadPlaneZ; /*   */
-	double outerSectorPadPlaneZ; /*   */
-	int innerPadsPerRow[13]; /*   */
-	int outerPadsPerRow[32]; /*   */
-	double innerRowRadii[13]; /*   */
-	double outerRowRadii[32]; /*   */
+  int padRows; /*   */
+  int innerPadRows; /*   */
+  int innerPadRows48; /*   */
+  int innerPadRows52; /*   */
+  int outerPadRows; /*   */
+  int superInnerPadRows; /*   */
+  int superOuterPadRows; /*   */
+  double innerSectorPadWidth; /*   */
+  double innerSectorPadLength; /*   */
+  double innerSectorPadPitch; /*   */
+  double innerSectorRowPitch1; /*   */
+  double innerSectorRowPitch2; /*   */
+  double firstPadRow; /*   */
+  double firstOuterSectorPadRow; /*   */
+  double lastOuterSectorPadRow; /*   */
+  double firstRowWidth; /*   */
+  double lastRowWidth; /*   */
+  double outerSectorPadWidth; /*   */
+  double outerSectorPadLength; /*   */
+  double outerSectorPadPitch; /*   */
+  double outerSectorRowPitch; /*   */
+  double outerSectorLength; /*   */
+  double ioSectorSeparation; /*   */
+  double innerSectorEdge; /*   */
+  double outerSectorEdge; /*   */
+  double innerSectorPadPlaneZ; /*   */
+  double outerSectorPadPlaneZ; /*   */
+  int innerPadsPerRow[13]; /*   */
+  int outerPadsPerRow[32]; /*   */
+  double innerRowRadii[13]; /*   */
+  double outerRowRadii[32]; /*   */
 } TPCPADPLANES_ST;
 #endif /* TPCPADPLANES_H */

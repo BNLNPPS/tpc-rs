@@ -17,7 +17,7 @@
 class St_TpcAvgPowerSupply : public TTable
 {
  public:
-   ClassDefTable(St_TpcAvgPowerSupply,TpcAvgPowerSupply_st)
-   ClassDef(St_TpcAvgPowerSupply,2) //C++ wrapper for <TpcAvgPowerSupply> StAF table
+  ClassDefTable(St_TpcAvgPowerSupply, TpcAvgPowerSupply_st)
+  ClassDef(St_TpcAvgPowerSupply, 2) //C++ wrapper for <TpcAvgPowerSupply> StAF table
 };
 #endif

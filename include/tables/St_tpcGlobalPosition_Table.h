@@ -17,7 +17,7 @@
 class St_tpcGlobalPosition : public TTable
 {
  public:
-   ClassDefTable(St_tpcGlobalPosition,tpcGlobalPosition_st)
-   ClassDef(St_tpcGlobalPosition,2) //C++ wrapper for <tpcGlobalPosition> StAF table
+  ClassDefTable(St_tpcGlobalPosition, tpcGlobalPosition_st)
+  ClassDef(St_tpcGlobalPosition, 2) //C++ wrapper for <tpcGlobalPosition> StAF table
 };
 #endif

@@ -34,33 +34,33 @@
 
 class StFtpcSectorCoordinate
 {
-public:
-    StFtpcSectorCoordinate();
-    StFtpcSectorCoordinate(const int, const int);
+ public:
+  StFtpcSectorCoordinate();
+  StFtpcSectorCoordinate(const int, const int);
 
-    virtual ~StFtpcSectorCoordinate();
-    //StFtpcSectorCoordinate(const StFtpcSectorCoordinate&);
-    //StFtpcSectorCoordinate& operator=(cont StFtpcSectorCoordinate&);
-    
-    int operator==(const StFtpcSectorCoordinate&) const;
-    int operator!=(const StFtpcSectorCoordinate&) const;
-    // access functions
-    const int plane()       const;
-    const int sector()      const;
+  virtual ~StFtpcSectorCoordinate();
+  //StFtpcSectorCoordinate(const StFtpcSectorCoordinate&);
+  //StFtpcSectorCoordinate& operator=(cont StFtpcSectorCoordinate&);
 
-    void setPlane(int);
-    void setSector(int);
-    
-private:
-    int mPlane;
-    int mSector;
+  int operator==(const StFtpcSectorCoordinate &) const;
+  int operator!=(const StFtpcSectorCoordinate &) const;
+  // access functions
+  const int plane()       const;
+  const int sector()      const;
+
+  void setPlane(int);
+  void setSector(int);
+
+ private:
+  int mPlane;
+  int mSector;
 };
 
-const inline int StFtpcSectorCoordinate::plane()     const {return(mPlane);}
-const inline int StFtpcSectorCoordinate::sector()        const {return(mSector);}
+const inline int StFtpcSectorCoordinate::plane()     const {return (mPlane);}
+const inline int StFtpcSectorCoordinate::sector()        const {return (mSector);}
 inline void StFtpcSectorCoordinate::setPlane(int p) {mPlane = p;}
 inline void StFtpcSectorCoordinate::setSector(int s) {mSector = s;}
 // Non-member
-ostream& operator<<(ostream&, const StFtpcSectorCoordinate&);
+ostream &operator<<(ostream &, const StFtpcSectorCoordinate &);
 
 #endif

@@ -17,7 +17,7 @@
 class St_richvoltages : public TTable
 {
  public:
-   ClassDefTable(St_richvoltages,richvoltages_st)
-   ClassDef(St_richvoltages,2) //C++ wrapper for <richvoltages> StAF table
+  ClassDefTable(St_richvoltages, richvoltages_st)
+  ClassDef(St_richvoltages, 2) //C++ wrapper for <richvoltages> StAF table
 };
 #endif

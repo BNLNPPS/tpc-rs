@@ -17,7 +17,7 @@
 class St_g2t_pythia : public TTable
 {
  public:
-   ClassDefTable(St_g2t_pythia,g2t_pythia_st)
-   ClassDef(St_g2t_pythia,2) //C++ wrapper for <g2t_pythia> StAF table
+  ClassDefTable(St_g2t_pythia, g2t_pythia_st)
+  ClassDef(St_g2t_pythia, 2) //C++ wrapper for <g2t_pythia> StAF table
 };
 #endif

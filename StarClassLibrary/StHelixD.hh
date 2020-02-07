@@ -13,5 +13,5 @@
 #include "StHelix.hh"
 #include <utility>
 typedef StHelix StHelixD;
-typedef pair<double,double> pairD;
+typedef pair<double, double> pairD;
 #endif

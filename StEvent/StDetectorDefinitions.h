@@ -88,7 +88,7 @@
 **  spectrometers (tu April 6, 2009)
 */
 #define kFpdWestIdentifier            30
-#define kFpdEastIdentifier            31 
+#define kFpdEastIdentifier            31
 #define kFmsIdentifier                32
 
 /*
@@ -120,7 +120,7 @@
 /*
 ** Add the FTS tracker
 */
-#define kFtsIdentifier                38 
+#define kFtsIdentifier                38
 
 /*
  ** iTPC

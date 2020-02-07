@@ -17,7 +17,7 @@
 class St_tpcSectorPosition : public TTable
 {
  public:
-   ClassDefTable(St_tpcSectorPosition,tpcSectorPosition_st)
-   ClassDef(St_tpcSectorPosition,2) //C++ wrapper for <tpcSectorPosition> StAF table
+  ClassDefTable(St_tpcSectorPosition, tpcSectorPosition_st)
+  ClassDef(St_tpcSectorPosition, 2) //C++ wrapper for <tpcSectorPosition> StAF table
 };
 #endif

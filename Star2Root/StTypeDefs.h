@@ -31,8 +31,8 @@ class TTableIter;
 class TTablePoints;
 class TTableSorter;
 class TTableDescriptor;
- 
-typedef TCL              StCL; 
+
+typedef TCL              StCL;
 typedef TDataSet         St_DataSet ;
 typedef TDataSetIter     St_DataSetIter;
 typedef TFileSet         St_FileSet;

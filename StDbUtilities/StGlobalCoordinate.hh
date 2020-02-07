@@ -63,26 +63,26 @@
 #include "StThreeVectorF.hh"
 
 class StGlobalCoordinate
-{         
-public:
+{
+ public:
   StGlobalCoordinate() {}
-  StGlobalCoordinate(const double x, const double y, const double z) : mPosition(x,y,z) { }
-  StGlobalCoordinate(const double *x) : mPosition(x) { }
-  StGlobalCoordinate(const StThreeVector<double>& x) : mPosition(x) {}
-  StGlobalCoordinate(const StThreeVectorF& x) : mPosition(x.x(), x.y(), x.z()) {}
-  
+  StGlobalCoordinate(const double x, const double y, const double z) : mPosition(x, y, z) { }
+  StGlobalCoordinate(const double* x) : mPosition(x) { }
+  StGlobalCoordinate(const StThreeVector<double> &x) : mPosition(x) {}
+  StGlobalCoordinate(const StThreeVectorF &x) : mPosition(x.x(), x.y(), x.z()) {}
+
   virtual ~StGlobalCoordinate() {}
-  int operator==(const StGlobalCoordinate& p) const {return p.mPosition == mPosition;}
-  int operator!=(const StGlobalCoordinate& p) const {return !(*this == p);}
+  int operator==(const StGlobalCoordinate &p) const {return p.mPosition == mPosition;}
+  int operator!=(const StGlobalCoordinate &p) const {return !(*this == p);}
   // access functions provided by StThreeVector
-  virtual const StThreeVector<double>& position() const {return *&mPosition;}
-  virtual       StThreeVector<double>& position()       {return *&mPosition;}
-  virtual void setPosition(const StThreeVector<double>& val) {mPosition = val; }
-    
-protected:
-    StThreeVector<double> mPosition;
+  virtual const StThreeVector<double> &position() const {return * &mPosition;}
+  virtual       StThreeVector<double> &position()       {return * &mPosition;}
+  virtual void setPosition(const StThreeVector<double> &val) {mPosition = val; }
+
+ protected:
+  StThreeVector<double> mPosition;
 
 };
 // Non-Member
-ostream& operator<<(ostream&, const StGlobalCoordinate&);
+ostream &operator<<(ostream &, const StGlobalCoordinate &);
 #endif

@@ -36,31 +36,31 @@
 
 class StFtpcLocalCoordinate
 {
-public:
-    StFtpcLocalCoordinate();
-    StFtpcLocalCoordinate(const double, const double, const double);
-    StFtpcLocalCoordinate(const StThreeVector<double>&);
+ public:
+  StFtpcLocalCoordinate();
+  StFtpcLocalCoordinate(const double, const double, const double);
+  StFtpcLocalCoordinate(const StThreeVector<double> &);
 
-    virtual ~StFtpcLocalCoordinate();
-    //StFtpcLocalCoordinate(const StTpcLocalCoordinate&);
-    //StFtpcLocalCoordinate& operator=(const StTpcLocalCoordinate&);
-    
-    int operator==(const StFtpcLocalCoordinate&) const;
-    int operator!=(const StFtpcLocalCoordinate&) const;
-    // access functions provided by StThreeVector
-    const StThreeVector<double>& position()  const;
-    StThreeVector<double>& position();
-    void setPosition(const StThreeVector<double>&);
-    
-private:
-    StThreeVector<double> mPosition;
+  virtual ~StFtpcLocalCoordinate();
+  //StFtpcLocalCoordinate(const StTpcLocalCoordinate&);
+  //StFtpcLocalCoordinate& operator=(const StTpcLocalCoordinate&);
+
+  int operator==(const StFtpcLocalCoordinate &) const;
+  int operator!=(const StFtpcLocalCoordinate &) const;
+  // access functions provided by StThreeVector
+  const StThreeVector<double> &position()  const;
+  StThreeVector<double> &position();
+  void setPosition(const StThreeVector<double> &);
+
+ private:
+  StThreeVector<double> mPosition;
 };
 
-inline const StThreeVector<double>& StFtpcLocalCoordinate::position() const { return(mPosition); }
-inline StThreeVector<double>& StFtpcLocalCoordinate::position() { return(mPosition); }
-inline void StFtpcLocalCoordinate::setPosition(const StThreeVector<double>& val) { mPosition = val; }
+inline const StThreeVector<double> &StFtpcLocalCoordinate::position() const { return (mPosition); }
+inline StThreeVector<double> &StFtpcLocalCoordinate::position() { return (mPosition); }
+inline void StFtpcLocalCoordinate::setPosition(const StThreeVector<double> &val) { mPosition = val; }
 
 // Non-member
-ostream& operator<<(ostream&, const StFtpcLocalCoordinate&);
+ostream &operator<<(ostream &, const StFtpcLocalCoordinate &);
 #endif
-    
+

@@ -31,19 +31,19 @@
 	double hallTemperature; \
 };"
 typedef struct tpcSlowControlSim_st {
-	double driftVelocity; /*   */
-	double driftVoltage; /*   */
-	double innerSectorAnodeVoltage; /*   */
-	double innerSectorGatingGridV; /*   */
-	double outerSectorAnodeVoltage; /*   */
-	double outerSectorGatingGridV; /*   */
-	double innerSectorGasGain; /*   */
-	double innerSectorGasGainVzero; /*   */
-	double innerSectorGasGainb; /*   */
-	double outerSectorGasGain; /*   */
-	double outerSectorGasGainVzero; /*   */
-	double outerSectorGasGainb; /*   */
-	double hallPressure; /*   */
-	double hallTemperature; /*   */
+  double driftVelocity; /*   */
+  double driftVoltage; /*   */
+  double innerSectorAnodeVoltage; /*   */
+  double innerSectorGatingGridV; /*   */
+  double outerSectorAnodeVoltage; /*   */
+  double outerSectorGatingGridV; /*   */
+  double innerSectorGasGain; /*   */
+  double innerSectorGasGainVzero; /*   */
+  double innerSectorGasGainb; /*   */
+  double outerSectorGasGain; /*   */
+  double outerSectorGasGainVzero; /*   */
+  double outerSectorGasGainb; /*   */
+  double hallPressure; /*   */
+  double hallTemperature; /*   */
 } TPCSLOWCONTROLSIM_ST;
 #endif /* TPCSLOWCONTROLSIM_H */

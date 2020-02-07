@@ -17,7 +17,7 @@
 class St_trigDetSums : public TTable
 {
  public:
-   ClassDefTable(St_trigDetSums,trigDetSums_st)
-   ClassDef(St_trigDetSums,2) //C++ wrapper for <trigDetSums> StAF table
+  ClassDefTable(St_trigDetSums, trigDetSums_st)
+  ClassDef(St_trigDetSums, 2) //C++ wrapper for <trigDetSums> StAF table
 };
 #endif

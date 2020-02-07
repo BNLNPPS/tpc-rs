@@ -32,13 +32,13 @@
 	float outerSectorCovMatrix; \
 };"
 typedef struct tpcSectorPosition_st {
-	float innerSectorLocalxShift; /*   cm : shift in local x coord.  */
-	float innerSectorLocalyShift; /*   cm : shift in local y coord.  */
-	float innerSectorRotationAngle; /*   degrees : clockwise rotation  */
-	float innerSectorCovMatrix; /*   0  */
-	float outerSectorLocalxShift; /*   cm : shift in local x coord.  */
-	float outerSectorLocalyShift; /*   cm : shift in local y coord.  */
-	float outerSectorRotationAngle; /*   degrees : clockwise rotation  */
-	float outerSectorCovMatrix; /*   0  */
+  float innerSectorLocalxShift; /*   cm : shift in local x coord.  */
+  float innerSectorLocalyShift; /*   cm : shift in local y coord.  */
+  float innerSectorRotationAngle; /*   degrees : clockwise rotation  */
+  float innerSectorCovMatrix; /*   0  */
+  float outerSectorLocalxShift; /*   cm : shift in local x coord.  */
+  float outerSectorLocalyShift; /*   cm : shift in local y coord.  */
+  float outerSectorRotationAngle; /*   degrees : clockwise rotation  */
+  float outerSectorCovMatrix; /*   0  */
 } TPCSECTORPOSITION_ST;
 #endif /* TPCSECTORPOSITION_H */

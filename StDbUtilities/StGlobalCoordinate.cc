@@ -52,12 +52,12 @@
 #include "StGlobalCoordinate.hh"
 #include "StThreeVectorF.hh"
 static const char rcsid[] = "$Id: StGlobalCoordinate.cc,v 1.4 2011/01/18 14:34:27 fisyak Exp $";
-    
+
 // Non-member functions
-ostream& operator<<(ostream& os, const StGlobalCoordinate& a)
+ostream &operator<<(ostream &os, const StGlobalCoordinate &a)
 {
-    return os << "GC ( "
-	      << a.position().x() << ", "
-	      << a.position().y() << ", "
-	      << a.position().z() << ")";
+  return os << "GC ( "
+         << a.position().x() << ", "
+         << a.position().y() << ", "
+         << a.position().z() << ")";
 }

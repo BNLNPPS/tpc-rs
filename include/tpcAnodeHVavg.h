@@ -8,7 +8,7 @@
 
   Table: tpcAnodeHVavg
 
-       description: average voltages over stable periods of time, 
+       description: average voltages over stable periods of time,
 
  */
 #ifndef TPCANODEHVAVG_H
@@ -23,11 +23,11 @@
 	long numoutliers; \
 };"
 typedef struct tpcAnodeHVavg_st {
-	unsigned short sector; /*  sector 1-24 */
-	unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
-	float voltage; /*  average voltage  */
-	float rms; /*  rms for averaged voltage */
-	int numentries; /*  number of entries used for average */
-	int numoutliers; /*  number of encountered outliers */
+  unsigned short sector; /*  sector 1-24 */
+  unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
+  float voltage; /*  average voltage  */
+  float rms; /*  rms for averaged voltage */
+  int numentries; /*  number of entries used for average */
+  int numoutliers; /*  number of encountered outliers */
 } TPCANODEHVAVG_ST;
 #endif /* TPCANODEHVAVG_H */

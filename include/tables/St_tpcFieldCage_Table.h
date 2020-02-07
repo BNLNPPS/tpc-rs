@@ -17,7 +17,7 @@
 class St_tpcFieldCage : public TTable
 {
  public:
-   ClassDefTable(St_tpcFieldCage,tpcFieldCage_st)
-   ClassDef(St_tpcFieldCage,2) //C++ wrapper for <tpcFieldCage> StAF table
+  ClassDefTable(St_tpcFieldCage, tpcFieldCage_st)
+  ClassDef(St_tpcFieldCage, 2) //C++ wrapper for <tpcFieldCage> StAF table
 };
 #endif

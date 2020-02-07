@@ -14,8 +14,8 @@
 :Size of Data:
 :Pointer to data:  tpcCorrection.time:
  type = 0 polymonical fit,                                        use only [min,max]
- type = 1 TChebyshev poly in range [min,max] => [-1,1]           
- type = 2 shifted  TChebyshev poly in range [min,max] => [ 0,1]  
+ type = 1 TChebyshev poly in range [min,max] => [-1,1]
+ type = 2 shifted  TChebyshev poly in range [min,max] => [ 0,1]
  type = 3 X => Log(1 - |x|)                                       use only [min,max]
  type = 4 X => Log(1 - |x|)*sign(x)                                -"-
  type = 5 X => Log(x), for x <= 1 => 0
@@ -48,13 +48,13 @@ COMMENTS TRUNCATED */
 	double a[10]; \
 };"
 typedef struct tpcCorrection_st {
-	int type; 
-	int idx; 
-	int nrows; 
-	int npar; 
-	double OffSet; 
-	double min; 
-	double max; 
-	double a[10]; 
+  int type;
+  int idx;
+  int nrows;
+  int npar;
+  double OffSet;
+  double min;
+  double max;
+  double a[10];
 } TPCCORRECTION_ST;
 #endif /* TPCCORRECTION_H */

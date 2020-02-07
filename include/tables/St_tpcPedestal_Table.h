@@ -17,7 +17,7 @@
 class St_tpcPedestal : public TTable
 {
  public:
-   ClassDefTable(St_tpcPedestal,tpcPedestal_st)
-   ClassDef(St_tpcPedestal,2) //C++ wrapper for <tpcPedestal> StAF table
+  ClassDefTable(St_tpcPedestal, tpcPedestal_st)
+  ClassDef(St_tpcPedestal, 2) //C++ wrapper for <tpcPedestal> StAF table
 };
 #endif

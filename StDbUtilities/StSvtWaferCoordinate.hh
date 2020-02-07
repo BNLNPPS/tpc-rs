@@ -42,51 +42,51 @@
 #include <Stiostream.h>
 
 class StSvtWaferCoordinate
-{ 
-public:
-    StSvtWaferCoordinate();
-    StSvtWaferCoordinate(const int, const int, const int, const int, const double, const double);
+{
+ public:
+  StSvtWaferCoordinate();
+  StSvtWaferCoordinate(const int, const int, const int, const int, const double, const double);
 
-    virtual ~StSvtWaferCoordinate();
-    //StSvtWaferCoordinate(const StSvtWaferCoordinate&);
-    //StSvtWaferCoordinate& operator=(cont StSvtWaferCoordinate&);
-    
-    int operator==(const StSvtWaferCoordinate&) const;
-    int operator!=(const StSvtWaferCoordinate&) const;
+  virtual ~StSvtWaferCoordinate();
+  //StSvtWaferCoordinate(const StSvtWaferCoordinate&);
+  //StSvtWaferCoordinate& operator=(cont StSvtWaferCoordinate&);
 
-    // access functions
-    const int barrel()      const;
-    const int layer()       const;
-    const int ladder()      const;
-    const int wafer()       const;
-    const int hybrid()      const;
-    const double anode()    const;
-    const double timebucket() const;
+  int operator==(const StSvtWaferCoordinate &) const;
+  int operator!=(const StSvtWaferCoordinate &) const;
 
-    void setLayer(int);
-    void setLadder(int);
-    void setWafer(int);
-    void setHybrid(int);
-    void setAnode(double);
-    void setTimeBucket(double);
-    
-protected:
-    int mLayer;
-    int mLadder;
-    int mWafer;
-    int mHybrid;
-    double mAnode;
-    double mTimeBucket;
+  // access functions
+  const int barrel()      const;
+  const int layer()       const;
+  const int ladder()      const;
+  const int wafer()       const;
+  const int hybrid()      const;
+  const double anode()    const;
+  const double timebucket() const;
+
+  void setLayer(int);
+  void setLadder(int);
+  void setWafer(int);
+  void setHybrid(int);
+  void setAnode(double);
+  void setTimeBucket(double);
+
+ protected:
+  int mLayer;
+  int mLadder;
+  int mWafer;
+  int mHybrid;
+  double mAnode;
+  double mTimeBucket;
 };
 
-const inline int StSvtWaferCoordinate::barrel() 
-  const {return(((mLayer-1)/2)+1);}
-const inline int StSvtWaferCoordinate::layer()   const {return(mLayer);}
-const inline int StSvtWaferCoordinate::ladder()  const {return(mLadder);}
-const inline int StSvtWaferCoordinate::wafer()   const {return(mWafer);}
-const inline int StSvtWaferCoordinate::hybrid()   const {return(mHybrid);}
-const inline double StSvtWaferCoordinate::anode()  const {return(mAnode);}
-const inline double StSvtWaferCoordinate::timebucket()   const {return(mTimeBucket);}
+const inline int StSvtWaferCoordinate::barrel()
+const {return (((mLayer - 1) / 2) + 1);}
+const inline int StSvtWaferCoordinate::layer()   const {return (mLayer);}
+const inline int StSvtWaferCoordinate::ladder()  const {return (mLadder);}
+const inline int StSvtWaferCoordinate::wafer()   const {return (mWafer);}
+const inline int StSvtWaferCoordinate::hybrid()   const {return (mHybrid);}
+const inline double StSvtWaferCoordinate::anode()  const {return (mAnode);}
+const inline double StSvtWaferCoordinate::timebucket()   const {return (mTimeBucket);}
 inline void StSvtWaferCoordinate::setLayer(int l)  {mLayer  = l;}
 inline void StSvtWaferCoordinate::setLadder(int d) {mLadder = d;}
 inline void StSvtWaferCoordinate::setWafer(int w)  {mWafer  = w;}
@@ -94,6 +94,6 @@ inline void StSvtWaferCoordinate::setHybrid(int h)  {mHybrid  = h;}
 inline void StSvtWaferCoordinate::setAnode(double a)  {mAnode = a;}
 inline void StSvtWaferCoordinate::setTimeBucket(double t)  {mTimeBucket  = t;}
 // Non-member
-ostream& operator<<(ostream&, const StSvtWaferCoordinate&);
+ostream &operator<<(ostream &, const StSvtWaferCoordinate &);
 
 #endif

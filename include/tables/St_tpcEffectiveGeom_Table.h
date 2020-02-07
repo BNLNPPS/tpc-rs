@@ -17,7 +17,7 @@
 class St_tpcEffectiveGeom : public TTable
 {
  public:
-   ClassDefTable(St_tpcEffectiveGeom,tpcEffectiveGeom_st)
-   ClassDef(St_tpcEffectiveGeom,2) //C++ wrapper for <tpcEffectiveGeom> StAF table
+  ClassDefTable(St_tpcEffectiveGeom, tpcEffectiveGeom_st)
+  ClassDef(St_tpcEffectiveGeom, 2) //C++ wrapper for <tpcEffectiveGeom> StAF table
 };
 #endif

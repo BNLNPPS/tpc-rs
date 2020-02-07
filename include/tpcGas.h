@@ -4,7 +4,7 @@
 ** Instead, edit the source idl file and then re-run the compiler.
 ** For help, type contact Craig Tull or Herb Ward. */
 /* COMMENTS FROM IDL FILE:
-:Description: 
+:Description:
 :Synonyms::::
 :Source:
 :Update:
@@ -55,21 +55,21 @@
 	float flowRateRecirculation; \
 };"
 typedef struct tpcGas_st {
-	float barometricPressure; 
-	float inputTPCGasPressure; 
-	float nitrogenPressure; 
-	float gasPressureDiff; 
-	float inputGasTemperature; 
-	float outputGasTemperature; 
-	float flowRateArgon1; 
-	float flowRateArgon2; 
-	float flowRateMethane; 
-	float percentMethaneIn; 
-	float ppmOxygenIn; 
-	float flowRateExhaust; 
-	float percentMethaneOut; 
-	float ppmWaterOut; 
-	float ppmOxygenOut; 
-	float flowRateRecirculation; 
+  float barometricPressure;
+  float inputTPCGasPressure;
+  float nitrogenPressure;
+  float gasPressureDiff;
+  float inputGasTemperature;
+  float outputGasTemperature;
+  float flowRateArgon1;
+  float flowRateArgon2;
+  float flowRateMethane;
+  float percentMethaneIn;
+  float ppmOxygenIn;
+  float flowRateExhaust;
+  float percentMethaneOut;
+  float ppmWaterOut;
+  float ppmOxygenOut;
+  float flowRateRecirculation;
 } TPCGAS_ST;
 #endif /* TPCGAS_H */

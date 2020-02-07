@@ -17,7 +17,7 @@
 class St_tpcPadConfig : public TTable
 {
  public:
-   ClassDefTable(St_tpcPadConfig,tpcPadConfig_st)
-   ClassDef(St_tpcPadConfig,2) //C++ wrapper for <tpcPadConfig> StAF table
+  ClassDefTable(St_tpcPadConfig, tpcPadConfig_st)
+  ClassDef(St_tpcPadConfig, 2) //C++ wrapper for <tpcPadConfig> StAF table
 };
 #endif

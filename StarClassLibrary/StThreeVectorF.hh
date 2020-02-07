@@ -5,7 +5,7 @@
  * Author: Thomas Ullrich, Jan 1999
  ***************************************************************************
  *
- * Description:  
+ * Description:
  *
  * Remarks:   This is a 'handmade' specialisation of StThreeVector<T>
  *            for T=float. This code contains no templates.

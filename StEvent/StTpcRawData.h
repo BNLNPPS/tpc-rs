@@ -64,24 +64,25 @@
 typedef std::vector<Short_t>  StVectorADC;
 typedef std::vector<UShort_t> StVectorIDT;
 
-class StDigitalPair : public StObject {
-public:
-    StDigitalPair(UShort_t time=0)      {mTime=time;}
-    virtual ~StDigitalPair() {}
-    void add(Short_t adc)               {mAdc.push_back(adc);}
-    void add(Short_t adc,Int_t idt)     {mAdc.push_back(adc); mIdt.push_back(idt);}
-    
-    Short_t* adc()   const {return (Short_t*)&mAdc[0];}			
-    Bool_t   isIdt() const {return mAdc.size() == mIdt.size();}
-    UShort_t*idt()   const {return (UShort_t*) (isIdt() ? &mIdt[0] : 0);}			
-    Int_t    size()  const {return mAdc.size();}
-    UShort_t time()  const {return mTime;}
+class StDigitalPair : public StObject
+{
+ public:
+  StDigitalPair(UShort_t time = 0)      {mTime = time;}
+  virtual ~StDigitalPair() {}
+  void add(Short_t adc)               {mAdc.push_back(adc);}
+  void add(Short_t adc, Int_t idt)     {mAdc.push_back(adc); mIdt.push_back(idt);}
 
-private:
-    UShort_t    mTime;
-    StVectorADC mAdc;
-    StVectorIDT mIdt; 
-    ClassDef(StDigitalPair,1)
+  Short_t* adc()   const {return (Short_t*)&mAdc[0];}
+  Bool_t   isIdt() const {return mAdc.size() == mIdt.size();}
+  UShort_t* idt()   const {return (UShort_t*) (isIdt() ? &mIdt[0] : 0);}
+  Int_t    size()  const {return mAdc.size();}
+  UShort_t time()  const {return mTime;}
+
+ private:
+  UShort_t    mTime;
+  StVectorADC mAdc;
+  StVectorIDT mIdt;
+  ClassDef(StDigitalPair, 1)
 };
 
 typedef std::vector<StDigitalPair>           StDigitalTimeBins;
@@ -100,72 +101,74 @@ typedef std::vector<UChar_t> 	               StVecUChar;
 typedef std::vector<Int_t> 	               StVecInt;
 typedef std::vector<StTpcPixel>              StVectPixel;
 
-class StTpcDigitalSector : public StObject {
-public:
-    StTpcDigitalSector(void *db = 0);
-    StTpcDigitalSector(int sector);
-    virtual ~StTpcDigitalSector() {}
-    // access functions
-    const StDigitalTimeBins* timeBinsOfRowAndPad(Int_t rowN, Int_t padN) const { return (&mData[(rowN-1)][(padN-1)]);}
-    StDigitalTimeBins*       timeBinsOfRowAndPad(Int_t rowN, Int_t padN)       { return (&mData[(rowN-1)][(padN-1)]);}
-    StDigitalPadRow*         padsOfRow(Int_t rowN)                             { return (&mData[(rowN-1)]);}
-    StDigitalSector*         rows()                                            { return (&mData);}
-    
-    Int_t  numberOfRows()             		        const    { return mData.size();}
-    Int_t  numberOfPadsInRow(Int_t rowN)		const    { return mData[(rowN-1)].size();}
-    Int_t  numberOfTimeBins(Int_t rowN, Int_t padN) 	const    { return mData[(rowN-1)][(padN-1)].size();}
-    
-    // Adding
-    void   assignTimeBins(int row , int pad, StDigitalTimeBins*);
-    Int_t  getSequences(Int_t row, Int_t pad, Int_t *nSeq, StSequence** seq, UShort_t ***Id);
-    Int_t  getPadList(Int_t row, UChar_t **padList);
-    Int_t  getTimeAdc(Int_t row, Int_t pad, Short_t ADCs[__MaxNumberOfTimeBins__], 
-		      UShort_t IDTs[__MaxNumberOfTimeBins__]); // with  8 => 10 conversion
-    Int_t  getTimeAdc(Int_t row, Int_t pad, UChar_t  ADCs[__MaxNumberOfTimeBins__], 
-		      UShort_t IDTs[__MaxNumberOfTimeBins__]);
-    Int_t  putTimeAdc(Int_t row, Int_t pad, Short_t *ADCs, UShort_t *IDTs = 0);     // with 10 =>  8 conversion
-    Int_t  putTimeAdc(Int_t row, Int_t pad, UChar_t  *ADCs, UShort_t *IDTs = 0);
-    void   setSector(Int_t sector) {mSector = sector;} 
-    void   clear();
-    Int_t  cleanup();
-    virtual void   Print(const Option_t *opt="") const;
-    virtual Int_t  PrintTimeAdc(Int_t row, Int_t pad) const;
-    StTpcDigitalSector &operator+= (StTpcDigitalSector& v);
-    Int_t numberOfPadsAtRow(Int_t row) {return (row > 0 && row <= mNoRows) ? St_tpcPadConfigC::instance()->padsPerRow(mSector, row) : 0;}
-    StTpcDigitalSector& operator=(const StTpcDigitalSector&);
-    Int_t sector() {return mSector;}
-    Int_t numberOfRows() {return mNoRows;}
-private:
-    StTpcDigitalSector(const StTpcDigitalSector&);
+class StTpcDigitalSector : public StObject
+{
+ public:
+  StTpcDigitalSector(void* db = 0);
+  StTpcDigitalSector(int sector);
+  virtual ~StTpcDigitalSector() {}
+  // access functions
+  const StDigitalTimeBins* timeBinsOfRowAndPad(Int_t rowN, Int_t padN) const { return (&mData[(rowN - 1)][(padN - 1)]);}
+  StDigitalTimeBins*       timeBinsOfRowAndPad(Int_t rowN, Int_t padN)       { return (&mData[(rowN - 1)][(padN - 1)]);}
+  StDigitalPadRow*         padsOfRow(Int_t rowN)                             { return (&mData[(rowN - 1)]);}
+  StDigitalSector*         rows()                                            { return (&mData);}
 
-private:
-    StDigitalSector       mData;
-    Int_t                 mSector;
-    StVecPads             mPadList;
-    StVecSequence         mSequence;
-    StVecIds              mIds;
-    Int_t                 mNoRows;
-    ClassDef(StTpcDigitalSector,2)
+  Int_t  numberOfRows()             		        const    { return mData.size();}
+  Int_t  numberOfPadsInRow(Int_t rowN)		const    { return mData[(rowN - 1)].size();}
+  Int_t  numberOfTimeBins(Int_t rowN, Int_t padN) 	const    { return mData[(rowN - 1)][(padN - 1)].size();}
+
+  // Adding
+  void   assignTimeBins(int row, int pad, StDigitalTimeBins*);
+  Int_t  getSequences(Int_t row, Int_t pad, Int_t* nSeq, StSequence** seq, UShort_t*** Id);
+  Int_t  getPadList(Int_t row, UChar_t** padList);
+  Int_t  getTimeAdc(Int_t row, Int_t pad, Short_t ADCs[__MaxNumberOfTimeBins__],
+                    UShort_t IDTs[__MaxNumberOfTimeBins__]); // with  8 => 10 conversion
+  Int_t  getTimeAdc(Int_t row, Int_t pad, UChar_t  ADCs[__MaxNumberOfTimeBins__],
+                    UShort_t IDTs[__MaxNumberOfTimeBins__]);
+  Int_t  putTimeAdc(Int_t row, Int_t pad, Short_t* ADCs, UShort_t* IDTs = 0);     // with 10 =>  8 conversion
+  Int_t  putTimeAdc(Int_t row, Int_t pad, UChar_t*  ADCs, UShort_t* IDTs = 0);
+  void   setSector(Int_t sector) {mSector = sector;}
+  void   clear();
+  Int_t  cleanup();
+  virtual void   Print(const Option_t* opt = "") const;
+  virtual Int_t  PrintTimeAdc(Int_t row, Int_t pad) const;
+  StTpcDigitalSector &operator+= (StTpcDigitalSector &v);
+  Int_t numberOfPadsAtRow(Int_t row) {return (row > 0 && row <= mNoRows) ? St_tpcPadConfigC::instance()->padsPerRow(mSector, row) : 0;}
+  StTpcDigitalSector &operator=(const StTpcDigitalSector &);
+  Int_t sector() {return mSector;}
+  Int_t numberOfRows() {return mNoRows;}
+ private:
+  StTpcDigitalSector(const StTpcDigitalSector &);
+
+ private:
+  StDigitalSector       mData;
+  Int_t                 mSector;
+  StVecPads             mPadList;
+  StVecSequence         mSequence;
+  StVecIds              mIds;
+  Int_t                 mNoRows;
+  ClassDef(StTpcDigitalSector, 2)
 };
 
-class StTpcRawData : public StObject {
-public:
-    StTpcRawData(Int_t noSectors = 24) {setNoSectors(noSectors);}
-    virtual ~StTpcRawData() {clear();}
-    UInt_t size() {return mSectors.size();}
-    UInt_t getNoSectors() {return size();}
-    StTpcDigitalSector *GetSector(UInt_t sector) {return sector > 0 && sector <= size() ? mSectors[sector-1] : 0;}
-    StTpcDigitalSector *getSector(UInt_t sector) {return GetSector(sector);}
-    Int_t  getVecOfPixels(StVectPixel &pixels, Int_t sector, Int_t row, Int_t padMin = 1, Int_t padMax = -1, 
-			  Int_t tMin = 0, Int_t tMax = -1);
-    void   setNoSectors(UInt_t noSectors = 0) {mSectors.resize(noSectors); for (UInt_t i = 0; i < noSectors; i++) mSectors[i] = 0;} 
-    void   setSector(UInt_t sector, StTpcDigitalSector* digitSector);
-    void   clear() {Clear();}
-    void   Clear(const Option_t *opt = ""); 
-    StTpcRawData &operator+= (StTpcRawData& v);
-    virtual void Print(const Option_t *opt="") const; 
-private:
-    std::vector<StTpcDigitalSector*> mSectors;
-    ClassDef(StTpcRawData,1)
- };
+class StTpcRawData : public StObject
+{
+ public:
+  StTpcRawData(Int_t noSectors = 24) {setNoSectors(noSectors);}
+  virtual ~StTpcRawData() {clear();}
+  UInt_t size() {return mSectors.size();}
+  UInt_t getNoSectors() {return size();}
+  StTpcDigitalSector* GetSector(UInt_t sector) {return sector > 0 && sector <= size() ? mSectors[sector - 1] : 0;}
+  StTpcDigitalSector* getSector(UInt_t sector) {return GetSector(sector);}
+  Int_t  getVecOfPixels(StVectPixel &pixels, Int_t sector, Int_t row, Int_t padMin = 1, Int_t padMax = -1,
+                        Int_t tMin = 0, Int_t tMax = -1);
+  void   setNoSectors(UInt_t noSectors = 0) {mSectors.resize(noSectors); for (UInt_t i = 0; i < noSectors; i++) mSectors[i] = 0;}
+  void   setSector(UInt_t sector, StTpcDigitalSector* digitSector);
+  void   clear() {Clear();}
+  void   Clear(const Option_t* opt = "");
+  StTpcRawData &operator+= (StTpcRawData &v);
+  virtual void Print(const Option_t* opt = "") const;
+ private:
+  std::vector<StTpcDigitalSector*> mSectors;
+  ClassDef(StTpcRawData, 1)
+};
 #endif

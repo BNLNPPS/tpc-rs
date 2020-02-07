@@ -26,14 +26,14 @@
 	double tau; \
 };"
 typedef struct tpcElectronics_st {
-	int numberOfTimeBins; /*   */
-	double nominalGain; /*   mV/fC  */
-	double samplingFrequency; /* MHz, not used,  overwritten by starClockOnl*/
-	double tZero; /*   us (microseconds)  */
-	double adcCharge; /*   fC/adc count  */
-	double adcConversion; /*   mV/adc count  */
-	double averagePedestal; /*   adc counts  */
-	double shapingTime; /*   ns  */
-	double tau; /*   ns  */
+  int numberOfTimeBins; /*   */
+  double nominalGain; /*   mV/fC  */
+  double samplingFrequency; /* MHz, not used,  overwritten by starClockOnl*/
+  double tZero; /*   us (microseconds)  */
+  double adcCharge; /*   fC/adc count  */
+  double adcConversion; /*   mV/adc count  */
+  double averagePedestal; /*   adc counts  */
+  double shapingTime; /*   ns  */
+  double tau; /*   ns  */
 } TPCELECTRONICS_ST;
 #endif /* TPCELECTRONICS_H */

@@ -17,7 +17,7 @@
 class St_tss_tsspar : public TTable
 {
  public:
-   ClassDefTable(St_tss_tsspar,tss_tsspar_st)
-   ClassDef(St_tss_tsspar,2) //C++ wrapper for <tss_tsspar> StAF table
+  ClassDefTable(St_tss_tsspar, tss_tsspar_st)
+  ClassDef(St_tss_tsspar, 2) //C++ wrapper for <tss_tsspar> StAF table
 };
 #endif

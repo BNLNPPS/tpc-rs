@@ -17,7 +17,7 @@
 class St_g2t_event : public TTable
 {
  public:
-   ClassDefTable(St_g2t_event,g2t_event_st)
-   ClassDef(St_g2t_event,2) //C++ wrapper for <g2t_event> StAF table
+  ClassDefTable(St_g2t_event, g2t_event_st)
+  ClassDef(St_g2t_event, 2) //C++ wrapper for <g2t_event> StAF table
 };
 #endif

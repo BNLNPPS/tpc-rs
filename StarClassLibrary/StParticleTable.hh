@@ -2,11 +2,11 @@
  *
  * $Id: StParticleTable.hh,v 1.5 2005/09/22 20:09:20 fisyak Exp $
  *
- * Author: Thomas Ullrich, May 99 (based on Geant4 code, see below) 
+ * Author: Thomas Ullrich, May 99 (based on Geant4 code, see below)
  ***************************************************************************
  *
  * The design of the StParticleDefinition class and all concrete
- * classes derived from it is largely based on the design of the 
+ * classes derived from it is largely based on the design of the
  * G4ParticleDefinition class from Geant4 (RD44).
  * Although the code is in large parts different (modified or rewritten)
  * and adapted to the STAR framework the basic idea stays the same.
@@ -54,61 +54,62 @@ typedef vector<StParticleDefinition*, allocator<StParticleDefinition*> > StVecPt
 typedef vector<StParticleDefinition*> StVecPtrParticleDefinition;
 #endif
 
-class StParticleTable {
-public:
-    virtual ~StParticleTable();
-    
-    static StParticleTable* particleTable();
-    static StParticleTable* instance();
-    
-    unsigned int entries() const;
-    unsigned int size() const;
-    
-    bool contains(const string &) const;              // by name
-    bool contains(int) const;                         // by PDG encoding
-    bool containsGeantId(int) const;                  // by Geant3 id
-    
-    StParticleDefinition* findParticle(const string&)  const; // by name    
-    StParticleDefinition* findParticle(int)  const;           // by PDG encoding   
-    StParticleDefinition* findParticleByGeantId(int) const;   // by Geant3 id
-    
-    void insert(StParticleDefinition*);
-    void erase(StParticleDefinition*);
-    
-    void dump(ostream& = cout);
+class StParticleTable
+{
+ public:
+  virtual ~StParticleTable();
 
-    StVecPtrParticleDefinition allParticles() const;
-    
-    friend class nobody;
+  static StParticleTable* particleTable();
+  static StParticleTable* instance();
 
-private:
-    StParticleTable();
-    StParticleTable(const StParticleTable &right);
-    
-    static StParticleTable *mParticleTable;
+  unsigned int entries() const;
+  unsigned int size() const;
+
+  bool contains(const string &) const;              // by name
+  bool contains(int) const;                         // by PDG encoding
+  bool containsGeantId(int) const;                  // by Geant3 id
+
+  StParticleDefinition* findParticle(const string &)  const; // by name
+  StParticleDefinition* findParticle(int)  const;           // by PDG encoding
+  StParticleDefinition* findParticleByGeantId(int) const;   // by Geant3 id
+
+  void insert(StParticleDefinition*);
+  void erase(StParticleDefinition*);
+
+  void dump(ostream & = cout);
+
+  StVecPtrParticleDefinition allParticles() const;
+
+  friend class nobody;
+
+ private:
+  StParticleTable();
+  StParticleTable(const StParticleTable &right);
+
+  static StParticleTable* mParticleTable;
 
 #ifdef ST_NO_TEMPLATE_DEF_ARGS
-    // as soon as Sun CC4.2 is gone this goes as well
-    typedef map<int, int, less<int>,
-	allocator< pair<const int, int> > >
-    mGeantPdgMapType;
-    typedef map<int, StParticleDefinition*, less<int>,
-	allocator< pair<const int,StParticleDefinition*> > >
-    mPdgMapType;
-    typedef map<string,	StParticleDefinition*, less<string>,
-	allocator< pair<const string,StParticleDefinition*> > >
-    mNameMapType;
+  // as soon as Sun CC4.2 is gone this goes as well
+  typedef map<int, int, less<int>,
+          allocator< pair<const int, int> > >
+          mGeantPdgMapType;
+  typedef map<int, StParticleDefinition*, less<int>,
+          allocator< pair<const int, StParticleDefinition*> > >
+          mPdgMapType;
+  typedef map<string,	StParticleDefinition*, less<string>,
+          allocator< pair<const string, StParticleDefinition*> > >
+          mNameMapType;
 #else
-    typedef map<int, int>                      mGeantPdgMapType;
-    typedef map<int, StParticleDefinition*>    mPdgMapType;
-    typedef map<string, StParticleDefinition*> mNameMapType;
+  typedef map<int, int>                      mGeantPdgMapType;
+  typedef map<int, StParticleDefinition*>    mPdgMapType;
+  typedef map<string, StParticleDefinition*> mNameMapType;
 #endif
-    
-    mGeantPdgMapType   mGeantPdgMap;     // Geant3 IDs only
-    mPdgMapType        mPdgMap;          // PDG IDs only
-    mNameMapType       mNameMap;         // complete list
+
+  mGeantPdgMapType   mGeantPdgMap;     // Geant3 IDs only
+  mPdgMapType        mPdgMap;          // PDG IDs only
+  mNameMapType       mNameMap;         // complete list
 #ifdef __ROOT__
-  ClassDef(StParticleTable,1)
+  ClassDef(StParticleTable, 1)
 #endif
 };
 #endif

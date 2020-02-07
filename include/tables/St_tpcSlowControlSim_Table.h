@@ -17,7 +17,7 @@
 class St_tpcSlowControlSim : public TTable
 {
  public:
-   ClassDefTable(St_tpcSlowControlSim,tpcSlowControlSim_st)
-   ClassDef(St_tpcSlowControlSim,2) //C++ wrapper for <tpcSlowControlSim> StAF table
+  ClassDefTable(St_tpcSlowControlSim, tpcSlowControlSim_st)
+  ClassDef(St_tpcSlowControlSim, 2) //C++ wrapper for <tpcSlowControlSim> StAF table
 };
 #endif

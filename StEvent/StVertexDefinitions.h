@@ -1,15 +1,15 @@
 /*!
  * \file StVertexDefinitions.h
- * 
+ *
  * \author unknown
- * 
+ *
  * Numbering scheme for vertex types.
  * The definitions listed here are used in StEnumeration
  * to define the actual enumerations to be used in C/C++
  * code. The definitions here are only to allow fortran
  * code to use the same identifiers and thus maintain
  * backwards compatibility.
- * 
+ *
  */
 /***************************************************************************
  *

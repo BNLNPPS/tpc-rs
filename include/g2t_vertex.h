@@ -27,23 +27,23 @@
 	float ge_x[3]; \
 };"
 typedef struct g2t_vertex_st {
-	char ge_volume[4]; /* GEANT volume name */
-	int daughter_p; /* Id of first daughter in linked list */
-	int eg_label; /* generator label (or 0 if GEANT vertex) */
-	int eg_proc; /* generator production mechanism (if any) */
-	int event_p; /* pointer to event */
-	int ge_medium; /* GEANT Medium */
-	int ge_proc; /* >0 GEANT, =0 event generator */
-	int id; /* primary key */
-	int is_itrmd; /* flags intermediate vertex */
-	int n_daughter; /* Number of daughter tracks */
-	int n_parent; /* number of parent tracks */
-	int next_itrmd_p; /* Id of next intermedate vertex */
-	int next_prim_v_p; /* Id of next primary vertex */
-	int parent_p; /* Id of first parent track */
-	float eg_tof; /* generator vertex production time */
-	float eg_x[3]; /* generator vertex coordinate (Cartesian) */
-	float ge_tof; /* GEANT vertex production time */
-	float ge_x[3]; /* GEANT vertex coordinate (Cartesian) */
+  char ge_volume[4]; /* GEANT volume name */
+  int daughter_p; /* Id of first daughter in linked list */
+  int eg_label; /* generator label (or 0 if GEANT vertex) */
+  int eg_proc; /* generator production mechanism (if any) */
+  int event_p; /* pointer to event */
+  int ge_medium; /* GEANT Medium */
+  int ge_proc; /* >0 GEANT, =0 event generator */
+  int id; /* primary key */
+  int is_itrmd; /* flags intermediate vertex */
+  int n_daughter; /* Number of daughter tracks */
+  int n_parent; /* number of parent tracks */
+  int next_itrmd_p; /* Id of next intermedate vertex */
+  int next_prim_v_p; /* Id of next primary vertex */
+  int parent_p; /* Id of first parent track */
+  float eg_tof; /* generator vertex production time */
+  float eg_x[3]; /* generator vertex coordinate (Cartesian) */
+  float ge_tof; /* GEANT vertex production time */
+  float ge_x[3]; /* GEANT vertex coordinate (Cartesian) */
 } G2T_VERTEX_ST;
 #endif /* G2T_VERTEX_H */

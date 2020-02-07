@@ -40,26 +40,27 @@
 
 #include "StThreeVector.hh"
 
-class StSvtLocalCoordinate {
+class StSvtLocalCoordinate
+{
  public:
   StSvtLocalCoordinate();
   StSvtLocalCoordinate(const double, const double, const double);
-  StSvtLocalCoordinate(const StThreeVector<double>&);
-  
+  StSvtLocalCoordinate(const StThreeVector<double> &);
+
   virtual ~StSvtLocalCoordinate();
-  
-  int operator==(const StSvtLocalCoordinate&) const;
-  int operator!=(const StSvtLocalCoordinate&) const;
+
+  int operator==(const StSvtLocalCoordinate &) const;
+  int operator!=(const StSvtLocalCoordinate &) const;
 
   // access functions provided by StThreeVector
-  const StThreeVector<double>& position()  const  { return(mPosition); }
-  StThreeVector<double>& position()               { return(mPosition); }
-  const int barrel()      const  {return((mLayer-1)/2+1);}
-  const int layer()       const  {return(mLayer);}
-  const int ladder()      const  {return(mLadder);}
-  const int wafer()       const  {return(mWafer);}
-  const int hybrid()      const  {return(mHybrid);}
-  void setPosition(const StThreeVector<double>& val) { mPosition = val; }
+  const StThreeVector<double> &position()  const  { return (mPosition); }
+  StThreeVector<double> &position()               { return (mPosition); }
+  const int barrel()      const  {return ((mLayer - 1) / 2 + 1);}
+  const int layer()       const  {return (mLayer);}
+  const int ladder()      const  {return (mLadder);}
+  const int wafer()       const  {return (mWafer);}
+  const int hybrid()      const  {return (mHybrid);}
+  void setPosition(const StThreeVector<double> &val) { mPosition = val; }
   void setLayer(int l)   {mLayer  = l;}
   void setLadder(int d)  {mLadder = d;}
   void setWafer(int  w)  {mWafer  = w;}
@@ -71,6 +72,6 @@ class StSvtLocalCoordinate {
   int mWafer;
   int mHybrid;
 };
-ostream& operator<<(ostream&, const StSvtLocalCoordinate&);
+ostream &operator<<(ostream &, const StSvtLocalCoordinate &);
 #endif
-    
+

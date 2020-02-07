@@ -36,7 +36,7 @@
 //
 // Typedefs for numeric types
 // for synchronisation with CLHEP
-// 
+//
 typedef double          HepDouble;
 typedef int             HepInt;
 typedef float           HepFloat;
@@ -45,7 +45,7 @@ typedef bool            HepBoolean;
 //
 // Typedefs for numeric types
 // for synchronisation with STAR
-// 
+//
 typedef double          StDouble;
 typedef float           StFloat;
 typedef int             StInt;
@@ -66,7 +66,7 @@ template<class T>
 inline StInt sign(T a) { return a < 0 ? -1 : 1; }
 
 template<class T>
-inline StDouble sqr(T a) { return a*a; }
+inline StDouble sqr(T a) { return a * a; }
 
 //
 //   Macros for debugging and testing

@@ -17,7 +17,7 @@
 class St_asic_thresholds_tpx : public TTable
 {
  public:
-   ClassDefTable(St_asic_thresholds_tpx,asic_thresholds_tpx_st)
-   ClassDef(St_asic_thresholds_tpx,2) //C++ wrapper for <asic_thresholds_tpx> StAF table
+  ClassDefTable(St_asic_thresholds_tpx, asic_thresholds_tpx_st)
+  ClassDef(St_asic_thresholds_tpx, 2) //C++ wrapper for <asic_thresholds_tpx> StAF table
 };
 #endif

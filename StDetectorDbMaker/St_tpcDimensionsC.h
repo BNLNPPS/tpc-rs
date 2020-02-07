@@ -6,10 +6,11 @@
 #include "St_tpcPadConfigC.h"
 #include "St_tpcEffectiveGeomC.h"
 #include "St_tpcWirePlanesC.h"
-class St_tpcDimensionsC : public TChair {
+class St_tpcDimensionsC : public TChair
+{
  public:
   static St_tpcDimensionsC* 	instance();
-  tpcDimensions_st 	*Struct(Int_t i = 0) 	{return ((St_tpcDimensions*) Table())->GetTable()+i;}
+  tpcDimensions_st* 	Struct(Int_t i = 0) 	{return ((St_tpcDimensions*) Table())->GetTable() + i;}
   UInt_t     	getNumRows()                	{return GetNRows();}
   Int_t 	numberOfSectors(Int_t i = 0) 	{return Struct(i)->numberOfSectors;}
   Double_t 	tpcInnerRadius(Int_t i = 0) 	{return Struct(i)->tpcInnerRadius;}
@@ -18,21 +19,21 @@ class St_tpcDimensionsC : public TChair {
   Double_t 	wheelInnerRadius(Int_t i = 0) 	{return Struct(i)->wheelInnerRadius;}
   Double_t 	wheelOuterRadius(Int_t i = 0) 	{return Struct(i)->wheelOuterRadius;}
   Double_t 	wheelThickness(Int_t i = 0) 	{return Struct(i)->wheelThickness;}
-  Double_t 	senseGasOuterRadius(Int_t i = 0){return Struct(i)->senseGasOuterRadius;}
+  Double_t 	senseGasOuterRadius(Int_t i = 0) {return Struct(i)->senseGasOuterRadius;}
   Double_t 	tpeaThickness(Int_t i = 0) 	{return Struct(i)->tpeaThickness;}
   Double_t 	cathodeInnerRadius(Int_t i = 0) {return Struct(i)->cathodeInnerRadius;}
   Double_t 	cathodeOuterRadius(Int_t i = 0) {return Struct(i)->cathodeOuterRadius;}
   Double_t 	cathodeThickness(Int_t i = 0) 	{return Struct(i)->cathodeThickness;}
   Double_t 	outerCuThickness(Int_t i = 0) 	{return Struct(i)->outerCuThickness;}
-  Double_t 	outerKaptonThickness(Int_t i =0){return Struct(i)->outerKaptonThickness;}
-  Double_t 	outerNomexThickness(Int_t i = 0){return Struct(i)->outerNomexThickness;}
+  Double_t 	outerKaptonThickness(Int_t i = 0) {return Struct(i)->outerKaptonThickness;}
+  Double_t 	outerNomexThickness(Int_t i = 0) {return Struct(i)->outerNomexThickness;}
   Double_t 	outerGlueThickness(Int_t i = 0) {return Struct(i)->outerGlueThickness;}
-  Double_t 	outerInsGasThickness(Int_t i =0){return Struct(i)->outerInsGasThickness;}
+  Double_t 	outerInsGasThickness(Int_t i = 0) {return Struct(i)->outerInsGasThickness;}
   Double_t 	outerAlThickness(Int_t i = 0) 	{return Struct(i)->outerAlThickness;}
-  Double_t 	outerAlHoneycombThickness(Int_t i=0) 	{return Struct(i)->outerAlHoneycombThickness;}
+  Double_t 	outerAlHoneycombThickness(Int_t i = 0) 	{return Struct(i)->outerAlHoneycombThickness;}
   Double_t 	innerGlueThickness(Int_t i = 0) {return Struct(i)->innerGlueThickness;}
-  Double_t 	innerNomexThickness(Int_t i = 0){return Struct(i)->innerNomexThickness;}
-  Double_t 	innerKaptonThickness(Int_t i =0){return Struct(i)->innerKaptonThickness;}
+  Double_t 	innerNomexThickness(Int_t i = 0) {return Struct(i)->innerNomexThickness;}
+  Double_t 	innerKaptonThickness(Int_t i = 0) {return Struct(i)->innerKaptonThickness;}
   Double_t 	innerAlThickness(Int_t i = 0) 	{return Struct(i)->innerAlThickness;}
   Double_t 	innerGapWidI(Int_t i = 0) 	{return Struct(i)->innerGapWidI;}
   Double_t 	innerGapWidO(Int_t i = 0) 	{return Struct(i)->innerGapWidO;}
@@ -80,9 +81,11 @@ class St_tpcDimensionsC : public TChair {
   Double_t* 	outerZExtraAl(Int_t i = 0) 	{return Struct(i)->outerZExtraAl;}
   Double_t* 	outerDXExtraAl(Int_t i = 0) 	{return Struct(i)->outerDXExtraAl;}
   Double_t* 	outerDZExtraAl(Int_t i = 0) 	{return Struct(i)->outerDZExtraAl;}
-  Double_t      gatingGridZ(Int_t sector=20) {
-    return St_tpcPadConfigC::instance()->outerSectorPadPlaneZ(sector) 
-      - St_tpcWirePlanesC::instance()->outerSectorGatingGridPadPlaneSeparation();}
+  Double_t      gatingGridZ(Int_t sector = 20)
+  {
+    return St_tpcPadConfigC::instance()->outerSectorPadPlaneZ(sector)
+           - St_tpcWirePlanesC::instance()->outerSectorGatingGridPadPlaneSeparation();
+  }
   Double_t      zInnerOffset()                  {return St_tpcEffectiveGeomC::instance()->z_inner_offset();}
   Double_t      zOuterOffset()                  {return St_tpcEffectiveGeomC::instance()->z_outer_offset();}
   Double_t      zInnerOffset_West()             {return St_tpcEffectiveGeomC::instance()->z_inner_offset_West();}
@@ -92,11 +95,11 @@ class St_tpcDimensionsC : public TChair {
   Double_t ofcRadius() {return tpcOuterRadius();}
 
  protected:
-  St_tpcDimensionsC(St_tpcDimensions *table=0) : TChair(table) {}
+  St_tpcDimensionsC(St_tpcDimensions* table = 0) : TChair(table) {}
   virtual ~St_tpcDimensionsC() {fgInstance = 0;}
  private:
   static St_tpcDimensionsC* fgInstance;
   ClassDefChair(St_tpcDimensions, tpcDimensions_st )
-  ClassDef(St_tpcDimensionsC,1) //C++ TChair for tpcDimensions table class
+  ClassDef(St_tpcDimensionsC, 1) //C++ TChair for tpcDimensions table class
 };
 #endif

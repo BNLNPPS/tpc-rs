@@ -10,7 +10,7 @@
  *              TPC software.  This classes takes care of the annoying
  *              calls to the root infrastucture, packages and manipulates
  *              the data, and returns the data to the user via simple
- *              interface classes.    
+ *              interface classes.
  *
  ***************************************************************************
  *
@@ -219,20 +219,24 @@ Bool_t StTpcDb::mOldScheme = kTRUE;
 //_____________________________________________________________________________
 ClassImp(StTpcDb);
 //_____________________________________________________________________________
-StTpcDb::StTpcDb() {
-  assert(gStTpcDb==0);
-  memset(mBeg,0,mEnd-mBeg+1);
-  mTpc2GlobMatrix = new TGeoHMatrix("Default Tpc2Glob"); 
+StTpcDb::StTpcDb()
+{
+  assert(gStTpcDb == 0);
+  memset(mBeg, 0, mEnd - mBeg + 1);
+  mTpc2GlobMatrix = new TGeoHMatrix("Default Tpc2Glob");
+
   for (Int_t i = 1; i <= 24; i++) {
     for (Int_t k = 0; k < kTotalTpcSectorRotaions; k++) {
-      mTpcSectorRotations[i-1][k] = new TGeoHMatrix(Form("Default %02i %i",i,k));
+      mTpcSectorRotations[i - 1][k] = new TGeoHMatrix(Form("Default %02i %i", i, k));
     }
   }
+
   mFlip = new TGeoHMatrix;
   mzGG = Dimensions()->gatingGridZ(); // zGG
-  Double_t Rotation[9] = {0, 1, 0, 
-			  1, 0, 0,
-			  0, 0,-1};
+  Double_t Rotation[9] = {0, 1, 0,
+                          1, 0, 0,
+                          0, 0, -1
+                         };
   //  Double_t Translation[3] = {0, 0, mzGG};
   mFlip->SetName("Flip"); mFlip->SetRotation(Rotation);// mFlip->SetTranslation(Translation);
   mSwap[0] = new TGeoTranslation("Signed Drift distance to z for East", 0, 0, -mzGG);
@@ -243,14 +247,16 @@ StTpcDb::StTpcDb() {
 }
 //_____________________________________________________________________________
 //_____________________________________________________________________________
-StTpcDb::~StTpcDb() {
-  for (Int_t i = 0;i<24;i++) {
-    for (Int_t k = 0; k < kTotalTpcSectorRotaions; k++) 
-    SafeDelete(mTpcSectorRotations[i][k]);
+StTpcDb::~StTpcDb()
+{
+  for (Int_t i = 0; i < 24; i++) {
+    for (Int_t k = 0; k < kTotalTpcSectorRotaions; k++)
+      SafeDelete(mTpcSectorRotations[i][k]);
   }
-  SafeDelete(mHalf[0]);  
+
+  SafeDelete(mHalf[0]);
   SafeDelete(mHalf[1]);
-  SafeDelete(mSwap[0]);  
+  SafeDelete(mSwap[0]);
   SafeDelete(mSwap[1]);
   SafeDelete(mExB);
   SafeDelete(mTpc2GlobMatrix);
@@ -261,101 +267,129 @@ StTpcDb::~StTpcDb() {
 //________________________________________________________________________________
 Float_t StTpcDb::ScaleY() {return St_tpcDriftVelocityC::instance()->scaleY();}
 //-----------------------------------------------------------------------------
-float StTpcDb::DriftVelocity(Int_t sector, Double_t Y) {
-  static UInt_t u2007 = TUnixTime(20070101,0,1).GetUTime(); // 
+float StTpcDb::DriftVelocity(Int_t sector, Double_t Y)
+{
+  static UInt_t u2007 = TUnixTime(20070101, 0, 1).GetUTime(); //
   assert(mUc > 0);
+
   if (mUc < u2007) sector = 24;
+
   UInt_t kase = 1;
+
   if (sector <= 12) kase = 0;
-  return 1e6*mDriftVel[kase]*(1 + ScaleY()*Y);
+
+  return 1e6 * mDriftVel[kase] * (1 + ScaleY() * Y);
 }
 #else
 //-----------------------------------------------------------------------------
-float StTpcDb::DriftVelocity(Int_t sector) {
-  static UInt_t u2007 = TUnixTime(20070101,0,1).GetUTime(); // 
+float StTpcDb::DriftVelocity(Int_t sector)
+{
+  static UInt_t u2007 = TUnixTime(20070101, 0, 1).GetUTime(); //
   assert(mUc > 0);
+
   if (mUc < u2007) sector = 24;
+
   UInt_t kase = 1;
+
   if (sector <= 12) kase = 0;
-  return 1e6*mDriftVel[kase];
+
+  return 1e6 * mDriftVel[kase];
 }
 #endif
 //-----------------------------------------------------------------------------
-void StTpcDb::SetDriftVelocity() {
+void StTpcDb::SetDriftVelocity()
+{
   static UInt_t u0 = 0; // beginTime of current Table
   static UInt_t u1 = 0; // beginTime for next Table
-  static UInt_t umax = TUnixTime(20250101,0,1).GetUTime(); // maximum time allowed for next table
+  static UInt_t umax = TUnixTime(20250101, 0, 1).GetUTime(); // maximum time allowed for next table
   // for back compartiblity switch to separated West and East drift velocities after 2007
-  static St_tpcDriftVelocity *dvel0 = 0;
-  static St_tpcDriftVelocity *dvel1 = 0;
+  static St_tpcDriftVelocity* dvel0 = 0;
+  static St_tpcDriftVelocity* dvel1 = 0;
   static TDatime t[2];
-  UInt_t uc = TUnixTime(StMaker::GetChain()->GetDateTime(),1).GetUTime();
+  UInt_t uc = TUnixTime(StMaker::GetChain()->GetDateTime(), 1).GetUTime();
+
   if (uc != mUc) {
     if (! dvel0 || (uc < umax && ((uc < u0) || (uc > u1)))) {//First time only
-      dvel0 = (St_tpcDriftVelocity *) St_tpcDriftVelocityC::instance()->Table();
+      dvel0 = (St_tpcDriftVelocity*) St_tpcDriftVelocityC::instance()->Table();
+
       if (! dvel0) {
-	gMessMgr->Message("StTpcDb::Error Finding Tpc DriftVelocity","E");
-	mUc = 0;
- 	return;
+        gMessMgr->Message("StTpcDb::Error Finding Tpc DriftVelocity", "E");
+        mUc = 0;
+        return;
       }
-      if (St_db_Maker::GetValidity(dvel0,t) < 0) {
-	gMessMgr->Message("StTpcDb::Error Wrong Validity Tpc DriftVelocity","E");
-	mUc = 0;
-	return;
+
+      if (St_db_Maker::GetValidity(dvel0, t) < 0) {
+        gMessMgr->Message("StTpcDb::Error Wrong Validity Tpc DriftVelocity", "E");
+        mUc = 0;
+        return;
       }
-      u0 = TUnixTime(t[0],1).GetUTime();
-      u1 = TUnixTime(t[1],1).GetUTime();
+
+      u0 = TUnixTime(t[0], 1).GetUTime();
+      u1 = TUnixTime(t[1], 1).GetUTime();
       SafeDelete(dvel1);
-      if (u1 < umax && u1 - u0 <  7*24*3600) // do not extrapolate for more than 1 week 
-	dvel1 = (St_tpcDriftVelocity *) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcDriftVelocity",&t[1]);
+
+      if (u1 < umax && u1 - u0 <  7 * 24 * 3600) // do not extrapolate for more than 1 week
+        dvel1 = (St_tpcDriftVelocity*) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcDriftVelocity", &t[1]);
     }//End First time only
-    
-    if (!(u0<=uc && uc<u1)) {//current time out of validity
-      
+
+    if (!(u0 <= uc && uc < u1)) { //current time out of validity
+
       SafeDelete(dvel1);
-      if (u1 < umax && u1 - u0 < 7*24*3600 && uc - u0 < 7*24*3600) {// next drift velocity should within a week from current
-	dvel1 = (St_tpcDriftVelocity *) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcDriftVelocity",&t[1]);
-	if (! dvel1) {
-	  gMessMgr->Message("StTpcDb::Error Finding next Tpc DriftVelocity","W");
-	}
+
+      if (u1 < umax && u1 - u0 < 7 * 24 * 3600 && uc - u0 < 7 * 24 * 3600) { // next drift velocity should within a week from current
+        dvel1 = (St_tpcDriftVelocity*) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcDriftVelocity", &t[1]);
+
+        if (! dvel1) {
+          gMessMgr->Message("StTpcDb::Error Finding next Tpc DriftVelocity", "W");
+        }
       }
     }
-    
+
     mDriftVel[0] = mDriftVel[1] = 0;
-    tpcDriftVelocity_st *d0 = dvel0->GetTable();
+    tpcDriftVelocity_st* d0 = dvel0->GetTable();
+
     if (dvel1) {
-      tpcDriftVelocity_st *d1 = dvel1->GetTable();
+      tpcDriftVelocity_st* d1 = dvel1->GetTable();
+
       if (d0->laserDriftVelocityWest > 0 && d1->laserDriftVelocityWest > 0)
-	mDriftVel[0] = (d1->laserDriftVelocityWest  *(uc-u0) + d0->laserDriftVelocityWest  *(u1-uc))/(u1 - u0);
-      if (d0->laserDriftVelocityEast > 0 && d1->laserDriftVelocityEast > 0) 
-	mDriftVel[1] = (d1->laserDriftVelocityEast  *(uc-u0) + d0->laserDriftVelocityEast  *(u1-uc))/(u1 - u0);
+        mDriftVel[0] = (d1->laserDriftVelocityWest  * (uc - u0) + d0->laserDriftVelocityWest  * (u1 - uc)) / (u1 - u0);
+
+      if (d0->laserDriftVelocityEast > 0 && d1->laserDriftVelocityEast > 0)
+        mDriftVel[1] = (d1->laserDriftVelocityEast  * (uc - u0) + d0->laserDriftVelocityEast  * (u1 - uc)) / (u1 - u0);
+
       if (mDriftVel[0] <= 0.0 || mDriftVel[1] <= 0.0) {
-	if (d0->cathodeDriftVelocityWest > 0 && d1->cathodeDriftVelocityWest > 0) 
-	  mDriftVel[0] = (d1->cathodeDriftVelocityWest*(uc-u0) + d0->cathodeDriftVelocityWest*(u1-uc))/(u1 - u0);
-	if (d0->cathodeDriftVelocityEast > 0 && d1->cathodeDriftVelocityEast > 0) 
-	  mDriftVel[1] = (d1->cathodeDriftVelocityEast*(uc-u0) + d0->cathodeDriftVelocityEast*(u1-uc))/(u1 - u0);
+        if (d0->cathodeDriftVelocityWest > 0 && d1->cathodeDriftVelocityWest > 0)
+          mDriftVel[0] = (d1->cathodeDriftVelocityWest * (uc - u0) + d0->cathodeDriftVelocityWest * (u1 - uc)) / (u1 - u0);
+
+        if (d0->cathodeDriftVelocityEast > 0 && d1->cathodeDriftVelocityEast > 0)
+          mDriftVel[1] = (d1->cathodeDriftVelocityEast * (uc - u0) + d0->cathodeDriftVelocityEast * (u1 - uc)) / (u1 - u0);
       }
     }
+
     if (mDriftVel[0] <= 0.0 || mDriftVel[1] <= 0.0) {
       mDriftVel[0] = d0->laserDriftVelocityWest;
       mDriftVel[1] = d0->laserDriftVelocityEast;
+
       if (mDriftVel[0] <= 0.0) mDriftVel[0] = d0->cathodeDriftVelocityWest;
+
       if (mDriftVel[1] <= 0.0) mDriftVel[1] = d0->cathodeDriftVelocityEast;
     }
+
 #if 0
     LOG_INFO << "Set Tpc Drift Velocity =" << mDriftVel[0]  << " (West) " << mDriftVel[0] << " (East) for "
-	     << StMaker::GetChain()->GetDateTime().AsString() << endm;
+             << StMaker::GetChain()->GetDateTime().AsString() << endm;
 #endif
     mUc = uc;
   }
 }
 //_____________________________________________________________________________
-void StTpcDb::SetTpcRotations() {
+void StTpcDb::SetTpcRotations()
+{
   // Pad [== sector12 == localsector (SecL, ideal)] => subsector (SubS,local sector aligned) => flip => sector (SupS) => tpc => global
-  //                                    ------        
+  //                                    ------
   //old:  global = Tpc2GlobalMatrix() * SupS2Tpc(sector) *                                    Flip() * {SubSInner2SupS(sector) | SubSOuter2SupS(sector)}
   //new:  global = Tpc2GlobalMatrix() * SupS2Tpc(sector) * StTpcSuperSectorPosition(sector) * Flip() * {                     I | StTpcOuterSectorPosition(sector)}
-  //      StTpcSuperSectorPosition(sector) * Flip() = Flip() * SubSInner2SupS(sector) 
+  //      StTpcSuperSectorPosition(sector) * Flip() = Flip() * SubSInner2SupS(sector)
   // =>  StTpcSuperSectorPosition(sector) = Flip() * SubSInner2SupS(sector) * Flip()^-1
   //      StTpcSuperSectorPosition(sector) * Flip() * StTpcOuterSectorPosition(sector) = Flip() *  SubSOuter2SupS(sector)
   // =>  StTpcOuterSectorPosition(sector) = Flip()^-1 * StTpcSuperSectorPosition(sector)^-1 *  Flip() *  SubSOuter2SupS(sector)
@@ -369,10 +403,10 @@ void StTpcDb::SetTpcRotations() {
      x = xFromPad()
      z = zFromTB() - drift distance
      StTpcLocalSectorCoordinate LS(position(x,y,z),sector,row);
-     
+
      StTpcLocalCoordinate  Tpc(position(x,y,z),sector,row);
      Pad2Tpc(sector,row).LocalToMaster(LS.position().xyz(), Tpc.postion().xyz())
-     Flip transformation from Pad Coordinate system (xFromPad(pad), yFromRow(row), DriftDistance(timebacket)) => (y, x, -z): local sector CS => super sectoe CS 
+     Flip transformation from Pad Coordinate system (xFromPad(pad), yFromRow(row), DriftDistance(timebacket)) => (y, x, -z): local sector CS => super sectoe CS
 
 
 
@@ -389,138 +423,179 @@ void StTpcDb::SetTpcRotations() {
   Float_t gFactor = StarMagField::Instance()->GetFactor();
   Double_t phi, theta, psi;
   Int_t iphi;
-  TGeoRotation *rotm = 0;
-  TObjArray *listOfMatrices = 0;
+  TGeoRotation* rotm = 0;
+  TObjArray* listOfMatrices = 0;
   TString Rot;
-  if (gEnv->GetValue("NewTpcAlignment",0) != 0) mOldScheme = kFALSE;
+
+  if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = kFALSE;
+
   if (! mOldScheme) {
     LOG_INFO << "StTpcDb::SetTpcRotations use new schema for Rotation matrices" << endm;
-  } else {
+  }
+  else {
     LOG_INFO << "StTpcDb::SetTpcRotations use old schema for Rotation matrices" << endm;
   }
+
   for (Int_t sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors
     Int_t k;
     Int_t k1 = kSupS2Tpc;
     Int_t k2 = kTotalTpcSectorRotaions;
+
     if (sector == 0) {k2 = k1; k1 = kUndefSector;}
+
     for (k = k1; k < k2; k++) {
       Int_t Id     = 0;
       TGeoHMatrix rotA; // After alignment
+
       if (!sector ) { // TPC Reference System
-	if (mOldScheme) { // old scheme
-	  St_tpcGlobalPositionC *tpcGlobalPosition = St_tpcGlobalPositionC::instance();
-	  assert(tpcGlobalPosition);
-	  Id = 1;
-	  phi   = 0.0;                                               // -gamma large uncertainty, so set to 0
-	  theta = tpcGlobalPosition->PhiXZ_geom()*TMath::RadToDeg(); // -beta
-	  psi   = tpcGlobalPosition->PhiYZ_geom()*TMath::RadToDeg(); // -alpha
-	  rotA.RotateX(-psi);
-	  rotA.RotateY(-theta);
-	  rotA.RotateZ(-phi);
-	  Double_t transTpcRefSys[3] = {tpcGlobalPosition->LocalxShift(),
-					tpcGlobalPosition->LocalyShift(),
-					tpcGlobalPosition->LocalzShift()};
-	  rotA.SetTranslation(transTpcRefSys);
-	} else {
-	  rotA = StTpcPosition::instance()->GetMatrix();
-	  *mHalf[east] = StTpcHalfPosition::instance()->GetEastMatrix();
-	  *mHalf[west] = StTpcHalfPosition::instance()->GetWestMatrix();
-	}
-      } else {
-	Id = 10*sector + k;
-	StBeamDirection part = east;
-	if (sector <= 12) part = west;
-	switch (k) {
-	case kSupS2Tpc: // SupS => Tpc
-	  if (sector <= 12) {iphi = (360 + 90 - 30* sector      )%360; Rot = Form("R%03i",iphi);}
-	  else              {iphi = (      90 + 30*(sector - 12))%360; Rot = Form("Y%03i",iphi);}
-	  rotm = 0;
-	  if (gGeoManager) {
-	    listOfMatrices =  gGeoManager->GetListOfMatrices();
-	    rotm = (TGeoRotation *) listOfMatrices->FindObject(Rot);
-	  }
-	  if (! rotm) {
-	    if (sector <= 12) rotm = new TGeoRotation(Rot);
-	    else              rotm = new TGeoRotation(Rot,   90.0,    0.0,  90.0,  -90.0,  180.0,    0.00); // Flip (x,y,z) => ( x,-y,-z)
-	    rotm->RotateZ(iphi);
-	  }
-	  rotA = (*mSwap[part]) * (*mHalf[part]) * (*rotm);
-	  rotA *= StTpcSuperSectorPosition::instance()->GetMatrix(sector-1);
-	  if (gGeoManager) rotm->RegisterYourself();
-	  else             SafeDelete(rotm);
-	  break;
-	case kSupS2Glob:      // SupS => Tpc => Glob
-	  rotA = Tpc2GlobalMatrix() * SupS2Tpc(sector); 
-	  break; 
-	case kSubSInner2SupS: 
-	  if (mOldScheme) 	  rotA = Flip(); 
-	  else                    rotA = Flip() * StTpcInnerSectorPosition::instance()->GetMatrix(sector-1); 
-	  break;
-	case kSubSOuter2SupS: 
-	  if (mOldScheme) rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector-1); 
-	  else           {
-	    rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector-1); 
-	    if (StTpcOuterSectorPosition::instance()->GetNRows() > 24) {
-	      if (gFactor > 0.2) {
-		rotA *= StTpcOuterSectorPosition::instance()->GetMatrix(sector-1+24);
-	      } else if (gFactor < -0.2) {
-		rotA *= StTpcOuterSectorPosition::instance()->GetMatrix(sector-1+24).Inverse();
-	      }
-	    }
-	  }
-	  break;
-	case kSubSInner2Tpc:  rotA = SupS2Tpc(sector) * SubSInner2SupS(sector); break; // (Subs[io] => SupS) => Tpc
-	case kSubSOuter2Tpc:  rotA = SupS2Tpc(sector) * SubSOuter2SupS(sector); break; // -"-
-
-	case kSubSInner2Glob: rotA = Tpc2GlobalMatrix() * SubSInner2Tpc(sector);  break; // Subs[io] => SupS => Tpc) => Glob
-	case kSubSOuter2Glob: rotA = Tpc2GlobalMatrix() * SubSOuter2Tpc(sector);  break; // -"-
-
-	case kPadInner2SupS:  rotA = SubSInner2SupS(sector); break; // (Pad == SecL) => (SubS[io] => SupS)
-	case kPadOuter2SupS:  rotA = SubSOuter2SupS(sector); break; // -"-
-	case kPadInner2Tpc:   rotA = SupS2Tpc(sector) * PadInner2SupS(sector); break; // (Pad == SecL) => (SubS[io] => SupS => Tpc)
-	case kPadOuter2Tpc:   rotA = SupS2Tpc(sector) * PadOuter2SupS(sector); break; // -"-
-
-	case kPadInner2Glob:  rotA = Tpc2GlobalMatrix() * PadInner2Tpc(sector); break; // (Pad == SecL) => (SubS[io] => SupS => Tpc => Glob)
-	case kPadOuter2Glob:  rotA = Tpc2GlobalMatrix() * PadOuter2Tpc(sector); break; // -"-
-	default:
-	  assert(0);
-	}
+        if (mOldScheme) { // old scheme
+          St_tpcGlobalPositionC* tpcGlobalPosition = St_tpcGlobalPositionC::instance();
+          assert(tpcGlobalPosition);
+          Id = 1;
+          phi   = 0.0;                                               // -gamma large uncertainty, so set to 0
+          theta = tpcGlobalPosition->PhiXZ_geom() * TMath::RadToDeg(); // -beta
+          psi   = tpcGlobalPosition->PhiYZ_geom() * TMath::RadToDeg(); // -alpha
+          rotA.RotateX(-psi);
+          rotA.RotateY(-theta);
+          rotA.RotateZ(-phi);
+          Double_t transTpcRefSys[3] = {tpcGlobalPosition->LocalxShift(),
+                                        tpcGlobalPosition->LocalyShift(),
+                                        tpcGlobalPosition->LocalzShift()
+                                       };
+          rotA.SetTranslation(transTpcRefSys);
+        }
+        else {
+          rotA = StTpcPosition::instance()->GetMatrix();
+          *mHalf[east] = StTpcHalfPosition::instance()->GetEastMatrix();
+          *mHalf[west] = StTpcHalfPosition::instance()->GetWestMatrix();
+        }
       }
+      else {
+        Id = 10 * sector + k;
+        StBeamDirection part = east;
+
+        if (sector <= 12) part = west;
+
+        switch (k) {
+        case kSupS2Tpc: // SupS => Tpc
+          if (sector <= 12) {iphi = (360 + 90 - 30 * sector      ) % 360; Rot = Form("R%03i", iphi);}
+          else              {iphi = (      90 + 30 * (sector - 12)) % 360; Rot = Form("Y%03i", iphi);}
+
+          rotm = 0;
+
+          if (gGeoManager) {
+            listOfMatrices =  gGeoManager->GetListOfMatrices();
+            rotm = (TGeoRotation*) listOfMatrices->FindObject(Rot);
+          }
+
+          if (! rotm) {
+            if (sector <= 12) rotm = new TGeoRotation(Rot);
+            else              rotm = new TGeoRotation(Rot,   90.0,    0.0,  90.0,  -90.0,  180.0,    0.00); // Flip (x,y,z) => ( x,-y,-z)
+
+            rotm->RotateZ(iphi);
+          }
+
+          rotA = (*mSwap[part]) * (*mHalf[part]) * (*rotm);
+          rotA *= StTpcSuperSectorPosition::instance()->GetMatrix(sector - 1);
+
+          if (gGeoManager) rotm->RegisterYourself();
+          else             SafeDelete(rotm);
+
+          break;
+
+        case kSupS2Glob:      // SupS => Tpc => Glob
+          rotA = Tpc2GlobalMatrix() * SupS2Tpc(sector);
+          break;
+
+        case kSubSInner2SupS:
+          if (mOldScheme) 	  rotA = Flip();
+          else                    rotA = Flip() * StTpcInnerSectorPosition::instance()->GetMatrix(sector - 1);
+
+          break;
+
+        case kSubSOuter2SupS:
+          if (mOldScheme) rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
+          else           {
+            rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
+
+            if (StTpcOuterSectorPosition::instance()->GetNRows() > 24) {
+              if (gFactor > 0.2) {
+                rotA *= StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1 + 24);
+              }
+              else if (gFactor < -0.2) {
+                rotA *= StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1 + 24).Inverse();
+              }
+            }
+          }
+
+          break;
+
+        case kSubSInner2Tpc:  rotA = SupS2Tpc(sector) * SubSInner2SupS(sector); break; // (Subs[io] => SupS) => Tpc
+
+        case kSubSOuter2Tpc:  rotA = SupS2Tpc(sector) * SubSOuter2SupS(sector); break; // -"-
+
+        case kSubSInner2Glob: rotA = Tpc2GlobalMatrix() * SubSInner2Tpc(sector);  break; // Subs[io] => SupS => Tpc) => Glob
+
+        case kSubSOuter2Glob: rotA = Tpc2GlobalMatrix() * SubSOuter2Tpc(sector);  break; // -"-
+
+        case kPadInner2SupS:  rotA = SubSInner2SupS(sector); break; // (Pad == SecL) => (SubS[io] => SupS)
+
+        case kPadOuter2SupS:  rotA = SubSOuter2SupS(sector); break; // -"-
+
+        case kPadInner2Tpc:   rotA = SupS2Tpc(sector) * PadInner2SupS(sector); break; // (Pad == SecL) => (SubS[io] => SupS => Tpc)
+
+        case kPadOuter2Tpc:   rotA = SupS2Tpc(sector) * PadOuter2SupS(sector); break; // -"-
+
+        case kPadInner2Glob:  rotA = Tpc2GlobalMatrix() * PadInner2Tpc(sector); break; // (Pad == SecL) => (SubS[io] => SupS => Tpc => Glob)
+
+        case kPadOuter2Glob:  rotA = Tpc2GlobalMatrix() * PadOuter2Tpc(sector); break; // -"-
+
+        default:
+          assert(0);
+        }
+      }
+
       // Normalize
-      Double_t *r = rotA.GetRotationMatrix();
+      Double_t* r = rotA.GetRotationMatrix();
       Double_t norm;
-      TVector3 d(r[0],r[3],r[6]); norm = 1/d.Mag(); d *= norm;
-      TVector3 t(r[2],r[5],r[8]); norm = 1/t.Mag(); t *= norm;
-      TVector3 n(r[1],r[4],r[7]);
+      TVector3 d(r[0], r[3], r[6]); norm = 1 / d.Mag(); d *= norm;
+      TVector3 t(r[2], r[5], r[8]); norm = 1 / t.Mag(); t *= norm;
+      TVector3 n(r[1], r[4], r[7]);
       TVector3 c = d.Cross(t);
+
       if (c.Dot(n) < 0) c *= -1;
+
       Double_t rot[9] = {
-	d[0], c[0], t[0],
-	d[1], c[1], t[1],
-	d[2], c[2], t[2]};
-      rotA.SetRotation(rot);
-      const Char_t *names[kTotalTpcSectorRotaions] = {
-	"SupS_%02itoTpc",
-	"SupS_%02itoGlob",
-	"SubS_%02iInner2SupS",
-	"SubS_%02iOuter2SupS",
-	"SubS_%02iInner2Tpc",
-	"SubS_%02iOuter2Tpc",
-	"SubS_%02iInner2Glob",
-	"SubS_%02iOuter2Glob",
-	"PadInner2SupS_%02i",
-	"PadOuter2SupS_%02i",
-	"SupS_%02i12Inner2Tpc",
-	"SupS_%02i12Outer2Tpc",
-	"SupS_%02i12Inner2Glob",
-	"SupS_%02i12Outer2Glob"
+        d[0], c[0], t[0],
+        d[1], c[1], t[1],
+        d[2], c[2], t[2]
       };
-      if (sector == 0) rotA.SetName("Tpc2Glob"); 
-      else             rotA.SetName(Form(names[k],sector));
+      rotA.SetRotation(rot);
+      const Char_t* names[kTotalTpcSectorRotaions] = {
+        "SupS_%02itoTpc",
+        "SupS_%02itoGlob",
+        "SubS_%02iInner2SupS",
+        "SubS_%02iOuter2SupS",
+        "SubS_%02iInner2Tpc",
+        "SubS_%02iOuter2Tpc",
+        "SubS_%02iInner2Glob",
+        "SubS_%02iOuter2Glob",
+        "PadInner2SupS_%02i",
+        "PadOuter2SupS_%02i",
+        "SupS_%02i12Inner2Tpc",
+        "SupS_%02i12Outer2Tpc",
+        "SupS_%02i12Inner2Glob",
+        "SupS_%02i12Outer2Glob"
+      };
+
+      if (sector == 0) rotA.SetName("Tpc2Glob");
+      else             rotA.SetName(Form(names[k], sector));
+
       if (Debug() > 1) {
-	cout << "Id : " << Id << " "; rotA.Print();
+        cout << "Id : " << Id << " "; rotA.Print();
       }
-      SetTpcRotationMatrix(&rotA,sector,k);
+
+      SetTpcRotationMatrix(&rotA, sector, k);
     }
   }
 }

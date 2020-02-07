@@ -4,7 +4,7 @@
 **   Unknown Method          0
 **   TruncatedMean           1
 **   EnsembleTruncatedMean   2
-**   LikelihoodFit           3 
+**   LikelihoodFit           3
 **   WeightedTruncatedMean   4
 **   OtherMethod             5        */
 

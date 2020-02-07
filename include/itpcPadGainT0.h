@@ -20,8 +20,8 @@
 	float T0[24][40][120]; \
 };"
 typedef struct itpcPadGainT0_st {
-	int run; /* pulser run number used */
-	float Gain[24][40][120]; /* Gains per pad*/
-	float T0[24][40][120]; /* T0 per pad*/
+  int run; /* pulser run number used */
+  float Gain[24][40][120]; /* Gains per pad*/
+  float T0[24][40][120]; /* T0 per pad*/
 } ITPCPADGAINT0_ST;
 #endif /* ITPCPADGAINT0_H */

@@ -4,10 +4,11 @@
 #include "TChair.h"
 #include "tables/St_tpcSlowControlSim_Table.h"
 
-class St_tpcSlowControlSimC : public TChair {
+class St_tpcSlowControlSimC : public TChair
+{
  public:
   static St_tpcSlowControlSimC* 	instance();
-  tpcSlowControlSim_st 	*Struct(Int_t i = 0) 	        {return ((St_tpcSlowControlSim*) Table())->GetTable()+i;}
+  tpcSlowControlSim_st* 	Struct(Int_t i = 0) 	        {return ((St_tpcSlowControlSim*) Table())->GetTable() + i;}
   UInt_t     	getNumRows()                	        {return GetNRows();}
   Double_t 	driftVelocity(Int_t i = 0) 	        {return Struct(i)->driftVelocity;}
   Double_t 	driftVoltage(Int_t i = 0) 	        {return Struct(i)->driftVoltage;}
@@ -24,11 +25,11 @@ class St_tpcSlowControlSimC : public TChair {
   Double_t 	hallPressure(Int_t i = 0) 	        {return Struct(i)->hallPressure;}
   Double_t 	hallTemperature(Int_t i = 0) 	        {return Struct(i)->hallTemperature;}
  protected:
-  St_tpcSlowControlSimC(St_tpcSlowControlSim *table=0) : TChair(table) {}
+  St_tpcSlowControlSimC(St_tpcSlowControlSim* table = 0) : TChair(table) {}
   virtual ~St_tpcSlowControlSimC() {fgInstance = 0;}
  private:
   static St_tpcSlowControlSimC* fgInstance;
   ClassDefChair(St_tpcSlowControlSim, tpcSlowControlSim_st )
-  ClassDef(St_tpcSlowControlSimC,1) //C++ TChair for tpcSlowControlSim table class
+  ClassDef(St_tpcSlowControlSimC, 1) //C++ TChair for tpcSlowControlSim table class
 };
 #endif

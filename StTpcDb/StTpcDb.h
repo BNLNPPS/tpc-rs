@@ -9,7 +9,7 @@
  *              TPC software.  This classes takes care of the annoying
  *              calls to the root infrastucture, packages and manipulates
  *              the data, and returns the data to the user via simple
- *              interface classes.    
+ *              interface classes.
  *
  ***************************************************************************
  *
@@ -162,10 +162,11 @@ class StMagUtilities;
 class StTpcDb;
 // Global pointers:
 R__EXTERN StTpcDb* gStTpcDb;
-class StTpcDb {
- public:    
+class StTpcDb
+{
+ public:
   static StTpcDb* instance() {if (! gStTpcDb) new StTpcDb(); return gStTpcDb;}
-  // Glob     = Global coordinate 
+  // Glob     = Global coordinate
   // Tpc      = Tpc    -"-                survey
   // Half     = Tpc Half west / east -"-  survey
   // SupS     = super sector misalignment(?)
@@ -174,32 +175,33 @@ class StTpcDb {
   // Pad      = Pad -"- (x_p,y_p,z_p) (Sector12 coordinate system)
   // Tpc => Global is mTpc2GlobMatrix
   // Pad => SecL   is internal Flip matrix
-  enum ETpcSectorRotationType {kUndefSector     =-2,
-			       kFlip            =-1, // Flip * Subs[io] => SupS
-			       kSupS2Tpc        = 0, // SupS => Tpc
-			       kSupS2Glob       = 1, // SupS => Tpc => Glob; 
-			       kSubSInner2SupS  = 2, // Subs[io] => SupS
-			       kSubSOuter2SupS  = 3, // -"-
-			       kSubSInner2Tpc   = 4, // (Subs[io] => SupS) => Tpc
-			       kSubSOuter2Tpc   = 5, // -"-
-			       kSubSInner2Glob  = 6, // (Subs[io] => SupS => Tpc) => Glob
-			       kSubSOuter2Glob  = 7, // -"-
-			       kPadInner2SupS   = 8, // (Pad => SecL) => (SubS[io] => SupS)
-			       kPadOuter2SupS   = 9, // -"- 
-			       kPadInner2Tpc    =10, // (Pad => SecL) => (SubS[io] => SupS => Tpc)
-			       kPadOuter2Tpc    =11, // -"- 
-			       kPadInner2Glob   =12, // (Pad => SecL) => (SubS[io] => SupS => Tpc => Glob)
-			       kPadOuter2Glob   =13, // -"- 
-			       kTotalTpcSectorRotaions =14}; 
+  enum ETpcSectorRotationType {kUndefSector     = -2,
+                               kFlip            = -1, // Flip * Subs[io] => SupS
+                               kSupS2Tpc        = 0, // SupS => Tpc
+                               kSupS2Glob       = 1, // SupS => Tpc => Glob;
+                               kSubSInner2SupS  = 2, // Subs[io] => SupS
+                               kSubSOuter2SupS  = 3, // -"-
+                               kSubSInner2Tpc   = 4, // (Subs[io] => SupS) => Tpc
+                               kSubSOuter2Tpc   = 5, // -"-
+                               kSubSInner2Glob  = 6, // (Subs[io] => SupS => Tpc) => Glob
+                               kSubSOuter2Glob  = 7, // -"-
+                               kPadInner2SupS   = 8, // (Pad => SecL) => (SubS[io] => SupS)
+                               kPadOuter2SupS   = 9, // -"-
+                               kPadInner2Tpc    = 10, // (Pad => SecL) => (SubS[io] => SupS => Tpc)
+                               kPadOuter2Tpc    = 11, // -"-
+                               kPadInner2Glob   = 12, // (Pad => SecL) => (SubS[io] => SupS => Tpc => Glob)
+                               kPadOuter2Glob   = 13, // -"-
+                               kTotalTpcSectorRotaions = 14
+                              };
  private:
   Char_t                mBeg[1];        //!
   StMagUtilities*       mExB;           //!
   Int_t                 m_Debug;        //!
-  TGeoTranslation      *mSwap[2];       //! 
-  TGeoHMatrix          *mFlip;          //!
-  TGeoHMatrix          *mTpc2GlobMatrix;//!
-  TGeoHMatrix          *mHalf[2];       //!
-  TGeoHMatrix          *mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
+  TGeoTranslation*      mSwap[2];       //!
+  TGeoHMatrix*          mFlip;          //!
+  TGeoHMatrix*          mTpc2GlobMatrix;//!
+  TGeoHMatrix*          mHalf[2];       //!
+  TGeoHMatrix*          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
   Float_t               mDriftVel[2];   //!
   UInt_t                mUc;            //! time for which above mDriftVel have been calculated
   Int_t                 mTriggerId;     //! to distinguish local clock and RHIC clock
@@ -210,18 +212,18 @@ class StTpcDb {
   StTpcDb();
  public:
   virtual ~StTpcDb();
-  St_tpcPadPlanesC      *PadPlaneGeometry() {return St_tpcPadPlanesC::instance();}
-  St_tpcWirePlanesC     *WirePlaneGeometry() {return St_tpcWirePlanesC::instance();}
-  St_tpcDimensionsC     *Dimensions() {return St_tpcDimensionsC::instance();}
-  St_tpcSlowControlSimC *SlowControlSim() {return St_tpcSlowControlSimC::instance();}
-  St_tpcElectronicsC    *Electronics() {return St_tpcElectronicsC::instance();}
-  St_tpcGlobalPositionC *GlobalPosition() {return St_tpcGlobalPositionC::instance();}
-  St_tpcFieldCageC      *FieldCage() {return St_tpcFieldCageC::instance();}
-  St_tpcSectorPositionC *SectorPosition() {return St_tpcSectorPositionC::instance();}
-  St_tpcPedestalC       *Pedestal() {return St_tpcPedestalC::instance();}
-  St_tpcPadGainT0BC     *tpcGain() {return St_tpcPadGainT0BC::instance();}
-  St_tpcPadGainT0BC     *tpcT0()   {return St_tpcPadGainT0BC::instance();}
-  St_tpcPadResponseC    *PadResponse() {return St_tpcPadResponseC::instance();}
+  St_tpcPadPlanesC*      PadPlaneGeometry() {return St_tpcPadPlanesC::instance();}
+  St_tpcWirePlanesC*     WirePlaneGeometry() {return St_tpcWirePlanesC::instance();}
+  St_tpcDimensionsC*     Dimensions() {return St_tpcDimensionsC::instance();}
+  St_tpcSlowControlSimC* SlowControlSim() {return St_tpcSlowControlSimC::instance();}
+  St_tpcElectronicsC*    Electronics() {return St_tpcElectronicsC::instance();}
+  St_tpcGlobalPositionC* GlobalPosition() {return St_tpcGlobalPositionC::instance();}
+  St_tpcFieldCageC*      FieldCage() {return St_tpcFieldCageC::instance();}
+  St_tpcSectorPositionC* SectorPosition() {return St_tpcSectorPositionC::instance();}
+  St_tpcPedestalC*       Pedestal() {return St_tpcPedestalC::instance();}
+  St_tpcPadGainT0BC*     tpcGain() {return St_tpcPadGainT0BC::instance();}
+  St_tpcPadGainT0BC*     tpcT0()   {return St_tpcPadGainT0BC::instance();}
+  St_tpcPadResponseC*    PadResponse() {return St_tpcPadResponseC::instance();}
   Float_t                triggerTimeOffset()     {return St_trgTimeOffsetC::instance()->triggerTimeOffset();}
   Float_t                triggerTimeOffsetWest() {return St_trgTimeOffsetC::instance()->triggerTimeOffsetWest();}
   static Bool_t          IsOldScheme()    {return mOldScheme;}
@@ -232,17 +234,18 @@ class StTpcDb {
   //small pieces of data:
   void    SetDriftVelocity();
 #if 0
-  Float_t DriftVelocity(Int_t sector=24, Double_t Y = 0);
+  Float_t DriftVelocity(Int_t sector = 24, Double_t Y = 0);
 #else
-  Float_t DriftVelocity(Int_t sector=24);
+  Float_t DriftVelocity(Int_t sector = 24);
 #endif
   StMagUtilities* ExB() {return mExB;}
-  void SetExB(StMagUtilities *m) {mExB = m;}
+  void SetExB(StMagUtilities* m) {mExB = m;}
   void SetTpcRotations();
-  void SetTpc2GlobalMatrix(TGeoHMatrix *m) {SetTpcRotationMatrix(m);}
-  void SetTpcRotationMatrix(TGeoHMatrix *m, Int_t sector = 0, Int_t k = kSupS2Tpc) {
+  void SetTpc2GlobalMatrix(TGeoHMatrix* m) {SetTpcRotationMatrix(m);}
+  void SetTpcRotationMatrix(TGeoHMatrix* m, Int_t sector = 0, Int_t k = kSupS2Tpc)
+  {
     if (sector == 0)  {if (m) *mTpc2GlobMatrix = *m;}
-    else              {if (m) *mTpcSectorRotations[sector-1][k] = *m;}
+    else              {if (m) *mTpcSectorRotations[sector - 1][k] = *m;}
   }
   void  SetDebug(Int_t m) {m_Debug = m;}
   Int_t Debug() {return m_Debug;}
@@ -252,30 +255,30 @@ class StTpcDb {
   const TGeoHMatrix &TpcHalf(StBeamDirection part)    const {return *mHalf[part];}
   const TGeoTranslation &Swap(StBeamDirection part)   const {return *mSwap[part];}
   const TGeoHMatrix &Tpc2GlobalMatrix()               const {return *mTpc2GlobMatrix;}
-  const TGeoHMatrix &TpcRot(Int_t sector, Int_t k)    const {return *mTpcSectorRotations[sector-1][k];}
-  const TGeoHMatrix &SupS2Tpc(Int_t sector = 1)       const {return TpcRot(sector,kSupS2Tpc);}
-  const TGeoHMatrix &SupS2Glob(Int_t sector = 1)      const {return TpcRot(sector,kSupS2Glob);}
-  const TGeoHMatrix &SubSInner2SupS(Int_t sector = 1) const {return TpcRot(sector,kSubSInner2SupS);}
-  const TGeoHMatrix &SubSOuter2SupS(Int_t sector = 1) const {return TpcRot(sector,kSubSOuter2SupS);}
-  const TGeoHMatrix &SubSInner2Tpc(Int_t sector = 1)  const {return TpcRot(sector,kSubSInner2Tpc);}
-  const TGeoHMatrix &SubSOuter2Tpc(Int_t sector = 1)  const {return TpcRot(sector,kSubSOuter2Tpc);}
-  const TGeoHMatrix &SubSInner2Glob(Int_t sector = 1) const {return TpcRot(sector,kSubSInner2Glob);}
-  const TGeoHMatrix &SubSOuter2Glob(Int_t sector = 1) const {return TpcRot(sector,kSubSOuter2Glob);}
+  const TGeoHMatrix &TpcRot(Int_t sector, Int_t k)    const {return *mTpcSectorRotations[sector - 1][k];}
+  const TGeoHMatrix &SupS2Tpc(Int_t sector = 1)       const {return TpcRot(sector, kSupS2Tpc);}
+  const TGeoHMatrix &SupS2Glob(Int_t sector = 1)      const {return TpcRot(sector, kSupS2Glob);}
+  const TGeoHMatrix &SubSInner2SupS(Int_t sector = 1) const {return TpcRot(sector, kSubSInner2SupS);}
+  const TGeoHMatrix &SubSOuter2SupS(Int_t sector = 1) const {return TpcRot(sector, kSubSOuter2SupS);}
+  const TGeoHMatrix &SubSInner2Tpc(Int_t sector = 1)  const {return TpcRot(sector, kSubSInner2Tpc);}
+  const TGeoHMatrix &SubSOuter2Tpc(Int_t sector = 1)  const {return TpcRot(sector, kSubSOuter2Tpc);}
+  const TGeoHMatrix &SubSInner2Glob(Int_t sector = 1) const {return TpcRot(sector, kSubSInner2Glob);}
+  const TGeoHMatrix &SubSOuter2Glob(Int_t sector = 1) const {return TpcRot(sector, kSubSOuter2Glob);}
 
-  const TGeoHMatrix &PadInner2SupS(Int_t sector = 1)  const {return TpcRot(sector,kPadInner2SupS);}
-  const TGeoHMatrix &PadOuter2SupS(Int_t sector = 1)  const {return TpcRot(sector,kPadOuter2SupS);}
-  const TGeoHMatrix &PadInner2Tpc(Int_t sector = 1)   const {return TpcRot(sector,kPadInner2Tpc);}
-  const TGeoHMatrix &PadOuter2Tpc(Int_t sector = 1)   const {return TpcRot(sector,kPadOuter2Tpc);}
-  const TGeoHMatrix &PadInner2Glob(Int_t sector = 1)  const {return TpcRot(sector,kPadInner2Glob);}
-  const TGeoHMatrix &PadOuter2Glob(Int_t sector = 1)  const {return TpcRot(sector,kPadOuter2Glob);}
+  const TGeoHMatrix &PadInner2SupS(Int_t sector = 1)  const {return TpcRot(sector, kPadInner2SupS);}
+  const TGeoHMatrix &PadOuter2SupS(Int_t sector = 1)  const {return TpcRot(sector, kPadOuter2SupS);}
+  const TGeoHMatrix &PadInner2Tpc(Int_t sector = 1)   const {return TpcRot(sector, kPadInner2Tpc);}
+  const TGeoHMatrix &PadOuter2Tpc(Int_t sector = 1)   const {return TpcRot(sector, kPadOuter2Tpc);}
+  const TGeoHMatrix &PadInner2Glob(Int_t sector = 1)  const {return TpcRot(sector, kPadInner2Glob);}
+  const TGeoHMatrix &PadOuter2Glob(Int_t sector = 1)  const {return TpcRot(sector, kPadOuter2Glob);}
 
-  const TGeoHMatrix &SubS2SupS(Int_t sector = 1, Int_t row = 1) const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector,k);}
-  const TGeoHMatrix &SubS2Tpc(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2Tpc : kSubSOuter2Tpc; return TpcRot(sector,k);}
-  const TGeoHMatrix &SubS2Glob(Int_t sector = 1, Int_t row = 1) const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2Glob: kSubSOuter2Glob; return TpcRot(sector,k);}
+  const TGeoHMatrix &SubS2SupS(Int_t sector = 1, Int_t row = 1) const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2Tpc(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2Tpc : kSubSOuter2Tpc; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2Glob(Int_t sector = 1, Int_t row = 1) const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2Glob : kSubSOuter2Glob; return TpcRot(sector, k);}
 
-  const TGeoHMatrix &Pad2SupS(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2SupS: kPadOuter2SupS; return TpcRot(sector,k);}
-  const TGeoHMatrix &Pad2Tpc(Int_t sector = 1, Int_t row = 1)   const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Tpc: kPadOuter2Tpc; return TpcRot(sector,k);}
-  const TGeoHMatrix &Pad2Glob(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Glob: kPadOuter2Glob; return TpcRot(sector,k);}
-  ClassDef(StTpcDb,0)
+  const TGeoHMatrix &Pad2SupS(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2Tpc(Int_t sector = 1, Int_t row = 1)   const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Tpc : kPadOuter2Tpc; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2Glob(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
+  ClassDef(StTpcDb, 0)
 };
 #endif

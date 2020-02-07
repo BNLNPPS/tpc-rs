@@ -4,10 +4,11 @@
 #include "TChair.h"
 #include "tables/St_TpcResponseSimulator_Table.h"
 
-class St_TpcResponseSimulatorC : public TChair {
+class St_TpcResponseSimulatorC : public TChair
+{
  public:
   static St_TpcResponseSimulatorC* 	instance();
-  TpcResponseSimulator_st 	*Struct(Int_t i = 0) 	const {return ((St_TpcResponseSimulator*) Table())->GetTable()+i;}
+  TpcResponseSimulator_st* 	Struct(Int_t i = 0) 	const {return ((St_TpcResponseSimulator*) Table())->GetTable() + i;}
   UInt_t     	getNumRows()                	const {return GetNRows();}
   Float_t 	I0(Int_t i = 0) 	const {return Struct(i)->I0;}
   Float_t 	Cluster(Int_t i = 0) 	const {return Struct(i)->Cluster;}
@@ -24,10 +25,10 @@ class St_TpcResponseSimulatorC : public TChair {
   Float_t 	tauIntegration(Int_t i = 0) 	const {return Struct(i)->tauIntegration;}
   Float_t 	tauF(Int_t i = 0) 	const {return Struct(i)->tauF;}
   Float_t 	tauP(Int_t i = 0) 	const {return Struct(i)->tauP;}
-  Float_t      *tauX(Int_t i = 0) 	const {return &Struct(i)->tauXI;}
+  Float_t*      tauX(Int_t i = 0) 	const {return &Struct(i)->tauXI;}
   Float_t 	tauXI(Int_t i = 0) 	const {return Struct(i)->tauXI;}
   Float_t 	tauXO(Int_t i = 0) 	const {return Struct(i)->tauXO;}
-  Float_t      *tauC(Int_t i = 0) 	const {return &Struct(i)->tauCI;}
+  Float_t*      tauC(Int_t i = 0) 	const {return &Struct(i)->tauCI;}
   Float_t 	tauCI(Int_t i = 0) 	const {return Struct(i)->tauCI;}
   Float_t 	tauCO(Int_t i = 0) 	const {return Struct(i)->tauCO;}
   Float_t 	SigmaJitterTI(Int_t i = 0) 	const {return Struct(i)->SigmaJitterTI;}
@@ -42,17 +43,17 @@ class St_TpcResponseSimulatorC : public TChair {
   Float_t       NoElPerAdcX(Int_t i = 0) const {return Struct(i)->NoElPerAdcX;}
   Float_t       OmegaTauScaleI(Int_t i = 0) const {return Struct(i)->OmegaTauScaleI;}
   Float_t       OmegaTauScaleO(Int_t i = 0) const {return Struct(i)->OmegaTauScaleO;}
-  Float_t      *SecRowCor(Int_t i = 0)      const {return &Struct(i)->SecRowCorIW[0];}
-  Float_t      *SecRowCorIW(Int_t i = 0)    const {return &Struct(i)->SecRowCorIW[0];}
-  Float_t      *SecRowCorOW(Int_t i = 0)    const {return &Struct(i)->SecRowCorOW[0];}
-  Float_t      *SecRowCorIE(Int_t i = 0)    const {return &Struct(i)->SecRowCorIE[0];}
-  Float_t      *SecRowCorOE(Int_t i = 0)    const {return &Struct(i)->SecRowCorOE[0];}
+  Float_t*      SecRowCor(Int_t i = 0)      const {return &Struct(i)->SecRowCorIW[0];}
+  Float_t*      SecRowCorIW(Int_t i = 0)    const {return &Struct(i)->SecRowCorIW[0];}
+  Float_t*      SecRowCorOW(Int_t i = 0)    const {return &Struct(i)->SecRowCorOW[0];}
+  Float_t*      SecRowCorIE(Int_t i = 0)    const {return &Struct(i)->SecRowCorIE[0];}
+  Float_t*      SecRowCorOE(Int_t i = 0)    const {return &Struct(i)->SecRowCorOE[0];}
 
-  Float_t      *SecRowSig(Int_t i = 0)      const {return &Struct(i)->SecRowSigIW[0];}
-  Float_t      *SecRowSigIW(Int_t i = 0)    const {return &Struct(i)->SecRowSigIW[0];}
-  Float_t      *SecRowSigOW(Int_t i = 0)    const {return &Struct(i)->SecRowSigOW[0];}
-  Float_t      *SecRowSigIE(Int_t i = 0)    const {return &Struct(i)->SecRowSigIE[0];}
-  Float_t      *SecRowSigOE(Int_t i = 0)    const {return &Struct(i)->SecRowSigOE[0];}
+  Float_t*      SecRowSig(Int_t i = 0)      const {return &Struct(i)->SecRowSigIW[0];}
+  Float_t*      SecRowSigIW(Int_t i = 0)    const {return &Struct(i)->SecRowSigIW[0];}
+  Float_t*      SecRowSigOW(Int_t i = 0)    const {return &Struct(i)->SecRowSigOW[0];}
+  Float_t*      SecRowSigIE(Int_t i = 0)    const {return &Struct(i)->SecRowSigIE[0];}
+  Float_t*      SecRowSigOE(Int_t i = 0)    const {return &Struct(i)->SecRowSigOE[0];}
 
   Float_t       PolyaInner(Int_t i = 0)     const {return  Struct(i)->PolyaInner;}
   Float_t       PolyaOuter(Int_t i = 0)     const {return  Struct(i)->PolyaOuter;}
@@ -60,13 +61,13 @@ class St_TpcResponseSimulatorC : public TChair {
   Float_t       T0offsetI(Int_t i = 0)      const {return  Struct(i)->T0offsetI;}
   Float_t       T0offsetO(Int_t i = 0)      const {return  Struct(i)->T0offsetO;}
   Float_t       FirstRowC(Int_t i = 0)      const {return  Struct(i)->FirstRowC;}
-  
+
  protected:
-  St_TpcResponseSimulatorC(St_TpcResponseSimulator *table=0) : TChair(table) {}
+  St_TpcResponseSimulatorC(St_TpcResponseSimulator* table = 0) : TChair(table) {}
   virtual ~St_TpcResponseSimulatorC() {fgInstance = 0;}
  private:
   static St_TpcResponseSimulatorC* fgInstance;
   ClassDefChair(St_TpcResponseSimulator, TpcResponseSimulator_st )
-  ClassDef(St_TpcResponseSimulatorC,1) //C++ TChair for TpcResponseSimulator table class
+  ClassDef(St_TpcResponseSimulatorC, 1) //C++ TChair for TpcResponseSimulator table class
 };
 #endif

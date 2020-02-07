@@ -19,7 +19,7 @@
 	float Rms[100][182]; \
 };"
 typedef struct tpcPedestal_st {
-	float Pedestal[100][182]; /*  Pedestals per */
-	float Rms[100][182]; /*  Rms per */
+  float Pedestal[100][182]; /*  Pedestals per */
+  float Rms[100][182]; /*  Rms per */
 } TPCPEDESTAL_ST;
 #endif /* TPCPEDESTAL_H */
