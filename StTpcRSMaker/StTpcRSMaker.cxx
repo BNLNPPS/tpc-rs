@@ -49,6 +49,7 @@
 #include "StTpcRSMaker/Altro.h"
 #include "StarRoot/TRVector.h"
 #include "St_base/StMessMgr.h"
+#include "St_base/Stypes.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 // g2t tables
@@ -108,7 +109,6 @@ ClassImp(StTpcRSMaker);
 
 
 StTpcRSMaker::StTpcRSMaker(const char* name):
-  StMaker(name),
   mLaserScale(1),
   minSignal(1e-4),
   ElectronRange(0.0055), // Electron Range(.055mm)
@@ -146,7 +146,7 @@ Int_t StTpcRSMaker::Finish()
 
   for (Int_t io = 0; io < 2; io++) {// Inner/Outer
     for (Int_t sec = 0; sec < NoOfSectors; sec++) {
-      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(kNotDeleted)) {SafeDelete(mShaperResponses[io][sec]);}
+      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {SafeDelete(mShaperResponses[io][sec]);}
 
       SafeDelete(mChargeFraction[io][sec]);
       SafeDelete(mPadResponseFunction[io][sec]);
@@ -158,7 +158,8 @@ Int_t StTpcRSMaker::Finish()
   if (m_TpcdEdxCorrection && m_TpcdEdxCorrection->TestBit(kCanDelete)) delete m_TpcdEdxCorrection;
 
   m_TpcdEdxCorrection = 0;
-  return StMaker::Finish();
+
+  return 0;
 }
 
 
@@ -536,14 +537,11 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
 
   memset (hist, 0, sizeof(hist));
   memset (checkList, 0, sizeof(checkList));
+
 #ifdef __ClusterProfile__
-
-  if (GetTFile()) {
-    GetTFile()->cd();
-    ClusterProfile = kTRUE;
-  }
-
+  ClusterProfile = kTRUE;
 #endif /* __ClusterProfile__ */
+
   mHeed = fEc(St_TpcResponseSimulatorC::instance()->W());
 
   if ( ! ClusterProfile) {
@@ -673,18 +671,13 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
 
   delete [] pbins;
   delete [] pbinsL;
-  SetAttr("minSector", 1);
-  SetAttr("maxSector", 24);
-  SetAttr("minRow", 1);
-  SetAttr("maxRow", St_tpcPadConfigC::instance()->numberOfRows(20));
   return kStOK;
 }
 
-
-Int_t StTpcRSMaker::Make()   //  PrintInfo();
+Int_t StTpcRSMaker::Make(St_g2t_tpc_hit* g2t_tpc_hit, St_g2t_track* g2t_track, St_g2t_vertex* g2t_ver, StTpcRawData* tpcRawData)
 {
-  static Int_t minSector = IAttr("minSector");
-  static Int_t maxSector = IAttr("maxSector");
+  static Int_t minSector = 1;
+  static Int_t maxSector = 24;
   // constants
   static Int_t iBreak = 0;
 #ifdef __DEBUG__
@@ -698,7 +691,6 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
 #endif
   Double_t vminI = St_tpcGainCorrectionC::instance()->Struct(1)->min;
   Double_t vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
-  St_g2t_tpc_hit* g2t_tpc_hit = (St_g2t_tpc_hit*) GetDataSet("geant/g2t_tpc_hit");
 
   if (!g2t_tpc_hit) return kStWarn;
 
@@ -706,7 +698,6 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
 
   if (Debug() > 1) g2t_tpc_hit->Print(0, 10);
 
-  St_g2t_track* g2t_track = (St_g2t_track*) GetDataSet("geant/g2t_track");  //  if (!g2t_track)    return kStWarn;
   Int_t NoTpcTracks = 0;
 
   if (g2t_track) NoTpcTracks = g2t_track->GetNRows();
@@ -717,7 +708,6 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
 
   if (g2t_track) tpc_track = g2t_track->GetTable();
 
-  St_g2t_vertex*  g2t_ver = (St_g2t_vertex*) GetDataSet("geant/g2t_vertex"); // if (!g2t_ver)      return kStWarn;
   g2t_vertex_st*     gver = 0;
   Int_t NV = 0;
 
@@ -1426,7 +1416,7 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
     }  // hits in the sector
 
     if (NoHitsInTheSector) {
-      StTpcDigitalSector* digitalSector = DigitizeSector(sector);
+      StTpcDigitalSector* digitalSector = DigitizeSector(sector, tpcRawData);
 
       if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << NoHitsInTheSector << endm;
 
@@ -1651,20 +1641,11 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 }
 
 
-StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector)
+StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* data)
 {
   static Int_t iBreak = 0;
   static Int_t AdcCut = 500;
   //  static Int_t PedestalMem[__MaxNumberOfTimeBins__];
-  TDataSet* event = GetData("Event");
-  StTpcRawData* data = 0;
-
-  if (! event) {
-    data = new StTpcRawData(NoOfSectors);
-    event = new TObjectSet("Event", data);
-    AddData(event);
-  }
-  else data = (StTpcRawData*) event->GetObject();
 
   assert(data);
   SignalSum_t* SignalSum = GetSignalSum(sector);

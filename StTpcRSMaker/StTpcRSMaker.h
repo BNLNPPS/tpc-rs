@@ -1,14 +1,6 @@
 #ifndef STAR_ST_TRS_MAKER_HH
 #define STAR_ST_TRS_MAKER_HH
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// StTpcRSMaker virtual base class for Maker                          //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-#ifndef StMaker_H
-#include "StChain/StMaker.h"
-#endif
 #include "StEvent/StTpcRawData.h"
 #include "StTpcRSMaker/TF1F.h"
 #include "TH1.h"
@@ -23,12 +15,18 @@ class HitPoint_t;
 class g2t_tpc_hit_st;
 class g2t_vertex_st;
 class StTpcCoordinateTransform;
+
+class St_g2t_tpc_hit;
+class St_g2t_track;
+class St_g2t_vertex;
+
 struct SignalSum_t {
   Float_t      Sum;
   Short_t      Adc;
   Short_t  TrackId;
 };
-class StTpcRSMaker : public StMaker
+
+class StTpcRSMaker
 {
  public:
   enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
@@ -43,8 +41,9 @@ class StTpcRSMaker : public StMaker
   StTpcRSMaker(const char* name = "TpcRS");
   virtual              ~StTpcRSMaker();
   virtual Int_t         InitRun(int runnumber);
-  virtual Int_t         Make();
+  virtual Int_t Make(St_g2t_tpc_hit* g2t_tpc_hit, St_g2t_track* g2t_track, St_g2t_vertex*  g2t_ver, StTpcRawData* tpcRawData);
   virtual Int_t  	Finish();
+  Int_t         Debug() const {return 1;}
   TF1F* GetShaperResponse(Int_t io = 0, Int_t sector = 1) {return (TF1F*) mShaperResponses[io][sector - 1];}
   TF1F* GetChargeFraction(Int_t io = 0, Int_t sector = 20)     {return (TF1F*) mChargeFraction[io][sector - 1];}
   TF1F* GetPadResponseFunction(Int_t io = 0, Int_t sector = 20) {return (TF1F*) mPadResponseFunction[io][sector - 1];}
@@ -54,7 +53,7 @@ class StTpcRSMaker : public StMaker
   TF1*  GetHeed()                    {return mHeed;}
   Double_t GetNoPrimaryClusters(Double_t betaGamma, Int_t charge);
   virtual void Print(Option_t* option = "") const;
-  StTpcDigitalSector* DigitizeSector(Int_t sector);
+  StTpcDigitalSector* DigitizeSector(Int_t sector, StTpcRawData* data);
   void SetLaserScale(Double_t m = 1) {mLaserScale = m;}
   static Int_t    AsicThresholds(Short_t ADCs[__MaxNumberOfTimeBins__]);
   static Int_t    SearchT(const void* elem1, const void** elem2);
@@ -90,6 +89,7 @@ class StTpcRSMaker : public StMaker
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
   Char_t   beg[1];                    //!
+  Int_t    m_Mode;
   TTree*   fTree;                     //!
   SignalSum_t*     m_SignalSum;       //!
   TH1D*    mdNdx;                     //!
