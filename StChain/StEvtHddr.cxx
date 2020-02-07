@@ -6,7 +6,8 @@
 #include "St_base/StMessMgr.h"
 
 ClassImp(StEvtHddr)
-//_____________________________________________________________________________
+
+
 StEvtHddr::StEvtHddr(TDataSet* parent): TDataSet("EvtHddr", parent)
 {
   SetDateTime(20330101, 0);
@@ -14,7 +15,8 @@ StEvtHddr::StEvtHddr(TDataSet* parent): TDataSet("EvtHddr", parent)
   memset(&mRunNumber, 0, (char*)(&mEventNumber) - (char*)&mRunNumber);
   mRunNumber = -1; mOldRunNumber = -2; mEventNumber = -1;
 }
-//_____________________________________________________________________________
+
+
 StEvtHddr &StEvtHddr::operator=(const StEvtHddr &hddr)
 {
   if (!GetName() [0]) SetName (hddr.GetName ());
@@ -27,7 +29,8 @@ StEvtHddr &StEvtHddr::operator=(const StEvtHddr &hddr)
   mEventType = hddr.mEventType;
   return *this;
 }
-//_____________________________________________________________________________
+
+
 void StEvtHddr::FillTag(EvtHddr_st* tag)
 {
 
@@ -40,7 +43,8 @@ void StEvtHddr::FillTag(EvtHddr_st* tag)
   tag->mEventType[0] = 0;
   strncat(tag->mEventType, mEventType, 15);
 }
-//_____________________________________________________________________________
+
+
 void StEvtHddr::SetGMTime(UInt_t ut)
 {
   TUnixTime unixTime(ut);
@@ -48,7 +52,8 @@ void StEvtHddr::SetGMTime(UInt_t ut)
   unixTime.GetGTime(dat, tim);
   mEventTime.Set(dat, tim);
 }
-//_____________________________________________________________________________
+
+
 void  StEvtHddr::SetProdDateTime(UInt_t ut)
 {
   TUnixTime unixTime(ut);
@@ -56,14 +61,16 @@ void  StEvtHddr::SetProdDateTime(UInt_t ut)
   unixTime.GetGTime(dat, tim);
   mProdTime.Set(dat, tim);
 }
-//_____________________________________________________________________________
+
+
 UInt_t StEvtHddr::GetUTime() 	  const
 {
   TUnixTime unixTime;
   unixTime.SetGTime(mEventTime.GetDate(), mEventTime.GetTime());
   return unixTime.GetUTime();
 }
-//_____________________________________________________________________________
+
+
 void StEvtHddr::Print(Option_t* option) const
 {
   LOG_INFO << Form

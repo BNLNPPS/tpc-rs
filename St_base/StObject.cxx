@@ -93,32 +93,38 @@ enum {kBelongs = (1 << 22)};
 
 
 ClassImp(StObject)
-//_____________________________________________________________________________
+
+
 StObject::StObject(const StObject &sto): TObject(sto)
 {
   SetBit(kBelongs, 0);
 }
-//_____________________________________________________________________________
+
+
 StObject &StObject::operator=(const StObject &sto)
 {
   TObject::operator=(sto);
   SetBit(kBelongs, 0); return *this;
 }
-//_____________________________________________________________________________
+
+
 StObject::~StObject()
 {
 }
-//_____________________________________________________________________________
+
+
 void StObject::Browse(TBrowser* tb)
 {
   StAutoBrowse::Browse(this, tb);
 }
-//_____________________________________________________________________________
+
+
 Bool_t StObject::IsFolder() const
 {
   return StAutoBrowse::Browse((TObject*)this, 0);
 }
-//______________________________________________________________________________
+
+
 void StObject::Streamer(TBuffer &R__b)
 {
   //	Stream an object of class StObject.
@@ -148,7 +154,8 @@ void StObject::Streamer(TBuffer &R__b)
     TObject::Streamer(R__b);
   }
 }
-//______________________________________________________________________________
+
+
 UInt_t StObject::Ztreamer(TBuffer &R__b)
 {
   UInt_t udx = GetUniqueID();
@@ -160,12 +167,14 @@ UInt_t StObject::Ztreamer(TBuffer &R__b)
 }
 
 ClassImp(StUUId)
-//_____________________________________________________________________________
+
+
 StUUId::StUUId()
 {
   memset(fID, 0, 16);
 }
-//_____________________________________________________________________________
+
+
 void StUUId::Generate()
 {
   static UInt_t uu[4] = {0, 0, 0, 0};
@@ -188,7 +197,8 @@ void StUUId::Generate()
 #endif
 }
 
-//_____________________________________________________________________________
+
+
 void StUUId::Streamer(TBuffer &R__b)
 {
   if (R__b.IsReading()) {
@@ -198,28 +208,33 @@ void StUUId::Streamer(TBuffer &R__b)
     R__b.WriteFastArray(fID, 4);
   }
 }
-//_____________________________________________________________________________
+
+
 StUUId &StUUId::operator=(const StUUId &from)
 {
   if (this != &from) memcpy(fID, from.fID, sizeof(fID));
 
   return *this;
 }
-//_____________________________________________________________________________
+
+
 StUUId &StUUId::operator=(const char*  from )
 {
   memcpy(fID, from, 16); return *this;
 }
-//_____________________________________________________________________________
+
+
 int StUUId::Compare(const StUUId &u2) const
 {
   return memcmp(fID, u2.fID, 16);
 }
 
 
-//_____________________________________________________________________________
+
+
 ClassImp(StXRef)
-//_____________________________________________________________________________
+
+
 StXRef::StXRef(const char* brName, StXRefMain* evt, UInt_t tally)
   : TDataSet(brName, evt)
 {
@@ -230,12 +245,14 @@ StXRef::StXRef(const char* brName, StXRefMain* evt, UInt_t tally)
   SetTally(tally);
 
 }
-//_____________________________________________________________________________
+
+
 StXRef::~StXRef()
 {
 }
 
-//_____________________________________________________________________________
+
+
 void StXRef::Streamer(TBuffer &R__b)
 {
   UInt_t R__s, R__c;
@@ -271,7 +288,8 @@ void StXRef::Streamer(TBuffer &R__b)
     R__b.SetByteCount(R__c, kTRUE);
   }
 }
-//_____________________________________________________________________________
+
+
 StXRefMain* StXRef::GetMain()
 {
   if (!fMain) {
@@ -281,7 +299,8 @@ StXRefMain* StXRef::GetMain()
 
   return fMain;
 }
-//_____________________________________________________________________________
+
+
 void StXRef::Add(TDataSet* ds)
 {
   if (ds == this) 		return;
@@ -312,18 +331,21 @@ void StXRef::Add(TDataSet* ds)
   ds->Shunt(0); TDataSet::Add(ds);
 }
 
-//_____________________________________________________________________________
+
+
 ClassImp(StXRefMain)
 
 StXRefMain::~StXRefMain()
 {
 }
-//______________________________________________________________________________
+
+
 void StXRefMain::Streamer(TBuffer &R__b)
 {
   StXRef::Streamer(R__b);
 }
-//_____________________________________________________________________________
+
+
 StXRefManager::StXRefManager(const StUUId &id)
 {
   fTally = 0;
@@ -333,7 +355,8 @@ StXRefManager::StXRefManager(const StUUId &id)
   fgManagerList.push_front(this);
   fColList.push_front(0);
 }
-//_____________________________________________________________________________
+
+
 StXRefManager::~StXRefManager()
 {
 
@@ -360,7 +383,8 @@ StXRefManager::~StXRefManager()
 }
 
 
-//_____________________________________________________________________________
+
+
 void StXRefManager::Cd(StXRef* xref)
 {
   StXRefManager* man = fgManager;
@@ -386,7 +410,8 @@ void StXRefManager::Cd(StXRef* xref)
 
   fgManager = man;
 }
-//_____________________________________________________________________________
+
+
 void StXRefManager::Open(StXRef* xref)
 {
   if (fgRWmode == 1) {		//Writing
@@ -413,7 +438,8 @@ void StXRefManager::Open(StXRef* xref)
     xref->SetMain(man->fMain);
   }
 }
-//_____________________________________________________________________________
+
+
 void StXRefManager::Close(StXRef* xref)
 {
   if (fgRWmode == 1) {		//Writing
@@ -437,12 +463,14 @@ void StXRefManager::Close(StXRef* xref)
 }
 
 
-//_____________________________________________________________________________
+
+
 void StXRefManager::AddColl (StProxyUrr* rarr)
 {
   fUpd = 1; fColList.push_front(rarr);
 }
-//_____________________________________________________________________________
+
+
 void StXRefManager::AddColl (const StStrArray* sarr)
 {
   int size = sarr->size();
@@ -470,7 +498,8 @@ void StXRefManager::AddColl (const StStrArray* sarr)
     *p = to;
   }
 }
-//_____________________________________________________________________________
+
+
 void StXRefManager::Update ()
 {
   if (!fUpd) return;
@@ -517,18 +546,21 @@ void StXRefManager::Update ()
   }//end List
 
 }
-//_____________________________________________________________________________
+
+
 void StXRefManager::Clear (Option_t*)
 {}
 
-//_____________________________________________________________________________
+
+
 TDataSet* StXRefManager::GetMain()
 {
   if (!fgManager) return 0;
 
   return fgManager->fMain;
 }
-//_____________________________________________________________________________
+
+
 TPageMap::TPageMap()
 {
 
@@ -539,7 +571,8 @@ TPageMap::TPageMap()
   fMinUdx = 1000000000;
   fMaxUdx = 0;
 }
-//_____________________________________________________________________________
+
+
 
 
 TPageMap::~TPageMap()
@@ -549,7 +582,8 @@ TPageMap::~TPageMap()
   for (p = fList; p ; p = n)
   { n = (ULong_t*)p[0]; free(p);}
 }
-//_____________________________________________________________________________
+
+
 ULong_t* TPageMap::NewPage()
 {
   int n = sizeof(ULong_t) * (kPAGE + 1);
@@ -558,7 +592,8 @@ ULong_t* TPageMap::NewPage()
   return p + 1;
 }
 
-//_____________________________________________________________________________
+
+
 ULong_t* TPageMap::Get(UInt_t udx)
 {
   if ((udx & kLAST) == fLstUdx) {
@@ -586,7 +621,8 @@ ULong_t* TPageMap::Get(UInt_t udx)
 
   return fLstPage + (udx & kMASK);
 }
-//_____________________________________________________________________________
+
+
 ULong_t* TPageMap::GET(UInt_t udx)
 {
   if (fMinUdx > udx) fMinUdx = udx;
@@ -613,7 +649,8 @@ ULong_t* TPageMap::GET(UInt_t udx)
 
   return fLstPage + (udx & kMASK);
 }
-//_____________________________________________________________________________
+
+
 void TPageMap::Test()
 {
   TPageMap map;

@@ -44,7 +44,8 @@
 #include "StDetectorDbMaker/St_beamInfoC.h"
 #include "St_db_Maker/St_db_Maker.h"
 #include "TUnixTime.h"
-//________________________________________________________________________________
+
+
 StTpcdEdxCorrection::StTpcdEdxCorrection(Int_t option, Int_t debug) :
   m_Mask(option), m_tpcGas(0),// m_trigDetSums(0), m_trig(0),
   m_Debug(debug)
@@ -74,7 +75,8 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(Int_t option, Int_t debug) :
 
   ReSetCorrections();
 }
-//________________________________________________________________________________
+
+
 void StTpcdEdxCorrection::ReSetCorrections()
 {
   St_tpcGas* tpcGas = (St_tpcGas*) St_tpcGasC::instance()->Table();  //
@@ -226,13 +228,15 @@ CLEAR:
     m_Corrections[kAdcCorrection         ].Chair = 0;
   }
 }
-//________________________________________________________________________________
+
+
 StTpcdEdxCorrection::~StTpcdEdxCorrection()
 {
   // Can't delete because the chairs are also used in StTpcRSMaker
   //  for (Int_t k = 0; k < kTpcAllCorrections; k++) SafeDelete(m_Corrections[k].Chair);
 }
-//________________________________________________________________________________
+
+
 Int_t  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, Bool_t doIT)
 {
   //  static const Double_t Degree2Rad = TMath::Pi()/180.;
@@ -562,7 +566,8 @@ ENDL:
   //  memcpy (&CdEdx.dE, &CdEdx.C[kTpcLast].dE, sizeof(dE_t));
   return 0;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcdEdxCorrection::dEdxTrackCorrection(Int_t type, dst_dedx_st &dedx)
 {
   Int_t ok = 0;
@@ -574,7 +579,8 @@ Int_t StTpcdEdxCorrection::dEdxTrackCorrection(Int_t type, dst_dedx_st &dedx)
 
   return ok;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcdEdxCorrection::dEdxTrackCorrection(EOptions opt, Int_t type, dst_dedx_st &dedx)
 {
   Double_t LogTrackLength = TMath::Log((Double_t) (dedx.ndedx / 100));
@@ -648,7 +654,8 @@ Int_t StTpcdEdxCorrection::dEdxTrackCorrection(EOptions opt, Int_t type, dst_ded
 
   return 0;
 }
-//________________________________________________________________________________
+
+
 void StTpcdEdxCorrection::Print(Option_t* opt) const
 {
   if (! mdEdx) return;

@@ -16,7 +16,8 @@
 #define  PrP(A)  cout << "\t" << (#A) << " = \t" << ( A )
 
 ClassImp(dEdxParameterization)
-//________________________________________________________________________________
+
+
 dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
     const Double_t MostProbableZShift,
     const Double_t AverageZShift,
@@ -108,7 +109,8 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
 
   delete pFile;
 }
-//________________________________________________________________________________
+
+
 dEdxParameterization::~dEdxParameterization()
 {
   SafeDelete(fP);
@@ -123,7 +125,8 @@ dEdxParameterization::~dEdxParameterization()
   for (Int_t i = 0; i <= KPidParticles; i++)
     for (Int_t j = 0; j < 6; j++) {SafeDelete(fTrs[i][j]);}
 }
-//________________________________________________________________________________
+
+
 void dEdxParameterization::Print()
 {
   PrP(fTag); cout << endl;
@@ -140,18 +143,21 @@ void dEdxParameterization::Print()
   PrP(fI70Shift); cout << endl;
   PrP(fI60Shift); cout << endl;
 }
-//________________________________________________________________________________
+
+
 Double_t dEdxParameterization::MostProbableZCorrection(Double_t log10bg)
 {
   static const Double_t pars[2] = {-3.68846e-03, 4.72944e+00}; // FitHzAllHist012P05id  FitH + Prof 050905
   return pars[0] * TMath::Exp(-pars[1] * log10bg);
-}//________________________________________________________________________________
+}
+
 Double_t dEdxParameterization::I70Correction(Double_t log10bg)
 {
   static const Double_t pars[2] = {-1.65714e-02, 3.27271e+00}; //  FitH70AllHist012P05id FitH + Prof 050905
   return TMath::Exp(pars[0] * TMath::Exp(-pars[1] * log10bg));
 }
-//________________________________________________________________________________
+
+
 Double_t dEdxParameterization::Get(const TH1D* hist, Double_t log10bg) const
 {
   static TH1D* hsave = 0;

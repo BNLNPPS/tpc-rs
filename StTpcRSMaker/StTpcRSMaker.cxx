@@ -86,7 +86,8 @@ static       Double_t t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in I
 static const Double_t tauC[2]   = {999.655e-9, 919.183e-9};
 TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
 TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
-//________________________________________________________________________________
+
+
 static const Int_t nx[2] = {200, 500};
 static const Double_t xmin[2] =  {-10., -6};
 static const Double_t xmax[2] =  { 10., 44};
@@ -101,9 +102,11 @@ static TH1*  checkList[2][21] = {0};
 static TProfile2D*  SecRow[15] = {0};
 #endif /* __LASERINO__ */
 static TString TpcMedium("TPCE_SENSITIVE_GAS");
-//________________________________________________________________________________
+
+
 ClassImp(StTpcRSMaker);
-//________________________________________________________________________________
+
+
 StTpcRSMaker::StTpcRSMaker(const char* name):
   StMaker(name),
   mLaserScale(1),
@@ -123,13 +126,15 @@ StTpcRSMaker::StTpcRSMaker(const char* name):
   SETBIT(m_Mode, kdEdxCorr);
   SETBIT(m_Mode, kDistortion);
 }
-//________________________________________________________________________________
+
+
 StTpcRSMaker::~StTpcRSMaker()
 {
   SafeDelete(mAltro);
   Finish();
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRSMaker::Finish()
 {
   //  SafeDelete(fTree);
@@ -155,7 +160,8 @@ Int_t StTpcRSMaker::Finish()
   m_TpcdEdxCorrection = 0;
   return StMaker::Finish();
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
 {
   if (!gStTpcDb) {
@@ -673,7 +679,8 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
   SetAttr("maxRow", St_tpcPadConfigC::instance()->numberOfRows(20));
   return kStOK;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRSMaker::Make()   //  PrintInfo();
 {
   static Int_t minSector = IAttr("minSector");
@@ -1485,7 +1492,8 @@ Int_t StTpcRSMaker::Make()   //  PrintInfo();
 
   return kStOK;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::GetNoPrimaryClusters(Double_t betaGamma, Int_t charge)
 {
   Double_t beta = betaGamma / TMath::Sqrt(1.0 + betaGamma * betaGamma);
@@ -1524,7 +1532,8 @@ Double_t StTpcRSMaker::GetNoPrimaryClusters(Double_t betaGamma, Int_t charge)
 
   return Q_eff * Q_eff * dNdx;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::ShaperFunc(Double_t* x, Double_t* par)
 {
   Double_t tau = par[0];
@@ -1537,7 +1546,8 @@ Double_t StTpcRSMaker::ShaperFunc(Double_t* x, Double_t* par)
   Double_t val = TMath::Gamma(p, t2) - TMath::Gamma(p, t1);
   return val;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::PadResponseFunc(Double_t* x, Double_t* par)
 {
   Double_t CrossTalk = 0;
@@ -1556,7 +1566,8 @@ Double_t StTpcRSMaker::PadResponseFunc(Double_t* x, Double_t* par)
 
   return Value;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::Gatti(Double_t* x, Double_t* par)
 {
   /************************************************************************
@@ -1594,7 +1605,8 @@ Double_t StTpcRSMaker::Gatti(Double_t* x, Double_t* par)
   Double_t val = ATsqK3 * (TMath::ATan(Z2) - TMath::ATan(Z1));
   return val;
 }
-//________________________________________________________________________________
+
+
 void  StTpcRSMaker::Print(Option_t* /* option */) const
 {
   PrPP(Print, NoOfSectors);
@@ -1637,7 +1649,8 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
   PrPP(Print, St_TpcResponseSimulatorC::instance()->SigmaJitterTI());
   PrPP(Print, St_TpcResponseSimulatorC::instance()->SigmaJitterTO());
 }
-//________________________________________________________________________________
+
+
 StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector)
 {
   static Int_t iBreak = 0;
@@ -1827,7 +1840,8 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector)
 
   return digitalSector;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRSMaker::AsicThresholds(Short_t ADCs[__MaxNumberOfTimeBins__])
 {
   Int_t t1 = 0;
@@ -1857,7 +1871,8 @@ Int_t StTpcRSMaker::AsicThresholds(Short_t ADCs[__MaxNumberOfTimeBins__])
 
   return noTbleft;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::InducedCharge(Double_t s, Double_t h, Double_t ra, Double_t Va, Double_t &t0)
 {
   // Calculate variation of induced charge due to different arrived angles
@@ -1905,7 +1920,8 @@ Double_t StTpcRSMaker::InducedCharge(Double_t s, Double_t h, Double_t ra, Double
 
   return r;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRSMaker::SearchT(const void* elem1, const void** elem2)
 {
   g2t_tpc_hit_st* value1 = (g2t_tpc_hit_st*) elem1;
@@ -1923,12 +1939,14 @@ Int_t StTpcRSMaker::SearchT(const void* elem1, const void** elem2)
   // track length
   return (Int_t) 100 * (value1->length - value2->length);
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRSMaker::CompareT(const void** elem1, const void** elem2)
 {
   return SearchT(*elem1, elem2);
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::fei(Double_t t, Double_t t0, Double_t T)
 {
   static const Double_t xmaxt = 708.39641853226408;
@@ -1945,7 +1963,8 @@ Double_t StTpcRSMaker::fei(Double_t t, Double_t t0, Double_t T)
 
   return TMath::Exp(-t11) * (ROOT::Math::expint(t11) - ROOT::Math::expint(t01));
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::shapeEI(Double_t* x, Double_t* par)  // does not work. It is needed to 1/s
 {
   Double_t t  = x[0];
@@ -1967,7 +1986,8 @@ Double_t StTpcRSMaker::shapeEI(Double_t* x, Double_t* par)  // does not work. It
 
   return T1 / (T1 - T2) * (fei(t, t0, T1) - fei(t, t0, T2));
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::shapeEI3(Double_t* x, Double_t* par)  // does not work. It is needed to 1/s
 {
   Double_t t  = x[0];
@@ -1999,7 +2019,8 @@ Double_t StTpcRSMaker::shapeEI3(Double_t* x, Double_t* par)  // does not work. I
 
   return value;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::shapeEI_I(Double_t* x, Double_t* par)   //Integral of shape over time bin
 {
   static Double_t sqrt2 = TMath::Sqrt(2.);
@@ -2011,7 +2032,8 @@ Double_t StTpcRSMaker::shapeEI_I(Double_t* x, Double_t* par)   //Integral of sha
   assert(io >= 0 && io <= 1);
   return sqrt2 * fgTimeShape0[io]->Integral(t1, t2) / norm;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::shapeEI3_I(Double_t* x, Double_t* par)   //Integral of shape over time bin
 {
   static Double_t sqrt2 = TMath::Sqrt(2.);
@@ -2023,7 +2045,8 @@ Double_t StTpcRSMaker::shapeEI3_I(Double_t* x, Double_t* par)   //Integral of sh
   assert(io >= 0 && io <= 1);
   return sqrt2 * fgTimeShape3[io]->Integral(t1, t2) / norm;
 }
-//________________________________________________________________________________
+
+
 SignalSum_t*  StTpcRSMaker::GetSignalSum(Int_t sector)
 {
   if (! m_SignalSum)
@@ -2031,19 +2054,22 @@ SignalSum_t*  StTpcRSMaker::GetSignalSum(Int_t sector)
 
   return m_SignalSum;
 }
-//________________________________________________________________________________
+
+
 SignalSum_t*  StTpcRSMaker::ResetSignalSum(Int_t sector)
 {
   GetSignalSum(sector);
   memset (m_SignalSum, 0, St_tpcPadConfigC::instance()->numberOfRows(sector)*NoOfPads * NoOfTimeBins * sizeof(SignalSum_t));
   return m_SignalSum;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::polya(Double_t* x, Double_t* par)
 {
   return TMath::GammaDist(x[0], par[0], par[1], par[2]);
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::Ec(Double_t* x, Double_t* p)
 {
   if (x[0] < p[0] / 2 || x[0] > 3.064 * p[0]) return 0;
@@ -2052,20 +2078,23 @@ Double_t StTpcRSMaker::Ec(Double_t* x, Double_t* p)
 
   return TMath::Power(p[0] / x[0], 4);
 }
-//________________________________________________________________________________
+
+
 TF1* StTpcRSMaker::StTpcRSMaker::fEc(Double_t w)
 {
   TF1* f = new TF1("Ec", Ec, 0, 3.064 * w, 1);
   f->SetParameter(0, w);
   return f;
 }
-//________________________________________________________________________________
+
+
 #ifndef WIN32
 # define gcomad gcomad_
 #else
 # define gcomad  GCOMAD
 #endif
-//______________________________________________________________________
+
+
 extern "C"
 {
   void type_of_call gcomad(DEFCHARD, Int_t* &DEFCHARL);
@@ -2184,7 +2213,8 @@ Float_t StTpcRSMaker::GetCutEle()
   LOG_INFO << "StTpcRSMaker::GetCutEle: specific CutEle for medium \"" << TpcMedium.Data() << "\" has not been found. Use default." << endm;
   return fGccuts->cutele;
 }
-//________________________________________________________________________________
+
+
 Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits)
 {
   static Int_t iBreak = 0;
@@ -2284,7 +2314,8 @@ Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex
   PrPP(Make, TrackSegmentHits.Pad);
   return kTRUE;
 }
-//________________________________________________________________________________
+
+
 void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, Int_t sector, Int_t rowMin, Int_t rowMax, Double_t sigmaJitterT, Double_t sigmaJitterX)
 {
   static StTpcCoordinateTransform transform(gStTpcDb);
@@ -2451,7 +2482,8 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, Int_t sector, In
     } // pad limits
   } // row limits
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
 {
   Double_t dEdxCor = 1;

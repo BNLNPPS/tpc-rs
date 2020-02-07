@@ -275,10 +275,12 @@ class StMessMgr : public ostrstream
 #endif
 };
 
-//______________________________________________________________________________
+
+
 //
 //  StTurnLogger - an aux class to simply "save/restore the "current" logger
-//______________________________________________________________________________
+
+
 class StTurnLogger
 {
  private:
@@ -295,43 +297,51 @@ R__EXTERN StMessage* gMessage;
 R__EXTERN StMessage* endm;
 // R__EXTERN StMessMgr& gMess;
 
-//______________________________________________________________________________
+
+
 inline StTurnLogger::StTurnLogger(StMessMgr* msg): fMessager(0)
 {
   if (msg) fMessager = StMessMgr::SetCurrentMessager(msg);
 }
 
-//______________________________________________________________________________
+
+
 inline StTurnLogger::StTurnLogger(const StTurnLogger &push) : fMessager(push.fMessager)
 { ((StTurnLogger*)&push)->fMessager = 0; }
 
-//______________________________________________________________________________
+
+
 inline StTurnLogger::~StTurnLogger()
 {if (fMessager) StMessMgr::SetCurrentMessager(fMessager);}
 
 
-//______________________________________________________________________________
+
+
 inline ostream &operator<<(ostream &os, StMessage* stm)
 {
   return gMessMgr->OperatorShift(os, stm);
 }
 
-//______________________________________________________________________________
+
+
 inline ostream &operator++(StMessMgr &)
 {
   return gMessMgr->Info();
 }
-//______________________________________________________________________________
+
+
 inline ostream &operator--(StMessMgr &)
 {
   return gMessMgr->Error();
 }
-//______________________________________________________________________________
+
+
 inline ostream &operator~(StMessMgr &)
 {
   return gMessMgr->out();
 }
-//______________________________________________________________________________
+
+
 inline ostream &operator-(StMessMgr &)
 {
   return gMessMgr->err();

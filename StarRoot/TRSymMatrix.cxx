@@ -5,13 +5,15 @@
 #include "TRDiagMatrix.h"
 #include "TError.h"
 ClassImp(TRSymMatrix);
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(Int_t nrows, Double_t a0, ...) :
   TRArray(nrows * (nrows + 1) / 2), fNrows(nrows)
 {
   __VA_LIST__(a0);
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(Int_t nrows, const Double_t* Array) : TRArray()
 {
   fNrows = TMath::Abs(nrows);
@@ -34,7 +36,8 @@ TRSymMatrix::TRSymMatrix(Int_t nrows, const Double_t* Array) : TRArray()
     }
   }
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(Int_t nrows, const Float_t* Array) : TRArray()
 {
   fNrows = TMath::Abs(nrows);
@@ -60,9 +63,11 @@ TRSymMatrix::TRSymMatrix(Int_t nrows, const Float_t* Array) : TRArray()
     }
   }
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(Int_t nrows, const Char_t* s) : TRArray(nrows * (nrows + 1) / 2, s), fNrows(nrows) {}
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(ETRMatrixCreatorsOp kop, Int_t nrows) :
   TRArray(nrows * (nrows + 1) / 2), fNrows(nrows)
 {
@@ -80,7 +85,8 @@ TRSymMatrix::TRSymMatrix(ETRMatrixCreatorsOp kop, Int_t nrows) :
   }
 
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(const TRSymMatrix &S, ETRMatrixCreatorsOp kop)
 {
   switch (kop) {
@@ -104,7 +110,8 @@ TRSymMatrix::TRSymMatrix(const TRSymMatrix &S, ETRMatrixCreatorsOp kop)
     Error("TRSymMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(const TRMatrix &A)
 {
   Int_t NI = A.GetNrows(); fNrows = NI;
@@ -113,7 +120,8 @@ TRSymMatrix::TRSymMatrix(const TRMatrix &A)
   Set(fNrows * (fNrows + 1) / 2);
   TCL::trpck(A.GetArray(), fArray, NI);
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRSymMatrix &S)
 {
   Int_t M, N;
@@ -141,7 +149,8 @@ TRSymMatrix::TRSymMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRSym
     Error("TRSymMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(const TRSymMatrix &Q, ETRMatrixCreatorsOp kop, const TRSymMatrix &T)
 {
   assert (kop == kRxSxR);
@@ -151,7 +160,8 @@ TRSymMatrix::TRSymMatrix(const TRSymMatrix &Q, ETRMatrixCreatorsOp kop, const TR
   Set(fNrows * (fNrows + 1) / 2);
   TCL::trqsq(Q.GetArray(), T.GetArray(), fArray, M);
 }
-//________________________________________________________________________________
+
+
 TRSymMatrix::TRSymMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop)
 {
   Int_t M, N;
@@ -177,7 +187,8 @@ TRSymMatrix::TRSymMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop)
     Error("TRSymMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 Double_t TRSymMatrix::Product(const TRVector &A, ETRMatrixCreatorsOp /* kop */)
 {
   Int_t M, N; // N == 1
@@ -190,7 +201,8 @@ Double_t TRSymMatrix::Product(const TRVector &A, ETRMatrixCreatorsOp /* kop */)
   TCL::tratsa(A.GetArray(), GetArray(), &Value, M, N);
   return Value;
 }
-//________________________________________________________________________________
+
+
 ostream &operator<<(ostream &s, const TRSymMatrix &target)
 {
   static const int width = 10;
@@ -216,9 +228,11 @@ ostream &operator<<(ostream &s, const TRSymMatrix &target)
 
   return s;
 }
-//________________________________________________________________________________
+
+
 void TRSymMatrix::Print(Option_t* opt) const {if (opt) {}; cout << *this << endl;}
-//________________________________________________________________________________
+
+
 Int_t TRSymMatrix::SpmInv(const TRSymMatrix &S, TRVector* B)
 {
   if (&S != this) *this = S;
@@ -235,7 +249,8 @@ Int_t TRSymMatrix::SpmInv(const TRSymMatrix &S, TRVector* B)
   delete [] flag;
   return nrank;
 }
-//________________________________________________________________________________
+
+
 Int_t TRSymMatrix::spminv(Double_t* v, Double_t* b, Int_t n,
                           Int_t &nrank, Double_t* diag, Bool_t* flag)
 {
@@ -373,7 +388,8 @@ L10:  Int_t nn = (n * n + n) / 2;
 
   return 0;
 }
-//________________________________________________________________________________
+
+
 Int_t TRSymMatrix::TrsInv(const Double_t* g, Double_t* gi, Int_t n)
 {
   Int_t fail = TrchLU(g, gi, n);
@@ -381,7 +397,8 @@ Int_t TRSymMatrix::TrsInv(const Double_t* g, Double_t* gi, Int_t n)
   TrsmUL(gi, gi, n);
   return fail;
 }
-//________________________________________________________________________________
+
+
 Int_t TRSymMatrix::TrchLU(const double* a, double* b, int n)
 {
   Int_t fail = 0;
@@ -449,12 +466,15 @@ L42:
 
   return fail;
 }
-//________________________________________________________________________________
+
+
 Int_t TRSymMatrix::TrInv(const Double_t* g, Double_t* gi, Int_t n)  {TCL::trinv(g, gi, n); return 0;}
-//________________________________________________________________________________
+
+
 Int_t TRSymMatrix::TrsmUL(const Double_t* g, Double_t* gi, Int_t n) {TCL::trsmul(g, gi, n); return 0;}
 #if 0
-//________________________________________________________________________________
+
+
 Double_t &TRSymMatrix::operator()(Int_t i, Int_t j)
 {
   //  assert(! (j < 0 || j >= fNrows));

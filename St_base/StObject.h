@@ -46,7 +46,8 @@ class StStrArray;
 
 enum EStObjectDrawBit { kMark2Draw = BIT(24)}; // mark object to be rendered by "EventDisplay"
 
-//_____________________________________________________________________________
+
+
 class StObject : public TObject
 {
 
@@ -69,7 +70,8 @@ class StObject : public TObject
 
 };
 
-//_____________________________________________________________________________
+
+
 //////////////////////////////////////////////////////////////////////////
 //                                                                      //
 //  StUUDGen                                                             //
@@ -97,7 +99,8 @@ class StUUId
 
 #include "TDataSet.h"
 
-//_____________________________________________________________________________
+
+
 class StXRef : public TDataSet
 {
  public:
@@ -125,7 +128,8 @@ class StXRef : public TDataSet
 
 
 
-//_____________________________________________________________________________
+
+
 class StXRefMain : public StXRef
 {
  public:
@@ -137,7 +141,8 @@ class StXRefMain : public StXRef
   ClassDef(StXRefMain, 1)
 };
 
-//_____________________________________________________________________________
+
+
 class TPageMap
 {
 
@@ -177,10 +182,12 @@ typedef list<StXRefManager*> 		StXRefManagerList;
 typedef StXRefManagerList::iterator 	StXRefManagerListIter;
 typedef vector<UInt_t> 			UIntVector;
 typedef UIntVector::iterator 		UIntVectorIter;
-//_____________________________________________________________________________
 
 
-//_____________________________________________________________________________
+
+
+
+
 class StProxyUrr : public UIntVector
 {
  public:

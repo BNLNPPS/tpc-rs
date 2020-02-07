@@ -9,19 +9,24 @@ StMessMgr* gMessMgr = 0;
 StMessage* endm     = 0;
 StMessage* gMessage = 0;
 
-//______________________________________________________________________________
+
+
 StMessMgr::StMessMgr() : ostrstream() {}
 
 //  Manager factory
 //  The default version of the manager factory provide the singleton object
-//______________________________________________________________________________
+
+
 StMessMgr*  StMessMgr::CurrentMessager() { return gMessMgr;}
-//______________________________________________________________________________
+
+
 StMessMgr*  StMessMgr::Instance() { return (gMessMgr) ? gMessMgr->Instantiate() : 0;}
-//______________________________________________________________________________
+
+
 StMessMgr*  StMessMgr::Instance(const char* loggerName)
 {return (gMessMgr) ? gMessMgr->Instantiate(loggerName) : 0; }
-//______________________________________________________________________________
+
+
 StMessMgr*  StMessMgr::SetCurrentMessager(StMessMgr* mgr)
 {
   // Set the new value for the current logger manager and return the previous one
@@ -29,33 +34,45 @@ StMessMgr*  StMessMgr::SetCurrentMessager(StMessMgr* mgr)
   gMessMgr = mgr;
   return old;
 }
-//______________________________________________________________________________
+
+
 StMessMgr*  StMessMgr::Instantiate()            {return gMessMgr;     }
-//______________________________________________________________________________
+
+
 StMessMgr*  StMessMgr::Instantiate(const char*) {return Instantiate();}
 
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isDebugEnabled()  const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isWarnEnabled()   const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isWarningEnabled()   const { return isWarnEnabled(); }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isErrorEnabled()  const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isInfoEnabled()   const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isFatalEnabled()  const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isEnabledFor()    const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isQAInfoEnabled() const { return true; }
-//______________________________________________________________________________
+
+
 bool  StMessMgr::isUCMInfoEnabled()const { return true; }
 
 //
 // C and Fortran routines:
-//________________________________________
+
+
 static const char defaultMessType = 'I';
 static char emptyString[] = "";
 static char oOpt[] = "O";
@@ -111,7 +128,8 @@ void type_of_call Message_(const char* mess, int* lines, int*, size_t len)
 
   if (del_mess) delete [] mess2;
 }
-//________________________________________
+
+
 void type_of_call Msg_Enable_(const char* mess, size_t len)
 {
   size_t messlen = strlen(mess);
@@ -126,7 +144,8 @@ void type_of_call Msg_Enable_(const char* mess, size_t len)
     gMessMgr->SwitchOn(mess);
   }
 }
-//________________________________________
+
+
 int type_of_call Msg_Enabled_(const char* mess, int*, size_t len)
 {
   size_t messlen = strlen(mess);
@@ -146,7 +165,8 @@ int type_of_call Msg_Enabled_(const char* mess, int*, size_t len)
 
   return ret_val;
 }
-//________________________________________
+
+
 void type_of_call Msg_Disable_(const char* mess, size_t len)
 {
   size_t messlen = strlen(mess);
@@ -161,12 +181,14 @@ void type_of_call Msg_Disable_(const char* mess, size_t len)
     gMessMgr->SwitchOff(mess);
   }
 }
-//________________________________________
+
+
 void type_of_call MessageOut( const char* msg )
 {
   gMessMgr->Message(msg);
 }
-//________________________________________
+
+
 void type_of_call StCaller(const char* mess, const char* typString,
                            const char* opt, size_t len)
 {
@@ -189,7 +211,8 @@ void type_of_call StCaller(const char* mess, const char* typString,
   gMessMgr->Message(mess2, typString, opt);
   delete [] mess2;
 }
-//________________________________________
+
+
 void type_of_call StCallerOpt(const char* mess, const char* typString,
                               const char* opt, size_t len1, size_t len2,
                               char* optString)
@@ -210,7 +233,8 @@ void type_of_call StCallerOpt(const char* mess, const char* typString,
 
   if (del_opt) delete [] opt2;
 }
-//________________________________________
+
+
 void type_of_call StMessage_(const char* mess, const char* type,
                              const char* opt, size_t len1,
                              size_t len2, size_t len3)
@@ -231,73 +255,86 @@ void type_of_call StMessage_(const char* mess, const char* type,
 
   if (del_type) delete [] type2;
 }
-//________________________________________
+
+
 void type_of_call StInfo_(const char* mess, size_t len)
 {
   StCaller(mess, "I", oOpt, len);
 }
-//________________________________________
+
+
 void type_of_call StWarning_(const char* mess, size_t len)
 {
   StCaller(mess, "W", eOpt, len);
 }
-//________________________________________
+
+
 void type_of_call StError_(const char* mess, size_t len)
 {
   StCaller(mess, "E", eOpt, len);
 }
-//________________________________________
+
+
 void type_of_call StDebug_(const char* mess, size_t len)
 {
   StCaller(mess, "D", oOpt, len);
 }
-//________________________________________
+
+
 void type_of_call QAInfo_(const char* mess, size_t len)
 {
   StCaller(mess, "Q", otsOpt, len);
 }
-//________________________________________
+
+
 void type_of_call UCMInfo_(const char* mess, size_t len)
 {
   StCaller(mess, "U", otsOpt, len);
 }
-//________________________________________
+
+
 void type_of_call StInfoOpt_(const char* mess, const char* opt,
                              size_t len1, size_t len2)
 {
   StCallerOpt(mess, "I", opt, len1, len2, oOpt);
 }
-//________________________________________
+
+
 void type_of_call StWarningOpt_(const char* mess, const char* opt,
                                 size_t len1, size_t len2)
 {
   StCallerOpt(mess, "W", opt, len1, len2, eOpt);
 }
-//________________________________________
+
+
 void type_of_call StErrorOpt_(const char* mess, const char* opt,
                               size_t len1, size_t len2)
 {
   StCallerOpt(mess, "E", opt, len1, len2, eOpt);
 }
-//________________________________________
+
+
 void type_of_call StDebugOpt_(const char* mess, const char* opt,
                               size_t len1, size_t len2)
 {
   StCallerOpt(mess, "D", opt, len1, len2, oOpt);
 }
-//________________________________________
+
+
 void type_of_call QAInfoOpt_(const char* mess, const char* opt,
                              size_t len1, size_t len2)
 {
   StCallerOpt(mess, "Q", opt, len1, len2, otsOpt);
 }
-//________________________________________
+
+
 void type_of_call UCMInfoOpt_(const char* mess, const char* opt,
                               size_t len1, size_t len2)
 {
   StCallerOpt(mess, "U", opt, len1, len2, otsOpt);
 }
-//________________________________________
+
+
 void type_of_call StMessAddType_(const char* type, const char* text,
                                  size_t len1, size_t len2)
 {
@@ -308,5 +345,6 @@ void type_of_call StMessAddType_(const char* type, const char* text,
   gMessMgr->AddType(type, text);
 }
 
-//_____________________________________________________________________________
+
+
 // $Id: StMessMgr.cxx,v 1.8 2016/06/16 17:52:50 genevb Exp $

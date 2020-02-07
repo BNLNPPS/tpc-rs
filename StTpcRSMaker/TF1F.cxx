@@ -1,13 +1,15 @@
 #include "StTpcRSMaker/TF1F.h"
 #include "TMath.h"
 ClassImp(TF1F);
-//________________________________________________________________________________
+
+
 void TF1F::Save(Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax, Double_t zmin, Double_t zmax)
 {
   fXmin = xmin; fXmax = xmax; fStep = 20, fdX = 1. / fStep; fNpx = TMath::Nint((fXmax - fXmin) / fdX);
   TF1::Save(xmin, xmax, ymin, ymax, zmin, zmax);
 }
-//________________________________________________________________________________
+
+
 Double_t TF1F::GetSaveL(Double_t* xx)
 {
   // Get value corresponding to X in array of fSave values
@@ -25,7 +27,8 @@ Double_t TF1F::GetSaveL(Double_t* xx)
   return y;
 #endif
 }
-//________________________________________________________________________________
+
+
 Double_t TF1F::GetSaveL(Int_t N, Double_t x, Double_t* y)
 {
   // Get values y[N] corresponding to x+i, i = [0, ..., N-1];
@@ -41,7 +44,8 @@ Double_t TF1F::GetSaveL(Int_t N, Double_t x, Double_t* y)
 
   return y[0];
 }
-//________________________________________________________________________________
+
+
 Double_t TF1F::GetSaveL(Int_t N, Double_t* x, Double_t* y)
 {
   // Get values y[N] corresponding to x[N] in array of fSave values

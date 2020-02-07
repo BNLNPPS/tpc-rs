@@ -216,9 +216,11 @@
 StTpcDb* gStTpcDb = 0;
 Bool_t StTpcDb::mOldScheme = kTRUE;
 // C++ routines:
-//_____________________________________________________________________________
+
+
 ClassImp(StTpcDb);
-//_____________________________________________________________________________
+
+
 StTpcDb::StTpcDb()
 {
   assert(gStTpcDb == 0);
@@ -245,8 +247,10 @@ StTpcDb::StTpcDb()
   mHalf[1] = new TGeoHMatrix("Default for west part of TPC");
   gStTpcDb = this;
 }
-//_____________________________________________________________________________
-//_____________________________________________________________________________
+
+
+
+
 StTpcDb::~StTpcDb()
 {
   for (Int_t i = 0; i < 24; i++) {
@@ -264,7 +268,8 @@ StTpcDb::~StTpcDb()
   gStTpcDb = 0;
 }
 #if 0
-//________________________________________________________________________________
+
+
 Float_t StTpcDb::ScaleY() {return St_tpcDriftVelocityC::instance()->scaleY();}
 //-----------------------------------------------------------------------------
 float StTpcDb::DriftVelocity(Int_t sector, Double_t Y)
@@ -382,7 +387,8 @@ void StTpcDb::SetDriftVelocity()
     mUc = uc;
   }
 }
-//_____________________________________________________________________________
+
+
 void StTpcDb::SetTpcRotations()
 {
   // Pad [== sector12 == localsector (SecL, ideal)] => subsector (SubS,local sector aligned) => flip => sector (SupS) => tpc => global

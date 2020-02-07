@@ -6,7 +6,8 @@ ClassImp(Bichsel)
 TString   Bichsel::m_Tags[kTotal] = {"P10", "Bi", "PAI"};
 dEdxParameterization* Bichsel::m_dEdxParameterizations[kTotal] = {0, 0, 0};
 Bichsel* Bichsel::fgBichsel = 0;
-//________________________________________________________________________________
+
+
 Bichsel::Bichsel(const Char_t* tag, Int_t keep3D) : m_Type(-1), m_Tag(tag), m_dEdxParameterization(0)
 {
 
@@ -20,14 +21,16 @@ Bichsel::Bichsel(const Char_t* tag, Int_t keep3D) : m_Type(-1), m_Tag(tag), m_dE
   m_dEdxParameterization = m_dEdxParameterizations[m_Type];
   fgBichsel = this;
 }
-//________________________________________________________________________________
+
+
 Bichsel* Bichsel::Instance(const Char_t* tag, Int_t keep3D)
 {
   if (!fgBichsel) new Bichsel(tag, keep3D);
 
   return fgBichsel;
 }
-//________________________________________________________________________________
+
+
 void Bichsel::Clean()
 {
   for (Int_t k = 0; k < kTotal; k++)
@@ -36,7 +39,8 @@ void Bichsel::Clean()
       m_dEdxParameterizations[k] = 0;
     }
 }
-//________________________________________________________________________________
+
+
 void Bichsel::Print()
 {
   cout << "Bichsel:: " << m_Tag << endl;

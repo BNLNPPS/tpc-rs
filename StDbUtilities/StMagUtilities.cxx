@@ -510,7 +510,8 @@ double SpaceChargeRadialDependence(double Radius)
   return ( 3191. / (Radius * Radius) + 122.5 / Radius - 0.395 ) / 15823. ;
 }
 
-//________________________________________
+
+
 
 
 ClassImp(StMagUtilities);
@@ -519,9 +520,11 @@ struct Distortion_t {
 };
 static Distortion_t D;
 static const Char_t* Dnames = {"sector:xL:yL:zL:xLC:yLC:zLC"};
-//________________________________________________________________________________
+
+
 StMagUtilities* StMagUtilities::Instance()  { return fgInstance; }
-//________________________________________________________________________________
+
+
 void    StMagUtilities::SetDoDistortionT  (TFile* f)
 {
   if (! f) return;
@@ -529,7 +532,8 @@ void    StMagUtilities::SetDoDistortionT  (TFile* f)
   f->cd();
   fgDoDistortion = new TNtuple("DoDist", "Result of DoDistrotion in TPC CS", Dnames);
 }
-//________________________________________________________________________________
+
+
 void    StMagUtilities::SetUnDoDistortionT(TFile* f)
 {
   if (! f) return;
@@ -537,7 +541,8 @@ void    StMagUtilities::SetUnDoDistortionT(TFile* f)
   f->cd();
   fgUnDoDistortion = new TNtuple("UnDoDist", "Result of UnDoDistrotion in TPC CS", Dnames);
 }
-//________________________________________________________________________________
+
+
 /// StMagUtilities constructor using the DataBase
 StMagUtilities::StMagUtilities (StTpcDb* /* dbin */, Int_t mode )
 {
@@ -587,7 +592,8 @@ StMagUtilities::StMagUtilities ( const StarMagField::EBField map, const Float_t 
 }
 
 
-//________________________________________
+
+
 
 void StMagUtilities::GetDistoSmearing (Int_t mode)
 {
@@ -596,7 +602,8 @@ void StMagUtilities::GetDistoSmearing (Int_t mode)
 }
 
 
-//________________________________________
+
+
 
 void StMagUtilities::GetMagFactor ()
 {
@@ -962,7 +969,8 @@ void StMagUtilities::GetAbortGapCharge()
   IonDriftVel        = (St_tpcSCGLC::instance()->SC())[1] ; // temporary location for these?
 }
 
-//________________________________________
+
+
 
 //  Standard maps for E and B Field Distortions ... Note: These are no longer read from a file but are listed here (JT, 2009).
 //  These maps have enough resolution for all fields except the Grid Leak Calculations.  So note that the Grid Leak calculations
@@ -1290,10 +1298,12 @@ void StMagUtilities::CommonStart ( Int_t mode )
 
 }
 
-//________________________________________
 
 
-//________________________________________
+
+
+
+
 
 
 
@@ -1489,7 +1499,8 @@ void StMagUtilities::UndoDistortion( const Float_t x[], Float_t Xprime[], Int_t 
   }
 }
 
-//________________________________________
+
+
 
 
 /// Main Entry Point for requests to DO the E and B field distortions (for simulations)
@@ -1526,7 +1537,8 @@ void StMagUtilities::DoDistortion( const Float_t x[], Float_t Xprime[], Int_t Se
 }
 
 
-//________________________________________
+
+
 
 
 /// B field distortions in 3D ( no Table ) - calculate the distortions due to the shape of the B field
@@ -1787,7 +1799,8 @@ void StMagUtilities::FastUndo2DBDistortion( const Float_t x[], Float_t Xprime[],
 }
 
 
-//________________________________________
+
+
 
 
 /// Twist distortion
@@ -1827,7 +1840,8 @@ void StMagUtilities::UndoTwistDistortion( const Float_t x[], Float_t Xprime[], I
 }
 
 
-//________________________________________
+
+
 
 
 /// Pad row 13 distortion
@@ -1943,7 +1957,8 @@ void StMagUtilities::UndoPad13Distortion( const Float_t x[], Float_t Xprime[], I
 }
 
 
-//__________________________________________
+
+
 
 
 /// PadRow 40 and/or PadRow 13 distortion correction
@@ -2595,7 +2610,8 @@ void StMagUtilities::GetGLWallData ( const Int_t select, Float_t DataInTheGap[] 
 }
 
 
-//________________________________________
+
+
 
 
 /// Clock distortion
@@ -2632,7 +2648,8 @@ void StMagUtilities::UndoClockDistortion( const Float_t x[], Float_t Xprime[], I
 }
 
 
-//________________________________________
+
+
 
 
 /// Membrane distortion
@@ -2676,7 +2693,8 @@ void StMagUtilities::UndoMembraneDistortion( const Float_t x[], Float_t Xprime[]
 }
 
 
-//________________________________________
+
+
 
 
 /// Endcap distortion
@@ -2720,7 +2738,8 @@ void StMagUtilities::UndoEndcapDistortion( const Float_t x[], Float_t Xprime[], 
 }
 
 
-//________________________________________
+
+
 
 
 /// IFC Shift Distortion
@@ -2810,7 +2829,8 @@ void StMagUtilities::UndoIFCShiftDistortion( const Float_t x[], Float_t Xprime[]
 }
 
 
-//________________________________________
+
+
 
 
 /// Space Charge entry function
@@ -2836,7 +2856,8 @@ void StMagUtilities::UndoSpaceChargeDistortion( const Float_t x[], Float_t Xprim
 }
 
 
-//________________________________________
+
+
 
 
 /// Space Charge Correction
@@ -2930,7 +2951,8 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const Float_t x[], Float_t Xpr
 }
 
 
-//________________________________________
+
+
 
 
 /// 1/R**2 SpaceCharge Distortion
@@ -3078,7 +3100,8 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const Float_t x[], Float_t Xpr
 }
 
 
-//________________________________________
+
+
 
 
 /// Abort Gap Cleaning Cycle space charge correction
@@ -3289,7 +3312,8 @@ void StMagUtilities::UndoAbortGapDistortion( const Float_t x[], Float_t Xprime[]
 }
 
 
-//________________________________________
+
+
 
 
 /// Shorted Ring Distortion
@@ -3502,7 +3526,8 @@ void StMagUtilities::UndoShortedRingDistortion( const Float_t x[], Float_t Xprim
 }
 
 
-//________________________________________
+
+
 
 
 /// Gated Grid Voltage Error
@@ -3603,7 +3628,8 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const Float_t x[], Float_t Xprim
 
 }
 
-//________________________________________
+
+
 
 /// Interpolate a 2D table - 2D interpolation within a 2D TMatrix
 Float_t StMagUtilities::Interpolate2DTable( const Int_t ORDER, const Float_t x, const Float_t y, const Int_t nx, const Int_t ny,
@@ -3743,9 +3769,11 @@ Float_t StMagUtilities::Interpolate3DTable ( const Int_t ORDER, const Float_t x,
 }
 
 
-//________________________________________
 
-//________________________________________
+
+
+
+
 
 
 /// Solve Poisson's Equation by Relaxation Technique
@@ -3985,7 +4013,8 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
 }
 
 
-//________________________________________
+
+
 
 
 /// 3D - Solve Poisson's Equation in 3D by Relaxation Technique
@@ -4336,7 +4365,8 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
 
 }
 
-//________________________________________
+
+
 
 
 /// Convert from the old (Uniform) space charge correction to the new (1/R**2) space charge correction.
@@ -4526,7 +4556,8 @@ void StMagUtilities::FixSpaceChargeDistortion ( const Int_t Charge, const Float_
 }
 
 
-//________________________________________
+
+
 
 
 
@@ -5438,7 +5469,8 @@ Int_t StMagUtilities::PredictSpaceChargeDistortion (Int_t NHits, Int_t Charge, F
 }
 
 
-//________________________________________
+
+
 
 /// Check if integer is a power of 2
 
@@ -5454,7 +5486,8 @@ Int_t StMagUtilities::IsPowerOfTwo(Int_t i)
 }
 
 
-//________________________________________
+
+
 
 /// Calculate Sector Number from coordinate position if not already known.
 /*!
@@ -5495,7 +5528,8 @@ Int_t StMagUtilities::SectorSide( Int_t &Sector, const Float_t z )
 }
 
 
-//________________________________________
+
+
 
 /// Limit z based on Sector Number
 /*!
@@ -5515,7 +5549,8 @@ Float_t StMagUtilities::LimitZ( Int_t &Sector, const Float_t x[] )
 }
 
 
-//________________________________________
+
+
 
 /// Grid Leakage entry function
 /*!
@@ -5545,7 +5580,8 @@ void StMagUtilities::UndoGridLeakDistortion( const Float_t x[], Float_t Xprime[]
 }
 
 
-//________________________________________
+
+
 
 /// Grid Leakage Calculation
 /*!
@@ -5658,7 +5694,8 @@ void StMagUtilities::Undo2DGridLeakDistortion( const Float_t x[], Float_t Xprime
 }
 
 
-//________________________________________
+
+
 
 
 /// 3D GridLeak Distortion Calculation
@@ -5873,7 +5910,8 @@ void StMagUtilities::Undo3DGridLeakDistortion( const Float_t x[], Float_t Xprime
 
 }
 
-//________________________________________
+
+
 
 
 /// Full GridLeak Distortion Calculation
@@ -6125,7 +6163,8 @@ void StMagUtilities::UndoFullGridLeakDistortion( const Float_t x[], Float_t Xpri
 
 }
 
-//________________________________________
+
+
 
 
 /// 3D Sector Alignment Distortion Calculation
@@ -6412,7 +6451,8 @@ void StMagUtilities::UndoSectorAlignDistortion( const Float_t x[], Float_t Xprim
 }
 
 
-//________________________________________
+
+
 
 // Must call IterationFailCount once to initialize it
 // before it starts counting (will return a negative number)
@@ -6426,7 +6466,8 @@ Int_t StMagUtilities::IterationFailCount()
   return temp;
 
 }
-//________________________________________________________________________________
+
+
 void StMagUtilities::BFieldTpc ( const Float_t xTpc[], Float_t BTpc[], Int_t Sector )
 {
   if (StTpcDb::IsOldScheme()) {
@@ -6448,7 +6489,8 @@ void StMagUtilities::BFieldTpc ( const Float_t xTpc[], Float_t BTpc[], Int_t Sec
     BTpc[2] = BTpcL[2];
   }
 }
-//________________________________________________________________________________
+
+
 void StMagUtilities::B3DFieldTpc ( const Float_t xTpc[], Float_t BTpc[], Int_t Sector )
 {
   if (StTpcDb::IsOldScheme()) {
@@ -6458,4 +6500,5 @@ void StMagUtilities::B3DFieldTpc ( const Float_t xTpc[], Float_t BTpc[], Int_t S
     BFieldTpc(xTpc, BTpc, Sector);
   }
 }
-//________________________________________________________________________________
+
+

@@ -4,7 +4,8 @@
 #include "TError.h"
 #include "TString.h"
 ClassImp(TRMatrix);
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(const TRMatrix &S, Int_t NI, Int_t NJ, Int_t I, Int_t J)
 {
   if (NI == 0) NI = S.NI();
@@ -44,25 +45,29 @@ TRMatrix::TRMatrix(const TRMatrix &S, Int_t NI, Int_t NJ, Int_t I, Int_t J)
     for (int j = 0; j < fNcols; j++)
       fArray[j + i * fNcols] = Array[J + j - 1 + (I + i - 1) * S.NJ()];
 }
-//________________________________________________________________________________
+
+
 TRMatrix &TRMatrix::operator=(const TRMatrix &rhs)
 {
   if (this != &rhs) SetMatrix(rhs.GetNrows(), rhs.GetNcols(), rhs.GetArray());
 
   return *this;
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(Int_t nrows, Int_t ncols, Double_t a0, ...) :
   TRArray(nrows * ncols), fNrows(nrows), fNcols(ncols)
 {
   __VA_LIST__(a0);
 }
-//________________________________________________________________________________
+
+
 void TRMatrix::SetMatrix(Int_t nrows, Int_t ncols, const  Double_t* array)
 {
   fNrows = nrows; fNcols = ncols; Set(fNrows * fNcols, array);
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(ETRMatrixCreatorsOp kop, Int_t nrows):
   TRArray(nrows * nrows), fNrows(nrows), fNcols(nrows)
 {
@@ -79,7 +84,8 @@ TRMatrix::TRMatrix(ETRMatrixCreatorsOp kop, Int_t nrows):
     Error("TRMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop)
 {
   switch (kop) {
@@ -94,7 +100,8 @@ TRMatrix::TRMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop)
     Error("TRMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRMatrix &B):  TRArray(0)
 {
   Int_t NI, NJ, NK;
@@ -159,7 +166,8 @@ TRMatrix::TRMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRMatrix &B
 
   }
 }
-//________________________________________________________________________________
+
+
 void TRMatrix::Add(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRMatrix &B)
 {
   Int_t NI, NJ, NK;
@@ -205,7 +213,8 @@ void TRMatrix::Add(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRMatrix &B
     Error("TRMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 void TRMatrix::Substruct(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRMatrix &B)
 {
   Int_t NI, NJ, NK;
@@ -251,7 +260,8 @@ void TRMatrix::Substruct(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRMat
     Error("TRMatrix(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(const TRSymMatrix &S, ETRMatrixCreatorsOp kop, const TRMatrix &A)
 {
   Int_t M, N; // A[M,N], B[N,M]], C[M,N], S[M,M], R[N,N]
@@ -281,7 +291,8 @@ TRMatrix::TRMatrix(const TRSymMatrix &S, ETRMatrixCreatorsOp kop, const TRMatrix
     Error("TRMatrix SxA (ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRSymMatrix &S)
 {
   Int_t M, N; // A[M,N], B[N,M]], C[M,N], S[M,M], R[N,N]
@@ -311,7 +322,8 @@ TRMatrix::TRMatrix(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRSymMatrix
     Error("TRMatrix AxS (ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRMatrix::TRMatrix(const TRSymMatrix &S)
 {
   Int_t M = S.GetNcols();
@@ -320,7 +332,8 @@ TRMatrix::TRMatrix(const TRSymMatrix &S)
   Set(fNrows * fNcols);
   TCL::trupck(S.GetArray(), fArray, M);
 }
-//________________________________________________________________________________
+
+
 std::ostream &operator<<(std::ostream &s, const TRMatrix &target)
 {
   Int_t Nrows = target.GetNrows();
@@ -353,5 +366,6 @@ std::ostream &operator<<(std::ostream &s, const TRMatrix &target)
 
   return s;
 }
-//________________________________________________________________________________
+
+
 void TRMatrix::Print(Option_t* opt) const {if (opt) {}; std::cout << *this << std::endl;}

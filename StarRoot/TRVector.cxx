@@ -4,16 +4,21 @@
 #include "TError.h"
 #include "TString.h"
 ClassImp(TRVector);
-//________________________________________________________________________________
+
+
 TRVector::TRVector(Int_t nrows):    TRMatrix(nrows, 1) {;}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(Int_t nrows, const Double_t* fArray): TRMatrix(nrows, 1, fArray) {;}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(Int_t nrows, const Float_t* fArray): TRMatrix(nrows, 1, fArray) {;}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const TRMatrix &A, ETRMatrixCreatorsOp kop, const TRVector &B) :
   TRMatrix(A, kop, B) {}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const TRMatrix &S, Int_t I)  // get I'th row
 {
   if (I == 0) {
@@ -30,7 +35,8 @@ TRVector::TRVector(const TRMatrix &S, Int_t I)  // get I'th row
   fNcols = 1;
   Set(fNrows, S.GetArray() + S.NJ() * (I - 1));
 }
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const TRVector &A, ETRMatrixCreatorsOp kop, const TRMatrix &B)
 {
   Int_t NI, NJ, NK;
@@ -49,32 +55,39 @@ TRVector::TRVector(const TRVector &A, ETRMatrixCreatorsOp kop, const TRMatrix &B
     Error("TRVector(ETRMatrixCreatorsOp)", "operation %d not yet implemented", kop);
   }
 }
-//________________________________________________________________________________
+
+
 TRVector::TRVector(Int_t nrows, const Char_t* s): TRMatrix(nrows, 1, s) {;}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const TRSymMatrix &S, ETRMatrixCreatorsOp kop, const TRVector &A) :
   TRMatrix(S, kop, A) {;}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const TRVector &A, ETRMatrixCreatorsOp kop, const TRSymMatrix &S) :
   TRMatrix(A, kop, S) {;}
-//________________________________________________________________________________
+
+
 TRVector::TRVector(Int_t nrows, Double_t a0, ...) : TRMatrix(nrows, 1)
 {
   __VA_LIST__(a0);
 }
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const TVector3 &A) : TRMatrix(3, 1)
 {
   Double_t xyz[3];
   A.GetXYZ(xyz);
   Set(3, xyz);
 }
-//________________________________________________________________________________
+
+
 TRVector::TRVector(const StThreeVectorD &A) : TRMatrix(3, 1)
 {
   Set(3, A.xyz());
 }
-//________________________________________________________________________________
+
+
 TRVector &TRVector::operator=(const TVector3 &A)
 {
   Double_t xyz[3];
@@ -84,7 +97,8 @@ TRVector &TRVector::operator=(const TVector3 &A)
   fNcols = 1;
   return *this;
 }
-//________________________________________________________________________________
+
+
 TRVector &TRVector::operator=(const StThreeVectorD &A)
 {
   Set(3, A.xyz());
@@ -92,7 +106,8 @@ TRVector &TRVector::operator=(const StThreeVectorD &A)
   fNcols = 1;
   return *this;
 }
-//________________________________________________________________________________
+
+
 ostream &operator<<(ostream &s, const TRVector &target)
 {
   Int_t Nrows = target.GetNrows();
@@ -106,9 +121,11 @@ ostream &operator<<(ostream &s, const TRVector &target)
   //  s << endl;
   return s;
 }
-//________________________________________________________________________________
+
+
 void TRVector::Print(Option_t* opt) const {if (opt) {}; cout << *this << endl;}
-//________________________________________________________________________________
+
+
 TRVector TRVector::Cross(const TRVector &v) const
 {
   assert(fNrows == 3 && fNcols == 1 && v.GetNrows() == 3 && v.GetNcols() == 1);
@@ -116,7 +133,8 @@ TRVector TRVector::Cross(const TRVector &v) const
   TMath::Cross(GetArray(), v.GetArray(), out.GetArray());
   return out;
 }
-//________________________________________________________________________________
+
+
 TRVector TRVector::Unit() const
 {
   Double_t Norm = TMath::Sqrt((*this) * (*this));

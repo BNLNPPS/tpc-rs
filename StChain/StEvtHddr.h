@@ -98,11 +98,13 @@ class StEvtHddr : public TDataSet
   ClassDef(StEvtHddr, 3)                  // Event header
 };
 
-//__________________________________________________________________________________
+
+
 inline  StEvtHddr::StEvtHddr(const StEvtHddr &hddr, const char* name): TDataSet(name, "")
 { operator=(hddr); }
 
-//__________________________________________________________________________________
+
+
 struct EvtHddr_st {
   Int_t	mRunNumber;
   Int_t	mOldRunNumber;		//!

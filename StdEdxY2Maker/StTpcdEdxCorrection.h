@@ -11,7 +11,8 @@
 #include "StEvent/StTrackPidTraits.h"
 //class St_trigDetSums;
 //class trigDetSums_st;
-//________________________________________________________________________________
+
+
 struct dE_t {
  public:
   Float_t dE;
@@ -20,7 +21,8 @@ struct dE_t {
   Float_t dEdxL;
   Float_t dEdxN;
 };
-//________________________________________________________________________________
+
+
 struct dEdxCorrection_t {
   dEdxCorrection_t(const Char_t* name = "", const  Char_t* title = "", TChair* chair = 0, Int_t n = 0) :
     Name(name), Title(title), Chair(chair), nrows(n), dE(0) {}
@@ -30,7 +32,8 @@ struct dEdxCorrection_t {
   Int_t   nrows;
   Float_t dE;
 };
-//________________________________________________________________________________
+
+
 class dEdxY2_t;
 class StTpcdEdxCorrection : public TObject
 {
@@ -108,7 +111,8 @@ class StTpcdEdxCorrection : public TObject
   dEdxCorrection_t     m_Corrections[kTpcAllCorrections];//!
   Int_t                m_Debug;                 //!
 };
-//________________________________________________________________________________
+
+
 class dEdxY2_t
 {
  public:

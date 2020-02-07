@@ -136,7 +136,8 @@ class StMaker : public TDataSet
 
   //  called WhiteBoard(name,&ptr)
   virtual TDataSet* WhiteBoard  (const char* name, void* v = 0) const;
-  //______________________________________________________________________________
+  
+
   virtual Int_t        Skip(Int_t nskip);     //Skip events
 
   virtual void         AddConst(TDataSet* data = 0) {AddData(data, ".const");}

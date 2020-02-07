@@ -172,7 +172,8 @@ To do:  <br>
 #include <string>
 #include "TMath.h"
 StarMagField* StarMagField::fgInstance = 0;
-//________________________________________________________________________________
+
+
 
 #define agufld           F77_NAME(agufld,AGUFLD)
 #define mfldgeo          F77_NAME(mfldgeo,MFLDGEO)
@@ -184,9 +185,11 @@ StarMagField* StarMagField::fgInstance = 0;
 #include "TEnv.h"
 ClassImp(StarMagField);
 #endif
-//________________________________________________________________________________
+
+
 StarMagField* StarMagField::Instance() {return fgInstance;}
-//________________________________________________________________________________
+
+
 R__EXTERN  "C" {
 
   Float_t type_of_call agufld(Float_t* x, Float_t* bf)
@@ -202,7 +205,8 @@ R__EXTERN  "C" {
 
     return 0;
   }
-  //________________________________________________________________________________
+  
+
   void type_of_call mfldgeo(Float_t &factor)
   {
     if (StarMagField::Instance()) {
@@ -218,7 +222,8 @@ R__EXTERN  "C" {
     printf("StarMagField:mfldgeo(%g) Bz=%g\n", factor, b[2]);
   }
 }
-//________________________________________________________________________________
+
+
 struct BFLD_t {
   Int_t version;
   const Char_t* code;
@@ -504,14 +509,16 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
   },// Radial
 };
 #ifdef __ROOT__
-//________________________________________________________________________________
+
+
 void StarMagField::SetStarMagFieldRotation(TGeoRotation &rot)
 {
   fStarMagFieldRotation = rot;
   fStarMagFieldRotation.SetName("StarMagFieldRotation");
   fStarMagFieldRotation.Print();
 }
-//________________________________________________________________________________
+
+
 void StarMagField::SetStarMagFieldRotation(Double_t* r)
 {
   TGeoRotation rot;
@@ -522,7 +529,8 @@ void StarMagField::SetStarMagFieldRotation(Double_t* r)
 
 bool StarMagField::mConstBz = false;
 
-//________________________________________________________________________________
+
+
 StarMagField::StarMagField ( EBField map, Float_t factor,
                              Bool_t lock, Float_t rescale,
                              Float_t BDipole, Float_t RmaxDip,
@@ -559,7 +567,8 @@ StarMagField::StarMagField ( EBField map, Float_t factor,
   fStarMagFieldRotation = TGeoRotation("StarMagFieldRotation");
 #endif /* __ROOT__ */
 }
-//________________________________________
+
+
 /// B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
 void StarMagField::BField( const Double_t x[], Double_t B[] )
 {
@@ -568,7 +577,8 @@ void StarMagField::BField( const Double_t x[], Double_t B[] )
   BField(xx, bb);
   B[0] = bb[0]; B[1] = bb[1]; B[2] = bb[2];
 }
-//________________________________________________________________________________
+
+
 void StarMagField::BField( const Float_t x[], Float_t B[] )
 
 {
@@ -683,7 +693,8 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
   // cout<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<endl;
   return;
 }
-//________________________________________________________________________________
+
+
 /// Bfield in Cartesian coordinates - 3D field
 void StarMagField::B3DField( const Float_t x[], Float_t B[] )
 {
@@ -798,7 +809,8 @@ void StarMagField::BrBz3DField( const Float_t r, const Float_t z, const Float_t 
 }
 
 
-//________________________________________
+
+
 
 /// Read the electric and magnetic field maps stored on disk
 
@@ -1043,7 +1055,8 @@ void StarMagField::ReadField( )
 }
 
 
-//________________________________________
+
+
 
 /// Interpolate the B field map - 2D interpolation
 
@@ -1081,7 +1094,8 @@ void StarMagField::Interpolate2DBfield( const Float_t r, const Float_t z, Float_
   Bz_value  = fscale * Interpolate( &ZList[jlow], save_Bz, ORDER, z )   ;
 
 }
-//________________________________________________________________________________
+
+
 void StarMagField::Interpolate2ExtDBfield( const Float_t r, const Float_t z, Float_t &Br_value, Float_t &Bz_value )
 {
   static Float_t ZExtList[nZext];
@@ -1260,7 +1274,8 @@ void StarMagField::Interpolate3DBSteelfield( const Float_t r, const Float_t z, c
 
 //end added by Lijuan
 
-//________________________________________
+
+
 #if 0
 /// Interpolate the E field map - 2D interpolation
 
@@ -1337,7 +1352,8 @@ void StarMagField::Interpolate3DEdistortion( const Float_t r, const Float_t phi,
 }
 #endif
 
-//________________________________________
+
+
 
 /// Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
 
@@ -1369,7 +1385,8 @@ Float_t StarMagField::Interpolate( const Float_t Xarray[], const Float_t Yarray[
 }
 
 
-//________________________________________
+
+
 
 /// Search an ordered table by starting at the most recently used point
 
@@ -1427,7 +1444,8 @@ void StarMagField::Search( Int_t N, const Float_t Xarray[], Float_t x, Int_t &lo
   if ( x == Xarray[0]   ) low = 0 ;
 
 }
-//________________________________________________________________________________
+
+
 #define PPLOCK(A) \
   void StarMagField::Set ## A (Float_t m) {				\
     if (!fLock) f ## A  = m;					\
@@ -1440,7 +1458,8 @@ PPLOCK(RmaxDip)
 PPLOCK(ZminDip)
 PPLOCK(ZmaxDip)
 #undef PPLOCK
-//________________________________________________________________________________
+
+
 void StarMagField::SetLock ()
 {
   if (! fLock) {
@@ -1449,7 +1468,8 @@ void StarMagField::SetLock ()
     Print();
   }
 }
-//________________________________________________________________________________
+
+
 #define PrintPar(A) printf("StarMagField:: "#A"\t%f\n",f ## A)
 void StarMagField::Print (Option_t*) const
 {
