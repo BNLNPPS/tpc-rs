@@ -149,13 +149,6 @@ class StTpcRSMaker
   const Int_t NoOfPads;               //!
   const Int_t NoOfTimeBins;           //!
   Double_t   mCutEle;                 //! cut for delta electrons
- public:
-  virtual const char* GetCVS() const
-  {
-    static const char cvs[] =
-      "Tag $Name:  $ $Id: StTpcRSMaker.h,v 1.33 2018/12/09 23:22:59 fisyak Exp $ built " __DATE__ " " __TIME__ ;
-    return cvs;
-  }
   ClassDef(StTpcRSMaker, 0)  //StAF chain virtual base class for Makers
 };
 #endif
