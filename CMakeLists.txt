@@ -22,7 +22,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_definitions(-Wfatal-errors)
 
 # This library depends on ROOT
-find_package(ROOT REQUIRED COMPONENTS Table)
+find_package(ROOT REQUIRED COMPONENTS Table MathMore)
 
 include_directories(
 	${ROOT_INCLUDE_DIR}
