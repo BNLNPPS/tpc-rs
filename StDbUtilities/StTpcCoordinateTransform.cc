@@ -26,6 +26,7 @@
 #include "tpcrs/logger.h"
 
 static Int_t _debug = 0;
+
 StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer */)
 {
   if (St_tpcPadConfigC::instance()

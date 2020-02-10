@@ -97,7 +97,7 @@ float StTpcDb::DriftVelocity(Int_t sector, Double_t Y)
   return 1e6 * mDriftVel[kase] * (1 + ScaleY() * Y);
 }
 #else
-//-----------------------------------------------------------------------------
+
 float StTpcDb::DriftVelocity(Int_t sector)
 {
   static UInt_t u2007 = TUnixTime(20070101, 0, 1).GetUTime(); //
@@ -112,7 +112,7 @@ float StTpcDb::DriftVelocity(Int_t sector)
   return 1e6 * mDriftVel[kase];
 }
 #endif
-//-----------------------------------------------------------------------------
+
 void StTpcDb::SetDriftVelocity()
 {
   static UInt_t u0 = 0; // beginTime of current Table

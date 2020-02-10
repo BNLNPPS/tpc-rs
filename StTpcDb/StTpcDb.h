@@ -88,7 +88,6 @@ class StTpcDb
 #if 0
   Float_t                ScaleY();
 #endif
-  //small pieces of data:
   void    SetDriftVelocity();
 #if 0
   Float_t DriftVelocity(Int_t sector = 24, Double_t Y = 0);
