@@ -54,7 +54,6 @@ class TF1F : public TF1
   Double_t fXmax;
   Double_t fdX;
   Int_t    fStep;
-  ClassDef(TF1F, 1)
 
 };
 #endif

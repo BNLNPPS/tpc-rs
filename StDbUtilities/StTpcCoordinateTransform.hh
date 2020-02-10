@@ -272,7 +272,6 @@ class StTpcCoordinateTransform  //: public StObject {
   Int_t       mNoOfInnerRows;
   Int_t       mNoOfRows;
 
-  //  ClassDef(StTpcCoordinateTransform,0) //
 };
 
 #endif

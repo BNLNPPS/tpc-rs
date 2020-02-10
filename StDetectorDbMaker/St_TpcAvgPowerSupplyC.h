@@ -45,6 +45,5 @@ class St_TpcAvgPowerSupplyC : public TChair
  private:
   static St_TpcAvgPowerSupplyC* fgInstance;
   ClassDefChair(St_TpcAvgPowerSupply, TpcAvgPowerSupply_st )
-  ClassDef(St_TpcAvgPowerSupplyC, 1) //C++ TChair for TpcAvgPowerSupply table class
 };
 #endif

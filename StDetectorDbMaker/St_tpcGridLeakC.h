@@ -53,6 +53,5 @@ class St_tpcGridLeakC : public TChair {
  private:
   static St_tpcGridLeakC* fgInstance;
   ClassDefChair(St_tpcGridLeak, tpcGridLeak_st )
-  ClassDef(St_tpcGridLeakC,1) //C++ TChair for tpcGridLeak table class
 };
 #endif

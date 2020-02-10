@@ -17,6 +17,5 @@ class St_tpcSectorT0offsetC : public TChair {
  private:
   static St_tpcSectorT0offsetC* fgInstance;
   ClassDefChair(St_tpcSectorT0offset, tpcSectorT0offset_st )
-  ClassDef(St_tpcSectorT0offsetC,1) //C++ TChair for tpcSectorT0offset table class
 };
 #endif

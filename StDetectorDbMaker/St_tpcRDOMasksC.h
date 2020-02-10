@@ -52,6 +52,5 @@ class St_tpcRDOMasksC : public TChair
  private:
   static St_tpcRDOMasksC* fgInstance;
   ClassDefChair(St_tpcRDOMasks, tpcRDOMasks_st )
-  ClassDef(St_tpcRDOMasksC, 1) //C++ TChair for tpcRDOMasks table class
 };
 #endif

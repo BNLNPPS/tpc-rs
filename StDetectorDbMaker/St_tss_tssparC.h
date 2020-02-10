@@ -59,6 +59,5 @@ class St_tss_tssparC : public TChair
  private:
   static St_tss_tssparC* fgInstance;
   ClassDefChair(St_tss_tsspar, tss_tsspar_st )
-  ClassDef(St_tss_tssparC, 1) //C++ TChair for tss_tsspar table class
 };
 #endif

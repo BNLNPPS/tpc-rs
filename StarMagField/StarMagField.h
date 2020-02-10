@@ -193,7 +193,6 @@ class StarMagField
   void  SetStarMagFieldRotation(TGeoRotation &rot);
   void  SetStarMagFieldRotation(Double_t* rot);
   const TGeoRotation &StarMagFieldRotation() {return * &fStarMagFieldRotation;}
-  ClassDef(StarMagField, 1)   // Base class for all STAR MagField
 #endif
 };
 

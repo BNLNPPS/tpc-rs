@@ -30,6 +30,5 @@ class St_tpcSlowControlSimC : public TChair
  private:
   static St_tpcSlowControlSimC* fgInstance;
   ClassDefChair(St_tpcSlowControlSim, tpcSlowControlSim_st )
-  ClassDef(St_tpcSlowControlSimC, 1) //C++ TChair for tpcSlowControlSim table class
 };
 #endif

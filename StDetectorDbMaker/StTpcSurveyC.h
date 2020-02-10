@@ -10,7 +10,6 @@ class StTpcInnerSectorPosition : public St_SurveyC {// Inner part of sector to S
   virtual ~StTpcInnerSectorPosition() {fgInstance = 0;}
  private:
   static StTpcInnerSectorPosition* fgInstance;
-  ClassDef(StTpcInnerSectorPosition,1) //C++ TChair for TpcInnerSectorPosition
 };
 class StTpcOuterSectorPosition : public St_SurveyC {// Outer part of sector to Super Sector
  public:
@@ -19,7 +18,6 @@ class StTpcOuterSectorPosition : public St_SurveyC {// Outer part of sector to S
   virtual ~StTpcOuterSectorPosition() {fgInstance = 0;}
  private:
   static StTpcOuterSectorPosition* fgInstance;
-  ClassDef(StTpcOuterSectorPosition,1) //C++ TChair for TpcOuterSectorPosition
 };
 
 class StTpcSuperSectorPosition : public St_SurveyC {// Extra rotation for whole Super Sector to half Tpc
@@ -29,7 +27,6 @@ class StTpcSuperSectorPosition : public St_SurveyC {// Extra rotation for whole 
   virtual ~StTpcSuperSectorPosition() {fgInstance = 0;}
  private:
   static StTpcSuperSectorPosition* fgInstance;
-  ClassDef(StTpcSuperSectorPosition,1) //C++ TChair for TpcSuperSectorPosition
 };
 
 class StTpcHalfPosition : public St_SurveyC {// Extra rotation for half of Tpc  to Tpc
@@ -44,7 +41,6 @@ class StTpcHalfPosition : public St_SurveyC {// Extra rotation for half of Tpc  
   static void Normalize(TGeoHMatrix &R) {}
  private:
   static StTpcHalfPosition* fgInstance;
-  ClassDef(StTpcHalfPosition,1) //C++ TChair for TpcHalfPosition
 };
 
 class StTpcPosition : public St_SurveyC {// Global position of TPC in Magnet
@@ -55,6 +51,5 @@ class StTpcPosition : public St_SurveyC {// Global position of TPC in Magnet
   const TGeoHMatrix  &GetMatrix() {return  St_SurveyC::GetMatrix(0);}
  private:
   static StTpcPosition* fgInstance;
-  ClassDef(StTpcPosition,1) //C++ TChair for TpcPosition
 };
 #endif

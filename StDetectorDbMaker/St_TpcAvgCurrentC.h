@@ -38,6 +38,5 @@ class St_TpcAvgCurrentC : public TChair
  private:
   static St_TpcAvgCurrentC* fgInstance;
   ClassDefChair(St_TpcAvgCurrent, TpcAvgCurrent_st )
-  ClassDef(St_TpcAvgCurrentC, 1) //C++ TChair for TpcAvgCurrent table class
 };
 #endif

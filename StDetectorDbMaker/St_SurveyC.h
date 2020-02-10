@@ -45,6 +45,5 @@ class St_SurveyC : public TChair {
  private:
   TGeoHMatrix  **fRotations;
   ClassDefChair(St_Survey, Survey_st )
-  ClassDef(St_SurveyC,1) //C++ TChair for Survey table class
 };
 #endif

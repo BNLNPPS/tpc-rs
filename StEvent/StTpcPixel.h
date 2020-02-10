@@ -76,7 +76,6 @@ class StTpcPixel : public StObject
   Int_t     mIdTruth;
   Short_t   mId; // Cluster Id
 
-  ClassDef(StTpcPixel, 2)  //StTpcPixel structure
 };
 
 inline unsigned char   StTpcPixel::detector() const {return mDetector;}

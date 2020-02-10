@@ -141,7 +141,6 @@ class StTpcRSMaker
   const Int_t NoOfPads;               //!
   const Int_t NoOfTimeBins;           //!
   Double_t   mCutEle;                 //! cut for delta electrons
-  ClassDef(StTpcRSMaker, 0)  //StAF chain virtual base class for Makers
 };
 #endif
 // $Id: StTpcRSMaker.h,v 1.33 2018/12/09 23:22:59 fisyak Exp $

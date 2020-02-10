@@ -557,7 +557,6 @@ class StMagUtilities
 
 
 
-  ClassDef(StMagUtilities, 1)   // Base class for all STAR MagField
 
 };
 

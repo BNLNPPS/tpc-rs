@@ -110,6 +110,5 @@ class St_trigDetSumsC : public TChair
   }
 
   ClassDefChair(St_trigDetSums, trigDetSums_st )
-  ClassDef(St_trigDetSumsC, 3) //C++ TChair for trigDetSums table class
 };
 #endif

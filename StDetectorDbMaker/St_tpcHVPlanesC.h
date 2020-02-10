@@ -11,6 +11,5 @@ class St_tpcHVPlanesC : public TChair {
   virtual ~St_tpcHVPlanesC() {fgInstance = 0;}
  private:
   static St_tpcHVPlanesC* fgInstance;
-  ClassDef(St_tpcHVPlanesC,1)
 };
 #endif

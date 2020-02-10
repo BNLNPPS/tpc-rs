@@ -59,6 +59,5 @@ class St_tpcChargeEventC : public TChair {
   TArrayF localStoreCharges; //!
   TArrayD localStoreTimesSinceCharges; //!
   static St_tpcChargeEventC* fgInstance;
-  ClassDef(St_tpcChargeEventC,1)
 };
 #endif

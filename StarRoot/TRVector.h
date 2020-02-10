@@ -37,7 +37,6 @@ class TRVector : public TRMatrix
   //  void Add(const TRMatrix& A, ETRMatrixCreatorsOp kop,con.xst  TRVector& B);
   //  void Substruct(const TRMatrix& A, ETRMatrixCreatorsOp kop,const  TRVector& B);
   virtual void   Print(Option_t* opt = "") const;
-  ClassDef(TRVector, 1) // TRMatrix class (double precision)
 };
 ostream &operator<<(ostream &s, const TRVector &target);
 #endif

@@ -56,7 +56,6 @@ class TRMatrix : public TRArray
   friend TRMatrix operator+(Double_t scalar, const TRMatrix &source) {TRMatrix s(source); s += scalar; return s;}
   friend TRMatrix operator-(const TRMatrix &source, Double_t scalar) {TRMatrix s(source); s -= scalar; return s;}
   friend TRMatrix operator-(Double_t scalar, const TRMatrix &source) {TRMatrix s(source); s -= scalar; return s;}
-  ClassDef(TRMatrix, 1) // TRMatrix class (double precision)
 };
 std::ostream &operator<<(std::ostream &s, const TRMatrix &target);
 inline Double_t &TRMatrix::operator()(Int_t i, Int_t j)

@@ -77,6 +77,5 @@ class St_starMagOnlC : public TChair
  private:
   static St_starMagOnlC* fgInstance;
   ClassDefChair(St_starMagOnl, starMagOnl_st )
-  ClassDef(St_starMagOnlC, 1) //C++ TChair for starMagOnl table class
 };
 #endif

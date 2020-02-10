@@ -10,7 +10,6 @@ class StMagF : public TNamed
 {
  public:
   static void Agufld(float* x, float* b);
-  ClassDef(StMagF, 0) //mmmm
 };
 inline void StMagF::Agufld(float* x, float* b)
 {

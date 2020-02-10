@@ -33,6 +33,5 @@ class St_itpcPadGainT0C : public TChair
  private:
   static St_itpcPadGainT0C* fgInstance;
   ClassDefChair(St_itpcPadGainT0, itpcPadGainT0_st )
-  ClassDef(St_itpcPadGainT0C, 1) //C++ TChair for itpcPadGainT0 table class
 };
 #endif

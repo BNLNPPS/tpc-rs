@@ -24,6 +24,5 @@ class St_tpcHighVoltagesC : public TChair {
  private:
   static St_tpcHighVoltagesC* fgInstance;
   ClassDefChair(St_tpcHighVoltages, tpcHighVoltages_st )
-  ClassDef(St_tpcHighVoltagesC,1) //C++ TChair for tpcHighVoltages table class
 };
 #endif

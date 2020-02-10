@@ -17,6 +17,5 @@ class St_tpcCalibResolutionsC : public TChair {
  private:
   static St_tpcCalibResolutionsC* fgInstance;
   ClassDefChair(St_tpcCalibResolutions, tpcCalibResolutions_st )
-  ClassDef(St_tpcCalibResolutionsC,1) //C++ TChair for tpcCalibResolutions table class
 };
 #endif

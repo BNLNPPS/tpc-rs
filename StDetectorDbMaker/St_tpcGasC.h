@@ -32,6 +32,5 @@ class St_tpcGasC : public TChair
  private:
   static St_tpcGasC* fgInstance;
   ClassDefChair(St_tpcGas, tpcGas_st )
-  ClassDef(St_tpcGasC, 1) //C++ TChair for tpcGas table class
 };
 #endif

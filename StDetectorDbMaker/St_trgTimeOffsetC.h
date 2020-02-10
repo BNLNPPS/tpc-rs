@@ -23,6 +23,5 @@ class St_trgTimeOffsetC : public TChair
   static St_trgTimeOffsetC* fgInstance;
   Bool_t        mLaser;
   ClassDefChair(St_trgTimeOffset, trgTimeOffset_st )
-  ClassDef(St_trgTimeOffsetC, 1) //C++ TChair for trgTimeOffset table class
 };
 #endif

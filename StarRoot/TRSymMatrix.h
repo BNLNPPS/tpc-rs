@@ -50,7 +50,6 @@ class TRSymMatrix : public TRArray
  protected:
   Int_t     fNrows;            // number of rows
  public:
-  ClassDef(TRSymMatrix, 1) // TRSymMatrix class (double precision)
 };
 std::ostream &operator<<(std::ostream &s, const TRSymMatrix &target);
 inline Double_t &TRSymMatrix::operator()(Int_t i, Int_t j)

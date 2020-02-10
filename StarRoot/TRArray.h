@@ -135,7 +135,6 @@ class TRArray : public TArrayD
 		       then TRArray is not owner of fArray and user has to care to its size and delete
 		       in contrary TArrayD                                                            */
  public:
-  ClassDef(TRArray, 1) // TRArray class (double precision)
 };
 std::ostream &operator<<(std::ostream &s, const TRArray &target);
 std::istream &operator>>(std::istream &s, TRArray &target);

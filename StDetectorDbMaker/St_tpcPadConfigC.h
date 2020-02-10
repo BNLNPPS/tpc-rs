@@ -69,6 +69,5 @@ class St_tpcPadConfigC : public TChair
  private:
   static St_tpcPadConfigC* fgInstance;
   ClassDefChair(St_tpcPadConfig, tpcPadConfig_st )
-  ClassDef(St_tpcPadConfigC, 1) //C++ TChair for tpcPadConfig table class
 };
 #endif

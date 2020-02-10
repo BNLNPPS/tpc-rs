@@ -48,6 +48,5 @@ class St_tpcGlobalPositionC : public TChair
  private:
   static St_tpcGlobalPositionC* fgInstance;
   ClassDefChair(St_tpcGlobalPosition, tpcGlobalPosition_st )
-  ClassDef(St_tpcGlobalPositionC, 1) //C++ TChair for tpcGlobalPosition table class
 };
 #endif

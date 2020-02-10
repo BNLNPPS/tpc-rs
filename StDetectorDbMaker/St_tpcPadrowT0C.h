@@ -14,7 +14,6 @@ class St_tpcPadrowT0C : public TChair {
  private:
   static St_tpcPadrowT0C* fgInstance;
   ClassDefChair(St_tpcPadrowT0, tpcPadrowT0_st )
-  ClassDef(St_tpcPadrowT0C,1) //C++ TChair for tpcPadrowT0 table class
 };
 
 #endif

@@ -22,6 +22,5 @@ class St_tpcRDOMapC : public TChair {
  private:
   static St_tpcRDOMapC* fgInstance;
   ClassDefChair(St_tpcRDOMap, tpcRDOMap_st )
-  ClassDef(St_tpcRDOMapC,1) //C++ TChair for tpcRDOMap table class
 };
 #endif

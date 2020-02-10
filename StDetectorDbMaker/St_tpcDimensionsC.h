@@ -100,6 +100,5 @@ class St_tpcDimensionsC : public TChair
  private:
   static St_tpcDimensionsC* fgInstance;
   ClassDefChair(St_tpcDimensions, tpcDimensions_st )
-  ClassDef(St_tpcDimensionsC, 1) //C++ TChair for tpcDimensions table class
 };
 #endif

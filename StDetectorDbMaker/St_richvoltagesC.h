@@ -20,6 +20,5 @@ class St_richvoltagesC : public TChair
  private:
   static St_richvoltagesC* fgInstance;
   ClassDefChair(St_richvoltages, richvoltages_st )
-  ClassDef(St_richvoltagesC, 1) //C++ TChair for richvoltages table class
 };
 #endif

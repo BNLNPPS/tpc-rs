@@ -20,6 +20,5 @@ class St_tpcPedestalC : public TChair
  private:
   static St_tpcPedestalC* fgInstance;
   ClassDefChair(St_tpcPedestal, tpcPedestal_st )
-  ClassDef(St_tpcPedestalC, 1) //C++ TChair for tpcPedestal table class
 };
 #endif

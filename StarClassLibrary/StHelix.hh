@@ -158,7 +158,6 @@ class StHelix
   double                 mSinPhase;
 
 #ifdef __ROOT__
-  ClassDef(StHelix, 1)
 #endif
 };
 

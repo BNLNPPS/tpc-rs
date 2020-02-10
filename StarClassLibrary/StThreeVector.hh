@@ -218,7 +218,6 @@ template<class T> class StThreeVector
  protected:
   T    mX1, mX2, mX3;
 #ifdef __ROOT__
-  ClassDef(StThreeVector, 3)
 #endif /* __ROOT__ */
 };
 

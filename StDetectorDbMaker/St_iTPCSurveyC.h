@@ -22,6 +22,5 @@ class St_iTPCSurveyC : public TChair {
  private:
   static St_iTPCSurveyC* fgInstance;
   ClassDefChair(St_iTPCSurvey, iTPCSurvey_st )
-  ClassDef(St_iTPCSurveyC,1) //C++ TChair for iTPCSurvey table class
 };
 #endif

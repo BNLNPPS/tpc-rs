@@ -26,6 +26,5 @@ class St_starClockOnlC : public TChair
  private:
   static St_starClockOnlC* fgInstance;
   ClassDefChair(St_starClockOnl, starClockOnl_st )
-  ClassDef(St_starClockOnlC, 1) //C++ TChair for starClockOnl table class
 };
 #endif

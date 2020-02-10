@@ -20,6 +20,5 @@ class St_asic_thresholdsC : public TChair
  private:
   static St_asic_thresholdsC* fgInstance;
   ClassDefChair(St_asic_thresholds, asic_thresholds_st )
-  ClassDef(St_asic_thresholdsC, 1) //C++ TChair for asic_thresholds table class
 };
 #endif

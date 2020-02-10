@@ -17,6 +17,5 @@ class St_y1MultC : public TChair
  private:
   static St_y1MultC* fgInstance;
   ClassDefChair(St_y1Mult, y1Mult_st )
-  ClassDef(St_y1MultC, 1) //C++ TChair for y1Mult table class
 };
 #endif

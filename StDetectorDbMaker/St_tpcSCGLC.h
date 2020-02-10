@@ -25,6 +25,5 @@ class St_tpcSCGLC : public TChair {
   virtual ~St_tpcSCGLC() {fgInstance = 0;}
  private:
   static St_tpcSCGLC* fgInstance;
-  ClassDef(St_tpcSCGLC,1)
 };
 #endif

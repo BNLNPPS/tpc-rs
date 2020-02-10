@@ -63,7 +63,6 @@ class StPhysicalHelix : public StHelix
   double geometricSignedDistance(const StThreeVector<double> &) ;
 
 #ifdef __ROOT__
-  ClassDef(StPhysicalHelix, 1)
 #endif
 };
 

@@ -279,6 +279,5 @@ class StTpcDb
   const TGeoHMatrix &Pad2SupS(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
   const TGeoHMatrix &Pad2Tpc(Int_t sector = 1, Int_t row = 1)   const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Tpc : kPadOuter2Tpc; return TpcRot(sector, k);}
   const TGeoHMatrix &Pad2Glob(Int_t sector = 1, Int_t row = 1)  const {Int_t k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
-  ClassDef(StTpcDb, 0)
 };
 #endif

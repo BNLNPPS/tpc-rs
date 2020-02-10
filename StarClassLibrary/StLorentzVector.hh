@@ -167,7 +167,6 @@ protected:
     StThreeVector<T> mThreeVector;
     T	             mX4;
 #ifdef __ROOT__
-  ClassDef(StLorentzVector,3)
 #endif
 };
 #ifndef __CINT__

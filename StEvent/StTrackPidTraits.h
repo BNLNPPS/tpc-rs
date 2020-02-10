@@ -74,6 +74,5 @@ class StTrackPidTraits : public StObject
  protected:
   Short_t mDetectorId;
 
-  ClassDef(StTrackPidTraits, 2)
 };
 #endif

@@ -22,6 +22,5 @@ class St_tpcFieldCageC : public TChair
  private:
   static St_tpcFieldCageC* fgInstance;
   ClassDefChair(St_tpcFieldCage, tpcFieldCage_st )
-  ClassDef(St_tpcFieldCageC, 1) //C++ TChair for tpcFieldCage table class
 };
 #endif

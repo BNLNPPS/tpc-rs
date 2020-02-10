@@ -10,6 +10,5 @@ class St_tpcGainCorrectionC : public St_tpcCorrectionC
   virtual ~St_tpcGainCorrectionC() {fgInstance = 0;}
  private:
   static St_tpcGainCorrectionC* fgInstance;
-  ClassDef(St_tpcGainCorrectionC, 1)
 };
 #endif

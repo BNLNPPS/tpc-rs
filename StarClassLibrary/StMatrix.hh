@@ -402,7 +402,6 @@ protected:
     unsigned int mRow, mCol;
     unsigned int mSize;
 #ifdef __ROOT__
-  ClassDef(StMatrix,3)
 #endif /* __ROOT__ */
 };
 

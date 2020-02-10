@@ -26,6 +26,5 @@ class St_tpcElectronicsC : public TChair
  private:
   static St_tpcElectronicsC* fgInstance;
   ClassDefChair(St_tpcElectronics, tpcElectronics_st )
-  ClassDef(St_tpcElectronicsC, 1) //C++ TChair for tpcElectronics table class
 };
 #endif

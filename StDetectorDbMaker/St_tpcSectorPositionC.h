@@ -29,6 +29,5 @@ class St_tpcSectorPositionC : public TObject
  private:
   static St_tpcSectorPositionC* fgInstance;
   static St_tpcSectorPosition* fgTables[24];
-  ClassDef(St_tpcSectorPositionC, 1) //C++ TChair for tpcSectorPosition table class
 };
 #endif

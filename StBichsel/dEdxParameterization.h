@@ -140,7 +140,6 @@ class dEdxParameterization
   Double_t IfitTrsS(Int_t part, Double_t log10bg) const {return Get(fTrs[part][5], log10bg);}  // Estimation for relative sigma beta*gamma dependence for Ifit from TpcRS normalized to MIP
 
 
-  ClassDef(dEdxParameterization, 0)
 };
 // $Id: dEdxParameterization.h,v 1.10 2015/12/24 00:16:26 fisyak Exp $
 // $Log: dEdxParameterization.h,v $

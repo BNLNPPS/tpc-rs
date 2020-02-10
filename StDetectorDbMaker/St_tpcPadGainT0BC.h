@@ -16,6 +16,5 @@ class St_tpcPadGainT0BC : public TObject
   virtual ~St_tpcPadGainT0BC() {fgInstance = 0;}
  private:
   static St_tpcPadGainT0BC* fgInstance;
-  ClassDef(St_tpcPadGainT0BC, 0) //C++ TChair for tpcPadGainT0B table class
 };
 #endif

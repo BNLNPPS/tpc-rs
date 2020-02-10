@@ -22,6 +22,5 @@ class St_tpcCorrectionC : public TChair
   Double_t CalcCorrection(Int_t i, Double_t x, Double_t z = 0, Int_t NparMax = -1);
   Double_t SumSeries(tpcCorrection_st* cor, Double_t x, Double_t z = 0, Int_t NparMax = -1);
   ClassDefChair(St_tpcCorrection, tpcCorrection_st )
-  ClassDef(St_tpcCorrectionC, 1) //C++ TChair for tpcCorrection table class
 };
 #endif

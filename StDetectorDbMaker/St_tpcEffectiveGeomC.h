@@ -22,6 +22,5 @@ class St_tpcEffectiveGeomC : public TChair
  private:
   static St_tpcEffectiveGeomC* fgInstance;
   ClassDefChair(St_tpcEffectiveGeom, tpcEffectiveGeom_st )
-  ClassDef(St_tpcEffectiveGeomC, 1) //C++ TChair for tpcEffectiveGeom table class
 };
 #endif

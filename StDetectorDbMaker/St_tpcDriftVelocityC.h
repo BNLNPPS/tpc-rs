@@ -22,6 +22,5 @@ class St_tpcDriftVelocityC : public TChair {
  private:
   static St_tpcDriftVelocityC* fgInstance;
   ClassDefChair(St_tpcDriftVelocity, tpcDriftVelocity_st )
-  ClassDef(St_tpcDriftVelocityC,1) //C++ TChair for tpcDriftVelocity table class
 };
 #endif

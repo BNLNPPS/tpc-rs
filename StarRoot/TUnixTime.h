@@ -43,7 +43,6 @@ private:
 //		Data members
    ULong_t fUTime; 
    
-   ClassDef(TUnixTime,2)
 
 };
 #endif //ROOT_TUnixTime

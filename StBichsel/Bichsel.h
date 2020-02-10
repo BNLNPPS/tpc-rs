@@ -100,7 +100,6 @@ class Bichsel
   Double_t IfitTrsB(Int_t part, Double_t log10bg) const {return m_dEdxParameterization->Get(IfitTrsB(part), log10bg);}  // Estimation for Ifit - Bichsel from TpcRS
   Double_t IfitTrsS(Int_t part, Double_t log10bg) const {return m_dEdxParameterization->Get(IfitTrsS(part), log10bg);}  // Estimation for relative sigma beta*gamma dependence for Ifit from TpcRS normalized to MIP
 
-  ClassDef(Bichsel, 0)
 };
 // $Id: Bichsel.h,v 1.15 2015/12/24 00:16:25 fisyak Exp $
 // $Log: Bichsel.h,v $

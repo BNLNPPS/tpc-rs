@@ -68,6 +68,5 @@ class St_TpcResponseSimulatorC : public TChair
  private:
   static St_TpcResponseSimulatorC* fgInstance;
   ClassDefChair(St_TpcResponseSimulator, TpcResponseSimulator_st )
-  ClassDef(St_TpcResponseSimulatorC, 1) //C++ TChair for TpcResponseSimulator table class
 };
 #endif

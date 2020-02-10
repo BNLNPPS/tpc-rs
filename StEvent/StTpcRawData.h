@@ -82,7 +82,6 @@ class StDigitalPair : public StObject
   UShort_t    mTime;
   StVectorADC mAdc;
   StVectorIDT mIdt;
-  ClassDef(StDigitalPair, 1)
 };
 
 typedef std::vector<StDigitalPair>           StDigitalTimeBins;
@@ -147,7 +146,6 @@ class StTpcDigitalSector : public StObject
   StVecSequence         mSequence;
   StVecIds              mIds;
   Int_t                 mNoRows;
-  ClassDef(StTpcDigitalSector, 2)
 };
 
 class StTpcRawData : public StObject
@@ -169,6 +167,5 @@ class StTpcRawData : public StObject
   virtual void Print(const Option_t* opt = "") const;
  private:
   std::vector<StTpcDigitalSector*> mSectors;
-  ClassDef(StTpcRawData, 1)
 };
 #endif

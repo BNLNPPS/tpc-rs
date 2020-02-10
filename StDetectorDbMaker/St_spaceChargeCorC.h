@@ -44,7 +44,6 @@ class St_spaceChargeCorC : public TChair {
   virtual ~St_spaceChargeCorC() {}
  private:
   ClassDefChair(St_spaceChargeCor, spaceChargeCor_st )
-  ClassDef(St_spaceChargeCorC,1) //C++ TChair for spaceChargeCor table class
 };
 
 class St_spaceChargeCorR1C : public St_spaceChargeCorC {
@@ -55,7 +54,6 @@ class St_spaceChargeCorR1C : public St_spaceChargeCorC {
   virtual ~St_spaceChargeCorR1C() {fgInstance = 0;}
  private:
   static St_spaceChargeCorR1C* fgInstance;
-  ClassDef(St_spaceChargeCorR1C,1) //C++ TChair for spaceChargeCor table class
 };
 class St_spaceChargeCorR2C : public St_spaceChargeCorC {
  public:
@@ -65,6 +63,5 @@ class St_spaceChargeCorR2C : public St_spaceChargeCorC {
   virtual ~St_spaceChargeCorR2C() {fgInstance = 0;}
  private:
   static St_spaceChargeCorR2C* fgInstance;
-  ClassDef(St_spaceChargeCorR2C,1) //C++ TChair for spaceChargeCor table class
 };
 #endif

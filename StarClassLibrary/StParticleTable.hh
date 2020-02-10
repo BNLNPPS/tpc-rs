@@ -109,7 +109,6 @@ class StParticleTable
   mPdgMapType        mPdgMap;          // PDG IDs only
   mNameMapType       mNameMap;         // complete list
 #ifdef __ROOT__
-  ClassDef(StParticleTable, 1)
 #endif
 };
 #endif

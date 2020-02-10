@@ -21,6 +21,5 @@ class St_tpcOmegaTauC : public TChair {
  private:
   static St_tpcOmegaTauC* fgInstance;
   ClassDefChair(St_tpcOmegaTau, tpcOmegaTau_st )
-  ClassDef(St_tpcOmegaTauC,1) //C++ TChair for tpcOmegaTau table class
 };
 #endif

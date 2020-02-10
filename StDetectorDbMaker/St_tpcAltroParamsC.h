@@ -25,6 +25,5 @@ class St_tpcAltroParamsC : public TChair
  private:
   static St_tpcAltroParamsC* fgInstance;
   ClassDefChair(St_tpcAltroParams, tpcAltroParams_st )
-  ClassDef(St_tpcAltroParamsC, 1) //C++ TChair for tpcAltroParams table class
 };
 #endif

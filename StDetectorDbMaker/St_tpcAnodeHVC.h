@@ -23,6 +23,5 @@ class St_tpcAnodeHVC : public TChair
  private:
   static St_tpcAnodeHVC* fgInstance;
   ClassDefChair(St_tpcAnodeHV, tpcAnodeHV_st )
-  ClassDef(St_tpcAnodeHVC, 1) //C++ TChair for tpcAnodeHV table class
 };
 #endif

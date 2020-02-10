@@ -32,6 +32,5 @@ class St_tpcPadResponseC : public TChair
  private:
   static St_tpcPadResponseC* fgInstance;
   ClassDefChair(St_tpcPadResponse, tpcPadResponse_st )
-  ClassDef(St_tpcPadResponseC, 1) //C++ TChair for tpcPadResponse table class
 };
 #endif

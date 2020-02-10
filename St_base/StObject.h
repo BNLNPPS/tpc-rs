@@ -64,7 +64,6 @@ class StObject : public TObject
   virtual void makeZombie(int flg = 1)
   {if (flg) {MakeZombie();} else {((UInt_t*)this)[1] &= ~(kZombie);}}
   UInt_t  Ztreamer(TBuffer &R__b);
-  ClassDef(StObject, 3) // Base class for StEvent
 
   static UInt_t 	         fgTally;
 
@@ -93,7 +92,6 @@ class StUUId
 
   //void  Streamer(TBuffer &b);
   int Compare(const StUUId &u2) const;
-  ClassDef(StUUId, 1)
 };
 
 
@@ -123,7 +121,6 @@ class StXRef : public TDataSet
   StUUId         fUUId;		//!
   UInt_t         fTally; 		//!
   StXRefMain*     fMain;          //!
-  ClassDef(StXRef, 1)
 };
 
 
@@ -138,7 +135,6 @@ class StXRefMain : public StXRef
   virtual  	void  		Split() = 0;
   virtual	       	StXRefMain*     MakeMain() {return this;}
   virtual		      void      Synchro(int toMain) {};
-  ClassDef(StXRefMain, 1)
 };
 
 

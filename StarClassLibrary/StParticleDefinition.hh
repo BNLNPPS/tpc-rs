@@ -120,7 +120,6 @@ class StParticleDefinition
   // life time is given in seconds.
   StParticleTable* mParticleTable;
 #ifdef __ROOT__
-  ClassDef(StParticleDefinition, 1)
 #endif
 };
 

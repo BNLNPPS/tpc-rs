@@ -61,6 +61,5 @@ class St_tpcWirePlanesC : public TChair
  private:
   static St_tpcWirePlanesC* fgInstance;
   ClassDefChair(St_tpcWirePlanes, tpcWirePlanes_st )
-  ClassDef(St_tpcWirePlanesC, 1) //C++ TChair for tpcWirePlanes table class
 };
 #endif
