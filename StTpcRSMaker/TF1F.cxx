@@ -1,6 +1,5 @@
 #include "StTpcRSMaker/TF1F.h"
 #include "TMath.h"
-ClassImp(TF1F);
 
 
 void TF1F::Save(Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax, Double_t zmin, Double_t zmax)

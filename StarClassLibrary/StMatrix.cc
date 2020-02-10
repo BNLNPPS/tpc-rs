@@ -2,7 +2,6 @@
 #ifdef __ROOT__
 #include "TBuffer.h"
 #include "TClass.h"
-ClassImpT(StMatrix,float);
 //________________________________________________________________________________
 template <> void StMatrix<float>::Streamer(TBuffer &R__b)
 {

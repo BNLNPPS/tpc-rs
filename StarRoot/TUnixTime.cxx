@@ -16,7 +16,6 @@
 #include "TDatime.h"
 
 
-ClassImp(TUnixTime)
 //______________________________________________________________________________
 TUnixTime::TUnixTime(ULong_t utime)
 {

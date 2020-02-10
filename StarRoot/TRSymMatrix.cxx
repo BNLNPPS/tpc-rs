@@ -4,7 +4,6 @@
 #include "StarRoot/TRSymMatrix.h"
 #include "TRDiagMatrix.h"
 #include "TError.h"
-ClassImp(TRSymMatrix);
 
 
 TRSymMatrix::TRSymMatrix(Int_t nrows, Double_t a0, ...) :

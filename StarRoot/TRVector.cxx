@@ -3,7 +3,6 @@
 #include "StarRoot/TRVector.h"
 #include "TError.h"
 #include "TString.h"
-ClassImp(TRVector);
 
 
 TRVector::TRVector(Int_t nrows):    TRMatrix(nrows, 1) {;}

@@ -3,7 +3,6 @@
 #include "TMath.h"
 #include "TError.h"
 #include "TString.h"
-ClassImp(TRMatrix);
 
 
 TRMatrix::TRMatrix(const TRMatrix &S, Int_t NI, Int_t NJ, Int_t I, Int_t J)

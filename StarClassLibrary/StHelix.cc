@@ -122,7 +122,6 @@ using std::numeric_limits;
 #include "StarClassLibrary/StHelix.hh"
 #include "StarClassLibrary/PhysicalConstants.h"
 #ifdef __ROOT__
-ClassImpT(StHelix, double);
 #endif
 const double StHelix::NoSolution = 3.e+33;
 

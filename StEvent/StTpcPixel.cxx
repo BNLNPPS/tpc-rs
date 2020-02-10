@@ -50,4 +50,3 @@ ostream& operator<< (ostream& os, const StTpcPixel& m)
     return os;
 }
 
-ClassImp(StTpcPixel)

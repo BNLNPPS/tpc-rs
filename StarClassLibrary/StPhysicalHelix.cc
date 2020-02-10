@@ -45,7 +45,6 @@
 #include "StarClassLibrary/PhysicalConstants.h"
 #include "StarClassLibrary/SystemOfUnits.h"
 #ifdef __ROOT__
-ClassImpT(StPhysicalHelix, double);
 #endif
 StPhysicalHelix::StPhysicalHelix() {}
 

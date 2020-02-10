@@ -83,7 +83,6 @@ MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
 #include "St_tpcDriftVelocityC.h"
 MakeChairInstance(tpcDriftVelocity,Calibrations/tpc/tpcDriftVelocity);
 #include "St_TpcSecRowCorC.h"
-ClassImp(St_TpcSecRowCorC);
 #include "St_TpcSecRowBC.h"
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowBC,Calibrations/tpc/TpcSecRowB);
 #include "St_TpcSecRowCC.h"
@@ -97,7 +96,6 @@ MakeChairInstance(tpcCalibResolutions,Calibrations/tpc/tpcCalibResolutions);
 MakeChairInstance(tpcChargeEvent,Calibrations/tpc/tpcChargeEvent);
 #include "St_tpcSCGLC.h"
 MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
-ClassImp(St_tpcCorrectionC);
 //________________________________________________________________________________
 Double_t St_tpcCorrectionC::CalcCorrection(Int_t i, Double_t x, Double_t z, Int_t NparMax) {
   tpcCorrection_st *cor =  ((St_tpcCorrection *) Table())->GetTable() + i;
@@ -276,7 +274,6 @@ MakeChairOptionalInstance2(tpcCorrection,St_TpcrChargeC,Calibrations/tpc/TpcrCha
 MakeChairInstance2(tpcCorrection,St_TpcTanLC,Calibrations/tpc/TpcTanL);
 #include "St_TpcCurrentCorrectionC.h"
 //MakeChairInstance2(tpcCorrection,St_TpcCurrentCorrectionC,Calibrations/tpc/TpcCurrentCorrection);
-ClassImp(St_TpcCurrentCorrectionC);
 St_TpcCurrentCorrectionC *St_TpcCurrentCorrectionC::fgInstance = 0;
 St_TpcCurrentCorrectionC *St_TpcCurrentCorrectionC::instance() {
   if (fgInstance) return fgInstance;
@@ -302,7 +299,6 @@ MakeChairInstance2(tpcCorrection,St_TpcDriftVelRowCorC,Calibrations/tpc/TpcDrift
 MakeChairInstance2(MDFCorrection,St_TpcLengthCorrectionMDF,Calibrations/tpc/TpcLengthCorrectionMDF);
 #include "St_TpcPadCorrectionMDF.h"
 MakeChairInstance2(MDFCorrection,St_TpcPadCorrectionMDF,Calibrations/tpc/TpcPadCorrectionMDF);
-ClassImp(St_MDFCorrectionC);
 St_MDFCorrectionC *St_MDFCorrectionC::fgMDFCorrectionC = 0;
 //____________________________________________________________________
 St_MDFCorrectionC::St_MDFCorrectionC(St_MDFCorrection *table) : TChair(table), fFunc(0) {
@@ -1068,7 +1064,6 @@ St_trigDetSumsC *St_trigDetSumsC::instance() {
   StMaker::GetChain()->AddData(fgInstance);
   return fgInstance;
 }
-ClassImp(St_trigDetSumsC);
 //___________________tpc_____________________________________________________________
 #include "St_tss_tssparC.h"
 MakeChairInstance(tss_tsspar,tpc/tsspars/tsspar);
@@ -1111,7 +1106,6 @@ MakeChairInstance(richvoltages,Calibrations/rich/richvoltages);
 #include "St_y1MultC.h"
 MakeChairInstance(y1Mult,Calibrations/rich/y1Mult);
 #include "St_spaceChargeCorC.h"
-ClassImp(St_spaceChargeCorC);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
 //_________________RunLog_____________________________________________________________
@@ -1260,7 +1254,6 @@ MakeChairInstance(tpcDimensions,Geometry/tpc/tpcDimensions);
 #include "St_tpcWirePlanesC.h"
 MakeChairInstance(tpcWirePlanes,Geometry/tpc/tpcWirePlanes);
 #include "St_tpcSectorPositionC.h"
-ClassImp(St_tpcSectorPositionC);
 St_tpcSectorPositionC *St_tpcSectorPositionC::fgInstance = 0;
 St_tpcSectorPosition  *St_tpcSectorPositionC::fgTables[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
 St_tpcSectorPositionC *St_tpcSectorPositionC::instance() {
@@ -1301,7 +1294,6 @@ MakeChairInstance(tpcFieldCageShort,Geometry/tpc/tpcFieldCageShort);
 #include "St_tpcHVPlanesC.h"
 MakeChairInstance(tpcHVPlanes,Geometry/tpc/tpcHVPlanes);
 #include "St_SurveyC.h"
-ClassImp(St_SurveyC);
 #include "StSvtSurveyC.h"
 MakeChairInstance2(Survey,StSvtOnGlobal,Geometry/svt/SvtOnGlobal);
 MakeChairInstance2(Survey,StSvtShellOnGlobal,Geometry/svt/ShellOnGlobal);
@@ -1532,7 +1524,6 @@ St_SurveyC   *St_SurveyC::instance(const Char_t *name) {
 MakeChairInstance(vertexSeed,Calibrations/rhic/vertexSeed);
 //__________________Calibrations/tof______________________________________________________________
 #include "St_tofCorrC.h"
-ClassImp(St_tofCorrC);
 St_tofCorrC::St_tofCorrC(TTable *table) : TChair(table), mCalibType(NOTSET) {
   Int_t N = 0;
   if (table) N = getNumRows();

@@ -2,7 +2,6 @@
 #include "StBichsel/Bichsel.h"
 #include <assert.h>
 using namespace std;
-ClassImp(Bichsel)
 TString   Bichsel::m_Tags[kTotal] = {"P10", "Bi", "PAI"};
 dEdxParameterization* Bichsel::m_dEdxParameterizations[kTotal] = {0, 0, 0};
 Bichsel* Bichsel::fgBichsel = 0;

@@ -183,7 +183,6 @@ StarMagField* StarMagField::fgInstance = 0;
 #include "TFile.h"
 #include "TError.h"
 #include "TEnv.h"
-ClassImp(StarMagField);
 #endif
 
 

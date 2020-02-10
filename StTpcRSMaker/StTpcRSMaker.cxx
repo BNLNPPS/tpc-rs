@@ -105,7 +105,6 @@ static TProfile2D*  SecRow[15] = {0};
 static TString TpcMedium("TPCE_SENSITIVE_GAS");
 
 
-ClassImp(StTpcRSMaker);
 
 
 StTpcRSMaker::StTpcRSMaker(const char* name):

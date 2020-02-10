@@ -15,7 +15,6 @@
 
 #define  PrP(A)  cout << "\t" << (#A) << " = \t" << ( A )
 
-ClassImp(dEdxParameterization)
 
 
 dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,

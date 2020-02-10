@@ -218,7 +218,6 @@ Bool_t StTpcDb::mOldScheme = kTRUE;
 // C++ routines:
 
 
-ClassImp(StTpcDb);
 
 
 StTpcDb::StTpcDb()

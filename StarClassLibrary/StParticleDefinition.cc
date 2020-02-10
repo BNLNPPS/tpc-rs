@@ -32,7 +32,6 @@
 #include "StarClassLibrary/PhysicalConstants.h"
 // #include <typeinfo>
 #ifdef __ROOT__
-ClassImp(StParticleDefinition)
 #endif
 
 StParticleDefinition::StParticleDefinition(

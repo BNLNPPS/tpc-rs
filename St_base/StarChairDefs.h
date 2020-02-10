@@ -19,7 +19,6 @@
   }
 #define MakeString(PATH) # PATH
 #define MakeChairInstance(STRUCT,PATH)					\
-ClassImp(St_ ## STRUCT ## C); \
 St_ ## STRUCT ## C *St_ ## STRUCT ## C::fgInstance = 0; \
 St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     if (fgInstance) return fgInstance;					\
@@ -33,7 +32,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     return fgInstance;							\
   }
 #define MakeChairOptionalInstance(STRUCT,PATH)			\
-  ClassImp(St_ ## STRUCT ## C);						\
   St_ ## STRUCT ## C *St_ ## STRUCT ## C::fgInstance = 0;		\
   St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() {			\
     if (fgInstance) return fgInstance;					\
@@ -48,7 +46,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     return fgInstance;							\
   }
 #define MakeChairInstance2(STRUCT,CLASS,PATH)			\
-  ClassImp(CLASS);						\
   CLASS *CLASS::fgInstance = 0;						\
   CLASS *CLASS::instance() {						\
     if (fgInstance) return fgInstance;					\
@@ -58,7 +55,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     return fgInstance;							\
   }
 #define MakeChairOptionalInstance2(STRUCT,CLASS,PATH)			\
-  ClassImp(CLASS);						\
   CLASS *CLASS::fgInstance = 0;		\
   CLASS *CLASS::instance() {			\
     if (fgInstance) return fgInstance;					\
@@ -77,7 +73,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     ((AorB == 0) ? StMaker::GetChain()->GetDataBase(MakeString(PATHA)): \
      StMaker::GetChain()->GetDataBase(MakeString(PATHB)))
 #define MakeChairAltInstance(STRUCT,PATHA,PATHB,AorB)	\
-  ClassImp(St_ ## STRUCT ## C);				\
   St_ ## STRUCT ## C *St_ ## STRUCT ## C::fgInstance = 0;	\
   St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() {			\
     if (fgInstance) return fgInstance;					\
@@ -93,7 +88,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     return fgInstance;							\
   }
 #define MakeChairAltOptionalInstance(STRUCT,PATHA,PATHB,AorB)		\
-  ClassImp(St_ ## STRUCT ## C);						\
   St_ ## STRUCT ## C *St_ ## STRUCT ## C::fgInstance = 0;		\
   St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() {			\
     if (fgInstance) return fgInstance;					\
@@ -108,7 +102,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     return fgInstance;							\
   }
 #define MakeChairAltInstance2(STRUCT,CLASS,PATHA,PATHB,AorB)	\
-  ClassImp(CLASS);							\
   CLASS *CLASS::fgInstance = 0;						\
   CLASS *CLASS::instance() {						\
     if (fgInstance) return fgInstance;					\
@@ -118,7 +111,6 @@ St_ ## STRUCT ## C *St_ ## STRUCT ## C::instance() { \
     return fgInstance;							\
   }
 #define MakeChairAltOptionalInstance2(STRUCT,CLASS,PATHA,PATHB,AorB)	\
-  ClassImp(CLASS);							\
   CLASS *CLASS::fgInstance = 0;		\
   CLASS *CLASS::instance() {						\
     if (fgInstance) return fgInstance;					\

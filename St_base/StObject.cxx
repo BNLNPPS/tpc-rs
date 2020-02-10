@@ -92,7 +92,6 @@ int StXRefManager::fgRWmode = -1;
 enum {kBelongs = (1 << 22)};
 
 
-ClassImp(StObject)
 
 
 StObject::StObject(const StObject &sto): TObject(sto)
@@ -166,7 +165,6 @@ UInt_t StObject::Ztreamer(TBuffer &R__b)
   return udx;
 }
 
-ClassImp(StUUId)
 
 
 StUUId::StUUId()
@@ -232,7 +230,6 @@ int StUUId::Compare(const StUUId &u2) const
 
 
 
-ClassImp(StXRef)
 
 
 StXRef::StXRef(const char* brName, StXRefMain* evt, UInt_t tally)
@@ -333,7 +330,6 @@ void StXRef::Add(TDataSet* ds)
 
 
 
-ClassImp(StXRefMain)
 
 StXRefMain::~StXRefMain()
 {

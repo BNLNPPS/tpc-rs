@@ -514,7 +514,6 @@ double SpaceChargeRadialDependence(double Radius)
 
 
 
-ClassImp(StMagUtilities);
 struct Distortion_t {
   Float_t sector, xL, yL, zL, xLC, yLC, zLC;
 };
