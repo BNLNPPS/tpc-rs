@@ -7,6 +7,7 @@
 #include <float.h>
 #include "StarClassLibrary/StHelix.hh"
 #include "StarClassLibrary/SystemOfUnits.h"
+
 const double StHelix::NoSolution = 3.e+33;
 
 StHelix::StHelix() { /*noop*/ }
@@ -561,7 +562,3 @@ std::ostream &operator<<(std::ostream &os, const StHelix &h)
          << "h = "          << h.h()         << ", "
          << "origin = "     << h.origin()    << ')';
 }
-
-
-
-

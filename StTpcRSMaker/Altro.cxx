@@ -29,6 +29,7 @@
 	*	@param timebins an <tt> int </tt> sets the length of the input Data (Channel)
 	*	@param Channel an <tt> short* </tt> Pointer to a 1d short Array with the input Data
 	*/
+
 Altro::Altro(int timebins, short* Channel)
 {
   ftimebins = timebins;
