@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "g2t_vertex.h"
+#include "include/g2t_vertex.h"
 
 /*!
  * \class  St_g2t_vertex

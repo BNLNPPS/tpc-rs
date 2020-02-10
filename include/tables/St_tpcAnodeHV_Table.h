@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcAnodeHV.h"
+#include "include/tpcAnodeHV.h"
 
 /*!
  * \class  St_tpcAnodeHV

@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcGlobalPosition.h"
+#include "include/tpcGlobalPosition.h"
 
 /*!
  * \class  St_tpcGlobalPosition

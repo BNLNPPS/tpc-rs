@@ -157,24 +157,24 @@
 #include <stdlib.h>
 #include "TMath.h"
 // SCL
-#include "StGlobals.hh"
-#include "SystemOfUnits.h"
-#include "StThreeVector.hh"
+#include "StarClassLibrary/StGlobals.hh"
+#include "StarClassLibrary/SystemOfUnits.h"
+#include "StarClassLibrary/StThreeVector.hh"
 #include "StTpcDb/StTpcDb.h"
-#include "StObject.h"
+#include "St_base/StObject.h"
 
 //#define DEBUG_TPC 0
 //#define idb if(DEBUG_TPC) cout
-#include "StTpcPadCoordinate.hh"
-#include "StTpcLocalCoordinate.hh"
-#include "StTpcLocalSectorCoordinate.hh"
-#include "StTpcLocalSectorAlignedCoordinate.hh"
-#include "StGlobalCoordinate.hh"
+#include "StDbUtilities/StTpcPadCoordinate.hh"
+#include "StDbUtilities/StTpcLocalCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorAlignedCoordinate.hh"
+#include "StDbUtilities/StGlobalCoordinate.hh"
 
-#include "StTpcLocalDirection.hh"
-#include "StTpcLocalSectorDirection.hh"
-#include "StTpcLocalSectorAlignedDirection.hh"
-#include "StGlobalDirection.hh"
+#include "StDbUtilities/StTpcLocalDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorAlignedDirection.hh"
+#include "StDbUtilities/StGlobalDirection.hh"
 // pad              => sector12       =>   subsector => sector => tpc      => global
 // TpcPadCoordinate => TpcSectL => TpcSectLAligned => TpcLocal => Global
 class StTpcCoordinateTransform  //: public StObject {

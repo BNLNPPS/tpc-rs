@@ -76,7 +76,7 @@ inline StDouble sqr(T a) { return a * a; }
 //
 //   Include physical constants and system of units
 //
-//#include "PhysicalConstants.h"
+//#include "StarClassLibrary/PhysicalConstants.h"
 
 #endif
 

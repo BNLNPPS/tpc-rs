@@ -96,7 +96,7 @@
 #include "Rtypes.h"
 #endif
 #ifndef __CINT__
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 #include <math.h>
 #ifdef GNU_GCC
 #    include <stddef.h>

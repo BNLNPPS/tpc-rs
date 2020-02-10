@@ -3,7 +3,7 @@
 
 #include "TChair.h"
 #include "tables/St_TpcAvgPowerSupply_Table.h"
-#include "St_TpcAvgCurrentC.h"
+#include "StDetectorDbMaker/St_TpcAvgCurrentC.h"
 class St_TpcAvgPowerSupplyC : public TChair
 {
  public:

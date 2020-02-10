@@ -1,8 +1,8 @@
 // * $Id: StGlobalDirection.hh,v 1.1 2004/03/05 17:22:54 fisyak Exp $
 #ifndef ST_GLOBAL_DIRECTION_HH
 #define ST_GLOBAL_DIRECTION_HH
-#include <Stiostream.h>
-#include "StGlobalCoordinate.hh"
+#include <St_base/Stiostream.h>
+#include "StDbUtilities/StGlobalCoordinate.hh"
 class StGlobalDirection : public StGlobalCoordinate
 {
  public:

@@ -167,8 +167,8 @@ To do:  <br>
 */
 #include <string.h>
 #include <assert.h>
-#include "StarMagField.h"
-#include "StarCallf77.h"
+#include "StarMagField/StarMagField.h"
+#include "St_base/StarCallf77.h"
 #include <string>
 #include "TMath.h"
 StarMagField* StarMagField::fgInstance = 0;

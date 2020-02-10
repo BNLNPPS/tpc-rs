@@ -1,9 +1,9 @@
 #ifndef St_tpcPadGainT0BC_h
 #define St_tpcPadGainT0BC_h
 #include "TObject.h"
-#include "St_tpcPadGainT0C.h"
-#include "St_itpcPadGainT0C.h"
-#include "St_tpcPadConfigC.h"
+#include "StDetectorDbMaker/St_tpcPadGainT0C.h"
+#include "StDetectorDbMaker/St_itpcPadGainT0C.h"
+#include "StDetectorDbMaker/St_tpcPadConfigC.h"
 class St_tpcPadGainT0BC : public TObject
 {
  public:

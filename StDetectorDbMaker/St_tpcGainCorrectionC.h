@@ -1,6 +1,6 @@
 #ifndef St_tpcGainCorrectionC_h
 #define St_tpcGainCorrectionC_h
-#include "St_tpcCorrectionC.h"
+#include "StDetectorDbMaker/St_tpcCorrectionC.h"
 class St_tpcGainCorrectionC : public St_tpcCorrectionC
 {
  public:

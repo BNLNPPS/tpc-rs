@@ -5,7 +5,7 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_COORDINATE_HH
 #define ST_TPC_LOCAL_SECTOR_COORDINATE_HH
-#include "StTpcCoordinate.h"
+#include "StDbUtilities/StTpcCoordinate.h"
 class StTpcLocalSectorCoordinate : public StTpcCoordinate
 {
  public:

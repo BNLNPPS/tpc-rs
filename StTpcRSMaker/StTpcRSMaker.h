@@ -7,20 +7,20 @@
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 #ifndef StMaker_H
-#include "StMaker.h"
+#include "StChain/StMaker.h"
 #endif
 #ifndef HEP_SYSTEM_OF_UNITS_H
-#include "SystemOfUnits.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 #endif
 #ifndef ST_NO_NAMESPACES
 using namespace units;
 #endif
-#include "StTpcRawData.h"
-#include "TF1F.h"
+#include "StEvent/StTpcRawData.h"
+#include "StTpcRSMaker/TF1F.h"
 #include "TH1.h"
 #include "TTree.h"
 #include "StTpcDb/StTpcDb.h"
-#include "StMagF.h"
+#include "StMagF/StMagF.h"
 #include "TArrayF.h"
 #include "TArrayI.h"
 class Altro;

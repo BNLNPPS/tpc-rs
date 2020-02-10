@@ -53,7 +53,7 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_COORDINATE_HH
 #define ST_TPC_LOCAL_COORDINATE_HH
-#include "StTpcCoordinate.h"
+#include "StDbUtilities/StTpcCoordinate.h"
 class StTpcLocalCoordinate : public StTpcCoordinate
 {
  public:

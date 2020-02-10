@@ -36,21 +36,21 @@
 #ifndef ST_TPC_COORDINATES_HH
 #define ST_TPC_COORDINATES_HH
 
-#include "StTpcPadCoordinate.hh"
-#include "StTpcLocalCoordinate.hh"
-#include "StTpcLocalSectorCoordinate.hh"
-#include "StTpcLocalSectorAlignedCoordinate.hh"
-#include "StGlobalCoordinate.hh"
+#include "StDbUtilities/StTpcPadCoordinate.hh"
+#include "StDbUtilities/StTpcLocalCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorAlignedCoordinate.hh"
+#include "StDbUtilities/StGlobalCoordinate.hh"
 
-#include "StTpcLocalDirection.hh"
-#include "StTpcLocalSectorDirection.hh"
-#include "StTpcLocalSectorAlignedDirection.hh"
-#include "StGlobalDirection.hh"
-#include "StTpcCoordinateTransform.hh"
+#include "StDbUtilities/StTpcLocalDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorAlignedDirection.hh"
+#include "StDbUtilities/StGlobalDirection.hh"
+#include "StDbUtilities/StTpcCoordinateTransform.hh"
 
-#include "StSvtLocalCoordinate.hh"
-#include "StSvtWaferCoordinate.hh"
+#include "StDbUtilities/StSvtLocalCoordinate.hh"
+#include "StDbUtilities/StSvtWaferCoordinate.hh"
 
-#include "StFtpcLocalCoordinate.hh"
-#include "StFtpcSectorCoordinate.hh"
+#include "StDbUtilities/StFtpcLocalCoordinate.hh"
+#include "StDbUtilities/StFtpcSectorCoordinate.hh"
 #endif

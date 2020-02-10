@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcGas.h"
+#include "include/tpcGas.h"
 
 /*!
  * \class  St_tpcGas

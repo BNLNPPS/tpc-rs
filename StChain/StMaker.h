@@ -8,7 +8,7 @@
 #define STAR_StMaker
 
 #include <assert.h>
-#include "Stypes.h"
+#include "St_base/Stypes.h"
 #include "TDataSet.h"
 #include "TDataSetIter.h"
 #include "TObjectSet.h"
@@ -18,12 +18,12 @@
 #include "TDatime.h"
 #include "TH1.h"
 #include "TFile.h"
-#include "StEvtHddr.h"
+#include "StChain/StEvtHddr.h"
 #ifndef ROOT_TClonesArray
 #include "TClonesArray.h"
 #endif
 #include "TStopwatch.h"
-#include "StMessMgr.h"
+#include "St_base/StMessMgr.h"
 
 #ifndef __CINT__
 #if ROOT_VERSION_CODE >= ROOT_VERSION(3,05,04)

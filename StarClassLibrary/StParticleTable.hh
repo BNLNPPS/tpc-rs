@@ -37,7 +37,7 @@
 #include "Rtypes.h"
 #endif
 
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 #include <string>
 #include <map>
 #include <vector>

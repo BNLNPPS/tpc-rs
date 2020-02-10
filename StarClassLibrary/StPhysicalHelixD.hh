@@ -9,8 +9,8 @@
 ****************************************************************************/
 #ifndef ST_PHYSICALHELIX_D_HH
 #define ST_PHYSICALHELIX_D_HH
-#include "StThreeVectorD.hh"
-#include "StHelixD.hh"
-#include "StPhysicalHelix.hh"
+#include "StarClassLibrary/StThreeVectorD.hh"
+#include "StarClassLibrary/StHelixD.hh"
+#include "StarClassLibrary/StPhysicalHelix.hh"
 typedef StPhysicalHelix StPhysicalHelixD;
 #endif

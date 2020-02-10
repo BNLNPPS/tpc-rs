@@ -54,8 +54,8 @@
 #include <math.h>
 #include <utility>
 #include <algorithm>
-#include "StThreeVector.hh"
-#include "SystemOfUnits.h"
+#include "StarClassLibrary/StThreeVector.hh"
+#include "StarClassLibrary/SystemOfUnits.h"
 #if !defined(ST_NO_NAMESPACES)
 using std::pair;
 using std::swap;

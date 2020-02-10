@@ -3,7 +3,7 @@
 
 #include "TChair.h"
 #include "tables/St_tpcPadGainT0_Table.h"
-#include "St_tpcPadConfigC.h"
+#include "StDetectorDbMaker/St_tpcPadConfigC.h"
 class St_tpcPadGainT0C : public TChair
 {
  public:

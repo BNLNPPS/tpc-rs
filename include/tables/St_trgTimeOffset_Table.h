@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "trgTimeOffset.h"
+#include "include/trgTimeOffset.h"
 
 /*!
  * \class  St_trgTimeOffset

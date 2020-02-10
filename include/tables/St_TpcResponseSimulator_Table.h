@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "TpcResponseSimulator.h"
+#include "include/TpcResponseSimulator.h"
 
 /*!
  * \class  St_TpcResponseSimulator

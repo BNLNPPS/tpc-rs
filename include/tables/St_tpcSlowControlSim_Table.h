@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcSlowControlSim.h"
+#include "include/tpcSlowControlSim.h"
 
 /*!
  * \class  St_tpcSlowControlSim

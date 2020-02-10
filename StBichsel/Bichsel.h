@@ -10,7 +10,7 @@
 #define Bichsel_h
 //#define P03ia
 #include "TString.h"
-#include "dEdxParameterization.h"
+#include "StBichsel/dEdxParameterization.h"
 class tpcCorrection_st;
 class Bichsel
 {

@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcDimensions.h"
+#include "include/tpcDimensions.h"
 
 /*!
  * \class  St_tpcDimensions

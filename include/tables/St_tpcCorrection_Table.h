@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcCorrection.h"
+#include "include/tpcCorrection.h"
 
 /*!
  * \class  St_tpcCorrection

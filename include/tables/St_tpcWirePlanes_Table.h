@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcWirePlanes.h"
+#include "include/tpcWirePlanes.h"
 
 /*!
  * \class  St_tpcWirePlanes

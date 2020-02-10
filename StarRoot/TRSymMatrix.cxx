@@ -1,7 +1,7 @@
 #include <iomanip>
 #include "TMath.h"
-#include "TRVector.h"
-#include "TRSymMatrix.h"
+#include "StarRoot/TRVector.h"
+#include "StarRoot/TRSymMatrix.h"
 #include "TRDiagMatrix.h"
 #include "TError.h"
 ClassImp(TRSymMatrix);

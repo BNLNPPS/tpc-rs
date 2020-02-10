@@ -142,8 +142,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 class StMagUtilities;
-#include "StMessMgr.h"
-#include "StEnumerations.h"
+#include "St_base/StMessMgr.h"
+#include "StEvent/StEnumerations.h"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcWirePlanesC.h"

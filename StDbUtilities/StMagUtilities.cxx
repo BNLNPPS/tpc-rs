@@ -445,7 +445,7 @@ To do:  <br>
 
 */
 #include <assert.h>
-#include "StMagUtilities.h"
+#include "StDbUtilities/StMagUtilities.h"
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TCanvas.h"

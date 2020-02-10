@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcElectronics.h"
+#include "include/tpcElectronics.h"
 
 /*!
  * \class  St_tpcElectronics

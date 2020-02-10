@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcRDOMasks.h"
+#include "include/tpcRDOMasks.h"
 
 /*!
  * \class  St_tpcRDOMasks

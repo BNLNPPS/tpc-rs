@@ -27,9 +27,9 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StParticleDefinition.hh"
-#include "StParticleTable.hh"
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StParticleDefinition.hh"
+#include "StarClassLibrary/StParticleTable.hh"
+#include "StarClassLibrary/PhysicalConstants.h"
 // #include <typeinfo>
 #ifdef __ROOT__
 ClassImp(StParticleDefinition)

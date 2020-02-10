@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcPadResponse.h"
+#include "include/tpcPadResponse.h"
 
 /*!
  * \class  St_tpcPadResponse

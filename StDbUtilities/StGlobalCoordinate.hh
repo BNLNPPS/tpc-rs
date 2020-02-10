@@ -58,9 +58,9 @@
 #ifndef ST_GLOBAL_COORDINATE_HH
 #define ST_GLOBAL_COORDINATE_HH
 
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 
-#include "StThreeVectorF.hh"
+#include "StarClassLibrary/StThreeVectorF.hh"
 
 class StGlobalCoordinate
 {

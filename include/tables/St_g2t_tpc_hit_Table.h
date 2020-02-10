@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "g2t_tpc_hit.h"
+#include "include/g2t_tpc_hit.h"
 
 /*!
  * \class  St_g2t_tpc_hit

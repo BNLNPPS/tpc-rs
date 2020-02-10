@@ -4,11 +4,11 @@
   \class StTpcdEdxCorrection
   StTpcdEdxCorrection class contains utilities
 */
-#include "StMaker.h"
-#include "StTpcdEdxCorrection.h"
+#include "StChain/StMaker.h"
+#include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 #include "StTpcDb/StTpcDb.h"
 #include "StBichsel/Bichsel.h"
-#include "StMessMgr.h"
+#include "St_base/StMessMgr.h"
 #include "StDetectorDbMaker/St_tss_tssparC.h"
 #include "StDetectorDbMaker/St_TpcEdgeC.h"
 #include "StDetectorDbMaker/St_TpcAdcCorrectionBC.h"

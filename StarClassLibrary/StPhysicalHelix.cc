@@ -40,10 +40,10 @@
  *
  **************************************************************************/
 #include <math.h>
-#include "StHelix.hh"
-#include "StPhysicalHelix.hh"
-#include "PhysicalConstants.h"
-#include "SystemOfUnits.h"
+#include "StarClassLibrary/StHelix.hh"
+#include "StarClassLibrary/StPhysicalHelix.hh"
+#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 #ifdef __ROOT__
 ClassImpT(StPhysicalHelix, double);
 #endif

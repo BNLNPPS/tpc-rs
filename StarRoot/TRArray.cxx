@@ -1,6 +1,6 @@
 #include <stdarg.h>
 #include <iomanip>
-#include "TRArray.h"
+#include "StarRoot/TRArray.h"
 #include "TString.h"
 #if ROOT_VERSION_CODE < 331013
 #include "TCL.h"

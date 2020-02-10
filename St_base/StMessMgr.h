@@ -43,7 +43,7 @@
 #endif
 
 #ifndef __CINT__
-#include "StarCallf77.h"
+#include "St_base/StarCallf77.h"
 #define Message_ F77_NAME(message,MESSAGE)
 #define Msg_Enable_ F77_NAME(msg_enable,MSG_ENABLE)
 #define Msg_Enabled_ F77_NAME(msg_enabled,MSG_ENABLED)
@@ -102,8 +102,8 @@ class StMessage;
 class messVec;
 #endif
 
-#include <Stsstream.h>
-#include <Stiostream.h>
+#include <St_base/Stsstream.h>
+#include <St_base/Stiostream.h>
 
 class StMessMgr : public ostrstream
 {

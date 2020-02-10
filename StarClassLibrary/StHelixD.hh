@@ -9,8 +9,8 @@
 ****************************************************************************/
 #ifndef ST_HELIX_D_HH
 #define ST_HELIX_D_HH
-#include "StThreeVectorD.hh"
-#include "StHelix.hh"
+#include "StarClassLibrary/StThreeVectorD.hh"
+#include "StarClassLibrary/StHelix.hh"
 #include <utility>
 typedef StHelix StHelixD;
 typedef pair<double, double> pairD;

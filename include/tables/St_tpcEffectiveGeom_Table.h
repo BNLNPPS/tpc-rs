@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcEffectiveGeom.h"
+#include "include/tpcEffectiveGeom.h"
 
 /*!
  * \class  St_tpcEffectiveGeom

@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "trigDetSums.h"
+#include "include/trigDetSums.h"
 
 /*!
  * \class  St_trigDetSums

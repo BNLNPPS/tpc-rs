@@ -4,8 +4,8 @@
 #include "TChair.h"
 #include <math.h>
 #include "tables/St_trigDetSums_Table.h"
-#include "StDetectorDbClock.h"
-#include "St_richvoltagesC.h"
+#include "StDetectorDbMaker/StDetectorDbClock.h"
+#include "StDetectorDbMaker/St_richvoltagesC.h"
 #include "TMath.h"
 class St_trigDetSumsC : public TChair
 {

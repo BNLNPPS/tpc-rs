@@ -7,7 +7,7 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_DIRECTION_HH
 #define ST_TPC_LOCAL_SECTOR_DIRECTION_HH
-#include "StTpcCoordinate.h"
+#include "StDbUtilities/StTpcCoordinate.h"
 class StTpcLocalSectorDirection : public StTpcCoordinate
 {
  public:

@@ -3,7 +3,7 @@
 
 #include "TChair.h"
 #include "tables/St_tpcElectronics_Table.h"
-#include "St_starClockOnlC.h"
+#include "StDetectorDbMaker/St_starClockOnlC.h"
 class St_tpcElectronicsC : public TChair
 {
  public:

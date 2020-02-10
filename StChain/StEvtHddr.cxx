@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <time.h>
 #include <assert.h>
-#include "StEvtHddr.h"
+#include "StChain/StEvtHddr.h"
 #include "StarRoot/TUnixTime.h"
-#include "StMessMgr.h"
+#include "St_base/StMessMgr.h"
 
 ClassImp(StEvtHddr)
 //_____________________________________________________________________________

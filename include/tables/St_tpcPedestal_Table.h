@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcPedestal.h"
+#include "include/tpcPedestal.h"
 
 /*!
  * \class  St_tpcPedestal

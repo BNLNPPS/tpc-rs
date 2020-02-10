@@ -3,8 +3,8 @@
 
 #include "TChair.h"
 #include "tables/St_tpcRDOMasks_Table.h"
-#include "St_tpcPadPlanesC.h"
-#include "St_tpcPadConfigC.h"
+#include "StDetectorDbMaker/St_tpcPadPlanesC.h"
+#include "StDetectorDbMaker/St_tpcPadConfigC.h"
 class St_tpcRDOMasksC : public TChair
 {
  public:

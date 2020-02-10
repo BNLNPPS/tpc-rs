@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tss_tsspar.h"
+#include "include/tss_tsspar.h"
 
 /*!
  * \class  St_tss_tsspar

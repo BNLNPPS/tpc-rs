@@ -1,12 +1,12 @@
 /***********************************************************************
  * $Id: StTpcCoordinate.cxx,v 1.2 2011/01/18 14:34:28 fisyak Exp $
  ***********************************************************************/
-#include "StTpcLocalDirection.hh"
-#include "StTpcLocalCoordinate.hh"
-#include "StTpcLocalSectorAlignedDirection.hh"
-#include "StTpcLocalSectorAlignedCoordinate.hh"
-#include "StTpcLocalSectorDirection.hh"
-#include "StTpcLocalSectorCoordinate.hh"
+#include "StDbUtilities/StTpcLocalDirection.hh"
+#include "StDbUtilities/StTpcLocalCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorAlignedDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorAlignedCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
 //________________________________________________________________________________
 StTpcLocalCoordinate::StTpcLocalCoordinate(double x, double y, double z) : StTpcCoordinate(x, y, z, 0, 0) {}
 //________________________________________________________________________________

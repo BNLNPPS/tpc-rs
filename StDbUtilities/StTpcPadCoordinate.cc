@@ -37,7 +37,7 @@
  *
  *
  *******************************************************************/
-#include "StTpcPadCoordinate.hh"
+#include "StDbUtilities/StTpcPadCoordinate.hh"
 
 static const char rcsid[] = "$Id: StTpcPadCoordinate.cc,v 1.3 2008/05/27 14:26:40 fisyak Exp $";
 // Non-Member function

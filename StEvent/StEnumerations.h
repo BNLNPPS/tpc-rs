@@ -228,10 +228,10 @@
 // processor #define statements. For compatibility reasons we have
 // to leave it as is for now.
 #include "Rtypes.h"
-#include "StDetectorDefinitions.h"
-#include "StDedxDefinitions.h"
-#include "StVertexDefinitions.h"
-#include "StTrackDefinitions.h"
+#include "StEvent/StDetectorDefinitions.h"
+#include "StEvent/StDedxDefinitions.h"
+#include "StEvent/StVertexDefinitions.h"
+#include "StEvent/StTrackDefinitions.h"
 
 /*!
  * \enum StBeamDirection

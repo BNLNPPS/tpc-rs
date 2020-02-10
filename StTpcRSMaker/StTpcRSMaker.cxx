@@ -10,12 +10,12 @@
  */
 
 #include <assert.h>
-#include "StTpcRSMaker.h"
-#include "Stiostream.h"
+#include "StTpcRSMaker/StTpcRSMaker.h"
+#include "St_base/Stiostream.h"
 // SCL
-#include "StGlobals.hh"
-#include "StThreeVectorD.hh"
-#include "StPhysicalHelixD.hh"
+#include "StarClassLibrary/StGlobals.hh"
+#include "StarClassLibrary/StThreeVectorD.hh"
+#include "StarClassLibrary/StPhysicalHelixD.hh"
 // ROOT
 #include "TClassTable.h"
 #include "TDataSetIter.h"
@@ -44,10 +44,10 @@
 #include "StDetectorDbMaker/St_TpcAvgCurrentC.h"
 #include "StDetectorDbMaker/St_TpcAvgPowerSupplyC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
-#include "StParticleTable.hh"
-#include "StParticleDefinition.hh"
-#include "Altro.h"
-#include "TRVector.h"
+#include "StarClassLibrary/StParticleTable.hh"
+#include "StarClassLibrary/StParticleDefinition.hh"
+#include "StTpcRSMaker/Altro.h"
+#include "StarRoot/TRVector.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 // g2t tables

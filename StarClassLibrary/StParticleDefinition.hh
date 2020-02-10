@@ -34,7 +34,7 @@
 #endif
 
 #include <string>
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 #if !defined(ST_NO_NAMESPACES)
 using std::string;
 #endif

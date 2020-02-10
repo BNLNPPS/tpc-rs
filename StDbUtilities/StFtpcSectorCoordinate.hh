@@ -30,7 +30,7 @@
  ***********************************************************************/
 #ifndef ST_FTPC_SECTOR_COORDINATE_HH
 #define ST_FTPC_SECTOR_COORDINATE_HH
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 
 class StFtpcSectorCoordinate
 {

@@ -249,10 +249,10 @@
  *
  *
  ***********************************************************************/
-#include "StTpcCoordinateTransform.hh"
+#include "StDbUtilities/StTpcCoordinateTransform.hh"
 #include "StMatrix.hh"
 #include <unistd.h>
-#include "StMessMgr.h"
+#include "St_base/StMessMgr.h"
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"
 #include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"
 #include "StDetectorDbMaker/St_tpcRDOT0offsetC.h"
@@ -262,7 +262,7 @@
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 #include "TMath.h"
-#include "StThreeVectorD.hh"
+#include "StarClassLibrary/StThreeVectorD.hh"
 #if defined (__SUNPRO_CC) && __SUNPRO_CC >= 0x500
 using namespace units;
 #endif

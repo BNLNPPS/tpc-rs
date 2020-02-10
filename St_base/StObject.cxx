@@ -74,7 +74,7 @@
 // Revision 1.1  1999/04/30 13:15:55  fisyak
 // Ad StObject, modification StArray for StRootEvent
 //
-#include "StObject.h"
+#include "St_base/StObject.h"
 #include "TDataSetIter.h"
 #include "TROOT.h"
 #include "TError.h"

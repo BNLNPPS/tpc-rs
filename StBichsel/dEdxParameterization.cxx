@@ -4,8 +4,8 @@
 //#define PRINT3 1
 //#define NumDer
 #include <assert.h>
-#include <Stiostream.h>
-#include "dEdxParameterization.h"
+#include <St_base/Stiostream.h>
+#include "StBichsel/dEdxParameterization.h"
 #include "TSystem.h"
 #include "TROOT.h"
 #include "TDirectory.h"

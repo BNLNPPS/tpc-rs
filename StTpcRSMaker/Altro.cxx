@@ -17,7 +17,7 @@
 	*	\verbinclude Altro/Altro.C.log
 	*/
 
-#include "Altro.h"
+#include "StTpcRSMaker/Altro.h"
 
 /**	@brief Consturctor of Altro Class
 	*

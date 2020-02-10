@@ -43,9 +43,9 @@
 #ifndef StTpcPixel_hh
 #define StTpcPixel_hh
 
-#include "StObject.h"
-#include "Stiostream.h"
-#include "StEnumerations.h"
+#include "St_base/StObject.h"
+#include "St_base/Stiostream.h"
+#include "StEvent/StEnumerations.h"
 
 class StTpcPixel : public StObject
 {

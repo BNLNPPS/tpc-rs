@@ -1,9 +1,9 @@
 #ifndef ROOT_TRVector
 #define ROOT_TRVector
-#include "TRMatrix.h"
-#include "TRSymMatrix.h"
+#include "StarRoot/TRMatrix.h"
+#include "StarRoot/TRSymMatrix.h"
 #include "TVector3.h"
-#include "StThreeVectorD.hh"
+#include "StarClassLibrary/StThreeVectorD.hh"
 class TRVector : public TRMatrix
 {
  public:

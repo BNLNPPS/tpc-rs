@@ -200,17 +200,17 @@
 //                                                                      //
 //                                                                      //
 #include "StChain.h"
-#include "StTpcDb.h"
+#include "StTpcDb/StTpcDb.h"
 #include "tables/St_trgTimeOffset_Table.h"
 #include "tables/St_dst_L0_Trigger_Table.h"
 #include "TUnixTime.h"
-#include "StMessMgr.h"
+#include "St_base/StMessMgr.h"
 #include "St_db_Maker/St_db_Maker.h"
 #include "TVector3.h"
 #include "TGeoManager.h"
 #include "StDetectorDbMaker/StTpcSurveyC.h"
 #include "StDetectorDbMaker/St_tpcDriftVelocityC.h"
-#include "StarMagField.h"
+#include "StarMagField/StarMagField.h"
 #include "StDbUtilities/StMagUtilities.h"
 #include "TEnv.h"
 StTpcDb* gStTpcDb = 0;

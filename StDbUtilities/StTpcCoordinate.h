@@ -4,8 +4,8 @@
  */
 #ifndef ST_TPC_COORDINATE_H
 #define ST_TPC_COORDINATE_H
-#include "Stiostream.h"
-#include "StThreeVector.hh"
+#include "St_base/Stiostream.h"
+#include "StarClassLibrary/StThreeVector.hh"
 
 class StTpcCoordinate
 {

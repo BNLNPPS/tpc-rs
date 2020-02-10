@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcAltroParams.h"
+#include "include/tpcAltroParams.h"
 
 /*!
  * \class  St_tpcAltroParams

@@ -48,8 +48,8 @@
  **************************************************************************/
 #ifndef StTrackPidTraits_hh
 #define StTrackPidTraits_hh
-#include "StObject.h"
-#include "StEnumerations.h"
+#include "St_base/StObject.h"
+#include "StEvent/StEnumerations.h"
 
 #ifndef DST_DEDX_H
 #define DST_DEDX_H

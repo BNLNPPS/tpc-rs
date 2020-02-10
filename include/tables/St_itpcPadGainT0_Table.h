@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "itpcPadGainT0.h"
+#include "include/itpcPadGainT0.h"
 
 /*!
  * \class  St_itpcPadGainT0

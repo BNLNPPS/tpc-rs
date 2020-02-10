@@ -53,11 +53,11 @@
 #ifndef StTpcRawData_h
 #define StTpcRawData_h
 
-#include "StObject.h"
+#include "St_base/StObject.h"
 #include <vector>
 #include <utility>
-#include "StSequence.hh"
-#include "StTpcPixel.h"
+#include "StarClassLibrary/StSequence.hh"
+#include "StEvent/StTpcPixel.h"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #define __MaxNumberOfTimeBins__ 512

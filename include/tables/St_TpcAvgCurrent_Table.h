@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "TpcAvgCurrent.h"
+#include "include/TpcAvgCurrent.h"
 
 /*!
  * \class  St_TpcAvgCurrent

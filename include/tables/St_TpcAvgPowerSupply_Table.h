@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "TpcAvgPowerSupply.h"
+#include "include/TpcAvgPowerSupply.h"
 
 /*!
  * \class  St_TpcAvgPowerSupply

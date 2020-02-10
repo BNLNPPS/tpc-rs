@@ -119,8 +119,8 @@ using std::numeric_limits;
 #endif
 #define FOR_HELIX
 #include <float.h>
-#include "StHelix.hh"
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StHelix.hh"
+#include "StarClassLibrary/PhysicalConstants.h"
 #ifdef __ROOT__
 ClassImpT(StHelix, double);
 #endif

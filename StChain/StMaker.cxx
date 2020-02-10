@@ -18,8 +18,8 @@
  *
  */
 #define STAR_LOGGER 1
-#include "StMaker.h"
-#include "Stiostream.h"
+#include "StChain/StMaker.h"
+#include "St_base/Stiostream.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,7 +44,7 @@
 #include "StMemStat.h"
 #include "TAttr.h"
 #include "StMkDeb.h"
-#include "StMessMgr.h"
+#include "St_base/StMessMgr.h"
 
 StMaker*     StMaker::fgTopChain    = 0;
 StMaker*     StMaker::fgStChain     = 0;

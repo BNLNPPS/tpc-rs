@@ -9,6 +9,6 @@
 ****************************************************************************/
 #ifndef ST_THREE_VECTOR_D_HH
 #define ST_THREE_VECTOR_D_HH
-#include "StThreeVector.hh"
+#include "StarClassLibrary/StThreeVector.hh"
 typedef StThreeVector<double> StThreeVectorD;
 #endif

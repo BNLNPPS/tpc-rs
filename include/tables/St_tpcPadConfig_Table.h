@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcPadConfig.h"
+#include "include/tpcPadConfig.h"
 
 /*!
  * \class  St_tpcPadConfig

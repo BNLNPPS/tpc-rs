@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "richvoltages.h"
+#include "include/richvoltages.h"
 
 /*!
  * \class  St_richvoltages

@@ -3,9 +3,9 @@
 
 #include "TChair.h"
 #include "tables/St_tpcDimensions_Table.h"
-#include "St_tpcPadConfigC.h"
-#include "St_tpcEffectiveGeomC.h"
-#include "St_tpcWirePlanesC.h"
+#include "StDetectorDbMaker/St_tpcPadConfigC.h"
+#include "StDetectorDbMaker/St_tpcEffectiveGeomC.h"
+#include "StDetectorDbMaker/St_tpcWirePlanesC.h"
 class St_tpcDimensionsC : public TChair
 {
  public:

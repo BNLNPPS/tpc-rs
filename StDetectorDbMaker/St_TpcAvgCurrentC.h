@@ -3,7 +3,7 @@
 
 #include "TChair.h"
 #include "tables/St_TpcAvgCurrent_Table.h"
-#include "St_tpcAnodeHVC.h"
+#include "StDetectorDbMaker/St_tpcAnodeHVC.h"
 class St_TpcAvgCurrentC : public TChair
 {
  public:

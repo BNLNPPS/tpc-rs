@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "starClockOnl.h"
+#include "include/starClockOnl.h"
 
 /*!
  * \class  St_starClockOnl

@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcFieldCage.h"
+#include "include/tpcFieldCage.h"
 
 /*!
  * \class  St_tpcFieldCage

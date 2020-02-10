@@ -4,6 +4,6 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_ALIGNED_DIRECTION_HH
 #define ST_TPC_LOCAL_SECTOR_ALIGNED_DIRECTION_HH
-#include "StTpcLocalSectorDirection.hh"
+#include "StDbUtilities/StTpcLocalSectorDirection.hh"
 typedef StTpcLocalSectorDirection StTpcLocalSectorAlignedDirection;
 #endif

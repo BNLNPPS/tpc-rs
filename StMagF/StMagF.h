@@ -4,7 +4,7 @@
 #include "TNamed.h"
 #include "StarMagField/StarMagField.h"
 #ifndef __CINT__
-#include "StarCallf77.h"
+#include "St_base/StarCallf77.h"
 #endif
 class StMagF : public TNamed
 {

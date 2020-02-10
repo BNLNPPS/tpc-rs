@@ -1,5 +1,5 @@
 #include "Riostream.h"
-#include "Bichsel.h"
+#include "StBichsel/Bichsel.h"
 #include <assert.h>
 using namespace std;
 ClassImp(Bichsel)

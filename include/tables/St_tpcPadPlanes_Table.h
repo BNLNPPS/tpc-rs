@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcPadPlanes.h"
+#include "include/tpcPadPlanes.h"
 
 /*!
  * \class  St_tpcPadPlanes

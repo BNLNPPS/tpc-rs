@@ -129,8 +129,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StParticleTable.hh"
-#include "StParticleDefinition.hh"
+#include "StarClassLibrary/StParticleTable.hh"
+#include "StarClassLibrary/StParticleDefinition.hh"
 
 #include "StarPDGEncoding.hh"
 #define kUndefined _undefined_particle_id++

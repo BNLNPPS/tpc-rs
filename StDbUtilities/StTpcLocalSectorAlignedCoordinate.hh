@@ -4,6 +4,6 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_ALIGNED_COORDINATE_HH
 #define ST_TPC_LOCAL_SECTOR_ALIGNED_COORDINATE_HH
-#include "StTpcLocalSectorCoordinate.hh"
+#include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
 typedef StTpcLocalSectorCoordinate StTpcLocalSectorAlignedCoordinate;
 #endif

@@ -1,6 +1,6 @@
 #ifndef ROOT_TRSymMatrix
 #define ROOT_TRSymMatrix
-#include "TRArray.h"
+#include "StarRoot/TRArray.h"
 #include <assert.h>
 class TRMatrix;
 class TRVector;

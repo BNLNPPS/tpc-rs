@@ -46,7 +46,7 @@
  ***********************************************************************/
 #ifndef ST_TPC_PAD_COORDINATE_HH
 #define ST_TPC_PAD_COORDINATE_HH
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 #include "Rtypes.h"
 class StTpcPadCoordinate
 {
