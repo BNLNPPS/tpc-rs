@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include "StTpcRSMaker/StTpcRSMaker.h"
+#include "St_base/StarCallf77.h"
 #include "St_base/Stiostream.h"
 // SCL
 #include "StarClassLibrary/StGlobals.hh"
@@ -25,8 +26,6 @@
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
-#include "TVirtualMC.h"
-#include "TInterpreter.h"
 #include "Math/SpecFuncMathMore.h"
 #include "StDbUtilities/StCoordinates.hh"
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
@@ -46,8 +45,10 @@
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
 #include "StarClassLibrary/StParticleTable.hh"
 #include "StarClassLibrary/StParticleDefinition.hh"
+#include "StMagF/StMagF.h"
 #include "StTpcRSMaker/Altro.h"
 #include "StarRoot/TRVector.h"
+#include "St_base/StMessMgr.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 // g2t tables
