@@ -31,7 +31,7 @@
 #ifndef __CINT__
 #define HEP_PHYSICAL_CONSTANTS_H
 
-#include "SystemOfUnits.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 #include "TMath.h"
 
 #ifndef ST_NO_NAMESPACES

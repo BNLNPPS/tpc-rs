@@ -27,10 +27,10 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StHyperTriton.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StHyperTriton.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
-#include "StarPDGEncoding.hh"
+#include "StarClassLibrary/StarPDGEncoding.hh"
 
 StHyperTriton::StHyperTriton(const string  &  aName,  
 			     double           mass,     

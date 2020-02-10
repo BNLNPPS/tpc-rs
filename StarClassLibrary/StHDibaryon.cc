@@ -24,8 +24,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StHDibaryon.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StHDibaryon.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
 StHDibaryon::StHDibaryon(const string  &  aName,  
 		   double           mass,     

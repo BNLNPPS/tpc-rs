@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcRDOT0offset.h"
+#include "include/tpcRDOT0offset.h"
 
 /*!
  * \class  St_tpcRDOT0offset

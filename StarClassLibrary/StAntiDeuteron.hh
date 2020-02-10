@@ -29,7 +29,7 @@
 #ifndef StAntiDeuteron_hh
 #define StAntiDeuteron_hh
 
-#include "StIon.hh"
+#include "StarClassLibrary/StIon.hh"
 
 class StAntiDeuteron : public StIon {
 public:

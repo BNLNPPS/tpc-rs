@@ -30,10 +30,10 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StAntiHyperTriton.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StAntiHyperTriton.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
-#include "StarPDGEncoding.hh"
+#include "StarClassLibrary/StarPDGEncoding.hh"
 
 StAntiHyperTriton::StAntiHyperTriton(const string  &  aName,  
 			     double           mass,     

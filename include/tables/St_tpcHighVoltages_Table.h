@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcHighVoltages.h"
+#include "include/tpcHighVoltages.h"
 
 /*!
  * \class  St_tpcHighVoltages

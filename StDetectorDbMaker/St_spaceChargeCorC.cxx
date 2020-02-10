@@ -1,5 +1,5 @@
-#include "St_spaceChargeCorC.h"
-#include "St_trigDetSumsC.h"
+#include "StDetectorDbMaker/St_spaceChargeCorC.h"
+#include "StDetectorDbMaker/St_trigDetSumsC.h"
 #include "StChain/StMaker.h"
 
 Double_t St_spaceChargeCorC::getSpaceChargeCoulombs(Double_t scaleFactor)

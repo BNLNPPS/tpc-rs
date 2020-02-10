@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "MagFactor.h"
+#include "include/MagFactor.h"
 
 /*!
  * \class  St_MagFactor

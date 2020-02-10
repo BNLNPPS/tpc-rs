@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcChargeEvent.h"
+#include "include/tpcChargeEvent.h"
 
 /*!
  * \class  St_tpcChargeEvent

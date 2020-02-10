@@ -1,4 +1,4 @@
-#include "StMatrix.hh"
+#include "StarClassLibrary/StMatrix.hh"
 #ifdef __ROOT__
 #include "TBuffer.h"
 #include "TClass.h"

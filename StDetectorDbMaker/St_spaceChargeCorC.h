@@ -3,7 +3,7 @@
 
 #include "TChair.h"
 #include "tables/St_spaceChargeCor_Table.h"
-#include "StDetectorDbMagnet.h"
+#include "StDetectorDbMaker/StDetectorDbMagnet.h"
 
 class St_spaceChargeCorC : public TChair {
  public:

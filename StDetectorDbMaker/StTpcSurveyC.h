@@ -1,8 +1,8 @@
 #ifndef StTpcSurveyC_h
 #define StTpcSurveyC_h
 
-#include "St_SurveyC.h"
-#include "StEnumerations.h"
+#include "StDetectorDbMaker/St_SurveyC.h"
+#include "StEvent/StEnumerations.h"
 class StTpcInnerSectorPosition : public St_SurveyC {// Inner part of sector to Super Sector
  public:
   static StTpcInnerSectorPosition* 	instance();

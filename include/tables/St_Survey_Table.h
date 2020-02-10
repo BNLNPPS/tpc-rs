@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "Survey.h"
+#include "include/Survey.h"
 
 /*!
  * \class  St_Survey

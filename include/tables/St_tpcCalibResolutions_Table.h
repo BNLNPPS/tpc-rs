@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcCalibResolutions.h"
+#include "include/tpcCalibResolutions.h"
 
 /*!
  * \class  St_tpcCalibResolutions

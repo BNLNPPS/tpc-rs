@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcDriftVelocity.h"
+#include "include/tpcDriftVelocity.h"
 
 /*!
  * \class  St_tpcDriftVelocity

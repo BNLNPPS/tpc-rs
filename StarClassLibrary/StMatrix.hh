@@ -240,7 +240,7 @@
 #ifndef ST_MATRIX_HH
 #define ST_MATRIX_HH
 
-#include <Stiostream.h>
+#include <St_base/Stiostream.h>
 #include <math.h>
 #include <vector>
 #include <float.h>
@@ -256,8 +256,8 @@ using std::vector;
 #   endif
 #endif
 
-#include "StThreeVector.hh"
-#include "StLorentzVector.hh"
+#include "StarClassLibrary/StThreeVector.hh"
+#include "StarClassLibrary/StLorentzVector.hh"
 
 // in types.h assumed:
 // typedef   unsigned int  size_t;

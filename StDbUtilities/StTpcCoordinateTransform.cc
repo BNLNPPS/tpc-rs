@@ -250,7 +250,7 @@
  *
  ***********************************************************************/
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
-#include "StMatrix.hh"
+#include "StarClassLibrary/StMatrix.hh"
 #include <unistd.h>
 #include "St_base/StMessMgr.h"
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"

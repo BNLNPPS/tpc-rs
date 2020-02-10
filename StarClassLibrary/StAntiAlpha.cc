@@ -26,8 +26,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StAntiAlpha.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StAntiAlpha.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
 StAntiAlpha::StAntiAlpha(const string  &  aName,  
 		 double           mass,     

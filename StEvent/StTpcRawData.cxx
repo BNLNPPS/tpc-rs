@@ -75,7 +75,7 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StTpcRawData.h"
+#include "StEvent/StTpcRawData.h"
 #include "Riostream.h"
 #include <assert.h>
 #include "TMath.h"

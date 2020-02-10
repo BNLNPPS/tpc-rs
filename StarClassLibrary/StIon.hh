@@ -21,7 +21,7 @@
 #ifndef StIon_hh
 #define StIon_hh
 
-#include "StParticleDefinition.hh"
+#include "StarClassLibrary/StParticleDefinition.hh"
 
 class StIon : public StParticleDefinition {
 public:

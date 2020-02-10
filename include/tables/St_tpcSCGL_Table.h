@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcSCGL.h"
+#include "include/tpcSCGL.h"
 
 /*!
  * \class  St_tpcSCGL

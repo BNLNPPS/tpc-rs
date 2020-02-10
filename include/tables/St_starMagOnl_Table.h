@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "starMagOnl.h"
+#include "include/starMagOnl.h"
 
 /*!
  * \class  St_starMagOnl

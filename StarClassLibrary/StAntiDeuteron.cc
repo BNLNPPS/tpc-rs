@@ -29,8 +29,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StAntiDeuteron.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StAntiDeuteron.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
 StAntiDeuteron::StAntiDeuteron(const string  &  aName,  
 		       double           mass,     

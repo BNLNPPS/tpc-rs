@@ -70,7 +70,7 @@
 #ifndef ST_LORENTZ_VECTOR_HH
 #define ST_LORENTZ_VECTOR_HH
 
-#include "StThreeVector.hh"
+#include "StarClassLibrary/StThreeVector.hh"
 template<class T> class StLorentzVector {
 public:
     StLorentzVector(T, T, T, T);

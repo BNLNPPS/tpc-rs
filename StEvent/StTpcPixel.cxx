@@ -29,7 +29,7 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StTpcPixel.h"
+#include "StEvent/StTpcPixel.h"
 
 void StTpcPixel::Print(Option_t *option) const {
       cout << option << "\t" << *this << endl;

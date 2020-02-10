@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcRDOMap.h"
+#include "include/tpcRDOMap.h"
 
 /*!
  * \class  St_tpcRDOMap

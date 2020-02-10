@@ -26,8 +26,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StAntiHelium3.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StAntiHelium3.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
 StAntiHelium3::StAntiHelium3(const string  &  aName,  
 		   double           mass,     

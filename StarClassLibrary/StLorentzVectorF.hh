@@ -9,8 +9,8 @@
 ****************************************************************************/
 #ifndef ST_LORENTZ_VECTOR_F_HH
 #define ST_LORENTZ_VECTOR_F_HH
-#include "StThreeVectorF.hh"
-#include "StThreeVectorD.hh"
-#include "StLorentzVector.hh"
+#include "StarClassLibrary/StThreeVectorF.hh"
+#include "StarClassLibrary/StThreeVectorD.hh"
+#include "StarClassLibrary/StLorentzVector.hh"
 typedef StLorentzVector<float> StLorentzVectorF;
 #endif

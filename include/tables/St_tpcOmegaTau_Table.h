@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcOmegaTau.h"
+#include "include/tpcOmegaTau.h"
 
 /*!
  * \class  St_tpcOmegaTau

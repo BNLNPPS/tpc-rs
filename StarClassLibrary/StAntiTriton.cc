@@ -26,8 +26,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StAntiTriton.hh" 
-#include "PhysicalConstants.h"
+#include "StarClassLibrary/StAntiTriton.hh" 
+#include "StarClassLibrary/PhysicalConstants.h"
 
 StAntiTriton::StAntiTriton(const string  &  aName,  
 		   double           mass,     

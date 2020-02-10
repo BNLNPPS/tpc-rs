@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "iTPCSurvey.h"
+#include "include/iTPCSurvey.h"
 
 /*!
  * \class  St_iTPCSurvey

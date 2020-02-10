@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "tpcGridLeak.h"
+#include "include/tpcGridLeak.h"
 
 /*!
  * \class  St_tpcGridLeak

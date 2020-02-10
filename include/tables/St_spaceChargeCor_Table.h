@@ -4,7 +4,7 @@
 
 #include "TTable.h"
 
-#include "spaceChargeCor.h"
+#include "include/spaceChargeCor.h"
 
 /*!
  * \class  St_spaceChargeCor

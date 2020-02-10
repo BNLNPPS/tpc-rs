@@ -29,7 +29,7 @@
 #ifndef StAntiHelium3_hh
 #define StAntiHelium3_hh
 
-#include "StIon.hh"
+#include "StarClassLibrary/StIon.hh"
 
 class StAntiHelium3 : public StIon {
 public:
