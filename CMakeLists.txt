@@ -67,3 +67,5 @@ add_library(tpcrs
 	StTpcDb/StTpcDb.cxx
 	StChain/StMaker.cxx
 )
+
+add_subdirectory(tests)
