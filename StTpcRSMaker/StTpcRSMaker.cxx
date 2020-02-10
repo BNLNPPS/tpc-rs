@@ -119,7 +119,6 @@ StTpcRSMaker::StTpcRSMaker(const char* name):
   NoOfTimeBins(__MaxNumberOfTimeBins__),
   mCutEle(1e-5)
 {
-  memset(beg, 0, end - beg + 1);
   m_Mode = 0;
   //  SETBIT(m_Mode,kHEED);
   SETBIT(m_Mode, kBICHSEL); // Default is Bichsel

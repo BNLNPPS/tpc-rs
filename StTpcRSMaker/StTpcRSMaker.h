@@ -88,7 +88,6 @@ class StTpcRSMaker
 #endif
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
-  Char_t   beg[1];                    //!
   Int_t    m_Mode;
   TTree*   fTree;                     //!
   SignalSum_t*     m_SignalSum;       //!
@@ -139,7 +138,6 @@ class StTpcRSMaker
   Double_t tbksdE[kTimeBacketMax];    //!
   Double_t rowsdEH[kRowMax];          //!
   Double_t rowsdE[kRowMax];           //!
-  Char_t end[1];                      //!
   Double_t             mLaserScale;   //!
   const Double_t minSignal;           //!
   const Double_t ElectronRange;       //!
