@@ -116,7 +116,7 @@ StTpcRSMaker::StTpcRSMaker(const char* name):
   NoOfSectors(24),
   NoOfPads(182),
   NoOfTimeBins(__MaxNumberOfTimeBins__),
-  mCutEle(1e-5)
+  mCutEle(1e-3)
 {
   m_Mode = 0;
   //  SETBIT(m_Mode,kHEED);
@@ -166,17 +166,6 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
   if (!gStTpcDb) {
     LOG_ERROR << "Database Missing! Can't initialize TpcRS" << endm;
     return kStFatal;
-  }
-
-  mCutEle = GetCutEle();
-
-  if (mCutEle > 0) {
-    LOG_INFO << "StTpcRSMaker::InitRun: mCutEle set to = " << mCutEle << " from geant \"" << TpcMedium.Data() << "\" parameters" << endm;
-  }
-  else {
-    mCutEle = 1e-4;
-    LOG_ERROR << "StTpcRSMaker::InitRun: mCutEle has not been found in GEANT3 for \"" << TpcMedium.Data() << "\" parameters."
-              << "Probably due to missing  Set it to default " << mCutEle << endm;
   }
 
   if (TESTBIT(m_Mode, kBICHSEL)) {
@@ -2064,128 +2053,6 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(Double_t w)
   TF1* f = new TF1("Ec", Ec, 0, 3.064 * w, 1);
   f->SetParameter(0, w);
   return f;
-}
-
-
-
-
-void type_of_call gcomad(DEFCHARD, Int_t* &DEFCHARL)
-{
-}
-
-Float_t StTpcRSMaker::GetCutEle()
-{
-  //----------GCBANK
-  //      COMMON/GCBANK/NZEBRA,GVERSN,ZVERSN,IXSTOR,IXDIV,IXCONS,FENDQ(16)
-  //     +             ,LMAIN,LR1,WS(KWBANK)
-  struct Gcbank_t {
-    Int_t nzebra;
-    Float_t gversn;
-    Float_t zversn;
-    Int_t ixstor;
-    Int_t ixdiv;
-    Int_t ixcons;
-    Float_t fendq[16];
-    Int_t lmain;
-    Int_t lr1;
-  };
-  Gcbank_t* fGcbank;          //! GCBANK common structure
-  gcomad(PASSCHARD("GCBANK"), (int* &) fGcbank  PASSCHARL("GCBANK"));
-  //----------GCLINK
-  //      COMMON/GCLINK/JDIGI ,JDRAW ,JHEAD ,JHITS ,JKINE ,JMATE ,JPART
-  //     +      ,JROTM ,JRUNG ,JSET  ,JSTAK ,JGSTAT,JTMED ,JTRACK,JVERTX
-  //     +      ,JVOLUM,JXYZ  ,JGPAR ,JGPAR2,JSKLT
-  typedef struct {
-    Int_t    jdigi;
-    Int_t    jdraw;
-    Int_t    jhead;
-    Int_t    jhits;
-    Int_t    jkine;
-    Int_t    jmate;
-    Int_t    jpart;
-    Int_t    jrotm;
-    Int_t    jrung;
-    Int_t    jset;
-    Int_t    jstak;
-    Int_t    jgstat;
-    Int_t    jtmed;
-    Int_t    jtrack;
-    Int_t    jvertx;
-    Int_t    jvolum;
-    Int_t    jxyz;
-    Int_t    jgpar;
-    Int_t    jgpar2;
-    Int_t    jsklt;
-  } Gclink_t;
-  Gclink_t* fGclink;          //! GCLINK common structure
-  gcomad(PASSCHARD("GCLINK"), (int* &) fGclink  PASSCHARL("GCLINK"));
-
-  //----------GCCUTS
-  //  COMMON/GCCUTS/CUTGAM,CUTELE,CUTNEU,CUTHAD,CUTMUO,BCUTE,BCUTM
-  //   +             ,DCUTE ,DCUTM ,PPCUTM,TOFMAX,GCUTS(5)
-  struct  Gccuts_t {
-    Float_t cutgam;
-    Float_t cutele;
-    Float_t cutneu;
-    Float_t cuthad;
-    Float_t cutmuo;
-    Float_t bcute;
-    Float_t bcutm;
-    Float_t dcute;
-    Float_t dcutm;
-    Float_t ppcutm;
-    Float_t tofmax;
-    Float_t gcuts[5];
-  };
-  Gccuts_t* fGccuts;          //! GCCUTS common structure
-  gcomad(PASSCHARD("GCCUTS"), (int* &) fGccuts  PASSCHARL("GCCUTS"));
-  //----------GCNUM
-  //   COMMON/GCNUM/NMATE ,NVOLUM,NROTM,NTMED,NTMULT,NTRACK,NPART
-  //  +            ,NSTMAX,NVERTX,NHEAD,NBIT
-  struct  Gcnum_t {
-    Int_t    nmate;
-    Int_t    nvolum;
-    Int_t    nrotm;
-    Int_t    ntmed;
-    Int_t    ntmult;
-    Int_t    ntrack;
-    Int_t    npart;
-    Int_t    nstmax;
-    Int_t    nvertx;
-    Int_t    nhead;
-    Int_t    nbit;
-  };
-  Gcnum_t*  fGcnum;           //! GCNUM common structure
-  gcomad(PASSCHARD("GCNUM"), (int* &) fGcnum   PASSCHARL("GCNUM"));
-  Int_t* addr;
-  // Variables for ZEBRA store
-  gcomad(PASSCHARD("IQ"), addr  PASSCHARL("IQ"));
-  Int_t*   fZiq = addr;
-  gcomad(PASSCHARD("LQ"), addr  PASSCHARL("LQ"));
-  Int_t*   fZlq = addr;
-  Float_t* fZq       = (float*)fZiq;
-  Int_t   ITPAR = 2; // IF(CHPAR.EQ.'CUTELE')ITPAR=2
-  Int_t JTMED = fGclink->jtmed;
-
-  for (Int_t i = 1; i <= fGcnum->ntmed; i++) {
-    Int_t JTM = fZlq[JTMED - i];
-
-    if (! JTM) continue;
-
-    TString Medium((Char_t*)(&fZiq[JTM + 1]), 20);
-
-    if (!Medium.BeginsWith(TpcMedium)) continue;
-
-    Int_t JTMN = fZlq[JTM];
-
-    if (! JTMN) continue;
-
-    Float_t cutele = fZq[JTMN + ITPAR];
-    return cutele;
-  }
-
-  LOG_INFO << "StTpcRSMaker::GetCutEle: specific CutEle for medium \"" << TpcMedium.Data() << "\" has not been found. Use default." << endm;
-  return fGccuts->cutele;
 }
 
 
