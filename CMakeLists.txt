@@ -34,4 +34,5 @@ add_library(tpcrs
 	StTpcRSMaker/StTpcRSMaker.cxx
 	StTpcRSMaker/Altro.cxx
 	StTpcRSMaker/TF1F.cxx
+	St_base/StMessMgr.cxx
 )
