@@ -117,10 +117,6 @@ template<class T> class StThreeVector
  public:
   StThreeVector();
   StThreeVector(T, T, T);
-  //                     ROOT_VERSION(5,03,01)
-#if ROOT_VERSION_CODE >= 328449
-  StThreeVector(TRootIOCtor*) : mX1(0), mX2(0), mX3(0) {}
-#endif
   virtual ~StThreeVector();
 
 #if !defined(ST_NO_MEMBER_TEMPLATES) && !defined(__CINT__)
