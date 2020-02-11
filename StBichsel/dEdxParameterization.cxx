@@ -2,7 +2,7 @@
 //#define PRINT2 1
 //#define PRINT3 1
 //#define NumDer
-#include <assert.h>
+#include <cassert>
 #include "StBichsel/dEdxParameterization.h"
 #include "TSystem.h"
 #include "TROOT.h"

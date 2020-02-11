@@ -63,7 +63,7 @@
 #ifndef HEP_SYSTEM_OF_UNITS_H
 #define HEP_SYSTEM_OF_UNITS_H
 
-#include <math.h>
+#include <cmath>
 
 namespace units
 {

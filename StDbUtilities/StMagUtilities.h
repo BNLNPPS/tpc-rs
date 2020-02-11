@@ -195,7 +195,7 @@
 #ifndef StMagUtilities_H
 #define StMagUtilities_H
 #define  __NEW_MagUtilities__
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -51,7 +51,7 @@
 #ifndef ST_HELIX_HH
 #define ST_HELIX_HH
 
-#include <math.h>
+#include <cmath>
 #include <ostream>
 #include <utility>
 #include <algorithm>

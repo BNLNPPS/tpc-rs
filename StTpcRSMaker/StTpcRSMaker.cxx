@@ -9,7 +9,7 @@
  *  \Author Y.Fisyak, fisyak@bnl.gov
  */
 
-#include <assert.h>
+#include <cassert>
 #include <vector>
 
 #include "StTpcRSMaker/StTpcRSMaker.h"

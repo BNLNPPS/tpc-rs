@@ -78,7 +78,7 @@
 #ifndef StarMagField_H
 #define StarMagField_H
 
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Rtypes.h>
