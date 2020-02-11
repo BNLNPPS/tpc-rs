@@ -4,7 +4,6 @@
 #include "TChair.h"
 #include "tables/St_spaceChargeCor_Table.h"
 #include "StDetectorDbMagnet.h"
-#include "StChain/StChain.h"
 
 class St_spaceChargeCorC : public TChair {
  public:

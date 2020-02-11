@@ -1,4 +1,3 @@
-#include <iomanip>
 #include "StarRoot/TRMatrix.h"
 #include "TMath.h"
 #include "TError.h"

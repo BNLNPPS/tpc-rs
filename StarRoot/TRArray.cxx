@@ -1,5 +1,4 @@
 #include <stdarg.h>
-#include <iomanip>
 #include "StarRoot/TRArray.h"
 #include "TString.h"
 #if ROOT_VERSION_CODE < 331013

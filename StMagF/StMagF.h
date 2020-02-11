@@ -3,9 +3,6 @@
 #include "Rtypes.h"
 #include "TNamed.h"
 #include "StarMagField/StarMagField.h"
-#ifndef __CINT__
-#include "St_base/StarCallf77.h"
-#endif
 class StMagF : public TNamed
 {
  public:

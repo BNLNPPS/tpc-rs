@@ -202,7 +202,6 @@
 
 #include "TDatime.h"
 
-#include "StChain.h"
 #include "StTpcDb/StTpcDb.h"
 #include "tables/St_trgTimeOffset_Table.h"
 #include "tables/St_dst_L0_Trigger_Table.h"
