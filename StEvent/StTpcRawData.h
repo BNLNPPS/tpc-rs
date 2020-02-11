@@ -118,14 +118,10 @@ class StTpcDigitalSector : public StObject
 
   // Adding
   void   assignTimeBins(int row, int pad, StDigitalTimeBins*);
-  Int_t  getSequences(Int_t row, Int_t pad, Int_t* nSeq, StSequence** seq, UShort_t*** Id);
   Int_t  getPadList(Int_t row, UChar_t** padList);
   Int_t  getTimeAdc(Int_t row, Int_t pad, Short_t ADCs[__MaxNumberOfTimeBins__],
                     UShort_t IDTs[__MaxNumberOfTimeBins__]); // with  8 => 10 conversion
-  Int_t  getTimeAdc(Int_t row, Int_t pad, UChar_t  ADCs[__MaxNumberOfTimeBins__],
-                    UShort_t IDTs[__MaxNumberOfTimeBins__]);
   Int_t  putTimeAdc(Int_t row, Int_t pad, Short_t* ADCs, UShort_t* IDTs = 0);     // with 10 =>  8 conversion
-  Int_t  putTimeAdc(Int_t row, Int_t pad, UChar_t*  ADCs, UShort_t* IDTs = 0);
   void   setSector(Int_t sector) {mSector = sector;}
   void   clear();
   Int_t  cleanup();

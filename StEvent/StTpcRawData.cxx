@@ -79,7 +79,6 @@
 #include "Riostream.h"
 #include <assert.h>
 #include "TMath.h"
-#include "StDaqLib/TPC/trans_table.hh"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 
@@ -153,37 +152,6 @@ Int_t StTpcDigitalSector::cleanup() {
 }
 
 
-Int_t StTpcDigitalSector::getSequences(Int_t row, Int_t pad, Int_t *nSeq, StSequence** Seq, UShort_t ***Ids) {
-  *Seq=0;
-  if (Ids) *Ids=0;*nSeq=0;
-  mSequence.clear();
-  mIds.clear();
-  StDigitalTimeBins* TrsPadData = timeBinsOfRowAndPad(row,pad);
-  if (!TrsPadData) return 1;
-  StDigitalTimeBins &trsPadData = *TrsPadData;
-  Int_t nTimeBins = trsPadData.size();
-  if (!nTimeBins) return 2;
-  // Construct the sequences:
-  StSequence aSequence;
-  static UChar_t ADCs[__MaxNumberOfTimeBins__];
-  static UShort_t IDTs[__MaxNumberOfTimeBins__];
-  getTimeAdc(row,pad,ADCs, IDTs);
-  
-  for (Int_t ibin=0;ibin<nTimeBins;ibin++)  {
-    aSequence.length       = trsPadData[ibin].size();
-    if (aSequence.length > 31) aSequence.length = 31;
-    aSequence.startTimeBin = trsPadData[ibin].time();
-    aSequence.firstAdc     = &ADCs[aSequence.startTimeBin];
-    mSequence.push_back(aSequence);
-    mIds.push_back(&IDTs[aSequence.startTimeBin]);
-  }
-  *nSeq = mSequence.size();
-  *Seq = &mSequence[0];
-  if (Ids) *Ids = &mIds[0];
-  return 0;
-}
-
-
 Int_t StTpcDigitalSector::getPadList(Int_t row, UChar_t **padList) {
   mPadList.clear();
   assert( row>=1 && row <=mNoRows);
@@ -215,24 +183,6 @@ Int_t StTpcDigitalSector::putTimeAdc(Int_t row, Int_t pad, Short_t *ADCs, UShort
 }
 
 
-Int_t StTpcDigitalSector::putTimeAdc(Int_t row, Int_t pad, UChar_t *ADCs, UShort_t *IDTs) {// no conversion
-  Int_t ntimebins = 0;
-  StDigitalTimeBins  digPadData;
-  Int_t tbC = -999;
-  for (Int_t tb = 0; tb < __MaxNumberOfTimeBins__; tb++) {
-    if (! ADCs[tb]) continue;
-    if (tb != tbC+1) digPadData.push_back(StDigitalPair(tb));
-    tbC = tb;
-    Short_t adc = log8to10_table[ADCs[tb]];
-    if (IDTs) digPadData.back().add(adc,IDTs[tb]);
-    else      digPadData.back().add(adc);
-    ntimebins++;
-  }
-  assignTimeBins(row,pad,&digPadData);
-  return ntimebins;
-}
-
-
 Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad, 
 				     Short_t  ADCs[__MaxNumberOfTimeBins__],
 				     UShort_t IDTs[__MaxNumberOfTimeBins__]) { 
@@ -257,34 +207,6 @@ Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad,
   }
   return nTimeSeqs;
 }
-
-
-Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad, 
-				     UChar_t ADCs[__MaxNumberOfTimeBins__], 
-				     UShort_t IDTs[__MaxNumberOfTimeBins__]) {
-  // 10-> 8 conversion
-  // no conversion
-  UInt_t nTimeSeqs = 0;
-  memset (ADCs, 0, __MaxNumberOfTimeBins__*sizeof(UChar_t));
-  memset (IDTs, 0, __MaxNumberOfTimeBins__*sizeof(UShort_t));
-  StDigitalTimeBins* TrsPadData = timeBinsOfRowAndPad(row,pad);
-  if (! TrsPadData) return nTimeSeqs;
-  StDigitalTimeBins &trsPadData = *TrsPadData;
-  nTimeSeqs = trsPadData.size();
-  if (! nTimeSeqs) return nTimeSeqs;
-  for (UInt_t i = 0; i < nTimeSeqs; i++) {
-    StDigitalPair &digPair = trsPadData[i];
-    UInt_t ntbk = digPair.size();
-    UInt_t tb   = digPair.time();
-    UInt_t isIdt= digPair.isIdt();
-    for (UInt_t j = 0; j < ntbk; j++, tb++) {
-      if (digPair.adc()[j] <= 0) continue;
-      ADCs[tb] = log10to8_table[digPair.adc()[j]];
-      if (isIdt) IDTs[tb] = digPair.idt()[j];
-    }
-  }
-  return nTimeSeqs;
- }
 
 
 Int_t StTpcDigitalSector::PrintTimeAdc(Int_t row, Int_t pad) const {
