@@ -31,8 +31,36 @@ include_directories(
 )
 
 add_library(tpcrs
+	St_base/StMessMgr.cxx
+	StarClassLibrary/StParticleTable.cc
+	StarClassLibrary/StParticleDefinition.cc
+	StarClassLibrary/StPhysicalHelix.cc
+	StarClassLibrary/StHelix.cc
+	StarClassLibrary/StHyperTriton.cc
+	StarClassLibrary/StAntiAlpha.cc
+	StarClassLibrary/StAntiHyperTriton.cc
+	StarClassLibrary/StAntiDeuteron.cc
+	StarClassLibrary/StAntiTriton.cc
+	StarClassLibrary/StAntiHelium3.cc
+	StarClassLibrary/StHDibaryon.cc
+	StarMagField/StarMagField.cxx
+	StarRoot/TRArray.cxx
+	StarRoot/TRMatrix.cxx
+	StarRoot/TRVector.cxx
+	StarRoot/TUnixTime.cxx
+	StDbUtilities/StGlobalCoordinate.cc
+	StDbUtilities/StGlobalDirection.cc
+	StDbUtilities/StMagUtilities.cxx
+	StDbUtilities/StTpcPadCoordinate.cc
+	StDbUtilities/StTpcCoordinate.cxx
+	StDbUtilities/StTpcCoordinateTransform.cc
 	StTpcRSMaker/StTpcRSMaker.cxx
 	StTpcRSMaker/Altro.cxx
 	StTpcRSMaker/TF1F.cxx
-	St_base/StMessMgr.cxx
+	StDetectorDbMaker/St_tpcChargeEventC.cxx
+	StDetectorDbMaker/St_spaceChargeCorC.cxx
+	StEvent/StTpcRawData.cxx
+	StEvent/StTpcPixel.cxx
+	St_base/StObject.cxx
+	StTpcDb/StTpcDb.cxx
 )
