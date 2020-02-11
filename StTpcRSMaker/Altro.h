@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 
 /*
 g++ -c -o Altro.o Altro.C

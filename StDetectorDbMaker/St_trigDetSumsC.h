@@ -2,7 +2,7 @@
 #define St_trigDetSumsC_h
 
 #include "TChair.h"
-#include <math.h>
+#include <cmath>
 #include "tables/St_trigDetSums_Table.h"
 #include "StDetectorDbMaker/StDetectorDbClock.h"
 #include "StDetectorDbMaker/St_richvoltagesC.h"

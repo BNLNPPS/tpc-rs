@@ -1,6 +1,6 @@
 #include "Riostream.h"
 #include "StBichsel/Bichsel.h"
-#include <assert.h>
+#include <cassert>
 TString   Bichsel::m_Tags[kTotal] = {"P10", "Bi", "PAI"};
 dEdxParameterization* Bichsel::m_dEdxParameterizations[kTotal] = {0, 0, 0};
 Bichsel* Bichsel::fgBichsel = 0;

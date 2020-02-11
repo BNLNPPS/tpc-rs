@@ -1,6 +1,6 @@
 #ifndef St_MDFCorrectionC_h
 #define St_MDFCorrectionC_h
-#include <string.h>
+#include <string>
 #include "TChair.h"
 #include "tables/St_MDFCorrection_Table.h"
 #include "TF3.h"

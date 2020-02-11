@@ -165,8 +165,8 @@ To do:  <br>
 - Add simulated B field map in the regions where the field is not mapped.
 
 */
-#include <string.h>
-#include <assert.h>
+#include <string>
+#include <cassert>
 #include "StarMagField/StarMagField.h"
 #include "St_base/StarCallf77.h"
 #include <string>

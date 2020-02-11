@@ -39,7 +39,7 @@
  * Initial Revision
  *
  **************************************************************************/
-#include <math.h>
+#include <cmath>
 #include "StarClassLibrary/StHelix.hh"
 #include "StarClassLibrary/StPhysicalHelix.hh"
 #include "StarClassLibrary/PhysicalConstants.h"

@@ -444,7 +444,7 @@ To do:  <br>
 - Spacecharge blob at negative X parameters from DB
 
 */
-#include <assert.h>
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 #include "StDbUtilities/StMagUtilities.h"

@@ -93,7 +93,7 @@
 #ifndef ST_THREE_VECTOR_HH
 #define ST_THREE_VECTOR_HH
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <stdexcept>
 using std::out_of_range;
 

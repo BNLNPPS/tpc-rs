@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <cassert>
 #include <string.h>
 #include "TEnv.h"
 #include "TF1.h"
