@@ -661,7 +661,7 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
   return kStOK;
 }
 
-Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_ver, StTpcRawData* tpcRawData)
+Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, StTpcRawData* tpcRawData)
 {
   static Int_t minSector = 1;
   static Int_t maxSector = 24;
@@ -691,16 +691,16 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
   mNoTpcHitsAll = TArrayI(NoTpcTracks + 1);
   mNoTpcHitsReal = TArrayI(NoTpcTracks + 1);
-  g2t_track_st* tpc_track = 0;
+  g2t_track_st* geantTrack = 0;
 
-  if (g2t_track) tpc_track = g2t_track->GetTable();
+  if (g2t_track) geantTrack = g2t_track->GetTable();
 
-  g2t_vertex_st*     gver = 0;
+  g2t_vertex_st*     geantVertex = 0;
   Int_t NV = 0;
 
-  if (g2t_ver) {
-    gver = g2t_ver->GetTable();
-    NV = g2t_ver->GetNRows();
+  if (g2t_vertex) {
+    geantVertex = g2t_vertex->GetTable();
+    NV = g2t_vertex->GetNRows();
   }
 
   g2t_tpc_hit_st* tpc_hit_begin = g2t_tpc_hit->GetTable();
@@ -726,7 +726,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
   tpc_hit = tpc_hit_begin;
 
   for (Int_t sector = minSector; sector <= maxSector; sector++) {
-    Int_t NoHitsInTheSector = 0;
+    Int_t nHitsInTheSector = 0;
     free(m_SignalSum); m_SignalSum = 0;
     ResetSignalSum(sector);
 
@@ -756,11 +756,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
       Int_t id3 = 0, ipart = 8, charge = 1;
       Double_t mass = 0;
 
-      if (tpc_track) {
-        id3        = tpc_track[Id - 1].start_vertex_p;
+      if (geantTrack) {
+        id3        = geantTrack[Id - 1].start_vertex_p;
         assert(id3 > 0 && id3 <= NV);
-        ipart      = tpc_track[Id - 1].ge_pid;
-        charge     = (Int_t) tpc_track[Id - 1].charge;
+        ipart      = geantTrack[Id - 1].ge_pid;
+        charge     = (Int_t) geantTrack[Id - 1].charge;
         StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
 
         if (particle) {
@@ -834,7 +834,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
           TrackSegmentHits[nSegHits].s = TrackSegmentHits[nSegHits - 1].s + TrackSegmentHits[nSegHits].tpc_hitC->ds;
         }
 
-        TrackSegment2Propagate(tpc_hitC, &gver[id3 - 1], TrackSegmentHits[nSegHits]);
+        TrackSegment2Propagate(tpc_hitC, &geantVertex[id3 - 1], TrackSegmentHits[nSegHits]);
 
         if (TrackSegmentHits[nSegHits].Pad.timeBucket() < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket() > NoOfTimeBins) continue;
 
@@ -1001,7 +1001,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
           // special case stopped electrons
           if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
             Int_t Id         = tpc_hitC->track_p;
-            Int_t ipart      = tpc_track[Id - 1].ge_pid;
+            Int_t ipart      = geantTrack[Id - 1].ge_pid;
 
             if (ipart == 3) {
               eKin = -tpc_hitC->de;
@@ -1379,7 +1379,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
           }
         }
 
-        NoHitsInTheSector++;
+        nHitsInTheSector++;
       } // end do loop over segments for a given particle
 
       for (Int_t iSegHits = 0; iSegHits < nSegHits; iSegHits++) {
@@ -1402,10 +1402,10 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
       }
     }  // hits in the sector
 
-    if (NoHitsInTheSector) {
+    if (nHitsInTheSector) {
       StTpcDigitalSector* digitalSector = DigitizeSector(sector, tpcRawData);
 
-      if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << NoHitsInTheSector << endm;
+      if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << endm;
 
       if (Debug() > 2) digitalSector->Print();
 
@@ -1459,11 +1459,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
   if (g2t_track) {
     // Reset no. Tpc hits in g2t_track
-    tpc_track = g2t_track->GetTable();
+    geantTrack = g2t_track->GetTable();
 
-    for (Int_t i = 0; i < NoTpcTracks; i++, tpc_track++) {
-      Int_t Id = tpc_track->id;
-      tpc_track->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
+    for (Int_t i = 0; i < NoTpcTracks; i++, geantTrack++) {
+      Int_t Id = geantTrack->id;
+      geantTrack->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
     }
   }
 
@@ -1628,13 +1628,13 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 }
 
 
-StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* data)
+StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tpcRawData)
 {
   static Int_t iBreak = 0;
   static Int_t AdcCut = 500;
   //  static Int_t PedestalMem[__MaxNumberOfTimeBins__];
 
-  assert(data);
+  assert(tpcRawData);
   SignalSum_t* SignalSum = GetSignalSum(sector);
   Double_t ped    = 0;
   Int_t adc = 0;
@@ -1642,17 +1642,17 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* da
   Double_t gain = 1;
   Int_t row, pad, bin;
   Int_t Sector = TMath::Abs(sector);
-  StTpcDigitalSector* digitalSector = data->GetSector(Sector);
+  StTpcDigitalSector* digitalSector = tpcRawData->GetSector(Sector);
 
   if (! digitalSector) {
     digitalSector = new StTpcDigitalSector(Sector);
-    data->setSector(Sector, digitalSector);
+    tpcRawData->setSector(Sector, digitalSector);
   }
   else
     digitalSector->clear();
 
   for (row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
-    Int_t NoOfPadsAtRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
+    Int_t nPadsPerRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
     Double_t pedRMS = St_TpcResponseSimulatorC::instance()->AveragePedestalRMS();
 
     if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) {
@@ -1665,7 +1665,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* da
     Float_t AdcSumBeforeAltro = 0, AdcSumAfterAltro = 0;
 #endif /*     __DEBUG__ */
 
-    for (pad = 1; pad <= NoOfPadsAtRow; pad++) {
+    for (pad = 1; pad <= nPadsPerRow; pad++) {
       gain = St_tpcPadGainT0BC::instance()->Gain(Sector, row, pad);
 
       if (gain <= 0.0) continue;
@@ -2056,7 +2056,7 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(Double_t w)
 }
 
 
-Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits)
+Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex_st* geantVertex, HitPoint_t &TrackSegmentHits)
 {
   static Int_t iBreak = 0;
 
@@ -2138,7 +2138,7 @@ Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex
   transform(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
   transform( dirLT, TrackSegmentHits.dirLS); PrPP(Make, TrackSegmentHits.dirLS);
   transform(   BLT,   TrackSegmentHits.BLS); PrPP(Make, TrackSegmentHits.BLS);
-  Double_t tof = gver->ge_tof;
+  Double_t tof = geantVertex->ge_tof;
   //	if (! TESTBIT(m_Mode, kNoToflight))
   tof += tpc_hitC->tof;
   Double_t driftLength = TrackSegmentHits.coorLS.position().z() + tof * gStTpcDb->DriftVelocity(sector); // ,row);
