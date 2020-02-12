@@ -3,6 +3,10 @@
 #include <assert.h>
 #include "TDatime.h"
 #include "tables/St_tpcCorrection_Table.h"
+#include "St_base/StMessMgr.h"
+#include "StChain/StMaker.h"
+#include "St_db_Maker/St_db_Maker.h"
+
 #define DEBUGTABLE(STRUCT)						\
   TDatime t[2];								\
   if (St_db_Maker::GetValidity(table,t) > 0) {				\

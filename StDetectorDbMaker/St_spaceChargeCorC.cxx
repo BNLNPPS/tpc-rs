@@ -1,6 +1,7 @@
 #include "St_spaceChargeCorC.h"
 #include "St_trigDetSumsC.h"
 #include "StMemStat.h"
+#include "StChain/StMaker.h"
 
 Double_t St_spaceChargeCorC::getSpaceChargeCoulombs(Double_t scaleFactor)
   {

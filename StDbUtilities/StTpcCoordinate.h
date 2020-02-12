@@ -4,6 +4,9 @@
  */
 #ifndef ST_TPC_COORDINATE_H
 #define ST_TPC_COORDINATE_H
+
+#include "Rtypes.h"
+
 #include "St_base/Stiostream.h"
 #include "StarClassLibrary/StThreeVector.hh"
 

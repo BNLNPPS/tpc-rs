@@ -200,6 +200,8 @@
 #include <stdlib.h>
 #include <St_base/Stiostream.h>
 
+#include "TArrayF.h"
+#include "TArrayD.h"
 #include "TMatrix.h"      // TMatrix keeps changing ... keep it here until proven otherwise.
 #include "StarMagField/StarMagField.h"
 class TFile;

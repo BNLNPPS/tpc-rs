@@ -140,6 +140,8 @@ long _undefined_particle_id = 2000000000; /* Unique PDG ID for each undefined pa
 #include <ospace/stl/src/treeaux.cpp> // CC4.2 with ObjectSpace only
 #endif
 
+#include "Rtypes.h"
+
 #include "StAntiDeuteron.hh"
 #include "StAntiTriton.hh"
 #include "StAntiAlpha.hh"
