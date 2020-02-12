@@ -319,13 +319,13 @@ void StTpcDb::SetDriftVelocity()
       dvel0 = (St_tpcDriftVelocity*) St_tpcDriftVelocityC::instance()->Table();
 
       if (! dvel0) {
-        gMessMgr->Message("StTpcDb::Error Finding Tpc DriftVelocity", "E");
+        LOG_ERROR << "StTpcDb::Error Finding Tpc DriftVelocity" << endm;
         mUc = 0;
         return;
       }
 
       if (St_db_Maker::GetValidity(dvel0, t) < 0) {
-        gMessMgr->Message("StTpcDb::Error Wrong Validity Tpc DriftVelocity", "E");
+        LOG_ERROR << "StTpcDb::Error Wrong Validity Tpc DriftVelocity" << endm;
         mUc = 0;
         return;
       }
@@ -346,7 +346,7 @@ void StTpcDb::SetDriftVelocity()
         dvel1 = (St_tpcDriftVelocity*) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcDriftVelocity", &t[1]);
 
         if (! dvel1) {
-          gMessMgr->Message("StTpcDb::Error Finding next Tpc DriftVelocity", "W");
+          LOG_ERROR << "StTpcDb::Error Finding next Tpc DriftVelocity" << endm;
         }
       }
     }

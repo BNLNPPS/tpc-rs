@@ -284,7 +284,7 @@ StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer *
 #endif
   }
   else {
-    gMessMgr->Error() << "StTpcDb IS INCOMPLETE! Cannot contstruct Coordinate transformation." << endm;
+    LOG_ERROR << "StTpcDb IS INCOMPLETE! Cannot contstruct Coordinate transformation." << endm;
     assert(St_tpcPadConfigC::instance());
     assert(StTpcDb::instance()->Electronics());
 #if 0
