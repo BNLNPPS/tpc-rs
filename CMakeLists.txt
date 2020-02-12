@@ -28,20 +28,6 @@ include_directories(
 	${ROOT_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}
 	include/
-	StBichsel/
-	StChain/
-	StDbUtilities/
-	StDetectorDbMaker/
-	StEvent/
-	StMagF/
-	StTpcDb/
-	StTpcRSMaker/
-	St_base/
-	Star2Root/
-	StarClassLibrary/
-	StarMagField/
-	StarRoot/
-	StdEdxY2Maker/
 )
 
 add_library(tpcrs
