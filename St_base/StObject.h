@@ -56,9 +56,7 @@ class StObject : public TObject
   StObject(const StObject &sto);
   StObject &operator=(const StObject &sto);
   virtual ~StObject();
-  virtual void Browse(TBrowser* b);
 
-  virtual Bool_t IsFolder() 	const;
   virtual TObject* clone() 	const {return ((TObject*)this)->Clone();}
   Int_t   isZombie() 		const {return IsZombie();}
   virtual void makeZombie(int flg = 1)
@@ -201,37 +199,6 @@ class StProxyUrr : public UIntVector
     TObject*  fArr;
     TObject** fAdr;
   };
-};
-
-
-class StXRefManager : public TObject
-{
- public:
-  StXRefManager(const StUUId &id);
-  ~StXRefManager();
-
-  void    Cd();
-  void    AddColl (      StProxyUrr* rarr);
-  void    AddColl (const StStrArray* sarr);
-  void    Update ();
-  void    Clear (Option_t*);
-  static  void    Cd        (StXRef*     xref);
-  static  void    Open      (StXRef*     xref);
-  static  void    Close     (StXRef*     xref);
-  static  TDataSet* GetMain();
-
- private:
-  Int_t  fUpd;
-  UInt_t fTally;
-  StUUId fUUId;		//!
-  StCollList  fColList;
-  TPageMap  fObjTab;
-  StXRefMain* fMain;
- public:
-  static StXRefManagerList fgManagerList;
-  static StXRefManager* 	fgManager;
-  static int 	         fgRWmode; //0=read,1=write,-1=undefined
-
 };
 
 #endif // -__CINT__
