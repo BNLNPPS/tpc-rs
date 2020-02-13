@@ -41,7 +41,7 @@ class StTpcRSMaker
   StTpcRSMaker(const char* name = "TpcRS");
   virtual              ~StTpcRSMaker();
   virtual Int_t         InitRun(int runnumber);
-  virtual Int_t Make(St_g2t_tpc_hit* g2t_tpc_hit, St_g2t_track* g2t_track, St_g2t_vertex*  g2t_ver, StTpcRawData* tpcRawData);
+  virtual Int_t Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, StTpcRawData* tpcRawData);
   virtual Int_t  	Finish();
   Int_t         Debug() const {return 1;}
   TF1F* GetShaperResponse(Int_t io = 0, Int_t sector = 1) {return (TF1F*) mShaperResponses[io][sector - 1];}
