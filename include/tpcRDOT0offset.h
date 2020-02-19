@@ -13,13 +13,8 @@
  */
 #ifndef TPCRDOT0OFFSET_H
 #define TPCRDOT0OFFSET_H
-#define TPCRDOT0OFFSET_SPEC \
-"struct tpcRDOT0offset { \
-	octet isShifted[24]; \
-	float t0[24][10]; \
-};"
-typedef struct tpcRDOT0offset_st {
+struct tpcRDOT0offset_st {
 	unsigned char isShifted[24]; /* flag if there is any RDO off set to tsector */
 	float t0[24][10]; /* RDO t0 offset per sector: [0-23], rdo [0-5] Tpx, [6-9] iTpc  (time bins) */
-} TPCRDOT0OFFSET_ST;
+};
 #endif /* TPCRDOT0OFFSET_H */

@@ -14,26 +14,7 @@
  */
 #ifndef TPCPADRESPONSE_H
 #define TPCPADRESPONSE_H
-#define TPCPADRESPONSE_SPEC \
-"struct tpcPadResponse { \
-	float innerGasGainFluctuation; \
-	float outerGasGainFluctuation; \
-	float innerPadResponseSigma; \
-	float outerPadResponseSigma; \
-	float innerWirePadCoupling; \
-	float outerWirePadCoupling; \
-	float innerRowNormalization; \
-	float outerRowNormalization; \
-	float BoundaryOfStepFunctions[6]; \
-	float innerChargeFractionConstants[6]; \
-	float outerChargeFractionConstants[6]; \
-	float errorFunctionRange; \
-	long errorFunctionEntry; \
-	float longitudinalDiffusionConstant; \
-	float transverseDiffusionConstant; \
-	float InnerOuterFactor; \
-};"
-typedef struct tpcPadResponse_st {
+struct tpcPadResponse_st {
   float innerGasGainFluctuation; /*   unitless  */
   float outerGasGainFluctuation; /*   unitless  */
   float innerPadResponseSigma; /*   cm  */
@@ -50,5 +31,5 @@ typedef struct tpcPadResponse_st {
   float longitudinalDiffusionConstant; /*   cm/sqrt(cm)  */
   float transverseDiffusionConstant; /*   cm/sqrt(cm)  */
   float InnerOuterFactor; /*   dimensionless  */
-} TPCPADRESPONSE_ST;
+};
 #endif /* TPCPADRESPONSE_H */

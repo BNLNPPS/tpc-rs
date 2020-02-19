@@ -13,19 +13,11 @@
  */
 #ifndef TPCFIELDCAGESHORT_H
 #define TPCFIELDCAGESHORT_H
-#define TPCFIELDCAGESHORT_SPEC \
-"struct tpcFieldCageShort { \
-	float side; \
-	float cage; \
-	float ring; \
-	float resistor; \
-	float MissingResistance; \
-};"
-typedef struct tpcFieldCageShort_st {
+struct tpcFieldCageShort_st {
 	float side; /* 0 = east, 1 = west */
 	float cage; /* 0 = inner, 1 = outer */
 	float ring; /* ring location of the short (e.g. 169.5) */
 	float resistor; /* MOhm value of added external resistor to resistor chain */
 	float MissingResistance; /* missing resistance */
-} TPCFIELDCAGESHORT_ST;
+};
 #endif /* TPCFIELDCAGESHORT_H */

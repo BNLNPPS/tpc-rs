@@ -5,25 +5,7 @@
 ** For help, type contact Craig Tull or Herb Ward. */
 #ifndef G2T_TPC_HIT_H
 #define G2T_TPC_HIT_H
-#define G2T_TPC_HIT_SPEC \
-"struct g2t_tpc_hit { \
-	long id; \
-	long next_tr_hit_p; \
-	long track_p; \
-	long volume_id; \
-	float de; \
-	float ds; \
-	float p[3]; \
-	float tof; \
-	float x[3]; \
-	float lgam; \
-	float length; \
-	float adc; \
-	float pad; \
-	float timebucket; \
-	long np; \
-};"
-typedef struct g2t_tpc_hit_st {
+struct g2t_tpc_hit_st {
   int id; /* primary key */
   int next_tr_hit_p; /* Id of next hit on same track */
   int track_p; /* Id of parent track */
@@ -39,5 +21,5 @@ typedef struct g2t_tpc_hit_st {
   float pad; /* hit pad position used in digitization */
   float timebucket; /* hit time position -"- */
   int np; /* no. of primary electrons */
-} G2T_TPC_HIT_ST;
+};
 #endif /* G2T_TPC_HIT_H */

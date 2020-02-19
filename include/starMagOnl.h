@@ -13,15 +13,9 @@
  */
 #ifndef STARMAGONL_H
 #define STARMAGONL_H
-#define STARMAGONL_SPEC \
-"struct starMagOnl { \
-	unsigned long runNumber; \
-	unsigned long time; \
-	double current; \
-};"
-typedef struct starMagOnl_st {
+struct starMagOnl_st {
 	unsigned int runNumber; /*   run number  */
 	unsigned int time; /*   unix time of entry  */
 	double current; /*   magnet current (- means B polarity)  */
-} STARMAGONL_ST;
+};
 #endif /* STARMAGONL_H */

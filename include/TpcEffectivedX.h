@@ -8,13 +8,8 @@
  */
 #ifndef TPCEFFECTIVEDX_H
 #define TPCEFFECTIVEDX_H
-#define TPCEFFECTIVEDX_SPEC \
-"struct TpcEffectivedX { \
-	float scaleInner; \
-	float scaleOuter; \
-};"
-typedef struct TpcEffectivedX_st {
+struct TpcEffectivedX_st {
 	float scaleInner; /* scale factor for inner dX */
 	float scaleOuter; /*       -"-        outer dX  */
-} TPCEFFECTIVEDX_ST;
+};
 #endif /* TPCEFFECTIVEDX_H */

@@ -16,11 +16,7 @@
  */
 #ifndef MAGFACTOR_H
 #define MAGFACTOR_H
-#define MAGFACTOR_SPEC \
-"struct MagFactor { \
-	float ScaleFactor; \
-};"
-typedef struct MagFactor_st {
+struct MagFactor_st {
 	float ScaleFactor; 
-} MAGFACTOR_ST;
+};
 #endif /* MAGFACTOR_H */

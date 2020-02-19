@@ -13,24 +13,7 @@
  */
 #ifndef TPCSLOWCONTROLSIM_H
 #define TPCSLOWCONTROLSIM_H
-#define TPCSLOWCONTROLSIM_SPEC \
-"struct tpcSlowControlSim { \
-	double driftVelocity; \
-	double driftVoltage; \
-	double innerSectorAnodeVoltage; \
-	double innerSectorGatingGridV; \
-	double outerSectorAnodeVoltage; \
-	double outerSectorGatingGridV; \
-	double innerSectorGasGain; \
-	double innerSectorGasGainVzero; \
-	double innerSectorGasGainb; \
-	double outerSectorGasGain; \
-	double outerSectorGasGainVzero; \
-	double outerSectorGasGainb; \
-	double hallPressure; \
-	double hallTemperature; \
-};"
-typedef struct tpcSlowControlSim_st {
+struct tpcSlowControlSim_st {
   double driftVelocity; /*   */
   double driftVoltage; /*   */
   double innerSectorAnodeVoltage; /*   */
@@ -45,5 +28,5 @@ typedef struct tpcSlowControlSim_st {
   double outerSectorGasGainb; /*   */
   double hallPressure; /*   */
   double hallTemperature; /*   */
-} TPCSLOWCONTROLSIM_ST;
+};
 #endif /* TPCSLOWCONTROLSIM_H */

@@ -13,13 +13,8 @@
  */
 #ifndef TPCSECROWCOR_H
 #define TPCSECROWCOR_H
-#define TPCSECROWCOR_SPEC \
-"struct TpcSecRowCor { \
-	float GainScale[100]; \
-	float GainRms[100]; \
-};"
-typedef struct TpcSecRowCor_st {
+struct TpcSecRowCor_st {
 	float GainScale[100]; /*  Gains for sector & row */
 	float GainRms[100]; /*  RMS  - " -  */
-} TPCSECROWCOR_ST;
+};
 #endif /* TPCSECROWCOR_H */

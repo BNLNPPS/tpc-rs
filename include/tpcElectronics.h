@@ -13,19 +13,7 @@
  */
 #ifndef TPCELECTRONICS_H
 #define TPCELECTRONICS_H
-#define TPCELECTRONICS_SPEC \
-"struct tpcElectronics { \
-	long numberOfTimeBins; \
-	double nominalGain; \
-	double samplingFrequency; \
-	double tZero; \
-	double adcCharge; \
-	double adcConversion; \
-	double averagePedestal; \
-	double shapingTime; \
-	double tau; \
-};"
-typedef struct tpcElectronics_st {
+struct tpcElectronics_st {
   int numberOfTimeBins; /*   */
   double nominalGain; /*   mV/fC  */
   double samplingFrequency; /* MHz, not used,  overwritten by starClockOnl*/
@@ -35,5 +23,5 @@ typedef struct tpcElectronics_st {
   double averagePedestal; /*   adc counts  */
   double shapingTime; /*   ns  */
   double tau; /*   ns  */
-} TPCELECTRONICS_ST;
+};
 #endif /* TPCELECTRONICS_H */

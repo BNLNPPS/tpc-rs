@@ -34,30 +34,7 @@
  */
 #ifndef SURVEY_H
 #define SURVEY_H
-#define SURVEY_SPEC \
-"struct Survey { \
-	long Id; \
-	double r00; \
-	double r01; \
-	double r02; \
-	double r10; \
-	double r11; \
-	double r12; \
-	double r20; \
-	double r21; \
-	double r22; \
-	double t0; \
-	double t1; \
-	double t2; \
-	double sigmaRotX; \
-	double sigmaRotY; \
-	double sigmaRotZ; \
-	double sigmaTrX; \
-	double sigmaTrY; \
-	double sigmaTrZ; \
-	char comment[32]; \
-};"
-typedef struct Survey_st {
+struct Survey_st {
 	int Id; 
 	double r00; 
 	double r01; /* -gamma */
@@ -78,5 +55,5 @@ typedef struct Survey_st {
 	double sigmaTrY; 
 	double sigmaTrZ; 
 	char comment[32]; 
-} SURVEY_ST;
+};
 #endif /* SURVEY_H */

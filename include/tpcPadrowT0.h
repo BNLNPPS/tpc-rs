@@ -13,11 +13,7 @@
  */
 #ifndef TPCPADROWT0_H
 #define TPCPADROWT0_H
-#define TPCPADROWT0_SPEC \
-"struct tpcPadrowT0 { \
-	float T0[100]; \
-};"
-typedef struct tpcPadrowT0_st {
+struct tpcPadrowT0_st {
 	float T0[100]; /*  T0s per padrow */
-} TPCPADROWT0_ST;
+};
 #endif /* TPCPADROWT0_H */

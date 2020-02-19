@@ -13,21 +13,12 @@
  */
 #ifndef TPCANODEHVAVG_H
 #define TPCANODEHVAVG_H
-#define TPCANODEHVAVG_SPEC \
-"struct tpcAnodeHVavg { \
-	unsigned short sector; \
-	unsigned short socket; \
-	float voltage; \
-	float rms; \
-	long numentries; \
-	long numoutliers; \
-};"
-typedef struct tpcAnodeHVavg_st {
+struct tpcAnodeHVavg_st {
   unsigned short sector; /*  sector 1-24 */
   unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
   float voltage; /*  average voltage  */
   float rms; /*  rms for averaged voltage */
   int numentries; /*  number of entries used for average */
   int numoutliers; /*  number of encountered outliers */
-} TPCANODEHVAVG_ST;
+};
 #endif /* TPCANODEHVAVG_H */

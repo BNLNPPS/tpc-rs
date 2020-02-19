@@ -26,19 +26,7 @@
  */
 #ifndef TPCALTROPARAMS_H
 #define TPCALTROPARAMS_H
-#define TPCALTROPARAMS_SPEC \
-"struct tpcAltroParams { \
-	long N; \
-	long Altro_thr; \
-	long Altro_seq; \
-	long Altro_K1; \
-	long Altro_K2; \
-	long Altro_K3; \
-	long Altro_L1; \
-	long Altro_L2; \
-	long Altro_L3; \
-};"
-typedef struct tpcAltroParams_st {
+struct tpcAltroParams_st {
   int N; /*  = no. of Altro parameters */
   int Altro_thr;
   int Altro_seq;
@@ -48,5 +36,5 @@ typedef struct tpcAltroParams_st {
   int Altro_L1;
   int Altro_L2;
   int Altro_L3;
-} TPCALTROPARAMS_ST;
+};
 #endif /* TPCALTROPARAMS_H */

@@ -13,15 +13,9 @@
  */
 #ifndef STARCLOCKONL_H
 #define STARCLOCKONL_H
-#define STARCLOCKONL_SPEC \
-"struct starClockOnl { \
-	unsigned long runNumber; \
-	unsigned long time; \
-	double frequency; \
-};"
-typedef struct starClockOnl_st {
+struct starClockOnl_st {
   unsigned int runNumber; /*   run number  */
   unsigned int time; /*   unix time of entry  */
   double frequency; /*   frequency in Hz  */
-} STARCLOCKONL_ST;
+};
 #endif /* STARCLOCKONL_H */

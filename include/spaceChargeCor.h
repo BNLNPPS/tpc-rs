@@ -13,20 +13,7 @@
  */
 #ifndef SPACECHARGECOR_H
 #define SPACECHARGECOR_H
-#define SPACECHARGECOR_SPEC \
-"struct spaceChargeCor { \
-	double fullFieldB; \
-	double halfFieldB; \
-	double zeroField; \
-	double halfFieldA; \
-	double fullFieldA; \
-	double satRate; \
-	float factor; \
-	float detector; \
-	float offset; \
-	float ewratio; \
-};"
-typedef struct spaceChargeCor_st {
+struct spaceChargeCor_st {
 	double fullFieldB; /* Negative Full Field Correction  */
 	double halfFieldB; /* Negative Half Field Correction  */
 	double zeroField; /*  Zero Field " "  */
@@ -37,5 +24,5 @@ typedef struct spaceChargeCor_st {
 	float detector; /* 0=VPDx, 1=BBCx, 2=ZDCx, 3=ZDCe+w, 4=BBCe+w, ... */
 	float offset; /* Offset at zero luminosity */
 	float ewratio; /* Ratio of charge east/west */
-} SPACECHARGECOR_ST;
+};
 #endif /* SPACECHARGECOR_H */

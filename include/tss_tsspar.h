@@ -10,51 +10,7 @@
  */
 #ifndef TSS_TSSPAR_H
 #define TSS_TSSPAR_H
-#define TSS_TSSPAR_SPEC \
-"struct tss_tsspar { \
-	char fileout[80]; \
-	long dynam; \
-	long format; \
-	long max_itime; \
-	long max_pads; \
-	long max_row; \
-	long max_sect; \
-	long min_itime; \
-	long min_pads; \
-	long min_row; \
-	long min_sect; \
-	long mode; \
-	long nele_laser; \
-	long ngain; \
-	long nseg; \
-	long ntime; \
-	long printout; \
-	long tpc_half; \
-	long reset; \
-	float ave_ion_pot; \
-	float bfield; \
-	float c_test; \
-	float diff_long; \
-	float diff_trans; \
-	float gain_in; \
-	float gain_out; \
-	float prf_in; \
-	float prf_out; \
-	float sca_rms; \
-	float scale; \
-	float step_size; \
-	float tau; \
-	float threshold; \
-	float time_offset; \
-	float v_test; \
-	float white_rms; \
-	float wire_coupling_in; \
-	float wire_coupling_out; \
-	float x_laser; \
-	float y_laser; \
-	float z_laser; \
-};"
-typedef struct tss_tsspar_st {
+struct tss_tsspar_st {
   char fileout[80]; /* output file for pixel data (none->table) */
   int dynam; /* adc dynamic range (adc counts; usu 1023) */
   int format; /* pixel data format */
@@ -96,5 +52,5 @@ typedef struct tss_tsspar_st {
   float x_laser; /* local x of laser point[cm] along row */
   float y_laser; /* local y of laser point[cm] across row */
   float z_laser; /* z drift length of pointlaser source(cm) */
-} TSS_TSSPAR_ST;
+};
 #endif /* TSS_TSSPAR_H */

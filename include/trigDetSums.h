@@ -13,29 +13,7 @@
  */
 #ifndef TRIGDETSUMS_H
 #define TRIGDETSUMS_H
-#define TRIGDETSUMS_SPEC \
-"struct trigDetSums { \
-	unsigned long runNumber; \
-	unsigned long timeOffset; \
-	double ctbWest; \
-	double ctbEast; \
-	double ctbTOFp; \
-	double tofp; \
-	double zdcWest; \
-	double zdcEast; \
-	double zdcX; \
-	double mult; \
-	double L0; \
-	double bbcX; \
-	double bbcXctbTOFp; \
-	double bbcWest; \
-	double bbcEast; \
-	double bbcYellowBkg; \
-	double bbcBlueBkg; \
-	double pvpdWest; \
-	double pvpdEast; \
-};"
-typedef struct trigDetSums_st {
+struct trigDetSums_st {
   unsigned int runNumber; /*       run number  */
   unsigned int timeOffset; /*       run begin time  */
   double ctbWest; /*   ctb West  */
@@ -55,5 +33,5 @@ typedef struct trigDetSums_st {
   double bbcBlueBkg; /*   --(BBC Westdelayed) and (BBC East)--  */
   double pvpdWest; /*   --PVPD East--  */
   double pvpdEast; /*   --PVPD West--  */
-} TRIGDETSUMS_ST;
+};
 #endif /* TRIGDETSUMS_H */

@@ -13,11 +13,7 @@
  */
 #ifndef TPCSECTORT0OFFSET_H
 #define TPCSECTORT0OFFSET_H
-#define TPCSECTORT0OFFSET_SPEC \
-"struct tpcSectorT0offset { \
-	float t0[48]; \
-};"
-typedef struct tpcSectorT0offset_st {
+struct tpcSectorT0offset_st {
 	float t0[48]; /* Sector t0 offset per sector: [0-23] Tpx, [24-47] iTpc  (time bins)*/
-} TPCSECTORT0OFFSET_ST;
+};
 #endif /* TPCSECTORT0OFFSET_H */

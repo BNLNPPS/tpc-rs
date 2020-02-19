@@ -13,15 +13,9 @@
  */
 #ifndef TPCRDOMASKS_H
 #define TPCRDOMASKS_H
-#define TPCRDOMASKS_SPEC \
-"struct tpcRDOMasks { \
-	unsigned long runNumber; \
-	unsigned long sector; \
-	unsigned long mask; \
-};"
-typedef struct tpcRDOMasks_st {
+struct tpcRDOMasks_st {
   unsigned int runNumber; /*       run number  */
   unsigned int sector; /*   sector  */
   unsigned int mask; /*   enable mask  */
-} TPCRDOMASKS_ST;
+};
 #endif /* TPCRDOMASKS_H */

@@ -47,85 +47,7 @@
 COMMENTS TRUNCATED */
 #ifndef G2T_TRACK_H
 #define G2T_TRACK_H
-#define G2T_TRACK_SPEC \
-"struct g2t_track { \
-	long eg_label; \
-	long eg_pid; \
-	long ge_pid; \
-	long hit_ctb_p; \
-	long hit_eem_p; \
-	long hit_emc_p; \
-	long hit_esm_p; \
-	long hit_ftp_p; \
-	long hit_gem_p; \
-	long hit_hpd_p; \
-	long hit_ist_p; \
-	long hit_igt_p; \
-	long hit_fst_p; \
-	long hit_fgt_p; \
-	long hit_fpd_p; \
-	long hit_fsc_p; \
-	long hit_mtd_p; \
-	long hit_mwc_p; \
-	long hit_pgc_p; \
-	long hit_pmd_p; \
-	long hit_smd_p; \
-	long hit_ssd_p; \
-	long hit_svt_p; \
-	long hit_pix_p; \
-	long hit_tof_p; \
-	long hit_tpc_p; \
-	long hit_vpd_p; \
-	long hit_etr_p; \
-	long hit_hca_p; \
-	long hit_fts_p; \
-	long hit_eto_p; \
-	long id; \
-	long is_shower; \
-	long itrmd_vertex_p; \
-	long n_ctb_hit; \
-	long n_eem_hit; \
-	long n_emc_hit; \
-	long n_esm_hit; \
-	long n_ftp_hit; \
-	long n_gem_hit; \
-	long n_hpd_hit; \
-	long n_ist_hit; \
-	long n_igt_hit; \
-	long n_fst_hit; \
-	long n_fgt_hit; \
-	long n_fpd_hit; \
-	long n_fsc_hit; \
-	long n_mtd_hit; \
-	long n_mwc_hit; \
-	long n_pgc_hit; \
-	long n_pmd_hit; \
-	long n_smd_hit; \
-	long n_ssd_hit; \
-	long n_svt_hit; \
-	long n_pix_hit; \
-	long n_tof_hit; \
-	long n_tpc_hit; \
-	long n_vpd_hit; \
-	long n_etr_hit; \
-	long n_hca_hit; \
-	long n_fts_hit; \
-	long n_eto_hit; \
-	long n_stg_hit; \
-	long n_wca_hit; \
-	long next_parent_p; \
-	long next_vtx_trk_p; \
-	long start_vertex_p; \
-	long stop_vertex_p; \
-	float charge; \
-	float e; \
-	float eta; \
-	float p[3]; \
-	float pt; \
-	float ptot; \
-	float rapidity; \
-};"
-typedef struct g2t_track_st {
+struct g2t_track_st {
   int eg_label; /* generator track label (0 if GEANT track) */
   int eg_pid; /* event generator particle id */
   int ge_pid; /* GEANT particle id */
@@ -201,5 +123,5 @@ typedef struct g2t_track_st {
   float pt; /* Transverse momentum */
   float ptot; /* Total momentum */
   float rapidity; /* Rapidity */
-} G2T_TRACK_ST;
+};
 #endif /* G2T_TRACK_H */
