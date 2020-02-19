@@ -17,17 +17,7 @@
  */
 #ifndef ITPCSURVEY_H
 #define ITPCSURVEY_H
-#define ITPCSURVEY_SPEC \
-"struct iTPCSurvey { \
-	long Id; \
-	float Angle; \
-	float dx; \
-	float dy; \
-	float ScaleX; \
-	float ScaleY; \
-	char comment[32]; \
-};"
-typedef struct iTPCSurvey_st {
+struct iTPCSurvey_st {
 	int Id; 
 	float Angle; 
 	float dx; 
@@ -35,5 +25,5 @@ typedef struct iTPCSurvey_st {
 	float ScaleX; 
 	float ScaleY; 
 	char comment[32]; 
-} ITPCSURVEY_ST;
+};
 #endif /* ITPCSURVEY_H */

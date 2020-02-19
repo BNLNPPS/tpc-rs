@@ -13,79 +13,7 @@
  */
 #ifndef TPCDIMENSIONS_H
 #define TPCDIMENSIONS_H
-#define TPCDIMENSIONS_SPEC \
-"struct tpcDimensions { \
-	long numberOfSectors; \
-	double tpcInnerRadius; \
-	double tpcOuterRadius; \
-	double tpcTotalLength; \
-	double wheelInnerRadius; \
-	double wheelOuterRadius; \
-	double wheelThickness; \
-	double senseGasOuterRadius; \
-	double tpeaThickness; \
-	double cathodeInnerRadius; \
-	double cathodeOuterRadius; \
-	double cathodeThickness; \
-	double outerCuThickness; \
-	double outerKaptonThickness; \
-	double outerNomexThickness; \
-	double outerGlueThickness; \
-	double outerInsGasThickness; \
-	double outerAlThickness; \
-	double outerAlHoneycombThickness; \
-	double innerGlueThickness; \
-	double innerNomexThickness; \
-	double innerKaptonThickness; \
-	double innerAlThickness; \
-	double innerGapWidI; \
-	double innerGapWidO; \
-	double innerGapHeit; \
-	double innerGapRad; \
-	double innerInWidth; \
-	double innerOutWidth; \
-	double innerHeight; \
-	double innerPPDepth; \
-	double innerAlDepth; \
-	double innerMWCDepth; \
-	double innerBoundary; \
-	double innerRCenter; \
-	double innerMWCInn; \
-	double innerMWCOut; \
-	double innerMVCHei; \
-	long innerAirGaps; \
-	long innerExtraAl; \
-	double innerZGaps[5]; \
-	double innerZGapsSize[5]; \
-	double innerXExtraAl[5]; \
-	double innerZExtraAl[5]; \
-	double innerDXExtraAl[5]; \
-	double innerDZExtraAl[5]; \
-	double outerGapWidI; \
-	double outerGapWidO; \
-	double outerGapHeit; \
-	double outerGapRad; \
-	double outerInWidth; \
-	double outerOutWidth; \
-	double outerHeight; \
-	double outerPPDepth; \
-	double outerAlDepth; \
-	double outerMWCDepth; \
-	double outerBoundary; \
-	double outerRCenter; \
-	double outerMWCInn; \
-	double outerMWCOut; \
-	double outerMVCHei; \
-	long outerAirGaps; \
-	long outerExtraAl; \
-	double outerZGaps[8]; \
-	double outerZGapsSize[8]; \
-	double outerXExtraAl[5]; \
-	double outerZExtraAl[5]; \
-	double outerDXExtraAl[5]; \
-	double outerDZExtraAl[5]; \
-};"
-typedef struct tpcDimensions_st {
+struct tpcDimensions_st {
   int numberOfSectors; /*   */
   double tpcInnerRadius; /*   */
   double tpcOuterRadius; /*   */
@@ -155,5 +83,5 @@ typedef struct tpcDimensions_st {
   double outerZExtraAl[5]; /*   z positions  */
   double outerDXExtraAl[5]; /*   x thickness  */
   double outerDZExtraAl[5]; /*   z thickness  */
-} TPCDIMENSIONS_ST;
+};
 #endif /* TPCDIMENSIONS_H */

@@ -13,41 +13,7 @@
  */
 #ifndef TPCPADPLANES_H
 #define TPCPADPLANES_H
-#define TPCPADPLANES_SPEC \
-"struct tpcPadPlanes { \
-	long padRows; \
-	long innerPadRows; \
-	long innerPadRows48; \
-	long innerPadRows52; \
-	long outerPadRows; \
-	long superInnerPadRows; \
-	long superOuterPadRows; \
-	double innerSectorPadWidth; \
-	double innerSectorPadLength; \
-	double innerSectorPadPitch; \
-	double innerSectorRowPitch1; \
-	double innerSectorRowPitch2; \
-	double firstPadRow; \
-	double firstOuterSectorPadRow; \
-	double lastOuterSectorPadRow; \
-	double firstRowWidth; \
-	double lastRowWidth; \
-	double outerSectorPadWidth; \
-	double outerSectorPadLength; \
-	double outerSectorPadPitch; \
-	double outerSectorRowPitch; \
-	double outerSectorLength; \
-	double ioSectorSeparation; \
-	double innerSectorEdge; \
-	double outerSectorEdge; \
-	double innerSectorPadPlaneZ; \
-	double outerSectorPadPlaneZ; \
-	long innerPadsPerRow[13]; \
-	long outerPadsPerRow[32]; \
-	double innerRowRadii[13]; \
-	double outerRowRadii[32]; \
-};"
-typedef struct tpcPadPlanes_st {
+struct tpcPadPlanes_st {
   int padRows; /*   */
   int innerPadRows; /*   */
   int innerPadRows48; /*   */
@@ -79,5 +45,5 @@ typedef struct tpcPadPlanes_st {
   int outerPadsPerRow[32]; /*   */
   double innerRowRadii[13]; /*   */
   double outerRowRadii[32]; /*   */
-} TPCPADPLANES_ST;
+};
 #endif /* TPCPADPLANES_H */

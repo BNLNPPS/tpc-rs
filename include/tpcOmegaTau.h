@@ -13,15 +13,9 @@
  */
 #ifndef TPCOMEGATAU_H
 #define TPCOMEGATAU_H
-#define TPCOMEGATAU_SPEC \
-"struct tpcOmegaTau { \
-	float tensorV1; \
-	float tensorV2; \
-	unsigned short distortionCorrectionsMode; \
-};"
-typedef struct tpcOmegaTau_st {
+struct tpcOmegaTau_st {
 	float tensorV1; /* tensor for OmegaTau           */
 	float tensorV2; /* tensor for OmegaTau    */
 	unsigned short distortionCorrectionsMode; /* modes for field distortion and non-uniformity corrections  */
-} TPCOMEGATAU_ST;
+};
 #endif /* TPCOMEGATAU_H */

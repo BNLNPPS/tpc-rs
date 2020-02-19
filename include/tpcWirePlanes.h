@@ -13,36 +13,7 @@
  */
 #ifndef TPCWIREPLANES_H
 #define TPCWIREPLANES_H
-#define TPCWIREPLANES_SPEC \
-"struct tpcWirePlanes { \
-	double anodeWireRadius; \
-	double frischGridWireRadius; \
-	double gatingGridWireRadius; \
-	double anodeWirePitch; \
-	double frischGridWirePitch; \
-	double gatingGridWirePitch; \
-	double innerSectorAnodeWirePadSep; \
-	double innerSectorFrischGridPadSep; \
-	double innerSectorGatingGridPadSep; \
-	double outerSectorAnodeWirePadSep; \
-	double outerSectorFrischGridPadSep; \
-	double outerSectorGatingGridPadSep; \
-	long numInnerSectorAnodeWires; \
-	long numInnerSectorFrischGridWires; \
-	long numInnerSectorGatingGridWires; \
-	double firstInnerSectorAnodeWire; \
-	double firstInnerSectorFrischGridWire; \
-	double firstInnerSectorGatingGridWire; \
-	double lastInnerSectorAnodeWire; \
-	long numOuterSectorAnodeWires; \
-	long numOuterSectorFrischGridWires; \
-	long numOuterSectorGatingGridWires; \
-	double firstOuterSectorAnodeWire; \
-	double firstOuterSectorFrischGridWire; \
-	double firstOuterSectorGatingGridWire; \
-	double lastOuterSectorAnodeWire; \
-};"
-typedef struct tpcWirePlanes_st {
+struct tpcWirePlanes_st {
   double anodeWireRadius; /*   */
   double frischGridWireRadius; /*   */
   double gatingGridWireRadius; /*   */
@@ -69,5 +40,5 @@ typedef struct tpcWirePlanes_st {
   double firstOuterSectorFrischGridWire; /*   */
   double firstOuterSectorGatingGridWire; /*   */
   double lastOuterSectorAnodeWire; /*   */
-} TPCWIREPLANES_ST;
+};
 #endif /* TPCWIREPLANES_H */

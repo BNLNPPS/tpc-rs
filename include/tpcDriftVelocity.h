@@ -13,17 +13,10 @@
  */
 #ifndef TPCDRIFTVELOCITY_H
 #define TPCDRIFTVELOCITY_H
-#define TPCDRIFTVELOCITY_SPEC \
-"struct tpcDriftVelocity { \
-	float laserDriftVelocityEast; \
-	float laserDriftVelocityWest; \
-	float cathodeDriftVelocityEast; \
-	float cathodeDriftVelocityWest; \
-};"
-typedef struct tpcDriftVelocity_st {
+struct tpcDriftVelocity_st {
 	float laserDriftVelocityEast; /*   cm/us : from laser beam analysis  */
 	float laserDriftVelocityWest; /*   cm/us : from laser beam analysis  */
 	float cathodeDriftVelocityEast; /*   cm/us : from cathode emission  */
 	float cathodeDriftVelocityWest; /*   cm/us : from cathode emission  */
-} TPCDRIFTVELOCITY_ST;
+};
 #endif /* TPCDRIFTVELOCITY_H */

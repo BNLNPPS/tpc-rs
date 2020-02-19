@@ -14,26 +14,7 @@
  */
 #ifndef BEAMINFO_H
 #define BEAMINFO_H
-#define BEAMINFO_SPEC \
-"struct beamInfo { \
-	unsigned long runNumber; \
-	long entryTag; \
-	char blueSpecies[32]; \
-	unsigned long blueMassNumber; \
-	float blueEnergy; \
-	float blueIntensity; \
-	float blueLifeTime; \
-	float blueBunchIntensity; \
-	char yellowSpecies[32]; \
-	unsigned long yellowMassNumber; \
-	float yellowEnergy; \
-	float yellowIntensity; \
-	float yellowLifeTime; \
-	float yellowBunchIntensity; \
-	float blueFillNumber; \
-	float yellowFillNumber; \
-};"
-typedef struct beamInfo_st {
+struct beamInfo_st {
 	unsigned int runNumber; /*   */
 	int entryTag; /*     0=startrun, 1=endrun, 2=runave, 3=std  */
 	char blueSpecies[32]; /*     species  */
@@ -50,5 +31,5 @@ typedef struct beamInfo_st {
 	float yellowBunchIntensity; /*     bunch intensity  */
 	float blueFillNumber; /*   */
 	float yellowFillNumber; /*   */
-} BEAMINFO_ST;
+};
 #endif /* BEAMINFO_H */

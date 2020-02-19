@@ -14,17 +14,10 @@
  */
 #ifndef TPCHIGHVOLTAGES_H
 #define TPCHIGHVOLTAGES_H
-#define TPCHIGHVOLTAGES_SPEC \
-"struct tpcHighVoltages { \
-	float cathode; \
-	float gatedGridRef; \
-	float gridLeakWallTip[24]; \
-	float gridLeakWallSide[24]; \
-};"
-typedef struct tpcHighVoltages_st {
+struct tpcHighVoltages_st {
 	float cathode; /*   kVolts  */
 	float gatedGridRef; /*   Volts - nominal TPC value but is set by 48 sub-sectors  */
 	float gridLeakWallTip[24]; /*   Volts - iTPC GridLeak wall tip voltage for 24 sectors  */
 	float gridLeakWallSide[24]; /*   above +100 means no wall  */
-} TPCHIGHVOLTAGES_ST;
+};
 #endif /* TPCHIGHVOLTAGES_H */

@@ -13,15 +13,9 @@
  */
 #ifndef TPCPADGAINT0_H
 #define TPCPADGAINT0_H
-#define TPCPADGAINT0_SPEC \
-"struct tpcPadGainT0 { \
-	long run; \
-	float Gain[24][45][182]; \
-	float T0[24][45][182]; \
-};"
-typedef struct tpcPadGainT0_st {
+struct tpcPadGainT0_st {
   int run; /* pulser run number used */
   float Gain[24][45][182]; /* Gains per pad*/
   float T0[24][45][182]; /* T9 per pad*/
-} TPCPADGAINT0_ST;
+};
 #endif /* TPCPADGAINT0_H */

@@ -13,19 +13,7 @@
  */
 #ifndef TPCGRIDLEAK_H
 #define TPCGRIDLEAK_H
-#define TPCGRIDLEAK_SPEC \
-"struct tpcGridLeak { \
-	double InnerGLRadius; \
-	double MiddlGLRadius; \
-	double OuterGLRadius; \
-	double InnerGLWidth; \
-	double MiddlGLWidth; \
-	double OuterGLWidth; \
-	double InnerGLStrength; \
-	double MiddlGLStrength; \
-	double OuterGLStrength; \
-};"
-typedef struct tpcGridLeak_st {
+struct tpcGridLeak_st {
 	double InnerGLRadius; /* Radius of GL around inner sectors           */
 	double MiddlGLRadius; /* Radius of GL between inner/outer sectors    */
 	double OuterGLRadius; /* Radius of GL around outer sectors           */
@@ -35,5 +23,5 @@ typedef struct tpcGridLeak_st {
 	double InnerGLStrength; /* Strength of GL around inner sectors         */
 	double MiddlGLStrength; /* Strength of GL between inner/outer sectors  */
 	double OuterGLStrength; /* Strength of GL around outer sectors         */
-} TPCGRIDLEAK_ST;
+};
 #endif /* TPCGRIDLEAK_H */

@@ -20,18 +20,7 @@
  */
 #ifndef TPCSECTORPOSITION_H
 #define TPCSECTORPOSITION_H
-#define TPCSECTORPOSITION_SPEC \
-"struct tpcSectorPosition { \
-	float innerSectorLocalxShift; \
-	float innerSectorLocalyShift; \
-	float innerSectorRotationAngle; \
-	float innerSectorCovMatrix; \
-	float outerSectorLocalxShift; \
-	float outerSectorLocalyShift; \
-	float outerSectorRotationAngle; \
-	float outerSectorCovMatrix; \
-};"
-typedef struct tpcSectorPosition_st {
+struct tpcSectorPosition_st {
   float innerSectorLocalxShift; /*   cm : shift in local x coord.  */
   float innerSectorLocalyShift; /*   cm : shift in local y coord.  */
   float innerSectorRotationAngle; /*   degrees : clockwise rotation  */
@@ -40,5 +29,5 @@ typedef struct tpcSectorPosition_st {
   float outerSectorLocalyShift; /*   cm : shift in local y coord.  */
   float outerSectorRotationAngle; /*   degrees : clockwise rotation  */
   float outerSectorCovMatrix; /*   0  */
-} TPCSECTORPOSITION_ST;
+};
 #endif /* TPCSECTORPOSITION_H */

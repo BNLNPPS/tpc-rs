@@ -13,25 +13,7 @@
  */
 #ifndef TPCGLOBALPOSITION_H
 #define TPCGLOBALPOSITION_H
-#define TPCGLOBALPOSITION_SPEC \
-"struct tpcGlobalPosition { \
-	float LocalxShift; \
-	float LocalyShift; \
-	float LocalzShift; \
-	float PhiXY; \
-	float PhiXZ; \
-	float PhiYZ; \
-	float XX; \
-	float YY; \
-	float ZZ; \
-	float PhiXY_geom; \
-	float PhiXZ_geom; \
-	float PhiYZ_geom; \
-	float XX_geom; \
-	float YY_geom; \
-	float ZZ_geom; \
-};"
-typedef struct tpcGlobalPosition_st {
+struct tpcGlobalPosition_st {
   float LocalxShift; /* cm : x position of TPC center in magnet frame  */
   float LocalyShift; /* cm : y position of TPC center in magnet frame  */
   float LocalzShift; /* cm : z position of TPC center in magnet frame  */
@@ -47,5 +29,5 @@ typedef struct tpcGlobalPosition_st {
   float XX_geom; /* XX element of geometrical rotation matrix  (not used) */
   float YY_geom; /* YY element of geometrical rotation matrix  (not used) */
   float ZZ_geom; /* ZZ element of geometrical rotation matrix  (not used) */
-} TPCGLOBALPOSITION_ST;
+};
 #endif /* TPCGLOBALPOSITION_H */

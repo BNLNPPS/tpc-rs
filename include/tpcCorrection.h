@@ -36,18 +36,7 @@
 COMMENTS TRUNCATED */
 #ifndef TPCCORRECTION_H
 #define TPCCORRECTION_H
-#define TPCCORRECTION_SPEC \
-"struct tpcCorrection { \
-	long type; \
-	long idx; \
-	long nrows; \
-	long npar; \
-	double OffSet; \
-	double min; \
-	double max; \
-	double a[10]; \
-};"
-typedef struct tpcCorrection_st {
+struct tpcCorrection_st {
   int type;
   int idx;
   int nrows;
@@ -56,5 +45,5 @@ typedef struct tpcCorrection_st {
   double min;
   double max;
   double a[10];
-} TPCCORRECTION_ST;
+};
 #endif /* TPCCORRECTION_H */

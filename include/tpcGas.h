@@ -35,26 +35,7 @@
  */
 #ifndef TPCGAS_H
 #define TPCGAS_H
-#define TPCGAS_SPEC \
-"struct tpcGas { \
-	float barometricPressure; \
-	float inputTPCGasPressure; \
-	float nitrogenPressure; \
-	float gasPressureDiff; \
-	float inputGasTemperature; \
-	float outputGasTemperature; \
-	float flowRateArgon1; \
-	float flowRateArgon2; \
-	float flowRateMethane; \
-	float percentMethaneIn; \
-	float ppmOxygenIn; \
-	float flowRateExhaust; \
-	float percentMethaneOut; \
-	float ppmWaterOut; \
-	float ppmOxygenOut; \
-	float flowRateRecirculation; \
-};"
-typedef struct tpcGas_st {
+struct tpcGas_st {
   float barometricPressure;
   float inputTPCGasPressure;
   float nitrogenPressure;
@@ -71,5 +52,5 @@ typedef struct tpcGas_st {
   float ppmWaterOut;
   float ppmOxygenOut;
   float flowRateRecirculation;
-} TPCGAS_ST;
+};
 #endif /* TPCGAS_H */

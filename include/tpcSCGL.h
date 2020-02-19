@@ -18,20 +18,7 @@
  */
 #ifndef TPCSCGL_H
 #define TPCSCGL_H
-#define TPCSCGL_SPEC \
-"struct tpcSCGL { \
-	float SC[8]; \
-	float SCoffset[8]; \
-	float SCexponent[8]; \
-	float SCscaler[8]; \
-	float GL[24]; \
-	float GLoffset[24]; \
-	float GLradius; \
-	float GLwidth; \
-	long mode; \
-	char comment[256]; \
-};"
-typedef struct tpcSCGL_st {
+struct tpcSCGL_st {
 	float SC[8]; /* Scale factor relating luminosity scaler to SpaceCharge */
 	float SCoffset[8]; /* Offset to define luminosity for SpaceCharge */
 	float SCexponent[8]; /* Luminosity exponential factor for SpaceCharge */
@@ -42,5 +29,5 @@ typedef struct tpcSCGL_st {
 	float GLwidth; /* Width of GridLeak between inner/outer sectors */
 	int mode; /* Modes to simplify parameter controls */
 	char comment[256]; 
-} TPCSCGL_ST;
+};
 #endif /* TPCSCGL_H */

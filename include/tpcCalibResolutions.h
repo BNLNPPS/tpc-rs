@@ -13,15 +13,9 @@
  */
 #ifndef TPCCALIBRESOLUTIONS_H
 #define TPCCALIBRESOLUTIONS_H
-#define TPCCALIBRESOLUTIONS_SPEC \
-"struct tpcCalibResolutions { \
-	float SpaceCharge; \
-	float GridLeak; \
-	char comment[255]; \
-};"
-typedef struct tpcCalibResolutions_st {
+struct tpcCalibResolutions_st {
 	float SpaceCharge; /* SpaceCharge correction */
 	float GridLeak; /* GridLeak correction */
 	char comment[255]; /* comments */
-} TPCCALIBRESOLUTIONS_ST;
+};
 #endif /* TPCCALIBRESOLUTIONS_H */

@@ -17,19 +17,11 @@
  */
 #ifndef TPCCHARGEEVENT_H
 #define TPCCHARGEEVENT_H
-#define TPCCHARGEEVENT_SPEC \
-"struct tpcChargeEvent { \
-	long nChargeEvents; \
-	unsigned long eventBunchCrossingsLow[4096]; \
-	unsigned long eventBunchCrossingsHigh[4096]; \
-	float eventCharges[4096]; \
-	long badBunch; \
-};"
-typedef struct tpcChargeEvent_st {
+struct tpcChargeEvent_st {
 	int nChargeEvents; /* number of charge events in this record */
 	unsigned int eventBunchCrossingsLow[4096]; /* number of bunches into the run when charge event occurred (32 low bits) */
 	unsigned int eventBunchCrossingsHigh[4096]; /* number of bunches into the run when charge event occurred (32 high bits) */
 	float eventCharges[4096]; /* metric of magnitude of charge deposited in TPC */
 	int badBunch; /* collider bunch where most of the charge events occurred */
-} TPCCHARGEEVENT_ST;
+};
 #endif /* TPCCHARGEEVENT_H */

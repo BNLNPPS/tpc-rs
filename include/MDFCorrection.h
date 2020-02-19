@@ -22,21 +22,7 @@
  */
 #ifndef MDFCORRECTION_H
 #define MDFCORRECTION_H
-#define MDFCORRECTION_SPEC \
-"struct MDFCorrection { \
-	octet idx; \
-	octet nrows; \
-	octet PolyType; \
-	octet NVariables; \
-	octet NCoefficients; \
-	octet Power[100]; \
-	double DMean; \
-	double XMin[2]; \
-	double XMax[2]; \
-	double Coefficients[50]; \
-	double CoefficientsRMS[50]; \
-};"
-typedef struct MDFCorrection_st {
+struct MDFCorrection_st {
 	unsigned char idx; 
 	unsigned char nrows; 
 	unsigned char PolyType; 
@@ -48,5 +34,5 @@ typedef struct MDFCorrection_st {
 	double XMax[2]; 
 	double Coefficients[50]; 
 	double CoefficientsRMS[50]; 
-} MDFCORRECTION_ST;
+};
 #endif /* MDFCORRECTION_H */

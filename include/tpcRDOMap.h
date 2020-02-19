@@ -15,21 +15,12 @@
  */
 #ifndef TPCRDOMAP_H
 #define TPCRDOMAP_H
-#define TPCRDOMAP_SPEC \
-"struct tpcRDOMap { \
-	long idx; \
-	long nrows; \
-	octet row; \
-	octet padMin; \
-	octet padMax; \
-	octet rdo; \
-};"
-typedef struct tpcRDOMap_st {
+struct tpcRDOMap_st {
 	int idx; 
 	int nrows; 
 	unsigned char row; 
 	unsigned char padMin; 
 	unsigned char padMax; 
 	unsigned char rdo; 
-} TPCRDOMAP_ST;
+};
 #endif /* TPCRDOMAP_H */

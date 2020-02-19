@@ -16,19 +16,7 @@
  */
 #ifndef TPCHVPLANES_H
 #define TPCHVPLANES_H
-#define TPCHVPLANES_SPEC \
-"struct tpcHVPlanes { \
-	float CM_shift_z; \
-	float CM_tilt_x; \
-	float CM_tilt_y; \
-	float GGE_shift_z; \
-	float GGE_tilt_x; \
-	float GGE_tilt_y; \
-	float GGW_shift_z; \
-	float GGW_tilt_x; \
-	float GGW_tilt_y; \
-};"
-typedef struct tpcHVPlanes_st {
+struct tpcHVPlanes_st {
 	float CM_shift_z; /* physical z shift of the CM plane                      */
 	float CM_tilt_x; /* x component of the CM plane's normal unit vector      */
 	float CM_tilt_y; /* y component of the CM plane's normal unit vector      */
@@ -38,5 +26,5 @@ typedef struct tpcHVPlanes_st {
 	float GGW_shift_z; /* physical z shift of the GG West plane                 */
 	float GGW_tilt_x; /* x component of the GG West plane's normal unit vector */
 	float GGW_tilt_y; /* y component of the GG West plane's normal unit vector */
-} TPCHVPLANES_ST;
+};
 #endif /* TPCHVPLANES_H */

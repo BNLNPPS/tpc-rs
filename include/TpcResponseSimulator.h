@@ -18,55 +18,7 @@
  */
 #ifndef TPCRESPONSESIMULATOR_H
 #define TPCRESPONSESIMULATOR_H
-#define TPCRESPONSESIMULATOR_SPEC \
-"struct TpcResponseSimulator { \
-	float I0; \
-	float Cluster; \
-	float W; \
-	float OmegaTau; \
-	float K3IP; \
-	float K3IR; \
-	float K3OP; \
-	float K3OR; \
-	float FanoFactor; \
-	float AveragePedestal; \
-	float AveragePedestalRMS; \
-	float AveragePedestalRMSX; \
-	float tauIntegration; \
-	float tauF; \
-	float tauP; \
-	float tauXI; \
-	float tauXO; \
-	float tauCI; \
-	float tauCO; \
-	float SigmaJitterTI; \
-	float SigmaJitterTO; \
-	float SigmaJitterXI; \
-	float SigmaJitterXO; \
-	float longitudinalDiffusion; \
-	float transverseDiffusion; \
-	float NoElPerAdc; \
-	float NoElPerAdcI; \
-	float NoElPerAdcO; \
-	float NoElPerAdcX; \
-	float OmegaTauScaleI; \
-	float OmegaTauScaleO; \
-	float SecRowCorIW[2]; \
-	float SecRowCorOW[2]; \
-	float SecRowCorIE[2]; \
-	float SecRowCorOE[2]; \
-	float SecRowSigIW[2]; \
-	float SecRowSigOW[2]; \
-	float SecRowSigIE[2]; \
-	float SecRowSigOE[2]; \
-	float PolyaInner; \
-	float PolyaOuter; \
-	float T0offset; \
-	float T0offsetI; \
-	float T0offsetO; \
-	float FirstRowC; \
-};"
-typedef struct TpcResponseSimulator_st {
+struct TpcResponseSimulator_st {
   float I0; /* = 13.1 eV, CH4 */
   float Cluster; /* = 3.2, average no. of electrons per primary  */
   float W; /* = 26.2 eV */
@@ -112,5 +64,5 @@ typedef struct TpcResponseSimulator_st {
   float T0offsetI; /* = 0.0   extra off set for inner sector */
   float T0offsetO; /* = 0.0   extra off set for outer sector */
   float FirstRowC; /* = 0.0   extra correction for the first pad row */
-} TPCRESPONSESIMULATOR_ST;
+};
 #endif /* TPCRESPONSESIMULATOR_H */
