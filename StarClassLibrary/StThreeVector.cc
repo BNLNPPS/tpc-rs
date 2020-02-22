@@ -2,7 +2,8 @@
 #ifdef __ROOT__
 #include "TBuffer.h"
 #include "TClass.h"
-//________________________________________________________________________________
+
+
 template <> void StThreeVector<float>::Streamer(TBuffer &R__b)
 {
   //	Stream an object of class StThreeVectorD.
@@ -18,7 +19,8 @@ template <> void StThreeVector<float>::Streamer(TBuffer &R__b)
   }
   else Class()->WriteBuffer(R__b, this);
 }
-//________________________________________________________________________________
+
+
 template <> void StThreeVector<double>::Streamer(TBuffer &R__b)
 {
   //	Stream an object of class StThreeVectorD.

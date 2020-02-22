@@ -292,7 +292,8 @@ StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer *
 #endif
   }
 }
-//________________________________________________________________________________
+
+
 //      Local Sector Coordnate    <->  Tpc Raw Pad Coordinate
 void StTpcCoordinateTransform::operator()(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, Bool_t useT0, Bool_t useTau)
 {
@@ -326,7 +327,8 @@ void StTpcCoordinateTransform::operator()(const StTpcLocalSectorCoordinate &a, S
   Double_t tb = tBFromZ(a.position().z() + zoffset - t0zoffset, sector, row, probablePad);
   b = StTpcPadCoordinate(sector, row, probablePad, tb);
 }
-//________________________________________________________________________________
+
+
 void StTpcCoordinateTransform::operator()(const StTpcPadCoordinate &a,  StTpcLocalSectorCoordinate &b, Bool_t useT0, Bool_t useTau)
 {
   // useT0 = kTRUE for pad and kFALSE for cluster, useTau = kTRUE for data cluster and = kFALSE for MC
@@ -357,7 +359,8 @@ void StTpcCoordinateTransform::operator()(const StTpcPadCoordinate &a,  StTpcLoc
   tmp.setZ(z);
   b = StTpcLocalSectorCoordinate(tmp, a.sector(), a.row());
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcCoordinateTransform::padFromX(Double_t x, Int_t sector, Int_t row) const
 {
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
@@ -399,7 +402,8 @@ Double_t StTpcCoordinateTransform::padFromX(Double_t x, Int_t sector, Int_t row)
 
   return (probablePad);
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcCoordinateTransform::xFromPad(Int_t sector, Int_t row, Double_t pad) const      // x coordinate in sector 12
 {
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
@@ -440,7 +444,8 @@ Double_t StTpcCoordinateTransform::xFromPad(Int_t sector, Int_t row, Double_t pa
 // Coordinate from Row
 //
 //Local Transformation...
-//________________________________________________________________________________
+
+
 Double_t StTpcCoordinateTransform::zFromTB(Double_t tb, Int_t sector, Int_t row, Int_t pad) const
 {
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
@@ -469,7 +474,8 @@ Double_t StTpcCoordinateTransform::zFromTB(Double_t tb, Int_t sector, Int_t row,
   Double_t z = StTpcDb::instance()->DriftVelocity(sector) * 1e-6 * time;
   return z;
 }
-//________________________________________________________________________________
+
+
 Double_t StTpcCoordinateTransform::tBFromZ(Double_t z, Int_t sector, Int_t row, Int_t pad) const
 {
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
@@ -495,7 +501,8 @@ Double_t StTpcCoordinateTransform::tBFromZ(Double_t z, Int_t sector, Int_t row, 
 
   return tb;
 }
-//________________________________________________________________________________
+
+
 // FOR SECTOR 12 ONLY!!!! (Local coordinate);
 Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
 {
@@ -558,7 +565,8 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
   return row;
 #endif
 }
-//________________________________________________________________________________
+
+
 void  StTpcCoordinateTransform::operator()(const        StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b           )
 {
   StThreeVectorD xGG;
@@ -573,7 +581,8 @@ void  StTpcCoordinateTransform::operator()(const        StTpcLocalSectorCoordina
   GG2TPC.LocalToMaster(xGG.xyz(), b.position().xyz());
   b.setSector(a.sector()); b.setRow(row);
 }
-//________________________________________________________________________________
+
+
 void  StTpcCoordinateTransform::operator()(const              StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b     )
 {
   Int_t row    = a.fromRow();

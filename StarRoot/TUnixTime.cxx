@@ -16,25 +16,29 @@
 #include "TDatime.h"
 
 
-//______________________________________________________________________________
+
+
 TUnixTime::TUnixTime(ULong_t utime)
 {
   fUTime = utime;
   if (!fUTime) fUTime = time(0);
 }
-//______________________________________________________________________________
+
+
 TUnixTime::TUnixTime(Int_t date,Int_t time,int gmt)
 {
   if (gmt) SetGTime(date,time);
   else     SetLTime(date,time);
 }
-//______________________________________________________________________________
+
+
 TUnixTime::TUnixTime(const TDatime &tdt,int gmt)
 {
    if (gmt) {SetGTime(tdt.GetDate(),tdt.GetTime());}
    else     {SetLTime(tdt.GetDate(),tdt.GetTime());}
 }
-//______________________________________________________________________________
+
+
 void TUnixTime::SetGTime(const struct tm *tm_gmt)
 {
   int dif;
@@ -61,14 +65,16 @@ UPD: if (dif<0) ugmt+=3600;
 OK: fUTime = ugmt;
 
 }
-//______________________________________________________________________________
+
+
 void TUnixTime::SetLTime(const struct tm *lt)
 {
   struct tm ltt;
   ltt = *lt;
   fUTime = mktime(&ltt);
 }
-//______________________________________________________________________________
+
+
 static void DateTime2tm(struct tm *gt,Int_t idate, Int_t itime)
 {
   time_t ul = time(0);
@@ -84,14 +90,16 @@ static void DateTime2tm(struct tm *gt,Int_t idate, Int_t itime)
   gt->tm_sec = (itime     )%100;
 }
 
-//______________________________________________________________________________
+
+
 static void tm2DateTime(Int_t &idate, Int_t &itime,const struct tm *gt)
 {
   idate  = (gt->tm_year+1900)*10000 + (gt->tm_mon+1)*100 + gt->tm_mday;
   itime  =  gt->tm_hour*10000 + gt->tm_min*100 + gt->tm_sec;
 }
 
-//______________________________________________________________________________
+
+
 void TUnixTime::SetGTime(Int_t idate, Int_t itime)
 {
   struct tm gt;
@@ -99,7 +107,8 @@ void TUnixTime::SetGTime(Int_t idate, Int_t itime)
   SetGTime(&gt);
 
 }
-//______________________________________________________________________________
+
+
 void TUnixTime::SetLTime(Int_t idate, Int_t itime)
 {
   struct tm gt;
@@ -107,7 +116,8 @@ void TUnixTime::SetLTime(Int_t idate, Int_t itime)
   SetLTime(&gt);
 
 }
-//______________________________________________________________________________
+
+
 void TUnixTime::GetGTime(Int_t &idate, Int_t &itime)
 {
   struct tm gt;
@@ -115,7 +125,8 @@ void TUnixTime::GetGTime(Int_t &idate, Int_t &itime)
   tm2DateTime(idate,itime,&gt);
 
 }
-//______________________________________________________________________________
+
+
 void TUnixTime::GetLTime(Int_t &idate, Int_t &itime)
 {
   struct tm gt;
@@ -123,29 +134,34 @@ void TUnixTime::GetLTime(Int_t &idate, Int_t &itime)
   tm2DateTime(idate,itime,&gt);
 
 }
-//______________________________________________________________________________
+
+
 TString TUnixTime::GetLString()
 {
   TString ts(ctime((time_t*)&fUTime));
   return ts;
 }  
-//______________________________________________________________________________
+
+
 TString TUnixTime::GetGString()
 {
   TString ts(asctime(gmtime((time_t*)&fUTime)));
   return ts;
 }  
-//______________________________________________________________________________
+
+
 void TUnixTime::SetLTime(const TDatime &loc)
 {
   SetLTime(loc.GetDate(), loc.GetTime());
 }
-//______________________________________________________________________________
+
+
 void TUnixTime::SetGTime(const TDatime &gmt)
 {
   SetGTime(gmt.GetDate(), gmt.GetTime());
 }
-//______________________________________________________________________________
+
+
 ULong_t TUnixTime::Convert(const TDatime &dt,int gmt)
 {
    TUnixTime ux;

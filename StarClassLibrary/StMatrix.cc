@@ -2,7 +2,8 @@
 #ifdef __ROOT__
 #include "TBuffer.h"
 #include "TClass.h"
-//________________________________________________________________________________
+
+
 template <> void StMatrix<float>::Streamer(TBuffer &R__b)
 {
    if (R__b.IsReading()) {
@@ -18,7 +19,8 @@ template <> void StMatrix<float>::Streamer(TBuffer &R__b)
    }
    else Class()->WriteBuffer(R__b,this);
 }
-//________________________________________________________________________________
+
+
 template <> void StMatrix<double>::Streamer(TBuffer &R__b)
 {
    if (R__b.IsReading()) {

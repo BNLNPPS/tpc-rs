@@ -82,7 +82,8 @@
 #include "StDaqLib/TPC/trans_table.hh"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
-//________________________________________________________________________________
+
+
 StTpcDigitalSector::StTpcDigitalSector(void *db) : mSector(20)
 {
   StDigitalTimeBins  timeBins;
@@ -110,7 +111,8 @@ StTpcDigitalSector::StTpcDigitalSector(int sector) : mSector(sector)
   }
 }
 
-//________________________________________________________________________________
+
+
 void StTpcDigitalSector::clear() {// clears only the time bins
   for(UInt_t row=0; row<mData.size(); row++) {
     for(UInt_t ipad=0; ipad<mData[row].size(); ipad++) {
@@ -118,7 +120,8 @@ void StTpcDigitalSector::clear() {// clears only the time bins
     }
   }
 }
-//________________________________________________________________________________
+
+
 void StTpcDigitalSector::assignTimeBins(Int_t rowN, Int_t padN, StDigitalTimeBins* tbins) {
   assert( (rowN >= 1 && rowN <= mNoRows ) ||
 	  (padN >= 1 && padN <= numberOfPadsAtRow(rowN)));
@@ -127,7 +130,8 @@ void StTpcDigitalSector::assignTimeBins(Int_t rowN, Int_t padN, StDigitalTimeBin
   if (Pad.size() > 0)  Pad.clear();
   Pad.swap(*tbins);
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::cleanup() {
   UInt_t numberOfEmptyRows=0;
   for (UInt_t iRow=0; iRow<mData.size(); iRow++) {
@@ -147,7 +151,8 @@ Int_t StTpcDigitalSector::cleanup() {
   if (numberOfEmptyRows==mData.size()) return 1;
   else return 0;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::getSequences(Int_t row, Int_t pad, Int_t *nSeq, StSequence** Seq, UShort_t ***Ids) {
   *Seq=0;
   if (Ids) *Ids=0;*nSeq=0;
@@ -177,7 +182,8 @@ Int_t StTpcDigitalSector::getSequences(Int_t row, Int_t pad, Int_t *nSeq, StSequ
   if (Ids) *Ids = &mIds[0];
   return 0;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::getPadList(Int_t row, UChar_t **padList) {
   mPadList.clear();
   assert( row>=1 && row <=mNoRows);
@@ -190,7 +196,8 @@ Int_t StTpcDigitalSector::getPadList(Int_t row, UChar_t **padList) {
   *padList = &mPadList[0];
   return mPadList.size();
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::putTimeAdc(Int_t row, Int_t pad, Short_t *ADCs, UShort_t *IDTs) {// 10 -> 8 conversion
   Int_t ntimebins = 0;
   StDigitalTimeBins  digPadData;
@@ -206,7 +213,8 @@ Int_t StTpcDigitalSector::putTimeAdc(Int_t row, Int_t pad, Short_t *ADCs, UShort
   if (ntimebins) assignTimeBins(row,pad,&digPadData);
   return ntimebins;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::putTimeAdc(Int_t row, Int_t pad, UChar_t *ADCs, UShort_t *IDTs) {// no conversion
   Int_t ntimebins = 0;
   StDigitalTimeBins  digPadData;
@@ -223,7 +231,8 @@ Int_t StTpcDigitalSector::putTimeAdc(Int_t row, Int_t pad, UChar_t *ADCs, UShort
   assignTimeBins(row,pad,&digPadData);
   return ntimebins;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad, 
 				     Short_t  ADCs[__MaxNumberOfTimeBins__],
 				     UShort_t IDTs[__MaxNumberOfTimeBins__]) { 
@@ -248,7 +257,8 @@ Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad,
   }
   return nTimeSeqs;
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad, 
 				     UChar_t ADCs[__MaxNumberOfTimeBins__], 
 				     UShort_t IDTs[__MaxNumberOfTimeBins__]) {
@@ -275,7 +285,8 @@ Int_t StTpcDigitalSector::getTimeAdc(Int_t row, Int_t pad,
   }
   return nTimeSeqs;
  }
-//________________________________________________________________________________
+
+
 Int_t StTpcDigitalSector::PrintTimeAdc(Int_t row, Int_t pad) const {
   UInt_t nTimeSeqs = 0;
   const StDigitalTimeBins* TrsPadData = timeBinsOfRowAndPad(row,pad);
@@ -295,7 +306,8 @@ Int_t StTpcDigitalSector::PrintTimeAdc(Int_t row, Int_t pad) const {
   }
   return nTimeSeqs;
  }
-//________________________________________________________________________________
+
+
 StTpcDigitalSector &StTpcDigitalSector::operator+= (StTpcDigitalSector& v) {
   static Short_t ADCs1[__MaxNumberOfTimeBins__], ADCs2[__MaxNumberOfTimeBins__];
   static UShort_t IDTs1[__MaxNumberOfTimeBins__], IDTs2[__MaxNumberOfTimeBins__];
@@ -322,7 +334,8 @@ StTpcDigitalSector &StTpcDigitalSector::operator+= (StTpcDigitalSector& v) {
   }
   return *this;
 }
-//________________________________________________________________________________
+
+
 StTpcDigitalSector &StTpcDigitalSector::operator= (const StTpcDigitalSector& v) {
   for (Int_t row = 1; row <= mNoRows; row++) {
     Int_t npad2 = v.numberOfPadsInRow(row);
@@ -337,7 +350,8 @@ StTpcDigitalSector &StTpcDigitalSector::operator= (const StTpcDigitalSector& v) 
   }
   return *this;
 }
-//________________________________________________________________________________
+
+
 void StTpcDigitalSector::Print(const Option_t *opt) const {
   TString Opt(opt);
   for (Int_t row = 1; row <= mNoRows; row++) {
@@ -352,7 +366,8 @@ void StTpcDigitalSector::Print(const Option_t *opt) const {
     }
   }
 }
-//________________________________________________________________________________
+
+
 void StTpcRawData::setSector(UInt_t  sector, StTpcDigitalSector* digitSector) {    
   if (sector > 0 && sector <= mSectors.size()) {
     if (mSectors[sector-1]) delete mSectors[sector-1];
@@ -360,11 +375,13 @@ void StTpcRawData::setSector(UInt_t  sector, StTpcDigitalSector* digitSector) {
     mSectors[sector-1] = digitSector;
   }
 }
-//________________________________________________________________________________
+
+
 void StTpcRawData::Clear(const Option_t*) {
   for (UInt_t ii=0; ii<mSectors.size(); ii++) {SafeDelete(mSectors[ii]);}
 }
-//________________________________________________________________________________
+
+
 Int_t StTpcRawData::getVecOfPixels(StVectPixel &pixels, Int_t sector, Int_t row, Int_t padMin, Int_t padMax, Int_t tMin, Int_t tMax) {
   pixels.clear();
   StTpcDigitalSector *s =   GetSector(sector);
@@ -391,7 +408,8 @@ Int_t StTpcRawData::getVecOfPixels(StVectPixel &pixels, Int_t sector, Int_t row,
   }
   return pixels.size();
 }
-//________________________________________________________________________________
+
+
 void StTpcRawData::Print(const Option_t *opt) const {
   Int_t N = ((StTpcRawData *) this)->size();
   for (Int_t i = 0; i < N; i++) {
@@ -399,7 +417,8 @@ void StTpcRawData::Print(const Option_t *opt) const {
     if (sector) sector->Print(opt);
   }
 }
-//________________________________________________________________________________
+
+
 StTpcRawData &StTpcRawData::operator+= (StTpcRawData& v) {
   for (Int_t sec = 1; sec <= 24; sec++) {
     StTpcDigitalSector *a = getSector(sec);
