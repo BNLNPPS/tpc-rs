@@ -63,4 +63,5 @@ add_library(tpcrs
 	StEvent/StTpcPixel.cxx
 	St_base/StObject.cxx
 	StTpcDb/StTpcDb.cxx
+	StChain/StMaker.cxx
 )
