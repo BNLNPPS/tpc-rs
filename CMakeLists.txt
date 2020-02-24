@@ -57,6 +57,7 @@ add_library(tpcrs
 	StTpcRSMaker/StTpcRSMaker.cxx
 	StTpcRSMaker/Altro.cxx
 	StTpcRSMaker/TF1F.cxx
+	StDetectorDbMaker/StDetectorDbChairs.cxx
 	StDetectorDbMaker/St_tpcChargeEventC.cxx
 	StDetectorDbMaker/St_spaceChargeCorC.cxx
 	StEvent/StTpcRawData.cxx
