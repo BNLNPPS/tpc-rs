@@ -7,9 +7,8 @@
 #include "Math/SMatrix.h"
 using namespace ROOT::Math;
 
-#include "TCernLib.h"
-
 #include "St_base/StarChairDefs.h"
+
 static Int_t _debug = 0;
 //__________________Calibrations/tpc______________________________________________________________
 #include "StDetectorDbMaker/St_tpcGasC.h"
