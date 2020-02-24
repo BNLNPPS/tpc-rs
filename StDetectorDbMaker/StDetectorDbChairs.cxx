@@ -915,17 +915,8 @@ Float_t St_tpcRDOT0offsetC::T0(Int_t sector, Int_t padrow, Int_t pad) const {
 }
 
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
-St_trigDetSumsC *St_trigDetSumsC::fgInstance = 0;
-St_trigDetSumsC *St_trigDetSumsC::instance() {
-  if (fgInstance) return fgInstance;
-  St_trigDetSums *table = (St_trigDetSums *) StMaker::GetChain()->GetDataSet("trigDetSums");
-  if (! table) table = (St_trigDetSums *) StMaker::GetChain()->GetDataBase("Calibrations/rich/trigDetSums");
-  assert(table);
-  fgInstance = new St_trigDetSumsC(table);
-  fgInstance->SetName("trigDetSumsC");
-  StMaker::GetChain()->AddData(fgInstance);
-  return fgInstance;
-}
+MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
+St_trigDetSums* St_trigDetSumsC::fgTableCopy = 0;
 //___________________tpc_____________________________________________________________
 #include "StDetectorDbMaker/St_tss_tssparC.h"
 MakeChairInstance(tss_tsspar,tpc/tsspars/tsspar);
