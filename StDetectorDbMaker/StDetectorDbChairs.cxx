@@ -1241,24 +1241,9 @@ void St_SurveyC::GetAngles(Double_t &phi, Double_t &the, Double_t &psi, Int_t i)
 
 St_SurveyC   *St_SurveyC::instance(const Char_t *name) {
   TString Name(name);
-  if (Name == "SvtOnGlobal")            return (St_SurveyC   *) StSvtOnGlobal::instance();
-  if (Name == "ShellOnGlobal")        	return (St_SurveyC   *) StSvtShellOnGlobal::instance();
-  if (Name == "LadderOnSurvey")       	return (St_SurveyC   *) StSvtLadderOnSurvey::instance();
-  if (Name == "LadderOnShell")        	return (St_SurveyC   *) StSvtLadderOnShell::instance();
-  if (Name == "WaferOnLadder")        	return (St_SurveyC   *) StSvtWaferOnLadder::instance();
-  if (Name == "SsdOnGlobal")          	return (St_SurveyC   *) StSsdOnGlobal::instance();
-  if (Name == "SsdSectorsOnGlobal")   	return (St_SurveyC   *) StSsdSectorsOnGlobal::instance();
-  if (Name == "SsdLaddersOnSectors")  	return (St_SurveyC   *) StSsdLaddersOnSectors::instance();
-  if (Name == "SsdWafersOnLadders")   	return (St_SurveyC   *) StSsdWafersOnLadders::instance();
   if (Name == "TpcInnerSectorPosition") return (St_SurveyC   *) StTpcInnerSectorPosition::instance();
   if (Name == "TpcOuterSectorPosition") return (St_SurveyC   *) StTpcOuterSectorPosition::instance();
   if (Name == "TpcSuperSectorPosition") return (St_SurveyC   *) StTpcSuperSectorPosition::instance();
   if (Name == "TpcHalfPosition")        return (St_SurveyC   *) StTpcHalfPosition::instance();
-  if (Name == "idsOnTpc")               return (St_SurveyC   *) StidsOnTpc::instance();
-  if (Name == "pstOnIds")        	return (St_SurveyC   *) StpstOnIds::instance();
-  if (Name == "istOnPst")        	return (St_SurveyC   *) StistOnPst::instance();
-  if (Name == "LadderOnIst")       	return (St_SurveyC   *) StLadderOnIst::instance();
-  if (Name == "LadderOnShell")        	return (St_SurveyC   *) StSvtLadderOnShell::instance();
-  if (Name == "istSensorOnLadder")      return (St_SurveyC   *) StistSensorOnLadder::instance();
   return 0;
 }
