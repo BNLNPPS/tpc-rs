@@ -67,6 +67,64 @@ add_library(tpcrs
 	St_db_Maker/StValiSet.cxx
 	StTpcDb/StTpcDb.cxx
 	StChain/StMaker.cxx
+	src/tpcrs_tables.cxx
+	tpcrs_tables_dict.cxx
+)
+
+root_generate_dictionary(
+	tpcrs_tables_dict
+	tables/St_asic_thresholds_Table.h
+	tables/St_g2t_tpc_hit_Table.h
+	tables/St_g2t_track_Table.h
+	tables/St_g2t_vertex_Table.h
+	tables/St_itpcPadGainT0_Table.h
+	tables/St_iTPCSurvey_Table.h
+	tables/St_MagFactor_Table.h
+	tables/St_richvoltages_Table.h
+	tables/St_spaceChargeCor_Table.h
+	tables/St_starClockOnl_Table.h
+	tables/St_starMagOnl_Table.h
+	tables/St_Survey_Table.h
+	tables/St_tpcAltroParams_Table.h
+	tables/St_tpcAnodeHV_Table.h
+	tables/St_tpcAnodeHVavg_Table.h
+	tables/St_TpcAvgCurrent_Table.h
+	tables/St_TpcAvgPowerSupply_Table.h
+	tables/St_tpcCalibResolutions_Table.h
+	tables/St_tpcChargeEvent_Table.h
+	tables/St_tpcCorrection_Table.h
+	tables/St_tpcDimensions_Table.h
+	tables/St_tpcDriftVelocity_Table.h
+	tables/St_tpcEffectiveGeom_Table.h
+	tables/St_tpcElectronics_Table.h
+	tables/St_tpcFieldCage_Table.h
+	tables/St_tpcFieldCageShort_Table.h
+	tables/St_tpcGas_Table.h
+	tables/St_tpcGlobalPosition_Table.h
+	tables/St_tpcGridLeak_Table.h
+	tables/St_tpcHighVoltages_Table.h
+	tables/St_tpcHVPlanes_Table.h
+	tables/St_tpcOmegaTau_Table.h
+	tables/St_tpcPadConfig_Table.h
+	tables/St_tpcPadGainT0_Table.h
+	tables/St_tpcPadPlanes_Table.h
+	tables/St_tpcPadResponse_Table.h
+	tables/St_tpcPadrowT0_Table.h
+	tables/St_tpcPedestal_Table.h
+	tables/St_tpcRDOMap_Table.h
+	tables/St_tpcRDOMasks_Table.h
+	tables/St_tpcRDOT0offset_Table.h
+	tables/St_TpcResponseSimulator_Table.h
+	tables/St_tpcSCGL_Table.h
+	tables/St_tpcSectorPosition_Table.h
+	tables/St_tpcSectorT0offset_Table.h
+	tables/St_tpcSlowControlSim_Table.h
+	tables/St_tpcWirePlanes_Table.h
+	tables/St_trgTimeOffset_Table.h
+	tables/St_trigDetSums_Table.h
+	tables/St_tss_tsspar_Table.h
+	StDetectorDbMaker/St_MagFactorC.h
+	LINKDEF include/LinkDef.h
 )
 
 add_subdirectory(tests)
