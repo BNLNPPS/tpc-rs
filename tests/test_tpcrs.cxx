@@ -3,7 +3,9 @@
 #include "TChain.h"
 #include "Ttypes.h"
 
+#include "StarMagField/StarMagField.h"
 #include "StEvent/StTpcRawData.h"
+#include "StTpcDb/StTpcDb.h"
 #include "StTpcRSMaker/StTpcRSMaker.h"
 #include "tables/St_g2t_tpc_hit_Table.h"
 #include "tables/St_g2t_track_Table.h"
@@ -18,6 +20,10 @@ int main(int argc, char **argv)
 {
   StTpcRSMaker* tpcrs = new StTpcRSMaker();
   StTpcRawData* tpcraw = new StTpcRawData();
+
+  StarMagField starMagField;
+  StTpcDb::instance()->SetDriftVelocity();
+  StTpcDb::instance()->SetTpcRotations();
 
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile("geant_event.root");
