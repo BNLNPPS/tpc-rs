@@ -107,6 +107,37 @@
 #pragma link C++ class St_tss_tsspar-;
 
 // Dictionaries for TChairs
+#pragma link C++ class St_beamInfoC+;
 #pragma link C++ class St_MagFactorC+;
+#pragma link C++ class St_MDFCorrectionC+;
+#pragma link C++ class St_TpcAdcCorrectionBC+;
+#pragma link C++ class St_TpcAdcCorrectionMDF+;
+#pragma link C++ class St_TpcCurrentCorrectionC+;
+#pragma link C++ class St_TpcdChargeC+;
+#pragma link C++ class St_TpcdEdxCorC+;
+#pragma link C++ class St_TpcDriftDistOxygenC+;
+#pragma link C++ class St_TpcdXCorrectionBC+;
+#pragma link C++ class St_TpcEdgeC+;
+#pragma link C++ class St_TpcEffectivedXC+;
+#pragma link C++ class St_tpcGasTemperatureC+;
+#pragma link C++ class St_TpcLengthCorrectionBC+;
+#pragma link C++ class St_TpcLengthCorrectionMDF+;
+#pragma link C++ class St_tpcMethaneInC+;
+#pragma link C++ class St_TpcMultiplicityC+;
+#pragma link C++ class St_TpcPadCorrectionMDF+;
+#pragma link C++ class St_TpcPhiDirectionC+;
+#pragma link C++ class St_tpcPressureBC+;
+#pragma link C++ class St_TpcrChargeC+;
+#pragma link C++ class St_TpcRowQC+;
+#pragma link C++ class St_TpcSecRowBC+;
+#pragma link C++ class St_TpcSecRowCC+;
+#pragma link C++ class St_TpcSecRowCorC+;
+#pragma link C++ class St_TpcSpaceChargeC+;
+#pragma link C++ class St_TpcTanLC+;
+#pragma link C++ class St_tpcTimeDependenceC+;
+#pragma link C++ class St_tpcWaterOutC+;
+#pragma link C++ class St_TpcZCorrectionBC+;
+#pragma link C++ class St_TpcZDCC+;
+
 
 #endif

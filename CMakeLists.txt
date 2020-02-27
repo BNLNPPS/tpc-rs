@@ -123,7 +123,37 @@ root_generate_dictionary(
 	tables/St_trgTimeOffset_Table.h
 	tables/St_trigDetSums_Table.h
 	tables/St_tss_tsspar_Table.h
+	StDetectorDbMaker/St_beamInfoC.h
 	StDetectorDbMaker/St_MagFactorC.h
+	StDetectorDbMaker/St_MDFCorrectionC.h
+	StDetectorDbMaker/St_TpcAdcCorrectionBC.h
+	StDetectorDbMaker/St_TpcAdcCorrectionMDF.h
+	StDetectorDbMaker/St_TpcCurrentCorrectionC.h
+	StDetectorDbMaker/St_TpcdChargeC.h
+	StDetectorDbMaker/St_TpcdEdxCorC.h
+	StDetectorDbMaker/St_TpcDriftDistOxygenC.h
+	StDetectorDbMaker/St_TpcdXCorrectionBC.h
+	StDetectorDbMaker/St_TpcEdgeC.h
+	StDetectorDbMaker/St_TpcEffectivedXC.h
+	StDetectorDbMaker/St_tpcGasTemperatureC.h
+	StDetectorDbMaker/St_TpcLengthCorrectionBC.h
+	StDetectorDbMaker/St_TpcLengthCorrectionMDF.h
+	StDetectorDbMaker/St_tpcMethaneInC.h
+	StDetectorDbMaker/St_TpcMultiplicityC.h
+	StDetectorDbMaker/St_TpcPadCorrectionMDF.h
+	StDetectorDbMaker/St_TpcPhiDirectionC.h
+	StDetectorDbMaker/St_tpcPressureBC.h
+	StDetectorDbMaker/St_TpcrChargeC.h
+	StDetectorDbMaker/St_TpcRowQC.h
+	StDetectorDbMaker/St_TpcSecRowBC.h
+	StDetectorDbMaker/St_TpcSecRowCC.h
+	StDetectorDbMaker/St_TpcSecRowCorC.h
+	StDetectorDbMaker/St_TpcSpaceChargeC.h
+	StDetectorDbMaker/St_TpcTanLC.h
+	StDetectorDbMaker/St_tpcTimeDependenceC.h
+	StDetectorDbMaker/St_tpcWaterOutC.h
+	StDetectorDbMaker/St_TpcZCorrectionBC.h
+	StDetectorDbMaker/St_TpcZDCC.h
 	LINKDEF include/LinkDef.h
 )
 
