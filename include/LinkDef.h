@@ -5,12 +5,14 @@
 #pragma link off all functions;
 
 #pragma link C++ struct asic_thresholds_st+;
+#pragma link C++ struct beamInfo_st+;
 #pragma link C++ struct g2t_tpc_hit_st+;
 #pragma link C++ struct g2t_track_st+;
 #pragma link C++ struct g2t_vertex_st+;
 #pragma link C++ struct itpcPadGainT0_st+;
 #pragma link C++ struct iTPCSurvey_st+;
 #pragma link C++ struct MagFactor_st+;
+#pragma link C++ struct MDFCorrection_st+;
 #pragma link C++ struct richvoltages_st+;
 #pragma link C++ struct spaceChargeCor_st+;
 #pragma link C++ struct starClockOnl_st+;
@@ -21,6 +23,8 @@
 #pragma link C++ struct tpcAnodeHVavg_st+;
 #pragma link C++ struct TpcAvgCurrent_st+;
 #pragma link C++ struct TpcAvgPowerSupply_st+;
+#pragma link C++ struct TpcEffectivedX_st+;
+#pragma link C++ struct TpcSecRowCor_st+;
 #pragma link C++ struct tpcCalibResolutions_st+;
 #pragma link C++ struct tpcChargeEvent_st+;
 #pragma link C++ struct tpcCorrection_st+;
@@ -56,12 +60,14 @@
 #pragma link C++ struct tss_tsspar_st+;
 
 #pragma link C++ class St_asic_thresholds-;
+#pragma link C++ class St_beamInfo-;
 #pragma link C++ class St_g2t_tpc_hit-;
 #pragma link C++ class St_g2t_track-;
 #pragma link C++ class St_g2t_vertex-;
 #pragma link C++ class St_itpcPadGainT0-;
 #pragma link C++ class St_iTPCSurvey-;
 #pragma link C++ class St_MagFactor-;
+#pragma link C++ class St_MDFCorrection-;
 #pragma link C++ class St_richvoltages-;
 #pragma link C++ class St_spaceChargeCor-;
 #pragma link C++ class St_starClockOnl-;
@@ -72,6 +78,8 @@
 #pragma link C++ class St_tpcAnodeHVavg-;
 #pragma link C++ class St_TpcAvgCurrent-;
 #pragma link C++ class St_TpcAvgPowerSupply-;
+#pragma link C++ class St_TpcEffectivedX-;
+#pragma link C++ class St_TpcSecRowCor-;
 #pragma link C++ class St_tpcCalibResolutions-;
 #pragma link C++ class St_tpcChargeEvent-;
 #pragma link C++ class St_tpcCorrection-;

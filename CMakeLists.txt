@@ -74,12 +74,14 @@ add_library(tpcrs
 root_generate_dictionary(
 	tpcrs_tables_dict
 	tables/St_asic_thresholds_Table.h
+	tables/St_beamInfo_Table.h
 	tables/St_g2t_tpc_hit_Table.h
 	tables/St_g2t_track_Table.h
 	tables/St_g2t_vertex_Table.h
 	tables/St_itpcPadGainT0_Table.h
 	tables/St_iTPCSurvey_Table.h
 	tables/St_MagFactor_Table.h
+	tables/St_MDFCorrection_Table.h
 	tables/St_richvoltages_Table.h
 	tables/St_spaceChargeCor_Table.h
 	tables/St_starClockOnl_Table.h
@@ -90,6 +92,8 @@ root_generate_dictionary(
 	tables/St_tpcAnodeHVavg_Table.h
 	tables/St_TpcAvgCurrent_Table.h
 	tables/St_TpcAvgPowerSupply_Table.h
+	tables/St_TpcEffectivedX_Table.h
+	tables/St_TpcSecRowCor_Table.h
 	tables/St_tpcCalibResolutions_Table.h
 	tables/St_tpcChargeEvent_Table.h
 	tables/St_tpcCorrection_Table.h

@@ -1,12 +1,14 @@
 #include "Ttypes.h"
 
 #include "tables/St_asic_thresholds_Table.h"
+#include "tables/St_beamInfo_Table.h"
 #include "tables/St_g2t_tpc_hit_Table.h"
 #include "tables/St_g2t_track_Table.h"
 #include "tables/St_g2t_vertex_Table.h"
 #include "tables/St_itpcPadGainT0_Table.h"
 #include "tables/St_iTPCSurvey_Table.h"
 #include "tables/St_MagFactor_Table.h"
+#include "tables/St_MDFCorrection_Table.h"
 #include "tables/St_richvoltages_Table.h"
 #include "tables/St_spaceChargeCor_Table.h"
 #include "tables/St_starClockOnl_Table.h"
@@ -17,6 +19,8 @@
 #include "tables/St_tpcAnodeHVavg_Table.h"
 #include "tables/St_TpcAvgCurrent_Table.h"
 #include "tables/St_TpcAvgPowerSupply_Table.h"
+#include "tables/St_TpcEffectivedX_Table.h"
+#include "tables/St_TpcSecRowCor_Table.h"
 #include "tables/St_tpcCalibResolutions_Table.h"
 #include "tables/St_tpcChargeEvent_Table.h"
 #include "tables/St_tpcCorrection_Table.h"
@@ -52,12 +56,14 @@
 #include "tables/St_tss_tsspar_Table.h"
 
 TableImpl(asic_thresholds)
+TableImpl(beamInfo)
 TableImpl(g2t_tpc_hit)
 TableImpl(g2t_track)
 TableImpl(g2t_vertex)
 TableImpl(itpcPadGainT0)
 TableImpl(iTPCSurvey)
 TableImpl(MagFactor)
+TableImpl(MDFCorrection)
 TableImpl(richvoltages)
 TableImpl(spaceChargeCor)
 TableImpl(starClockOnl)
@@ -68,6 +74,8 @@ TableImpl(tpcAnodeHV)
 TableImpl(tpcAnodeHVavg)
 TableImpl(TpcAvgCurrent)
 TableImpl(TpcAvgPowerSupply)
+TableImpl(TpcEffectivedX)
+TableImpl(TpcSecRowCor)
 TableImpl(tpcCalibResolutions)
 TableImpl(tpcChargeEvent)
 TableImpl(tpcCorrection)
