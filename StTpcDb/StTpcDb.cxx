@@ -204,7 +204,6 @@
 
 #include "StTpcDb/StTpcDb.h"
 #include "tables/St_trgTimeOffset_Table.h"
-#include "tables/St_dst_L0_Trigger_Table.h"
 #include "StarRoot/TUnixTime.h"
 #include "St_base/StMessMgr.h"
 #include "StChain/StMaker.h"
