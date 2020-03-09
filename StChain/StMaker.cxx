@@ -4,6 +4,7 @@
 #include "TSystem.h"
 
 #include "StChain/StMaker.h"
+#include "St_db_Maker/StValiSet.h"
 
 
 StChain* StMaker::gStChain = new StChain();
@@ -19,5 +20,14 @@ TTable* StChain::GetDataBase(std::string path, const TDatime *td)
 
   gInterpreter->ProcessLine(command.c_str());
 
-  return reinterpret_cast<TTable*>(gInterpreter->Calc("CreateTable()"));
+  TDataSet* ds = reinterpret_cast<TDataSet*>(gInterpreter->Calc("CreateTable()"));
+
+  StValiSet *vs = new StValiSet(("." + std::string(gSystem->BaseName(path.c_str()))).c_str(), ds);
+  vs->fTimeMin = TDatime(kMinTime, 0);
+  vs->fTimeMax = TDatime(kMaxTime, 0);
+  vs->fVers++;
+
+  ds->Add(vs);
+
+  return reinterpret_cast<TTable*>(ds);
 }
