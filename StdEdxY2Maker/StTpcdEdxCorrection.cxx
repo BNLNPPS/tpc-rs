@@ -257,9 +257,6 @@ Int_t  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, Bool_t doIT)
   CdEdx.Qcm     = 1e6 * Qcm; // uC/cm
   TUnixTime u(StMaker::GetChain()->GetDateTime(), kTRUE); // GMT
 
-  if (! St_trigDetSumsC::GetInstance()) {
-    StMaker::GetChain()->AddData(St_trigDetSumsC::instance());
-  }
 
 #if 0
 
