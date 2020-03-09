@@ -48,6 +48,7 @@ add_library(tpcrs
 	StarRoot/TRMatrix.cxx
 	StarRoot/TRVector.cxx
 	StarRoot/TUnixTime.cxx
+	StdEdxY2Maker/StTpcdEdxCorrection.cxx
 	StDbUtilities/StGlobalCoordinate.cc
 	StDbUtilities/StGlobalDirection.cc
 	StDbUtilities/StMagUtilities.cxx
