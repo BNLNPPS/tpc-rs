@@ -172,8 +172,7 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
     LOG_INFO << "StTpcRSMaker:: use H.Bichsel model for dE/dx simulation" << endm;
 
     if (! mdNdEL10 || ! mdNdx) {
-      const Char_t* path  = ".:./StarDb/dEdxModel:./StarDb/global/dEdx"
-                            ":./StRoot/StBichsel:$STAR/StarDb/dEdxModel:$STAR/StarDb/global/dEdx:$STAR/StRoot/StBichsel";
+      const Char_t* path  = ".:$STAR/StarDb/dEdxModel";
       const Char_t* Files[2] = {"dNdE_Bichsel.root", "dNdx_Bichsel.root"};
 
       for (Int_t i = 0; i < 2; i++) { // Inner/Outer
@@ -197,8 +196,7 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
     LOG_INFO << "StTpcRSMaker:: use Heed model for dE/dx simulation" << endm;
 
     if (! mdNdEL10 || ! mdNdxL10) {
-      const Char_t* path  = ".:./StarDb/dEdxModel:./StarDb/global/dEdx"
-                            ":./StRoot/StBichsel:$STAR/StarDb/dEdxModel:$STAR/StarDb/global/dEdx:$STAR/StRoot/StBichsel";
+      const Char_t* path  = ".:$STAR/StarDb/dEdxModel";
       const Char_t* Files[2] = {"dNdx_Heed.root", "dNdx_Heed.root"};
 
       for (Int_t i = 0; i < 2; i++) { // Inner/Outer
