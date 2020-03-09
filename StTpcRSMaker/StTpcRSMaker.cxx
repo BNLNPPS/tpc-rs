@@ -2067,17 +2067,12 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(Double_t w)
 }
 
 
-#ifndef WIN32
-# define gcomad gcomad_
-#else
-# define gcomad  GCOMAD
-#endif
 
 
-extern "C"
+void type_of_call gcomad(DEFCHARD, Int_t* &DEFCHARL)
 {
-  void type_of_call gcomad(DEFCHARD, Int_t* &DEFCHARL);
 }
+
 Float_t StTpcRSMaker::GetCutEle()
 {
   //----------GCBANK
