@@ -42,7 +42,6 @@
 #include "StDetectorDbMaker/St_tpcTimeDependenceC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
 #include "StDetectorDbMaker/St_beamInfoC.h"
-#include "St_db_Maker/St_db_Maker.h"
 #include "StarRoot/TUnixTime.h"
 
 
@@ -67,11 +66,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(Int_t option, Int_t debug) :
 
   if (isFixedTarget) flavor = "sim+ofl+FXT";
 
-  St_db_Maker* dbMk = (St_db_Maker*) StMaker::GetTopChain()->Maker("db");
 
-  for (Int_t i = 0; i < NT; i++) {
-    dbMk->SetFlavor(flavor, FXTtables[i]);
-  }
 
   ReSetCorrections();
 }
