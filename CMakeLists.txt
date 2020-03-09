@@ -62,6 +62,8 @@ add_library(tpcrs
 	StEvent/StTpcRawData.cxx
 	StEvent/StTpcPixel.cxx
 	St_base/StObject.cxx
+	St_db_Maker/St_db_Maker.cxx
+	St_db_Maker/StValiSet.cxx
 	StTpcDb/StTpcDb.cxx
 	StChain/StMaker.cxx
 )
