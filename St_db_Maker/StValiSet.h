@@ -40,7 +40,6 @@ public:
            void Modified(int m=1){fMod=m;}
            int  IsModified()				{return fMod;}
 
-ClassDef(StValiSet,1)
 };
 
 

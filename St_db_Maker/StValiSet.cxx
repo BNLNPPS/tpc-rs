@@ -24,10 +24,9 @@
 #include <time.h>
 #include "TError.h"
 #include "TDataSetIter.h"
-#include "TUnixTime.h"
-#include "StValiSet.h"
+#include "StarRoot/TUnixTime.h"
+#include "St_db_Maker/StValiSet.h"
 
-ClassImp(StValiSet)
 
 //_____________________________________________________________________________
 StValiSet::StValiSet(const char *name,TDataSet *parent): TDataSet(name,parent)
