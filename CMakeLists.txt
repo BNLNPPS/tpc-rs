@@ -24,6 +24,13 @@ add_definitions(-Wfatal-errors)
 # This library depends on ROOT
 find_package(ROOT REQUIRED COMPONENTS Cint Table MathMore Geom)
 
+# In case of 32-bit ROOT add the compatible compiler flag
+if(${ROOT_CXX_FLAGS} MATCHES "-m32")
+	message(STATUS "tpc-rs: Found -m32 option in $ROOT_CXX_FLAGS (root-config). Will proceed with 32 bit build")
+	set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS FALSE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+endif()
+
 include_directories(
 	${ROOT_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}
