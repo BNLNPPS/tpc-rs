@@ -171,6 +171,7 @@ To do:  <br>
 #include "St_base/StarCallf77.h"
 #include <string>
 #include "TMath.h"
+#include <cmath>
 StarMagField* StarMagField::fgInstance = 0;
 
 
@@ -589,7 +590,7 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
   Br_value =  Bz_value = 0;
   B[0] = B[1] = B[2] = 0;
   z  = x[2] ;
-  r  = sqrt( x[0] * x[0] + x[1] * x[1] ) ;
+  r  = std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
   phi = atan2( x[1], x[0] ) ;
 
   if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
