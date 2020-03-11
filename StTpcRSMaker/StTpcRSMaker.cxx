@@ -661,6 +661,9 @@ Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
 
 Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, StTpcRawData* tpcRawData)
 {
+  static int nCalls = 0;
+  gRandom->SetSeed(2345 + nCalls++);
+
   static Int_t minSector = 1;
   static Int_t maxSector = 24;
   // constants
