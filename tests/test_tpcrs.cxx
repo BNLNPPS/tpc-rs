@@ -28,36 +28,45 @@ int main(int argc, char **argv)
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile("geant_event.root");
 
-  GeantEvent* geantEvent = new GeantEvent();
+  GeantEvent* geantEvent_inp = new GeantEvent();
+  GeantEvent  geantEvent_out;
 
-  trsTreeChain.SetBranchAddress("b", &geantEvent);
+  trsTreeChain.SetBranchAddress("b", &geantEvent_inp);
 
-  std::ofstream logFile("test_tpcrs.log");
+  std::ofstream logFile_inp("test_tpcrs_inp.log");
+  std::ofstream logFile_out("test_tpcrs_out.log");
 
   for (int iRecord = 1; iRecord <= trsTreeChain.GetEntries(); iRecord++)
   {
     trsTreeChain.GetEntry(iRecord - 1);
-    geantEvent->Print(logFile);
+    geantEvent_inp->Print(logFile_inp);
 
-    std::cout << geantEvent->hits.size() << std::endl;
+    geantEvent_out.hits     = geantEvent_inp->hits;
+    geantEvent_out.tracks   = geantEvent_inp->tracks;
+    geantEvent_out.vertices = geantEvent_inp->vertices;
+
+    std::cout << geantEvent_inp->hits.size() << std::endl;
 
     St_g2t_tpc_hit* g2t_tpc_hit = new St_g2t_tpc_hit("g2t_tpc_hit");
-    for (auto hit : geantEvent->hits)
+    for (auto hit : geantEvent_inp->hits)
       g2t_tpc_hit->AddAt(&hit);
 
     St_g2t_track* g2t_track = new St_g2t_track("g2t_track");
-    for (auto track : geantEvent->tracks)
+    for (auto track : geantEvent_inp->tracks)
       g2t_track->AddAt(&track);
 
     St_g2t_vertex* g2t_vertex = new St_g2t_vertex("g2t_vertex");
-    for (auto vertex : geantEvent->vertices)
+    for (auto vertex : geantEvent_inp->vertices)
       g2t_vertex->AddAt(&vertex);
 
     tpcrs->InitRun(0);
     tpcrs->Make(g2t_tpc_hit, g2t_track, g2t_vertex, tpcraw);
+
+    geantEvent_out.Fill(tpcraw);
+    geantEvent_out.Print(logFile_out);
   }
 
-  delete geantEvent;
+  delete geantEvent_inp;
 
   return EXIT_SUCCESS;
 }
