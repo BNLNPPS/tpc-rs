@@ -72,23 +72,23 @@ struct GeantEvent
 
   void Fill(const g2t_tpc_hit_st* hit, int nHits, const g2t_track_st* track, int nTracks, const g2t_vertex_st* vertex, int nVertices)
   {
-    Clear();
-
-    for (int i = 0; i < nHits; i++, hit++) {
+    hits.clear();
+    for (int i = 0; i < nHits; i++, hit++)
       hits.push_back(*hit);
-    }
 
-    for (int i = 0; i < nTracks; i++, track++) {
+    tracks.clear();
+    for (int i = 0; i < nTracks; i++, track++)
       tracks.push_back(*track);
-    }
 
-    for (int i = 0; i < nVertices; i++, vertex++) {
+    vertices.clear();
+    for (int i = 0; i < nVertices; i++, vertex++)
       vertices.push_back(*vertex);
-    }
   }
 
   void Fill(StTpcRawData& tpcrd)
   {
+    digiHits.clear();
+
     for (int sector = 1; sector <= tpcrd.getNoSectors(); sector++)
     {
       StTpcDigitalSector *digitalSector = tpcrd.GetSector(sector);
