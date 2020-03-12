@@ -38,6 +38,9 @@ int main(int argc, char **argv)
 
   for (int iRecord = 1; iRecord <= trsTreeChain.GetEntries(); iRecord++)
   {
+    logFile_inp << "event: " << iRecord << "\n";
+    logFile_out << "event: " << iRecord << "\n";
+
     trsTreeChain.GetEntry(iRecord - 1);
     geantEvent_inp->Print(logFile_inp);
 

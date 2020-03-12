@@ -115,9 +115,6 @@ struct GeantEvent
 
   void Print(std::ostream &os)
   {
-    static int index = 0;
-
-    os << "event: " << index++ << "\n";
     os << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
 
     for (auto hit : hits) {
