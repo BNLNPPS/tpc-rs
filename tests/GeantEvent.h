@@ -1,7 +1,9 @@
 #ifndef GeantEvent_h
 #define GeantEvent_h
 
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -111,9 +113,12 @@ struct GeantEvent
     }
   }
 
-  void Print(std::ostream &os) {
+  void Print(std::ostream &os)
+  {
     static int index = 0;
+
     os << "event: " << index++ << "\n";
+    os << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
 
     for (auto hit : hits) {
       os << hit.id << ", " << hit.x[0] << ", " << hit.x[1] << ", " << hit.x[2] << ", " << hit.de << ", " << hit.ds << "\n";
@@ -124,6 +129,8 @@ struct GeantEvent
       digiHit.Print(os, resetIndex);
       resetIndex = false;
     }
+
+    os << std::setprecision(6);
   }
 
   ClassDef(GeantEvent, 1)
