@@ -53,6 +53,8 @@ int main(int argc, char **argv)
     for (auto vertex : geantEvent->vertices)
       g2t_vertex->AddAt(&vertex);
 
+    tpcrs->InitRun(0);
+    tpcrs->Make(g2t_tpc_hit, g2t_track, g2t_vertex, tpcraw);
   }
 
   delete geantEvent;
