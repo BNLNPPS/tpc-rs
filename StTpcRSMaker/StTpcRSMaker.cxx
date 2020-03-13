@@ -161,7 +161,7 @@ Int_t StTpcRSMaker::Finish()
 }
 
 
-Int_t StTpcRSMaker::InitRun(Int_t /* runnumber */)
+Int_t StTpcRSMaker::InitRun(Int_t runnumber)
 {
   if (!gStTpcDb) {
     LOG_ERROR << "Database Missing! Can't initialize TpcRS" << endm;

@@ -40,7 +40,7 @@ class StTpcRSMaker
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
   StTpcRSMaker(const char* name = "TpcRS");
   virtual              ~StTpcRSMaker();
-  virtual Int_t         InitRun(int runnumber);
+  virtual Int_t         InitRun(int runnumber = 0);
   virtual Int_t Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, StTpcRawData* tpcRawData);
   virtual Int_t  	Finish();
   Int_t         Debug() const {return 1;}
