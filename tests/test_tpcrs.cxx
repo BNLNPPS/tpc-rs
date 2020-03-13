@@ -18,11 +18,12 @@
 
 int main(int argc, char **argv)
 {
-  StTpcRSMaker tpcrs;
-
   StarMagField starMagField;
   StTpcDb::instance()->SetDriftVelocity();
   StTpcDb::instance()->SetTpcRotations();
+
+  StTpcRSMaker tpcrs;
+  tpcrs.InitRun(0);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile("geant_event.root");
@@ -63,7 +64,6 @@ int main(int argc, char **argv)
 
     StTpcRawData tpcraw;
 
-    tpcrs.InitRun(0);
     tpcrs.Make(g2t_tpc_hit, g2t_track, g2t_vertex, &tpcraw);
 
     geantEvent_out.Fill(tpcraw);
