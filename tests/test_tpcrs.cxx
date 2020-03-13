@@ -18,8 +18,7 @@
 
 int main(int argc, char **argv)
 {
-  StTpcRSMaker* tpcrs = new StTpcRSMaker();
-  StTpcRawData* tpcraw = new StTpcRawData();
+  StTpcRSMaker tpcrs;
 
   StarMagField starMagField;
   StTpcDb::instance()->SetDriftVelocity();
@@ -62,8 +61,10 @@ int main(int argc, char **argv)
     for (auto vertex : geantEvent_inp->vertices)
       g2t_vertex->AddAt(&vertex);
 
-    tpcrs->InitRun(0);
-    tpcrs->Make(g2t_tpc_hit, g2t_track, g2t_vertex, tpcraw);
+    StTpcRawData tpcraw;
+
+    tpcrs.InitRun(0);
+    tpcrs.Make(g2t_tpc_hit, g2t_track, g2t_vertex, &tpcraw);
 
     geantEvent_out.Fill(tpcraw);
     geantEvent_out.Print(logFile_out);
