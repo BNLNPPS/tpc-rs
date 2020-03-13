@@ -2,6 +2,7 @@
 
 #include "TChain.h"
 #include "Ttypes.h"
+#include "TBenchmark.h"
 
 #include "StarMagField/StarMagField.h"
 #include "StEvent/StTpcRawData.h"
@@ -18,6 +19,8 @@
 
 int main(int argc, char **argv)
 {
+  gBenchmark = new TBenchmark();
+
   StarMagField starMagField;
   StTpcDb::instance()->SetDriftVelocity();
   StTpcDb::instance()->SetTpcRotations();
