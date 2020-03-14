@@ -6,47 +6,6 @@
  * with zero curvature. This represents only the mathematical model of
  * a helix. See the SCL user guide for more.
  */
-/***************************************************************************
- *
- * $Id: StHelix.hh,v 1.14 2015/04/22 18:02:01 ullrich Exp $
- *
- * Author: Thomas Ullrich, Sep 1997
- ***************************************************************************
- *
- * Description: Parametrization of a helix
- *
- ***************************************************************************
- *
- * $Log: StHelix.hh,v $
- * Revision 1.14  2015/04/22 18:02:01  ullrich
- * Added two default argument to dca of two helices for HFT.
- *
- * Revision 1.13  2010/10/18 21:55:11  fisyak
- * Warn off for gcc4.5.1 64bits
- *
- * Revision 1.12  2006/06/29 15:53:22  ullrich
- * Added direction vector at given pathlength (written by Yuri).
- *
- * Revision 1.11  2005/10/13 22:23:27  genevb
- * NoSolution is public
- *
- * Revision 1.10  2005/07/06 18:49:56  fisyak
- * Replace StHelixD, StLorentzVectorD,StLorentzVectorF,StMatrixD,StMatrixF,StPhysicalHelixD,StThreeVectorD,StThreeVectorF by templated version
- *
- * Revision 1.9  2004/12/02 02:51:16  ullrich
- * Added option to pathLenghth() and distance() to search for
- * DCA only within one period. Default stays as it was.
- *
- * Revision 1.8  2003/10/30 20:06:46  perev
- * Check of quality added
- *
- * Revision 1.7  2002/06/21 17:49:25  genevb
- * Some minor speed improvements
- *
- * Revision 1.6  2002/04/24 02:41:55  ullrich
- * Restored old format.
- *
- **************************************************************************/
 
 #ifndef ST_HELIX_HH
 #define ST_HELIX_HH

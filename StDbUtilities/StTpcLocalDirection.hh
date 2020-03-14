@@ -1,7 +1,3 @@
-/*********************************************************************
- *
- * $Id: StTpcLocalDirection.hh,v 1.2 2004/06/05 23:31:09 fisyak Exp $
- **********************************************************************/
 #ifndef ST_TPC_LOCAL_DIRECTION_HH
 #define ST_TPC_LOCAL_DIRECTION_HH
 

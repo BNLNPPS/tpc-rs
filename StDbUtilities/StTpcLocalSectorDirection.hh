@@ -1,10 +1,3 @@
-/*********************************************************************
- *
- * $Id: StTpcLocalSectorDirection.hh,v 1.2 2004/06/05 23:31:10 fisyak Exp $
- *
- * Author: brian May 20, 1998
- *
- **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_DIRECTION_HH
 #define ST_TPC_LOCAL_SECTOR_DIRECTION_HH
 

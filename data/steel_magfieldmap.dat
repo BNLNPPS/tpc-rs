@@ -1,8 +1,3 @@
-# $Id: steel_magfieldmap.dat,v 1.1 2007/08/24 14:52:43 fisyak Exp $
-# $Log: steel_magfieldmap.dat,v $
-# Revision 1.1  2007/08/24 14:52:43  fisyak
-# Add mag. field map in steel
-#
 #Magentic field map was calculated by Wuzheng Meng from CAD.
 #This calculation was done in the 3D OPERA frame.
 #The magnetic steel and coils were in the simulation. 

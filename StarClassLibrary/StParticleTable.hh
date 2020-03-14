@@ -1,35 +1,11 @@
 /***************************************************************************
- *
- * $Id: StParticleTable.hh,v 1.5 2005/09/22 20:09:20 fisyak Exp $
- *
  * Author: Thomas Ullrich, May 99 (based on Geant4 code, see below)
- ***************************************************************************
  *
  * The design of the StParticleDefinition class and all concrete
  * classes derived from it is largely based on the design of the
  * G4ParticleDefinition class from Geant4 (RD44).
  * Although the code is in large parts different (modified or rewritten)
  * and adapted to the STAR framework the basic idea stays the same.
- *
- ***************************************************************************
- *
- * $Log: StParticleTable.hh,v $
- * Revision 1.5  2005/09/22 20:09:20  fisyak
- * Make StLorentzVector persistent
- *
- * Revision 1.4  2003/09/02 17:59:35  perev
- * gcc 3.2 updates + WarnOff
- *
- * Revision 1.3  2000/01/04 14:57:56  ullrich
- * Added friend declaration to avoid warning messages
- * under Linux.
- *
- * Revision 1.2  1999/12/21 15:14:26  ullrich
- * Modified to cope with new compiler version on Sun (CC5.0).
- *
- * Revision 1.1  1999/05/14 18:50:00  ullrich
- * Initial Revision
- *
  **************************************************************************/
 #ifndef StParticleTable_hh
 #define StParticleTable_hh

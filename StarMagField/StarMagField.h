@@ -1,80 +1,9 @@
 /***********************************************************************
- *
- * $Id: StarMagField.h,v 1.17 2017/04/26 21:11:25 perev Exp $
- *
  * Author: Jim Thomas   11/1/2000
  *
- ***********************************************************************
- *
  * Description: the STAR Magnetic Field
- *
- ***********************************************************************
- *
- * $Log: StarMagField.h,v $
- * Revision 1.17  2017/04/26 21:11:25  perev
- * Add setConstBz
- *
- * Revision 1.16  2014/06/26 21:50:17  fisyak
- * New Tpc Alignment, v632
- *
- * Revision 1.15  2013/03/26 13:38:18  fisyak
- * restore back modififcations as not related to drop in no. of reconstructed tracks
- *
- * Revision 1.13  2013/01/17 15:11:33  fisyak
- * More clear handling ROOT and non ROOT versions
- *
- * Revision 1.11  2013/01/16 00:05:27  fisyak
- * Add TObject
- *
- * Revision 1.10  2013/01/15 23:45:02  fisyak
- * Account ROOT version with TVirtualMagField
- *
- * Revision 1.9  2013/01/15 17:35:23  fisyak
- * Create clean versions of ROOT and non ROOT StarMagField
- *
- * Revision 1.8  2009/12/11 14:19:07  fisyak
- * switch from define to enum
- *
- * Revision 1.7  2009/12/08 15:33:57  fisyak
- * Hold replacement defines via enum till StMagUtilities will be updated
- *
- * Revision 1.6  2009/12/07 23:38:15  fisyak
- * Move size definition from #define  to enumerations
- *
- * Revision 1.5  2009/01/13 03:19:44  perev
- * Mag field nou controlled from starsim. BugFix
- *
- * Revision 1.4  2007/09/21 21:07:08  fisyak
- * Remove ClassDef and ClassImp
- *
- * Revision 1.3  2007/09/13 00:00:27  fisyak
- * add mag.field in steel, from Lijuan Ruan
- *
- * Revision 1.2  2005/07/28 19:46:01  fisyak
- * Add:
- * -  frindge magnetic field from P.Nevski extrapolation,
- * -  lock mechanism for Magnetic Field parameters
- * Remove:
- * -  Electric Field (Still part of StDbUtilitie/StMagUtilities)
- *
- * Comparision between mfldgeo and StarMagField calculation for Z and R components of mag.field
- * is at http://www.star.bnl.gov/~fisyak/star/MagField/
- *
- * Revision 1.1.1.1  2005/07/07 14:13:55  fisyak
- * The version of STAR mag. field extracted from StDbUtilities/StMagUtilities to be used in Simulation and Reconstruction instead of agufld
- *
- * Revision 1.2  2005/07/07 14:07:55  fisyak
- * Final version before moving to official repository
- *
- * Revision 1.1  2004/03/12 13:26:24  fisyak
- * Singleton for STAR magnetic field
- *
   ***********************************************************************/
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// StarMagField Class                                                 //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+
 #ifndef StarMagField_H
 #define StarMagField_H
 

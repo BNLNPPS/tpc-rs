@@ -1,43 +1,7 @@
 /***************************************************************************
- *
- * $Id: StPhysicalHelix.cc,v 1.8 2007/08/20 23:24:54 perev Exp $
- *
  * Author: Brian Lasiuk, Sep 1997
- ***************************************************************************
  *
- * Description:
  * Parametrization of a physical helix.
- *
- ***************************************************************************
- *
- * $Log: StPhysicalHelix.cc,v $
- * Revision 1.8  2007/08/20 23:24:54  perev
- * BugFix #1027
- *
- * Revision 1.7  2005/07/06 18:49:56  fisyak
- * Replace StHelixD, StLorentzVectorD,StLorentzVectorF,StMatrixD,StMatrixF,StPhysicalHelixD,StThreeVectorD,StThreeVectorF by templated version
- *
- * Revision 1.6  2003/09/02 17:59:35  perev
- * gcc 3.2 updates + WarnOff
- *
- * Revision 1.5  2002/06/21 17:49:26  genevb
- * Some minor speed improvements
- *
- * Revision 1.4  2002/02/20 00:56:23  ullrich
- * Added methods to calculate signed DCA.
- *
- * Revision 1.3  1999/02/24 11:42:18  ullrich
- * Fixed bug in momentum().
- *
- * Revision 1.2  1999/02/12 01:01:04  wenaus
- * Fix bug in momentum calculation
- *
- * Revision 1.1  1999/01/30 03:59:04  fisyak
- * Root Version of StarClassLibrary
- *
- * Revision 1.1  1999/01/23 00:29:21  ullrich
- * Initial Revision
- *
  **************************************************************************/
 #include <cmath>
 #include "StarClassLibrary/StHelix.hh"

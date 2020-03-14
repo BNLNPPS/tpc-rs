@@ -174,11 +174,3 @@ Double_t dEdxParameterization::Get(const TH1D* hist, Double_t log10bg) const
 
   return hsave->Interpolate(log10bg);
 }
-// $Id: dEdxParameterization.cxx,v 1.19 2016/06/10 19:56:11 fisyak Exp $
-// $Log: dEdxParameterization.cxx,v $
-// Revision 1.19  2016/06/10 19:56:11  fisyak
-// Fix covertry warning
-//
-// Revision 1.18  2015/12/24 00:16:26  fisyak
-// Add TpcRS model and macros
-//
