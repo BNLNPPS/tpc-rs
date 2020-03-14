@@ -1,11 +1,3 @@
-//////////////////////////////////////////////////////////
-//   This class has been automatically generated
-//     (Thu Nov 29 16:25:03 2001 by ROOT version3.02/01)
-//   from TTree Bichsel/H.Bichel Calculation Summary
-//   found on file: dEdx2T.root
-//////////////////////////////////////////////////////////
-
-
 #ifndef Bichsel_h
 #define Bichsel_h
 //#define P03ia
@@ -97,10 +89,5 @@ class Bichsel
   Double_t IfitTrsS(Int_t part, Double_t log10bg) const {return m_dEdxParameterization->Get(IfitTrsS(part), log10bg);}  // Estimation for relative sigma beta*gamma dependence for Ifit from TpcRS normalized to MIP
 
 };
-// $Id: Bichsel.h,v 1.15 2015/12/24 00:16:25 fisyak Exp $
-// $Log: Bichsel.h,v $
-// Revision 1.15  2015/12/24 00:16:25  fisyak
-// Add TpcRS model and macros
-//
 #endif
 

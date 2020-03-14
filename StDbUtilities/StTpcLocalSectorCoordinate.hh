@@ -1,8 +1,3 @@
-/*********************************************************************
- *
- * $Id: StTpcLocalSectorCoordinate.hh,v 1.5 2004/06/05 23:31:10 fisyak Exp $
- *
- **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_COORDINATE_HH
 #define ST_TPC_LOCAL_SECTOR_COORDINATE_HH
 

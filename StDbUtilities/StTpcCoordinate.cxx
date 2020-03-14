@@ -1,6 +1,3 @@
-/***********************************************************************
- * $Id: StTpcCoordinate.cxx,v 1.2 2011/01/18 14:34:28 fisyak Exp $
- ***********************************************************************/
 #include "StDbUtilities/StTpcLocalDirection.hh"
 #include "StDbUtilities/StTpcLocalCoordinate.hh"
 #include "StDbUtilities/StTpcLocalSectorAlignedDirection.hh"

@@ -1,30 +1,11 @@
 /***************************************************************************
- *
- * $Id: StParticleDefinition.cc,v 1.4 2016/07/25 17:45:33 jwebb Exp $
- *
  * Author: Thomas Ullrich, May 99 (based on Geant4 code, see below)
- ***************************************************************************
  *
  * The design of the StParticleDefinition class and all concrete
  * classes derived from it is largely based on the design of the
  * G4ParticleDefinition class from Geant4 (RD44).
  * Although the code is in large parts different (modified or rewritten)
  * and adapted to the STAR framework the basic idea stays the same.
- *
- ***************************************************************************
- *
- * $Log: StParticleDefinition.cc,v $
- * Revision 1.4  2016/07/25 17:45:33  jwebb
- * Init members in ctor / coverity
- *
- * Revision 1.3  2009/10/13 18:31:39  perev
- * Unonimous update
- *
- * Revision 1.2  1999/12/07 23:43:04  ullrich
- * Modified to get rid of warnings on Linux.
- *
- * Revision 1.1  1999/05/14 18:48:13  ullrich
- * Initial Revision
  *
  **************************************************************************/
 

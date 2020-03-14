@@ -1,9 +1,5 @@
 /***************************************************************************
- *
- * $Id: StThreeVector.hh,v 1.23 2010/10/18 21:55:11 fisyak Exp $
- *
  * Author: Brian Lasiuk, Thomas Ullrich, April 1998
- ***************************************************************************
  *
  * Description:
  *
@@ -11,84 +7,6 @@
  *            we have to specialize the templated member on these
  *            platforms. If member templates are not supported the
  *            ST_NO_MEMBER_TEMPLATES flag has to be set. tu.
- *
- ***************************************************************************
- *
- * $Log: StThreeVector.hh,v $
- * Revision 1.23  2010/10/18 21:55:11  fisyak
- * Warn off for gcc4.5.1 64bits
- *
- * Revision 1.22  2009/09/22 16:43:29  fine
- * Introdcue the dedicated default ctor for StThreeVector #1612
- *
- * Revision 1.21  2008/10/29 19:16:13  perev
- * set(x,y,z) added
- *
- * Revision 1.20  2007/02/23 22:41:42  ullrich
- * Also add non-const version of xyz().
- *
- * Revision 1.19  2007/02/23 17:36:19  ullrich
- * Added xyz() method.
- *
- * Revision 1.18  2006/02/14 17:57:31  perev
- * x(),y(),z() return references now
- *
- * Revision 1.17  2006/01/09 23:47:27  fisyak
- * Add missing methods (found by Zhangbu) to Cint dictionary
- *
- * Revision 1.16  2005/12/07 20:47:21  perev
- * uint<0 redundand. WarnOff
- *
- * Revision 1.15  2005/09/22 20:09:20  fisyak
- * Make StLorentzVector persistent
- *
- * Revision 1.14  2005/07/19 22:27:11  perev
- * Cleanup
- *
- * Revision 1.13  2005/07/06 18:49:57  fisyak
- * Replace StHelixD, StLorentzVectorD,StLorentzVectorF,StMatrixD,StMatrixF,StPhysicalHelixD,StThreeVectorD,StThreeVectorF by templated version
- *
- * Revision 1.12  2005/03/28 06:03:41  perev
- * Defence FPE added
- *
- * Revision 1.11  2004/12/02 20:07:32  fine
- * define the valid method for both flavor of StThreeVector
- *
- * Revision 1.10  2003/10/30 20:06:46  perev
- * Check of quality added
- *
- * Revision 1.9  2003/09/02 17:59:35  perev
- * gcc 3.2 updates + WarnOff
- *
- * Revision 1.8  2002/06/21 17:47:37  genevb
- * Added pseudoProduct
- *
- * Revision 1.7  2000/01/04 19:56:05  ullrich
- * Added cpp macro for CINT.
- *
- * Revision 1.6  1999/12/21 15:14:31  ullrich
- * Modified to cope with new compiler version on Sun (CC5.0).
- *
- * Revision 1.5  1999/10/15 15:46:54  ullrich
- * Changed output format in operator<<
- *
- * Revision 1.4  1999/06/04 18:00:05  ullrich
- * Added new constructor which takes C-style array as argument.
- * New operators operator() and operator[] which can be used
- * as lvalues.
- *
- * Revision 1.3  1999/02/17 11:42:19  ullrich
- * Removed specialization for 'long double'.
- *
- * Revision 1.2  1999/02/14 23:11:48  fisyak
- * Fixes for Rootcint
- *
- * Revision 1.1  1999/01/30 03:59:05  fisyak
- * Root Version of StarClassLibrary
- *
- * Revision 1.1  1999/01/23 00:28:04  ullrich
- * Initial Revision
- *
  **************************************************************************/
 #ifndef ST_THREE_VECTOR_HH
 #define ST_THREE_VECTOR_HH

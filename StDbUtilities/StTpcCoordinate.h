@@ -1,5 +1,4 @@
-/*********************************************************************
- * $Id: StTpcCoordinate.h,v 1.2 2011/01/18 14:34:28 fisyak Exp $
+/**
  * base class for TPC coordinate / direction transformations
  */
 #ifndef ST_TPC_COORDINATE_H

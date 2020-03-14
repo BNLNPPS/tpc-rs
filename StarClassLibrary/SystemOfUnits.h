@@ -1,9 +1,5 @@
 /***************************************************************************
- *
- * $Id: SystemOfUnits.h,v 1.7 2012/06/11 15:29:27 fisyak Exp $
- *
  * Author: blasiuk adapted from CLHEP
- ***************************************************************************
  *
  * Description:  This file is based on the SystemOfUnits provided
  *               in the CLHEP library v1.2:  The units remain the same.
@@ -32,33 +28,6 @@
  *              the amount of substance (mole)
  *              radian                  (radian)
  *              steradian               (steradian)
- ***************************************************************************
- *
- * $Log: SystemOfUnits.h,v $
- * Revision 1.7  2012/06/11 15:29:27  fisyak
- * std namespace
- *
- * Revision 1.6  2007/08/17 16:04:46  fine
- * Eliminate the redundant semicolon - causes the compilation error with the pedantic compilation flag
- *
- * Revision 1.5  2003/09/02 17:59:35  perev
- * gcc 3.2 updates + WarnOff
- *
- * Revision 1.4  1999/03/22 16:21:38  fisyak
- * Add anti CINT flags
- *
- * Revision 1.3  1999/03/11 14:53:07  ullrich
- * Added definition of inch.
- *
- * Revision 1.2  1999/03/02 20:15:08  ullrich
- * Added millivolt.
- *
- * Revision 1.1  1999/01/30 03:59:06  fisyak
- * Root Version of StarClassLibrary
- *
- * Revision 1.1  1999/01/23 00:28:08  ullrich
- * Initial Revision
- *
  **************************************************************************/
 #ifndef HEP_SYSTEM_OF_UNITS_H
 #define HEP_SYSTEM_OF_UNITS_H
