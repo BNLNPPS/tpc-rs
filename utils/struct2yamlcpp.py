@@ -191,13 +191,108 @@ def from_json(ast_json):
     return from_dict(json.loads(ast_json))
 
 
+def extract_decls(ast_dict, decl=None):
+    """Extracts struct member declarations defined in a header file. A single
+    struct definition is assumed per file
+    """
+
+    class Decl:
+        """A trivial class with primary purpose to provide access to data attributes
+        by dot notation used in the `extract_decls` function
+        """
+        def __init__(self):
+            self.name = None
+            self.type = None
+            self.dims = []
+
+    if isinstance(ast_dict, dict):
+        for key, value in ast_dict.items():
+            if key is '_nodetype' and value is "Decl":
+                decl = Decl()
+            elif key is 'init':
+                decl.dims = decl.dims[::-1]
+                yield decl
+            elif key is 'declname':
+                decl.name = value
+            elif key is 'dim':
+                decl.dims += [int(value['value'])]
+            elif key is 'names':
+                decl.type = ' '.join(value)
+            elif isinstance(value, dict):
+                for d in extract_decls(value, decl):
+                    yield d
+            elif isinstance(value, list) or isinstance(value, tuple):
+                for v in value:
+                    for d in extract_decls(v, decl):
+                        yield d
+
+
+def generate_yamlcpp(ast_dict, pre=None):
+    """Generates c++ code for converting C structures to YAML format and back by
+    the `yaml-cpp` library
+    """
+
+    # Skip header files without the proper struct
+    if not ast_dict['ext'] or not len(ast_dict['ext']):
+       return ""
+
+    cxx_code_encode = ""
+    cxx_code_decode = ""
+
+    for decl in extract_decls(ast_dict):
+        if not decl.name or not decl.type: continue
+
+        if decl.dims:
+            from functools import reduce
+            size = reduce(lambda x, y: x*y, decl.dims)
+            cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = reinterpret_cast<const std::array<{decl.type}, {size}>&>( st.{decl.name} );"
+            cxx_code_encode += f"\n\tnode[\"{decl.name}\"].SetStyle(YAML::EmitterStyle::Flow);"
+            cxx_code_decode += f"\n\tauto {decl.name} = reinterpret_cast<{decl.type}*>( node[\"{decl.name}\"].as<std::array<{decl.type}, {size}>>().data() );"
+            cxx_code_decode += f"\n\tstd::copy({decl.name}, {decl.name} + {size}, reinterpret_cast<{decl.type}*>(st.{decl.name}));"
+        else:
+            cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = st.{decl.name};"
+            cxx_code_decode += f"\n\tst.{decl.name} = node[\"{decl.name}\"].as<{decl.type}>();"
+
+    struct_name = ast_dict['ext'][0]['type']['name']
+    # Pop the last three charasters "_st"
+    header_name = struct_name[:-3]
+
+    cxx_code = """
+    #include "yaml-cpp/yaml.h"
+    #include "%(header_name)s.h"
+
+    namespace YAML {
+    template<>
+    struct convert<%(struct_name)s> {
+      static Node encode(const %(struct_name)s& st) {
+        Node node;
+        %(cxx_code_encode)s
+        return node;
+      };
+
+      static bool decode(const Node& node, %(struct_name)s& st) {
+        if(!node.IsMap()) {
+          return false;
+        }
+        %(cxx_code_decode)s
+        return true;
+      }
+    };
+    }
+    """ % {'header_name': header_name, 'struct_name': struct_name,
+           'cxx_code_encode': cxx_code_encode, 'cxx_code_decode': cxx_code_decode}
+
+    import inspect
+    return inspect.cleandoc(cxx_code)
+
+
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         # Some test code...
         # Do trip from C -> ast -> dict -> ast -> json, then print.
         ast_dict = file_to_dict(sys.argv[1])
-        ast = from_dict(ast_dict)
-        print(to_json(ast, sort_keys=True, indent=4))
+        cxx_code = generate_yamlcpp(ast_dict)
+        print(cxx_code)
     else:
         print("Please provide a filename as argument")
