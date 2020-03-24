@@ -1,3 +1,6 @@
+#ifndef tpcrs_config_yaml_h
+#define tpcrs_config_yaml_h
+
 #include "yaml-cpp/yaml.h"
 #include "tpcCalibResolutions.h"
 
@@ -2584,3 +2587,4 @@ struct convert<tpcPadrowT0_st> {
 };
 }
 
+#endif
