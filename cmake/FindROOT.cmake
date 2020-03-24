@@ -105,9 +105,9 @@ find_package(GCCXML)
 #                                    LINKDEF linkdef1 ...
 #                                    OPTIONS opt1...)
 function(ROOT_GENERATE_DICTIONARY dictionary)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINKDEF;OPTIONS" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINKDEF;OPTIONS;INCDIRS" "" ${ARGN})
   #---Get the list of include directories------------------
-  get_directory_property(incdirs INCLUDE_DIRECTORIES)
+  set(incdirs ${ARG_INCDIRS})
   set(includedirs)
   foreach( d ${incdirs})
      set(includedirs ${includedirs} -I${d})
