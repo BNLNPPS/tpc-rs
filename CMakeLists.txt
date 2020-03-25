@@ -200,7 +200,8 @@ add_library(tpcrs
 	tpcrs_tables_dict.cxx
 )
 
-target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} include/)
+target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} include/ ${YAML_CPP_INSTALL_PREFIX}/include/)
+add_dependencies(tpcrs yaml-cpp-lib)
 
 root_generate_dictionary(
 	tpcrs_tables_dict
