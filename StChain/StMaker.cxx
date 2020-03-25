@@ -1,10 +1,14 @@
 #include <iostream>
 
-#include "TInterpreter.h"
+
 #include "TSystem.h"
+#include "TTable.h"
 
 #include "StChain/StMaker.h"
 #include "St_db_Maker/StValiSet.h"
+
+#include "config_structs.h"
+#include "tpcrs/Configurator.h"
 
 
 StChain* StMaker::gStChain = new StChain();
@@ -12,15 +16,18 @@ StChain* StMaker::gStChain = new StChain();
 
 TTable* StChain::GetDataBase(std::string path, const TDatime *td)
 {
-  std::string paths("./StarDb/:../StarDb/:/home/smirnovd/tpc-rs/StarDb/");
+  static YAML::Node config = YAML::LoadFile(tpcrs::Configurator::File());
 
-  std::string sfile( gSystem->Which(paths.c_str(), (path+".C").c_str(), kReadPermission) );
+  TTable* table;
 
-  std::string command(".L " + sfile);
+  for (auto cst : tpcrs::configStructs)
+  {
+    if (path != cst->tname) continue;
+    table = cst->yaml2table(tpcrs::Configurator::YAML(cst->tname));
+    break;
+  }
 
-  gInterpreter->ProcessLine(command.c_str());
-
-  TDataSet* ds = reinterpret_cast<TDataSet*>(gInterpreter->Calc("CreateTable()"));
+  TDataSet* ds = reinterpret_cast<TDataSet*>(table);
 
   StValiSet *vs = new StValiSet(("." + std::string(gSystem->BaseName(path.c_str()))).c_str(), ds);
   vs->fTimeMin = TDatime(kMinTime, 0);
