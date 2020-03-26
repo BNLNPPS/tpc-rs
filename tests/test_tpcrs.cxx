@@ -19,6 +19,15 @@
 
 int main(int argc, char **argv)
 {
+  // Process 1st optional argument
+  std::string testName(argc > 1 ? argv[1] : "rcf16000_1_100evts.fzd");
+
+  // Process 2nd optional argument
+  int maxRecords(argc > 2 ? std::atoi(argv[2]) : -1);
+
+  std::cout << "testName:   " << testName << "\n"
+            << "maxRecords: " << maxRecords << "\n";
+
   gBenchmark = new TBenchmark();
 
   StarMagField starMagField;
@@ -28,17 +37,19 @@ int main(int argc, char **argv)
   StTpcRSMaker tpcrs;
 
   TChain trsTreeChain("t", "tpcrs test TTree");
-  trsTreeChain.AddFile("geant_event.root");
+  trsTreeChain.AddFile((testName + ".root").c_str());
 
   GeantEvent* geantEvent_inp = new GeantEvent();
   GeantEvent  geantEvent_out;
 
   trsTreeChain.SetBranchAddress("b", &geantEvent_inp);
 
-  std::ofstream logFile_inp("test_tpcrs_inp.log");
-  std::ofstream logFile_out("test_tpcrs_out.log");
+  std::ofstream logFile_inp(testName + "_inp.log");
+  std::ofstream logFile_out(testName + "_out.log");
 
-  for (int iRecord = 1; iRecord <= trsTreeChain.GetEntries(); iRecord++)
+  maxRecords = (maxRecords < 0 || maxRecords > trsTreeChain.GetEntries() ? trsTreeChain.GetEntries() : maxRecords);
+
+  for (int iRecord = 1; iRecord <= maxRecords; iRecord++)
   {
     logFile_inp << "event: " << iRecord << "\n";
     logFile_out << "event: " << iRecord << "\n";
