@@ -186,6 +186,7 @@ StarMagField* StarMagField::fgInstance = 0;
 #include "TEnv.h"
 #endif
 
+#include "tpcrs/Configurator.h"
 
 StarMagField* StarMagField::Instance() {return fgInstance;}
 
@@ -820,46 +821,30 @@ void StarMagField::ReadField( )
   FILE*    magfile, *b3Dfile ;
   std::string comment, filename, filename3D ;
   std::string MapLocation ;
-  std::string BaseLocation = getenv("STAR") ; 	// Base Directory for Maps
-  BaseLocation += "/StarDb/StMagF/" ;     	// Base Directory for Maps
 #ifdef __ROOT__
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) {
-    TString rootf("StarFieldZ.root");
-    TString path(".:./StarDb/StMagF:$STAR/StarDb/StMagF");
-    Char_t* file = gSystem->Which(path, rootf, kReadPermission);
+    TFile pFile(tpcrs::Configurator::Locate("StarFieldZ.root").c_str());
+    TH2F* Br0 = (TH2F*) pFile.Get("Br0");
+    TH2F* Bz0 = (TH2F*) pFile.Get("Bz0");
 
-    if (! file) {
-      Error("StarMagField::ReadField", "File %s has not been found in path %s", rootf.Data(), path.Data());
+    if (Br0 && Bz0) {
+      TH2F* Br5cm = (TH2F*) pFile.Get("Br5cm");
+      TH2F* Bz5cm = (TH2F*) pFile.Get("Bz5cm");
+      assert(Br5cm && Bz5cm);
+      TH2F* Br10cm = (TH2F*) pFile.Get("Br10cm");
+      TH2F* Bz10cm = (TH2F*) pFile.Get("Bz10cm");
+      assert(Br10cm && Bz10cm);
+      fBzdZCorrection = new TH2F(*Bz5cm); fBzdZCorrection->SetDirectory(0);
+      fBzdZCorrection->Scale(0.5);
+      fBzdZCorrection->Add(Bz10cm, 0.5);
+      fBzdZCorrection->Add(Bz0, -1.0);
+      fBrdZCorrection = new TH2F(*Br5cm); fBrdZCorrection->SetDirectory(0);
+      fBrdZCorrection->Scale(0.5);
+      fBrdZCorrection->Add(Br10cm, 0.5);
+      fBrdZCorrection->Add(Br0, -1.0);
+      Warning("StarMagField::ReadField", "Use effective PMT box dZ = 7.5 cm");
     }
-    else {
-      Warning("StarMagField::ReadField", "File %s has been found", rootf.Data());
-      TFile*       pFile = new TFile(file);
-      TH2F* Br0 = (TH2F*) pFile->Get("Br0");
-      TH2F* Bz0 = (TH2F*) pFile->Get("Bz0");
-
-      if (Br0 && Bz0) {
-        TH2F* Br5cm = (TH2F*) pFile->Get("Br5cm");
-        TH2F* Bz5cm = (TH2F*) pFile->Get("Bz5cm");
-        assert(Br5cm && Bz5cm);
-        TH2F* Br10cm = (TH2F*) pFile->Get("Br10cm");
-        TH2F* Bz10cm = (TH2F*) pFile->Get("Bz10cm");
-        assert(Br10cm && Bz10cm);
-        fBzdZCorrection = new TH2F(*Bz5cm); fBzdZCorrection->SetDirectory(0);
-        fBzdZCorrection->Scale(0.5);
-        fBzdZCorrection->Add(Bz10cm, 0.5);
-        fBzdZCorrection->Add(Bz0, -1.0);
-        fBrdZCorrection = new TH2F(*Br5cm); fBrdZCorrection->SetDirectory(0);
-        fBrdZCorrection->Scale(0.5);
-        fBrdZCorrection->Add(Br10cm, 0.5);
-        fBrdZCorrection->Add(Br0, -1.0);
-        Warning("StarMagField::ReadField", "Use effective PMT box dZ = 7.5 cm");
-      }
-
-      delete pFile;
-    }
-
-    delete [] file;
   }
 
 #endif
@@ -899,7 +884,7 @@ void StarMagField::ReadField( )
   printf("StarMagField::ReadField  Reading  Magnetic Field  %s,  Scale factor = %f \n", comment.c_str(), fFactor);
   printf("StarMagField::ReadField  Filename is %s, Adjusted Scale factor = %f \n", filename.c_str(), fFactor * fRescale);
 
-  MapLocation = BaseLocation + filename ;
+  MapLocation = tpcrs::Configurator::Locate(filename);
   magfile = fopen(MapLocation.c_str(), "r") ;
   printf("StarMagField::ReadField  Reading  2D Magnetic Field file: %s \n", filename.c_str());
 
@@ -938,7 +923,7 @@ void StarMagField::ReadField( )
 
   fclose(magfile) ;
 
-  MapLocation = BaseLocation + filename3D ;
+  MapLocation = tpcrs::Configurator::Locate(filename3D);
   b3Dfile = fopen(MapLocation.c_str(), "r") ;
   printf("StarMagField::ReadField  Reading 3D Magnetic Field file: %s \n", filename3D.c_str());
 
@@ -1003,7 +988,7 @@ void StarMagField::ReadField( )
   //   memset(Bx3DSteel, 0, nPhiSteel*nZSteel*nRSteel*sizeof(Float_t));
   //   memset(By3DSteel, 0, nPhiSteel*nZSteel*nRSteel*sizeof(Float_t));
   //   memset(Bz3DSteel, 0, nPhiSteel*nZSteel*nRSteel*sizeof(Float_t));
-  MapLocation = BaseLocation + "steel_magfieldmap.dat";
+  MapLocation = tpcrs::Configurator::Locate("steel_magfieldmap.dat");
   magfile = fopen(MapLocation.c_str(), "r") ;
 
   if (magfile) {
