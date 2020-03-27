@@ -126,6 +126,7 @@ StTpcRSMaker::StTpcRSMaker(const char* name):
   SETBIT(m_Mode, kBICHSEL); // Default is Bichsel
   SETBIT(m_Mode, kdEdxCorr);
   SETBIT(m_Mode, kDistortion);
+  InitRun(0);
 }
 
 

@@ -26,7 +26,6 @@ int main(int argc, char **argv)
   StTpcDb::instance()->SetTpcRotations();
 
   StTpcRSMaker tpcrs;
-  tpcrs.InitRun(0);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile("geant_event.root");
