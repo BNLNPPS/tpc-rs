@@ -50,6 +50,13 @@ add_library(yaml-cpp-lib STATIC IMPORTED)
 set_property(TARGET yaml-cpp-lib PROPERTY IMPORTED_LOCATION ${YAML_CPP_INSTALL_PREFIX}/lib/libyaml-cpp.a)
 add_dependencies(yaml-cpp-lib yaml-cpp)
 
+set(CMAKE_INSTALL_DATADIR "share"
+    CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where read-only data installed")
+
+set(TPCRS_DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/tpc-rs/data"
+    CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where project config data is installed")
+
+configure_file(src/config.h.in tpcrs/config.h @ONLY)
 
 add_compile_definitions(__ROOT__)
 
