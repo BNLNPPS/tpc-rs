@@ -1,0 +1,6 @@
+#ifndef tpcrs_config_h
+#define tpcrs_config_h
+
+#define TPCRS_CONFIG_SEARCH_PATHS ".:@TPCRS_DATA_INSTALL_DIR@:@PROJECT_SOURCE_DIR@/data"
+
+#endif
