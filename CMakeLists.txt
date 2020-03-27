@@ -204,10 +204,12 @@ add_library(tpcrs
 	StTpcDb/StTpcDb.cxx
 	StChain/StMaker.cxx
 	src/tpcrs_tables.cxx
+	src/Configurator.cpp
 	tpcrs_tables_dict.cxx
 )
 
-target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} include/ ${YAML_CPP_INSTALL_PREFIX}/include/)
+target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}
+	include/ ${YAML_CPP_INSTALL_PREFIX}/include/ ${CMAKE_BINARY_DIR})
 add_dependencies(tpcrs yaml-cpp-lib)
 
 root_generate_dictionary(
