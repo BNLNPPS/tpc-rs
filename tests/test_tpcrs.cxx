@@ -16,6 +16,8 @@
 #include "tables/St_tpcCorrection_Table.h"
 #include "tests/GeantEvent.h"
 
+#include "tpcrs/Configurator.h"
+
 
 int main(int argc, char **argv)
 {
@@ -28,6 +30,8 @@ int main(int argc, char **argv)
   std::cout << "testName:   " << testName << "\n"
             << "maxRecords: " << maxRecords << "\n";
 
+  tpcrs::Configurator::Instance().Configure(testName);
+
   gBenchmark = new TBenchmark();
 
   StarMagField starMagField;
@@ -37,7 +41,7 @@ int main(int argc, char **argv)
   StTpcRSMaker tpcrs;
 
   TChain trsTreeChain("t", "tpcrs test TTree");
-  trsTreeChain.AddFile((testName + ".root").c_str());
+  trsTreeChain.AddFile( tpcrs::Configurator::Instance().Locate(testName + ".root").c_str() );
 
   GeantEvent* geantEvent_inp = new GeantEvent();
   GeantEvent  geantEvent_out;
@@ -61,7 +65,7 @@ int main(int argc, char **argv)
     geantEvent_out.tracks   = geantEvent_inp->tracks;
     geantEvent_out.vertices = geantEvent_inp->vertices;
 
-    std::cout << geantEvent_inp->hits.size() << std::endl;
+    std::cout << geantEvent_inp->hits.size() << "\n";
 
     St_g2t_tpc_hit* g2t_tpc_hit = new St_g2t_tpc_hit("g2t_tpc_hit");
     for (auto hit : geantEvent_inp->hits)
