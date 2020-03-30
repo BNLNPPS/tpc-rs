@@ -1,1 +1,0 @@
-TpcEffectivedX.20000101.000000.C
