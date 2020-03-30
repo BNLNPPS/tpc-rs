@@ -1,1 +1,0 @@
-tpcRDOT0offset.19950101.000000.C
