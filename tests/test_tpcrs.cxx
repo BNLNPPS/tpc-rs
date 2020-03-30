@@ -14,9 +14,12 @@
 #include "tables/St_trigDetSums_Table.h"
 #include "tables/St_TpcAvgPowerSupply_Table.h"
 #include "tables/St_tpcCorrection_Table.h"
+#include "MagFactor.h"
+
 #include "tests/GeantEvent.h"
 
 #include "tpcrs/Configurator.h"
+#include "config_yaml.h"
 
 
 int main(int argc, char **argv)
@@ -34,7 +37,8 @@ int main(int argc, char **argv)
 
   gBenchmark = new TBenchmark();
 
-  StarMagField starMagField;
+  MagFactor_st mf = tpcrs::Configurator::YAML("RunLog/MagFactor").as<MagFactor_st>();
+  StarMagField starMagField(StarMagField::kMapped, mf.ScaleFactor);
   StTpcDb::instance()->SetDriftVelocity();
   StTpcDb::instance()->SetTpcRotations();
 
