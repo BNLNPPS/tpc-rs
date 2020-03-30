@@ -114,6 +114,12 @@ struct ConfigStruct : public ConfigStructI
     size_t slash_pos =  tname.find_last_of('/');
     std::string tbase = tname.substr( slash_pos+1 );
 
+    if (!node) {
+      table = new Table_t(tbase.c_str(), 0);
+      table->Mark();
+      return table;
+    }
+
     try
     {
       Struct_t row = node.as< Struct_t >();
