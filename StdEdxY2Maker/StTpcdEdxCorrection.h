@@ -69,12 +69,12 @@ class StTpcdEdxCorrection : public TObject
   StTpcdEdxCorrection(Int_t Option = 0, Int_t debug = 0);
   ~StTpcdEdxCorrection();
   Int_t dEdxCorrection(dEdxY2_t &dEdx, Bool_t doIT = kTRUE);
-  void SettpcGas               (St_tpcGas*          m = 0) {m_tpcGas = m;}
+  void SettpcGas               (St_tpcGasC*          m = 0) {m_tpcGas = m;}
 
   void SetDebug(Int_t m = 0) {m_Debug = m;}
   void SetMask (Int_t m = 0) {m_Mask = m;}
   void ReSetCorrections();
-  St_tpcGas*         tpcGas()              {return m_tpcGas;}
+  St_tpcGasC*         tpcGas()              {return m_tpcGas;}
   //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
 
   Int_t Debug()                            {return m_Debug;}
@@ -83,7 +83,7 @@ class StTpcdEdxCorrection : public TObject
   void Print(Option_t* opt = "") const;
  private:
   Int_t                m_Mask;                  //!
-  St_tpcGas*           m_tpcGas;                //!
+  St_tpcGasC*          m_tpcGas;                //!
   dEdxY2_t*            mdEdx;
   Float_t              mAdc2GeV;                //! Outer/Inner conversion factors from ADC -> GeV
   dEdxCorrection_t     m_Corrections[kTpcAllCorrections];//!

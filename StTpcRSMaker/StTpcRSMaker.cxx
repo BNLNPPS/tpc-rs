@@ -2131,10 +2131,10 @@ Double_t StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
     if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
 
     CdEdx.ZdriftDistance = TrackSegmentHits.coorLS.position().z(); // drift length
-    St_tpcGas* tpcGas = m_TpcdEdxCorrection->tpcGas();
+    St_tpcGasC* tpcGas = m_TpcdEdxCorrection->tpcGas();
 
     if (tpcGas)
-      CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * (*tpcGas)[0].ppmOxygenIn;
+      CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * tpcGas->Struct()->ppmOxygenIn;
 
     if (! m_TpcdEdxCorrection->dEdxCorrection(CdEdx)) {
       dEdxCor = CdEdx.F.dE;
