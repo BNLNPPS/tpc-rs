@@ -26,6 +26,7 @@
 #include "StDetectorDbMaker/St_TpcMultiplicityC.h"
 #include "StDetectorDbMaker/St_TpcZCorrectionBC.h"
 #include "StDetectorDbMaker/St_tpcMethaneInC.h"
+#include "StDetectorDbMaker/St_tpcGasC.h"
 #include "StDetectorDbMaker/St_tpcGasTemperatureC.h"
 #include "StDetectorDbMaker/St_tpcWaterOutC.h"
 #include "StDetectorDbMaker/St_TpcSpaceChargeC.h"
@@ -77,7 +78,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(Int_t option, Int_t debug) :
 
 void StTpcdEdxCorrection::ReSetCorrections()
 {
-  St_tpcGas* tpcGas = (St_tpcGas*) St_tpcGasC::instance()->Table();  //
+  St_tpcGasC* tpcGas = (St_tpcGasC*) St_tpcGasC::instance();  //
 
   if (!tpcGas || ! tpcGas->GetNRows()) {
     LOG_ERROR << "=== tpcGas is missing ===\n";
@@ -286,9 +287,9 @@ Int_t  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, Bool_t doIT)
   //  Double_t gainAVcorr = gasGain/gainNominal;
   mAdc2GeV = tsspar->ave_ion_pot() * tsspar->scale() / gainNominal;
   Double_t Adc2GeVReal = tsspar->ave_ion_pot() * tsspar->scale() / gasGain;
-  tpcGas_st* gas = m_tpcGas->GetTable();
-  Double_t ZdriftDistanceO2 = ZdriftDistance * (*m_tpcGas)[0].ppmOxygenIn;
-  Double_t ZdriftDistanceO2W = ZdriftDistanceO2 * (*m_tpcGas)[0].ppmWaterOut;
+  tpcGas_st* gas = m_tpcGas->Struct();
+  Double_t ZdriftDistanceO2 = ZdriftDistance * gas->ppmOxygenIn;
+  Double_t ZdriftDistanceO2W = ZdriftDistanceO2 * gas->ppmWaterOut;
   CdEdx.ZdriftDistanceO2 = ZdriftDistanceO2;
   CdEdx.ZdriftDistanceO2W = ZdriftDistanceO2W;
   Double_t gc, ADC, xL2, dXCorr;
