@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "yaml-cpp/yaml.h"
+
 
 namespace tpcrs {
 
@@ -23,7 +25,10 @@ class Configurator
   bool Configure(std::string cfgname = "");
 
   static std::string Locate(std::string filename = "");
-  static std::string File() { return Locate(Instance().name + ".yaml"); };
+
+  static std::string File() { return Locate(Instance().name + ".yaml"); }
+
+  static YAML::Node YAML(std::string taxon) { return Instance().yaml[taxon]; }
 
  private:
 
@@ -40,6 +45,8 @@ class Configurator
   std::string name;
 
   std::vector<std::string> searchPaths;
+
+  YAML::Node yaml;
 };
 
 }
