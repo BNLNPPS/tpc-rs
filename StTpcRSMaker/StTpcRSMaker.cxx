@@ -110,7 +110,7 @@ static TString TpcMedium("TPCE_SENSITIVE_GAS");
 
 
 
-StTpcRSMaker::StTpcRSMaker(const char* name):
+StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
   mLaserScale(1),
   minSignal(1e-4),
   ElectronRange(0.0055), // Electron Range(.055mm)
@@ -119,7 +119,7 @@ StTpcRSMaker::StTpcRSMaker(const char* name):
   NoOfSectors(24),
   NoOfPads(182),
   NoOfTimeBins(__MaxNumberOfTimeBins__),
-  mCutEle(1e-3)
+  mCutEle(eCutOff)
 {
   m_Mode = 0;
   //  SETBIT(m_Mode,kHEED);
