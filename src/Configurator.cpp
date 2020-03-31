@@ -20,6 +20,8 @@ bool Configurator::Configure(std::string configname)
     last = next + 1;
   }
   Instance().searchPaths.push_back(paths.substr(last));
+
+  yaml = YAML::LoadFile(Configurator::File());
 }
 
 
