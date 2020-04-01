@@ -19,10 +19,8 @@ class TF1F : public TF1
   TF1F();
   TF1F(const char* name, const char* formula, Double_t xmin = 0, Double_t xmax = 1);
   TF1F(const char* name, void* fcn, Double_t xmin = 0, Double_t xmax = 1, Int_t npar = 0);
-#if !defined(__CINT__) && !defined(__CLING__)
   TF1F(const char* name, Double_t (*fcn)(Double_t*, Double_t*), Double_t xmin = 0, Double_t xmax = 1, Int_t npar = 0, Int_t ndim = 1 );
   TF1F(const char* name, Double_t (*fcn)(const Double_t*, const Double_t*), Double_t xmin = 0, Double_t xmax = 1, Int_t npar = 0, Int_t ndim = 1);
-#endif
 
   // constructor using a functor
   TF1F(const char* name, ROOT::Math::ParamFunctor f, Double_t xmin = 0, Double_t xmax = 1, Int_t npar = 0, Int_t ndim = 1);

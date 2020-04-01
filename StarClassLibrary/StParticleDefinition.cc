@@ -33,9 +33,6 @@
 #include "StarClassLibrary/StParticleDefinition.hh"
 #include "StarClassLibrary/StParticleTable.hh"
 #include "StarClassLibrary/PhysicalConstants.h"
-// #include <typeinfo>
-#ifdef __ROOT__
-#endif
 
 StParticleDefinition::StParticleDefinition(
   const string       &aName,

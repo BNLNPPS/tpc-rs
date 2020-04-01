@@ -1,5 +1,4 @@
 //#define PRINT 1
-#define PRINT0 1
 //#define PRINT2 1
 //#define PRINT3 1
 //#define NumDer
@@ -76,10 +75,8 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
 
     fnBins[i] = fAXYZ[i]->GetNbins();
     fbinW[i]  = fAXYZ[i]->GetBinWidth(1);
-#ifdef PRINT0
     PrP(i); PrP(fnBins[i]); PrP(fbinW[i]); LOG_INFO << '\n';
     assert(fnBins[i] != 1);
-#endif
   }
 
   //  if (! keep3D) SafeDelete(fPhi);

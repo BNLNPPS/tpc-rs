@@ -111,18 +111,10 @@
  * Initial Revision
  *
  **************************************************************************/
-#if !defined(ST_NO_NUMERIC_LIMITS)
-#    include <limits>
-#    if !defined(ST_NO_NAMESPACES)
-using std::numeric_limits;
-#    endif
-#endif
-#define FOR_HELIX
+#include <limits>
 #include <float.h>
 #include "StarClassLibrary/StHelix.hh"
 #include "StarClassLibrary/PhysicalConstants.h"
-#ifdef __ROOT__
-#endif
 const double StHelix::NoSolution = 3.e+33;
 
 StHelix::StHelix() { /*noop*/ }
@@ -177,12 +169,7 @@ void StHelix::setCurvature(double val)
   else
     mCurvature = val;
 
-#ifndef ST_NO_NUMERIC_LIMITS
-
   if (fabs(mCurvature) <= numeric_limits<double>::epsilon())
-#else
-  if (fabs(mCurvature) <= static_cast<double>(0))
-#endif
     mSingularity = true;			// straight line
   else
     mSingularity = false;            	// curved
@@ -266,10 +253,8 @@ double StHelix::pathLength(const StThreeVector<double> &p, bool scanPeriods) con
         mSinDipAngle * dz;
   }
   else { //
-#ifndef ST_NO_NAMESPACES
     {
       using namespace units;
-#endif
       const double MaxPrecisionNeeded = micrometer;
       const int    MaxIterations      = 100;
 
@@ -337,10 +322,7 @@ double StHelix::pathLength(const StThreeVector<double> &p, bool scanPeriods) con
 
         sOld = s;
       }
-
-#ifndef ST_NO_NAMESPACES
     }
-#endif
   }
 
   return s;
@@ -349,12 +331,7 @@ double StHelix::pathLength(const StThreeVector<double> &p, bool scanPeriods) con
 double StHelix::period() const
 {
   if (mSingularity)
-#ifndef ST_NO_NUMERIC_LIMITS
     return numeric_limits<double>::max();
-
-#else
-    return DBL_MAX;
-#endif
   else
     return fabs(2 * M_PI / (mH * mCurvature * mCosDipAngle));
 }

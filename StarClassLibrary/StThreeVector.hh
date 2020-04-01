@@ -92,25 +92,10 @@
  **************************************************************************/
 #ifndef ST_THREE_VECTOR_HH
 #define ST_THREE_VECTOR_HH
-#ifdef __ROOT__
-#include "Rtypes.h"
-#endif
-#ifndef __CINT__
 #include <iostream>
 #include <math.h>
-#ifdef GNU_GCC
-#    include <stddef.h>
-#endif
-#if defined (__SUNPRO_CC) && __SUNPRO_CC < 0x500
-#    include <stdcomp.h>
-#endif
-#ifndef ST_NO_EXCEPTIONS
-#    include <stdexcept>
-#    if !defined(ST_NO_NAMESPACES)
+#include <stdexcept>
 using std::out_of_range;
-#    endif
-#endif
-#endif // __CINT__
 
 template<class T> class StThreeVector
 {
@@ -119,22 +104,11 @@ template<class T> class StThreeVector
   StThreeVector(T, T, T);
   virtual ~StThreeVector();
 
-#if !defined(ST_NO_MEMBER_TEMPLATES) && !defined(__CINT__)
   template<class X> StThreeVector(const StThreeVector<X> &);
   template<class X> StThreeVector(const X*);
   template<class X> StThreeVector<T> &operator=(const StThreeVector<X> &);
   // StThreeVector(const StThreeVector<T>&);                use default
   // StThreeVector<T>& operator=(const StThreeVector<T>&);  use default
-#else
-  StThreeVector(const StThreeVector<float> &);
-  StThreeVector(const StThreeVector<double> &);
-
-  StThreeVector(const float*);
-  StThreeVector(const double*);
-
-  StThreeVector<T> &operator=(const StThreeVector<float> &);
-  StThreeVector<T> &operator=(const StThreeVector<double> &);
-#endif
 
   void setX(T);
   void setY(T);
@@ -181,7 +155,6 @@ template<class T> class StThreeVector
   StThreeVector<T> &operator/= (double);
   StThreeVector<T>  pseudoProduct(double, double, double) const;
 
-#if !defined(ST_NO_MEMBER_TEMPLATES) && !defined(__CINT__)
   template<class X> T                angle(const StThreeVector<X> &) const;
   template<class X> StThreeVector<T> cross(const StThreeVector<X> &) const;
   template<class X> T                dot  (const StThreeVector<X> &) const;
@@ -192,33 +165,10 @@ template<class T> class StThreeVector
 
   template<class X> StThreeVector<T> &operator+= (const StThreeVector<X> &);
   template<class X> StThreeVector<T> &operator-= (const StThreeVector<X> &);
-#else
-  T                angle(const StThreeVector<float> &) const;
-  StThreeVector<T> cross(const StThreeVector<float> &) const;
-  T                dot  (const StThreeVector<float> &) const;
-  StThreeVector<T> pseudoProduct(const StThreeVector<float> &) const;
-
-  T                angle(const StThreeVector<double> &) const;
-  T                dot  (const StThreeVector<double> &) const;
-  StThreeVector<T> cross(const StThreeVector<double> &) const;
-  StThreeVector<T> pseudoProduct(const StThreeVector<double> &) const;
-
-  bool operator == (const StThreeVector<float> &v) const;
-  bool operator != (const StThreeVector<float> &v) const;
-  StThreeVector<T> &operator+= (const StThreeVector<float> &);
-  StThreeVector<T> &operator-= (const StThreeVector<float> &);
-
-  bool operator == (const StThreeVector<double> &v) const;
-  bool operator != (const StThreeVector<double> &v) const;
-  StThreeVector<T> &operator+= (const StThreeVector<double> &);
-  StThreeVector<T> &operator-= (const StThreeVector<double> &);
-#endif
   int             valid(double world = 1.e+5) const;
   int               bad(double world = 1.e+5) const;
  protected:
   T    mX1, mX2, mX3;
-#ifdef __ROOT__
-#endif /* __ROOT__ */
 };
 
 //
@@ -420,12 +370,7 @@ template<class T>
 inline T StThreeVector<T>::operator() (size_t i) const
 {
   if (i <= 2)  return (&mX1)[i];
-
-#ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator(): bad index");
-#else
-  std::cerr << "StThreeVector<T>::operator(): bad index" << std::endl;
-#endif
   return 0;
 }
 
@@ -433,12 +378,7 @@ template<class T>
 inline T &StThreeVector<T>::operator() (size_t i)
 {
   if (i <= 2)  return (&mX1)[i];
-
-#ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator(): bad index");
-#else
-  std::cerr << "StThreeVector<T>::operator(): bad index" << std::endl;
-#endif
   return mX1;
 }
 
@@ -446,12 +386,7 @@ template<class T>
 inline T StThreeVector<T>::operator[] (size_t i) const
 {
   if (i <= 2)  return (&mX1)[i];
-
-#ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator[]: bad index");
-#else
-  std::cerr << "StThreeVector<T>::operator[]: bad index" << std::endl;
-#endif
   return 0;
 }
 
@@ -459,25 +394,15 @@ template<class T>
 inline T &StThreeVector<T>::operator[] (size_t i)
 {
   if (i <= 2)  return (&mX1)[i];
-
-#ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator[]: bad index");
-#else
-  std::cerr << "StThreeVector<T>::operator[]: bad index" << std::endl;
-#endif
   return mX1;
 }
-#ifndef __CINT__
 template<class T>
 inline StThreeVector<T> &StThreeVector<T>::operator*= (double c)
 {
   mX1 *= c; mX2 *= c; mX3 *= c;
   return *this;
 }
-#else
-template <> StThreeVector<double> &StThreeVector<double>::operator*= (double c);
-template <> StThreeVector<float> &StThreeVector<float>::operator*= (double c);
-#endif
 template<class T>
 inline StThreeVector<T> &StThreeVector<T>::operator/= (double c)
 {
@@ -504,7 +429,6 @@ StThreeVector<T> StThreeVector<T>::operator+ ()
   return *this;
 }
 
-#if !defined(ST_NO_MEMBER_TEMPLATES) && !defined(__CINT__)
 
 template<class T>
 template<class X>
@@ -595,166 +519,6 @@ StThreeVector<T>::pseudoProduct(const StThreeVector<X> &v) const
   return this->pseudoProduct(v.x(), v.y(), v.z());
 }
 
-#else
-
-template<class T>
-inline StThreeVector<T>::StThreeVector(const StThreeVector<float> &v)
-  : mX1(v.x()), mX2(v.y()), mX3(v.z()) {/* nop */}
-
-template<class T>
-inline StThreeVector<T>::StThreeVector(const StThreeVector<double> &v)
-  : mX1(v.x()), mX2(v.y()), mX3(v.z()) {/* nop */}
-
-template<class T>
-inline StThreeVector<T>::StThreeVector(const float* a)
-{
-  mX1 = a[0];
-  mX2 = a[1];
-  mX3 = a[2];
-}
-
-template<class T>
-inline StThreeVector<T>::StThreeVector(const double* a)
-{
-  mX1 = a[0];
-  mX2 = a[1];
-  mX3 = a[2];
-}
-
-template<class T>
-inline StThreeVector<T> &
-StThreeVector<T>::operator=(const StThreeVector<float> &v)
-{
-  mX1 = v.x();  mX2 = v.y();  mX3 = v.z();
-  return *this;
-}
-
-template<class T>
-inline StThreeVector<T> &
-StThreeVector<T>::operator=(const StThreeVector<double> &v)
-{
-  mX1 = v.x();  mX2 = v.y();  mX3 = v.z();
-  return *this;
-}
-
-template<class T>
-inline bool
-StThreeVector<T>::operator== (const StThreeVector<float> &v) const
-{
-  return mX1 == v.x() && mX2 == v.y() && mX3 == v.z();
-}
-
-template<class T>
-inline bool
-StThreeVector<T>::operator== (const StThreeVector<double> &v) const
-{
-  return mX1 == v.x() && mX2 == v.y() && mX3 == v.z();
-}
-
-template<class T>
-inline bool
-StThreeVector<T>::operator!= (const StThreeVector<float> &v) const
-{
-  return !(*this == v);
-}
-
-template<class T>
-inline bool
-StThreeVector<T>::operator!= (const StThreeVector<double> &v) const
-{
-  return !(*this == v);
-}
-
-template<class T>
-inline StThreeVector<T> &
-StThreeVector<T>::operator+= (const StThreeVector<float> &v)
-{
-  mX1 += v.x(); mX2 += v.y(); mX3 += v.z();
-  return *this;
-}
-
-template<class T>
-inline StThreeVector<T> &
-StThreeVector<T>::operator+= (const StThreeVector<double> &v)
-{
-  mX1 += v.x(); mX2 += v.y(); mX3 += v.z();
-  return *this;
-}
-
-template<class T>
-inline StThreeVector<T> &
-StThreeVector<T>::operator-= (const StThreeVector<float> &v)
-{
-  mX1 -= v.x(); mX2 -= v.y(); mX3 -= v.z();
-  return *this;
-}
-
-template<class T>
-inline StThreeVector<T> &
-StThreeVector<T>::operator-= (const StThreeVector<double> &v)
-{
-  mX1 -= v.x(); mX2 -= v.y(); mX3 -= v.z();
-  return *this;
-}
-
-template<class T>
-inline T StThreeVector<T>::dot(const StThreeVector<float> &v) const
-{
-  return mX1 * v.x() + mX2 * v.y() + mX3 * v.z();
-}
-
-template<class T>
-inline T StThreeVector<T>::dot(const StThreeVector<double> &v) const
-{
-  return mX1 * v.x() + mX2 * v.y() + mX3 * v.z();
-}
-
-template<class T>
-inline StThreeVector<T>
-StThreeVector<T>::cross(const StThreeVector<float> &v) const
-{
-  return StThreeVector<T>(mX2 * v.z() - mX3 * v.y(),
-                          mX3 * v.x() - mX1 * v.z(),
-                          mX1 * v.y() - mX2 * v.x());
-}
-
-template<class T>
-inline StThreeVector<T>
-StThreeVector<T>::cross(const StThreeVector<double> &v) const
-{
-  return StThreeVector<T>(mX2 * v.z() - mX3 * v.y(),
-                          mX3 * v.x() - mX1 * v.z(),
-                          mX1 * v.y() - mX2 * v.x());
-}
-
-template<class T>
-inline T StThreeVector<T>::angle(const StThreeVector<float> &v) const
-{
-  double tmp = mag() * v.mag(); if (tmp <= 0) tmp = 1e-20;
-  return acos(this->dot(v) / tmp);
-}
-
-template<class T>
-inline T StThreeVector<T>::angle(const StThreeVector<double> &v) const
-{
-  double tmp = mag() * v.mag(); if (tmp <= 0) tmp = 1e-20;
-  return acos(this->dot(v) / tmp);
-}
-
-template<class T>
-inline StThreeVector<T>
-StThreeVector<T>::pseudoProduct(const StThreeVector<float> &v) const
-{
-  return this->pseudoProduct(v.x(), v.y(), v.z());
-}
-
-template<class T>
-inline StThreeVector<T>
-StThreeVector<T>::pseudoProduct(const StThreeVector<double> &v) const
-{
-  return this->pseudoProduct(v.x(), v.y(), v.z());
-}
-#endif  // ST_NO_MEMBER_TEMPLATES
 template<class T>
 inline int
 StThreeVector<T>::valid(double world) const  {return !bad(world);}
@@ -774,7 +538,6 @@ StThreeVector<T>::bad(double world) const
 //
 //        Non-member functions
 //
-#if !defined(ST_NO_MEMBER_TEMPLATES) && !defined(__CINT__)
 template<class T>
 inline T abs(const StThreeVector<T> &v) {return v.mag();}
 template<class T, class X>
@@ -802,75 +565,6 @@ inline T operator* (const StThreeVector<T> &v1, const StThreeVector<X> &v2)
 {
   return StThreeVector<T>(v1).dot(v2);
 }
-#else
-template<>
-inline double abs(const StThreeVector<double> &v) {return v.mag();}
-
-template<>
-inline float abs(const StThreeVector<float> &v) {return v.mag();}
-
-template<class T>
-inline StThreeVector<T>
-cross_product(const StThreeVector<T> &v1, const StThreeVector<double> &v2)
-{
-  return v1.cross(v2);
-}
-template<class T>
-inline StThreeVector<T>
-cross_product(const StThreeVector<T> &v1, const StThreeVector<float> &v2)
-{
-  return v1.cross(v2);
-}
-
-
-//
-//        Non-member operators
-//
-template<class T>
-inline StThreeVector<T>
-operator+ (const StThreeVector<T> &v1, const StThreeVector<double> &v2)
-{
-  return StThreeVector<T>(v1) += v2;
-}
-
-template<class T>
-inline StThreeVector<T>
-operator- (const StThreeVector<T> &v1, const StThreeVector<double> &v2)
-{
-  return StThreeVector<T>(v1) -= v2;
-}
-#ifndef __CINT__
-template<class T>
-inline T operator* (const StThreeVector<T> &v1, const StThreeVector<double> &v2)
-{
-  return StThreeVector<T>(v1).dot(v2);
-}
-template<class T>
-inline T operator* (const StThreeVector<T> &v1, const StThreeVector<float> &v2)
-{
-  return StThreeVector<T>(v1).dot(v2);
-}
-#else
-template<> double operator* (const StThreeVector<double> &v1, const StThreeVector<double> &v2);
-template<> double operator* (const StThreeVector<double> &v1, const StThreeVector<float> &v2);
-template<> double operator* (const StThreeVector<float> &v1, const StThreeVector<double> &v2);
-template<> float  operator* (const StThreeVector<float> &v1, const StThreeVector<float> &v2);
-#endif
-template<class T>
-inline StThreeVector<T>
-operator+ (const StThreeVector<T> &v1, const StThreeVector<float> &v2)
-{
-  return StThreeVector<T>(v1) += v2;
-}
-
-template<class T>
-inline StThreeVector<T>
-operator- (const StThreeVector<T> &v1, const StThreeVector<float> &v2)
-{
-  return StThreeVector<T>(v1) -= v2;
-}
-
-#endif
 template<class T>
 inline StThreeVector<T> operator* (const StThreeVector<T> &v, double c)
 {
@@ -888,16 +582,11 @@ inline StThreeVector<T> operator/ (const StThreeVector<T> &v, double c)
 {
   return StThreeVector<T>(v) /= c;
 }
-#ifndef __CINT__
 template<class T>
 std::ostream  &operator<<(std::ostream &os, const StThreeVector<T> &v)
 {
   return os << v.x() << '\t' << v.y() << '\t' << v.z();
 }
-#else
-template<> std::ostream  &operator<<(std::ostream &os, const StThreeVector<double> &v);
-template<> std::ostream  &operator<<(std::ostream &os, const StThreeVector<float> &v);
-#endif
 template<class T>
 std::istream  &operator>>(std::istream &is, StThreeVector<T> &v)
 {

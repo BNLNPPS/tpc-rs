@@ -178,13 +178,11 @@ StarMagField* StarMagField::fgInstance = 0;
 
 #define agufld           F77_NAME(agufld,AGUFLD)
 #define mfldgeo          F77_NAME(mfldgeo,MFLDGEO)
-#ifdef __ROOT__
 #include "TString.h"
 #include "TSystem.h"
 #include "TFile.h"
 #include "TError.h"
 #include "TEnv.h"
-#endif
 
 #include "tpcrs/configurator.h"
 
@@ -509,7 +507,6 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
     {  0.0,   5.2,   9.8,  13.3,  15.2,  15.4,  14.1,  11.4,   7.9 }
   },// Radial
 };
-#ifdef __ROOT__
 
 
 void StarMagField::SetStarMagFieldRotation(TGeoRotation &rot)
@@ -526,7 +523,6 @@ void StarMagField::SetStarMagFieldRotation(Double_t* r)
   rot.SetMatrix(r);
   SetStarMagFieldRotation(rot);
 }
-#endif
 
 bool StarMagField::mConstBz = false;
 
@@ -536,13 +532,8 @@ StarMagField::StarMagField ( EBField map, Float_t factor,
                              Bool_t lock, Float_t rescale,
                              Float_t BDipole, Float_t RmaxDip,
                              Float_t ZminDip, Float_t ZmaxDip) :
-#ifdef __ROOT__
-#if ROOT_VERSION_CODE >= 335360 /* ROOT_VERSION(5,30,0) */
-  TVirtualMagField("StarMagField"),
-#endif
   fBzdZCorrection(0),
   fBrdZCorrection(0),
-#endif
   fMap(map),
   fFactor(factor),   fRescale(rescale),
   fBDipole(BDipole), fRmaxDip(RmaxDip),
@@ -564,9 +555,7 @@ StarMagField::StarMagField ( EBField map, Float_t factor,
   }
 
   ReadField() ;                       // Read the Magnetic
-#ifdef __ROOT__
   fStarMagFieldRotation = TGeoRotation("StarMagFieldRotation");
-#endif /* __ROOT__ */
 }
 
 
@@ -625,17 +614,11 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
       BL[1] = Br_value * (x[1] / r) ;
     }
 
-#ifdef __ROOT__
     Double_t BG[3];
     fStarMagFieldRotation.LocalToMaster(BL, BG);
 
     for (Int_t i = 0; i < 3; i++) B[i] = BG[i];
 
-#else  /* ! __ROOT__ */
-
-    for (Int_t i = 0; i < 3; i++) B[i] = BL[i];
-
-#endif /* __ROOT__ */
     return;
   }
 
@@ -736,17 +719,11 @@ void StarMagField::B3DField( const Float_t x[], Float_t B[] )
   }
 
   Double_t BL[3] = {B[0], B[1], B[2]};
-#ifdef __ROOT__
   Double_t BG[3];
   fStarMagFieldRotation.LocalToMaster(BL, BG);
 
   for (Int_t i = 0; i < 3; i++) B[i] = BG[i];
 
-#else
-
-  for (Int_t i = 0; i < 3; i++) B[i] = BL[i];
-
-#endif
   return ;
 
 }
@@ -821,7 +798,6 @@ void StarMagField::ReadField( )
   FILE*    magfile, *b3Dfile ;
   std::string comment, filename, filename3D ;
   std::string MapLocation ;
-#ifdef __ROOT__
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) {
     TFile pFile(tpcrs::Configurator::Locate("StarFieldZ.root").c_str());
@@ -846,8 +822,6 @@ void StarMagField::ReadField( )
       Warning("StarMagField::ReadField", "Use effective PMT box dZ = 7.5 cm");
     }
   }
-
-#endif
 
   if ( fMap == kMapped ) {                  	// Mapped field values
     if ( fabs(fFactor) > 0.8 ) {    		// Scale from full field data
@@ -902,14 +876,11 @@ void StarMagField::ReadField( )
       for ( Int_t k = 0 ; k < nR ; k++ ) {
         fgets  ( cname, sizeof(cname), magfile ) ;
         sscanf ( cname, " %f %f %f %f ", &Radius[k], &ZList[j], &Br[j][k], &Bz[j][k] ) ;
-#if defined(__ROOT__)
 
         if (fBzdZCorrection && fBrdZCorrection) {
           Br[j][k] += fFactor * fBrdZCorrection->Interpolate(ZList[j], Radius[k]);
           Bz[j][k] += fFactor * fBzdZCorrection->Interpolate(ZList[j], Radius[k]);
         }
-
-#endif
       }
     }
   }
@@ -945,14 +916,11 @@ void StarMagField::ReadField( )
           sscanf ( cname, " %f %f %f %f %f %f ",
                    &R3D[k], &Z3D[j], &Phi3D[i], &Br3D[i][j][k], &Bz3D[i][j][k], &Bphi3D[i][j][k] ) ;
           Phi3D[i] *= TMath::Pi() / 180. ;   // Convert to Radians  phi = 0 to 2*Pi
-#if defined(__ROOT__)
 
           if (fBzdZCorrection && fBrdZCorrection) {
             Br3D[i][j][k] += fFactor * fBrdZCorrection->Interpolate(Z3D[j], R3D[k]);
             Bz3D[i][j][k] += fFactor * fBzdZCorrection->Interpolate(Z3D[j], R3D[k]);
           }
-
-#endif
         }
       }
     }

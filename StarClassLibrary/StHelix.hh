@@ -57,11 +57,6 @@
 #include <algorithm>
 #include "StarClassLibrary/StThreeVector.hh"
 #include "StarClassLibrary/SystemOfUnits.h"
-#if !defined(ST_NO_NAMESPACES)
-using std::pair;
-using std::swap;
-using std::max;
-#endif
 
 class StHelix
 {
@@ -157,9 +152,6 @@ class StHelix
   double                 mSinDipAngle;
   double                 mCosPhase;
   double                 mSinPhase;
-
-#ifdef __ROOT__
-#endif
 };
 
 //

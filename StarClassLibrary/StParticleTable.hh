@@ -33,9 +33,7 @@
  **************************************************************************/
 #ifndef StParticleTable_hh
 #define StParticleTable_hh
-#ifdef __ROOT__
 #include "Rtypes.h"
-#endif
 
 #include <iostream>
 #include <string>
@@ -43,17 +41,11 @@
 #include <vector>
 
 class StParticleDefinition;
-#if !defined(ST_NO_NAMESPACES)
 using std::vector;
 using std::map;
 using std::string;
-#endif
 
-#ifdef ST_NO_TEMPLATE_DEF_ARGS
-typedef vector<StParticleDefinition*, allocator<StParticleDefinition*> > StVecPtrParticleDefinition;
-#else
 typedef vector<StParticleDefinition*> StVecPtrParticleDefinition;
-#endif
 
 class StParticleTable
 {
@@ -89,28 +81,13 @@ class StParticleTable
 
   static StParticleTable* mParticleTable;
 
-#ifdef ST_NO_TEMPLATE_DEF_ARGS
-  // as soon as Sun CC4.2 is gone this goes as well
-  typedef map<int, int, less<int>,
-          allocator< pair<const int, int> > >
-          mGeantPdgMapType;
-  typedef map<int, StParticleDefinition*, less<int>,
-          allocator< pair<const int, StParticleDefinition*> > >
-          mPdgMapType;
-  typedef map<string,	StParticleDefinition*, less<string>,
-          allocator< pair<const string, StParticleDefinition*> > >
-          mNameMapType;
-#else
   typedef map<int, int>                      mGeantPdgMapType;
   typedef map<int, StParticleDefinition*>    mPdgMapType;
   typedef map<string, StParticleDefinition*> mNameMapType;
-#endif
 
   mGeantPdgMapType   mGeantPdgMap;     // Geant3 IDs only
   mPdgMapType        mPdgMap;          // PDG IDs only
   mNameMapType       mNameMap;         // complete list
-#ifdef __ROOT__
-#endif
 };
 #endif
 
