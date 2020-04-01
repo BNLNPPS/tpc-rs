@@ -1992,16 +1992,8 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, Int_t sector, In
 
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT); // #1
 
-#if 1
     Double_t dely      = {transform.yFromRow(sector, row) - yOnWire};
     Double_t localYDirectionCoupling = mChargeFraction[io][sector - 1]->GetSaveL(&dely);
-#else
-    Int_t idWire = TMath::Abs(TMath::Nint((transform.yFromRow(sector, row) - yOnWire) / anodeWirePitch));
-
-    if (idWire > 6) continue;
-
-    Double_t localYDirectionCoupling = mLocalYDirectionCoupling[io][sector - 1][idWire];
-#endif
 
     if (ClusterProfile) {
       checkList[io][10]->Fill(TrackSegmentHits.xyzG.position().z(), localYDirectionCoupling);

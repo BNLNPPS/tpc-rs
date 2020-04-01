@@ -1,6 +1,5 @@
 #ifndef Bichsel_h
 #define Bichsel_h
-//#define P03ia
 #include "TString.h"
 #include "StBichsel/dEdxParameterization.h"
 class tpcCorrection_st;
