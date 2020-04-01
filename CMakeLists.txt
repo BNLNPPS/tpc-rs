@@ -58,8 +58,6 @@ set(TPCRS_DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/tpc
 
 configure_file(src/config.h.in tpcrs/config.h @ONLY)
 
-add_compile_definitions(__ROOT__)
-
 add_library(tpcrs
 	St_base/StMessMgr.cxx
 	StarClassLibrary/StParticleTable.cc

@@ -82,19 +82,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Rtypes.h>
-#if defined (__ROOT__)
 #include "TH2.h"
 #include "TGeoMatrix.h"
-#if ROOT_VERSION_CODE >= 335360 /* ROOT_VERSION(5,30,0) */
-#include "TVirtualMagField.h"
-class StarMagField : public TVirtualMagField
-#else
-#include "TObject.h"
-class StarMagField : public TObject
-#endif
-#else
+
 class StarMagField
-#endif
 {
  public:
   enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
@@ -113,11 +104,9 @@ class StarMagField
 
   virtual void    ReadField ( ) ;
   static StarMagField* fgInstance;
-#if defined (__ROOT__)
   TGeoRotation fStarMagFieldRotation;
   TH2F* fBzdZCorrection; // correction due to endcap calomiter
   TH2F* fBrdZCorrection; // correction due to endcap calomiter
-#endif
  public:
   //added by Lijuan
 
@@ -158,10 +147,8 @@ class StarMagField
   virtual ~StarMagField ()
   {
     fgInstance = 0;
-#if defined (__ROOT__)
     SafeDelete(fBzdZCorrection);
     SafeDelete(fBrdZCorrection);
-#endif
   }
   static StarMagField* Instance();
 
@@ -188,11 +175,9 @@ class StarMagField
   virtual Float_t GetRescale() {return fRescale;}
   virtual Bool_t  IsLocked()   {return fLock;}
   virtual void    Print(Option_t* opt = "") const;
-#ifdef __ROOT__
   void  SetStarMagFieldRotation(TGeoRotation &rot);
   void  SetStarMagFieldRotation(Double_t* rot);
   const TGeoRotation &StarMagFieldRotation() {return * &fStarMagFieldRotation;}
-#endif
 };
 
 #endif

@@ -136,10 +136,6 @@
 #define kUndefined _undefined_particle_id++
 long _undefined_particle_id = 2000000000; /* Unique PDG ID for each undefined particle */
 
-#if defined (__SUNPRO_CC) && __SUNPRO_CC < 0x500
-#include <ospace/stl/src/treeaux.cpp> // CC4.2 with ObjectSpace only
-#endif
-
 #include <iostream>
 #include "Rtypes.h"
 

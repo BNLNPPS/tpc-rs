@@ -264,9 +264,6 @@
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 #include "TMath.h"
 #include "StarClassLibrary/StThreeVectorD.hh"
-#if defined (__SUNPRO_CC) && __SUNPRO_CC >= 0x500
-using namespace units;
-#endif
 static Int_t _debug = 0;
 StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer */)
 {

@@ -61,9 +61,6 @@ class StPhysicalHelix : public StHelix
   double curvatureSignedDistance(const StThreeVector<double> &) ;
   // 3d DCA to 3d point signed relative to rotation
   double geometricSignedDistance(const StThreeVector<double> &) ;
-
-#ifdef __ROOT__
-#endif
 };
 
 #endif

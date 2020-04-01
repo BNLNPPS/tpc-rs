@@ -72,9 +72,6 @@ struct HitPoint_t {
   StTpcLocalSectorDirection dirLS, BLS;
   StTpcPadCoordinate Pad;
 };
-//#define ElectronHack
-//#define __LASERINO__
-//#define Old_dNdx_Table
 #define __STOPPED_ELECTRONS__
 #define __DEBUG__
 #if defined(__DEBUG__)
@@ -83,7 +80,6 @@ struct HitPoint_t {
 #define PrPP(A,B)
 #endif
 static const char rcsid[] = "$Id: StTpcRSMaker.cxx,v 1.89 2019/05/22 21:30:58 fisyak Exp $";
-#define __ClusterProfile__
 static Bool_t ClusterProfile = kFALSE;
 #define Laserino 170
 #define Chasrino 171
@@ -503,9 +499,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
   memset (hist, 0, sizeof(hist));
   memset (checkList, 0, sizeof(checkList));
 
-#ifdef __ClusterProfile__
   ClusterProfile = kTRUE;
-#endif /* __ClusterProfile__ */
 
   mHeed = fEc(St_TpcResponseSimulatorC::instance()->W());
 
@@ -1460,29 +1454,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 Double_t StTpcRSMaker::GetNoPrimaryClusters(Double_t betaGamma, Int_t charge)
 {
   Double_t beta = betaGamma / TMath::Sqrt(1.0 + betaGamma * betaGamma);
-#if defined(Old_dNdx_Table)
-  Double_t dNdx = 1.21773e+01 * Bichsel::Instance()->GetI70M(TMath::Log10(betaGamma));
-#else
-#if defined(ElectronHack)
-  Int_t elepos = charge / 100;
   Double_t dNdx = 0;
 
   if      (mdNdx   ) dNdx = mdNdx->Interpolate(betaGamma);
   else if (mdNdxL10) dNdx = mdNdxL10->Interpolate(TMath::Log10(betaGamma));
 
-  if (elepos) {
-    dNdx += 1.21773e+01 * Bichsel::Instance()->GetI70M(TMath::Log10(betaGamma));
-    dNdx /= 2;
-  }
-
-#else /* new H.Bichsel dNdx table 09/12/11 */
-  Double_t dNdx = 0;
-
-  if      (mdNdx   ) dNdx = mdNdx->Interpolate(betaGamma);
-  else if (mdNdxL10) dNdx = mdNdxL10->Interpolate(TMath::Log10(betaGamma));
-
-#endif /* Old_dNdx_Table || ElectronHack */
-#endif
   Double_t Q_eff = TMath::Abs(charge % 100);
 
   if (Q_eff > 1)   {
@@ -1725,24 +1701,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
       }
 
       if (mAltro) {
-        //#define PixelDUMP
-#ifdef PixelDUMP
-        static Short_t ADCsSaved[__MaxNumberOfTimeBins__];
-        memcpy(ADCsSaved, ADCs, sizeof(ADCsSaved));
-#endif
         mAltro->RunEmulation();
-#ifdef PixelDUMP
-        ofstream* out = new ofstream("digi.dump", ios_base::app);
-
-        for (Int_t i = 0; i < __MaxNumberOfTimeBins__; i++) {
-          if (ADCsSaved[i] > 0 || ADCs[i] > 0) {
-            LOG_INFO << Form("s %2i r %i p %3i t %3i: %10i => %10i keep %10i", sector, row, pad, i, ADCsSaved[i], ADCs[i], mAltro->ADCkeep[i]) << endm;
-            *out << Form("s %2i r %i p %3i t %3i: %10i => %10i keep %10i", sector, row, pad, i, ADCsSaved[i], ADCs[i], mAltro->ADCkeep[i]) << endl;
-          }
-        }
-
-        delete out;
-#endif
         NoTB = 0;
         Int_t ADCsum = 0;
 

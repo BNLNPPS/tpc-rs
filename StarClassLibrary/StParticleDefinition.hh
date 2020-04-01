@@ -29,16 +29,12 @@
  **************************************************************************/
 #ifndef StParticleDefinition_hh
 #define StParticleDefinition_hh
-#ifdef __ROOT__
 #include "Rtypes.h"
-#endif
 
 #include <ostream>
 #include <string>
 
-#if !defined(ST_NO_NAMESPACES)
 using std::string;
-#endif
 
 class StParticleTable;
 
@@ -120,8 +116,6 @@ class StParticleDefinition
   double   mPDGLifeTime;        // related to the decay width of the particle. The mean
   // life time is given in seconds.
   StParticleTable* mParticleTable;
-#ifdef __ROOT__
-#endif
 };
 
 std::ostream &operator<<(std::ostream &, const StParticleDefinition &);

@@ -104,9 +104,7 @@ static const double      inch   = 2.54 * centimeter;
 //
 static const double      radian = 1.;
 static const double milliradian = 1.e-3 * radian;
-#ifndef __CINT__
 static const double      degree = (M_PI / 180.0) * radian;
-#endif
 static const double   steradian = 1.;
 
 //
@@ -171,12 +169,7 @@ static const double newton  = joule / meter;
 //
 // Pressure [E][L^-3]
 //
-#ifndef __CINT__
-#define pascal hep_pascal       // a trick to avoid warnings 
-static const double hep_pascal = newton / meter2;
-#else
 static const double pascal     = newton / meter2;
-#endif
 static const double bar        = 100000 * pascal;
 static const double atmosphere = 101325 * pascal;
 
@@ -252,52 +245,6 @@ static const double gray = joule / kilogram ;
 static const double perCent     = 0.01 ;
 static const double perThousand = 0.001;
 static const double perMillion  = 0.000001;
-
-#ifdef ST_ADD_OLD_CLHEP_SYSTEM_OF_UNITS
-
-static const double mm  = 0.1;         // millimeter
-static const double mm2 = mm * mm;
-static const double mm3 = mm * mm * mm;
-
-static const double cm  = 10.*mm;      // centimeter
-static const double cm2 = cm * cm;
-static const double cm3 = cm * cm * cm;
-
-static const double m  = 1000.*mm;     // meter
-static const double m2 = m * m;
-static const double m3 = m * m * m;
-
-static const double km = 1000.*m;      // kilometer
-static const double km2 = km * km;
-static const double km3 = km * km * km;
-
-static const double microm = 1.e-6 * m; // micro meter
-static const double  nanom = 1.e-9 * m;
-//static const double  fermi = 1.e-15*m;
-
-//
-// Angle
-//
-static const double  rad = 1.;        // radian
-static const double mrad = 1.e-3 * rad; // milliradian
-static const double  deg = (M_PI / 180.0) * rad;
-
-static const double   st = 1.;	    // steradian
-
-//
-// Time [T]
-//
-static const double  s = 1;           // second
-static const double ns = 1.e-9 * s;   // nano second
-static const double ms = 1.e-3 * s;   // milli second
-
-// Mass [E][T^2][L^-2]
-//
-static const double kg = joule * second * second / (meter* meter);	// kg = 6.24150 e+24 * MeV*ns*ns/(mm*mm)
-static const double  g = 1.e-3 * kg;
-static const double mg = 1.e-3 * g;
-
-#endif
 
 }
 using namespace units;

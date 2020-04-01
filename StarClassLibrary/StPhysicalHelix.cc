@@ -44,8 +44,6 @@
 #include "StarClassLibrary/StPhysicalHelix.hh"
 #include "StarClassLibrary/PhysicalConstants.h"
 #include "StarClassLibrary/SystemOfUnits.h"
-#ifdef __ROOT__
-#endif
 StPhysicalHelix::StPhysicalHelix() {}
 
 StPhysicalHelix::~StPhysicalHelix() { /* nop */ }
@@ -64,15 +62,11 @@ StPhysicalHelix::StPhysicalHelix(const StThreeVector<double> &p,
   setDipAngle(atan2(p.z(), p.perp()));
   mOrigin = o;
 
-#ifndef ST_NO_NAMESPACES
   {
     using namespace units;
-#endif
     setCurvature(fabs((c_light * nanosecond / meter * q * B / tesla) /
                       (abs(p) / GeV * mCosDipAngle) / meter));
-#ifndef ST_NO_NAMESPACES
   }
-#endif
 }
 
 StPhysicalHelix::StPhysicalHelix(double c, double d, double phase,
@@ -85,18 +79,14 @@ StThreeVector<double> StPhysicalHelix::momentum(double B) const
   if (mSingularity)
     return (StThreeVector<double>(0, 0, 0));
   else {
-#ifndef ST_NO_NAMESPACES
     {
       using namespace units;
-#endif
       double pt = GeV * fabs(c_light* nanosecond / meter* B / tesla) / (fabs(mCurvature) * meter);
 
       return (StThreeVector<double>(pt * cos(mPhase + mH* M_PI / 2), // pos part pos field
                                     pt * sin(mPhase + mH* M_PI / 2),
                                     pt * tan(mDipAngle)));
-#ifndef ST_NO_NAMESPACES
     }
-#endif
   }
 }
 
