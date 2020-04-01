@@ -5941,73 +5941,35 @@ void StMagUtilities::UndoSectorAlignDistortion( const Float_t x[], Float_t Xprim
 
         if (StTpcDb::instance()) {
           Double_t local[3] = {0, 0, 0};
-#if 0
-          Double_t master[3];
-
-
-          // To test internal sector alignment parameters only:
-          //const TGeoHMatrix& iAlignMatrix = StTpcDb::instance()->SubSInner2SupS(Seclist[k]);
-          //const TGeoHMatrix& oAlignMatrix = StTpcDb::instance()->SubSOuter2SupS(Seclist[k]);
-          // For sector alignment with respect to the TPC
-          const TGeoHMatrix &iAlignMatrix = StTpcDb::instance()->SubSInner2Tpc(Seclist[k]);
-          const TGeoHMatrix &oAlignMatrix = StTpcDb::instance()->SubSOuter2Tpc(Seclist[k]);
-
-          // For debugging the rotation matrices
-          /*
-          if (SeclistW[k] != lastSec) {
-            iAlignMatrix.Print();
-            oAlignMatrix.Print();
-            lastSec=SeclistW[k];
-          }
-          */
-
-#else
           static StTpcCoordinateTransform tran;
           static StTpcLocalCoordinate locP;
           Double_t* master = locP.position().xyz();
-#endif
           // For the alignment, 'local' is the ideal position of the point
           // on the endcap, and 'master' is the real position of that point.
           // For this distortion, we will only worry about z displacements.
 
           local[0] = m * INNERGGFirst * tanSecPhi;
           local[1] = INNERGGFirst;
-#if 0
-          iAlignMatrix.LocalToMaster(local, master);
-#else
           StTpcLocalSectorCoordinate lSec(local[0], local[1], local[2], Seclist[k]);
           tran(lSec, locP);
-#endif
           iOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * INNERGGLast  * tanSecPhi;
           local[1] = INNERGGLast;
-#if 0
-          iAlignMatrix.LocalToMaster(local, master);
-#else
           lSec = StTpcLocalSectorCoordinate(local[0], local[1], local[2], Seclist[k]);
           tran(lSec, locP);
-#endif
           iOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGFirst * tanSecPhi;
           local[1] = OUTERGGFirst;
-#if 0
-          oAlignMatrix.LocalToMaster(local, master);
-#else
           lSec = StTpcLocalSectorCoordinate(local[0], local[1], local[2], Seclist[k]);
           tran(lSec, locP);
-#endif
           oOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGLast  * tanSecPhi;
           local[1] = OUTERGGLast;
-#if 0
-          oAlignMatrix.LocalToMaster(local, master);
-#else
           lSec = StTpcLocalSectorCoordinate(local[0], local[1], local[2], Seclist[k]);
           tran(lSec, locP);
-#endif
           oOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
         }

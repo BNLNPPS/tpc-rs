@@ -121,10 +121,6 @@ class StTpcCoordinateTransform
   Double_t    mTimeBinWidth;
   Double_t    mInnerSectorzOffset;
   Double_t    mOuterSectorzOffset;
-#if 0
-  Double_t    mInnerSectorzOffset_West;
-  Double_t    mOuterSectorzOffset_West;
-#endif
   Int_t       mNoOfInnerRows;
   Int_t       mNoOfRows;
 

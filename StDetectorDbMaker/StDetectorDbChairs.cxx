@@ -936,13 +936,6 @@ Float_t St_tss_tssparC::gain(Int_t sector, Int_t row) {
   V = St_tpcAnodeHVavgC::instance()->voltagePadrow(sector,row);
   if (V > 0) {
     Double_t v = V - V_nominal;
-#if 0
-    // Hack for Run XVI
-    if ( gC->min(l) > -1 && v > -100 && v < 0) {
-      if (l == 0) v =   0;
-      else        v = -70;
-    } else
-#endif
     if (v < gC->min(l) || v > gC->max(l)) return gain;
     if (gC->min(l) < -450) {
       // if range was expanded below 150 V then use only the linear approximation
@@ -1114,54 +1107,6 @@ Double_t St_SurveyC::IsOrtogonal(const Double_t *r) {
 
 
 void St_SurveyC::Normalize(TGeoHMatrix &R) {
-#if 0
-  Double_t det = R.Determinant();
-  Double_t ort = IsOrtogonal(R.GetRotationMatrix());
-  static Double_t eps = 1e-7;
-  if ( TMath::Abs(TMath::Abs(det) - 1) < eps && ort < eps) return;
-  LOG_INFO << "St_SurveyC::Normalize matrix " << R.GetName()
-   << Form(" has determinant-1 = %10.7f\tortoganality %10.7f",TMath::Abs(det)-1,ort) << endm;
-  cout << "Old\t"; R.Print();
-  const Double_t *r = R.GetRotationMatrix();
-  SMatrix<double,3,3> A(r,9); //   cout << "A: " << endl << A << endl;
-  SMatrix<double,3,3> B = A;
-  A.Det(det); //  cout << "Determinant - 1: " << det-1 << endl;  cout << "A again: " << endl << A << endl;
-  A = B;
-  A.Invert();//   cout << "A^-1: " << endl << A << endl;
-  // check if this is really the inverse:  cout << "A^-1 * B: " << endl << A * B << endl;
-  // the Babylonian method for extracting the square root of a matrix :  Q_{n+1} = 2 * M * ((Q_{n}^{-1} * M) + (M^{T} *Q_{n}))^{-1}
-  SMatrix<double,3,3> Qn1;
-  SMatrix<double,3,3> Qn2;
-  SMatrix<double,3,3> M = B;
-  SMatrix<double,3,3> Qn = M;
-  Int_t ifail = 0;
-  Int_t N = 0;
-  Qn.Det(det); if (_debug) {LOG_INFO << "N " << N << "\tQn Determinant - 1: " << Form("%15.5g",det-1) << endm;}
-  Qn = M;
-  while (TMath::Abs(TMath::Abs(det) - 1) > eps) {
-    SMatrix<double,3> QnInv = Qn.Inverse(ifail);
-    if (ifail) {
-      LOG_ERROR << "St_SurveyC::Normalize:: Qn inversion failed" << endm;
-      break;
-    }
-    SMatrix<double,3,3> C1 = QnInv * M;
-    SMatrix<double,3,3> C2 = Transpose(M) * Qn;
-    SMatrix<double,3,3> C  = C1 + C2;
-    SMatrix<double,3,3> CInv = C.Inverse(ifail);
-    if (ifail) {
-      LOG_ERROR << "St_SurveyC::Normalize:: C inversion failed" << endm;
-      break;
-    }
-    Qn1 = 2 * M * CInv;
-    Qn2 = Qn1;
-    N++;
-    Qn2.Det(det);  if (_debug) {LOG_INFO << "N " << N << "\tQn2 Determinant - 1: " << Form("%15.5g",det-1) << endm;}
-    if (N > 13) break;
-    Qn = Qn1;
-    if (_debug) {LOG_INFO << "Qn:" << endl << Qn << endm;}
-  }
-  R.SetRotation(Qn.Array()); cout << "New\t"; R.Print();
-#endif
   if (_debug) {
     LOG_INFO << "Matrix:\n"; R.Print("");
     LOG_INFO << "Determinant-1 = " << R.Determinant()-1 << '\n';

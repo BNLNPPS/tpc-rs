@@ -31,25 +31,15 @@ StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer *
 {
   if (St_tpcPadConfigC::instance()
       && StTpcDb::instance()->Electronics()
-#if 0
-      && StTpcDb::instance()->GlobalPosition()
-#endif
      ) {
     mTimeBinWidth = 1. / StTpcDb::instance()->Electronics()->samplingFrequency();
     mInnerSectorzOffset = StTpcDb::instance()->Dimensions()->zInnerOffset();
     mOuterSectorzOffset = StTpcDb::instance()->Dimensions()->zOuterOffset();
-#if 0
-    mInnerSectorzOffset_West = StTpcDb::instance()->Dimensions()->zInnerOffset_West();
-    mOuterSectorzOffset_West = StTpcDb::instance()->Dimensions()->zOuterOffset_West();
-#endif
   }
   else {
     LOG_ERROR << "StTpcDb IS INCOMPLETE! Cannot contstruct Coordinate transformation.\n";
     assert(St_tpcPadConfigC::instance());
     assert(StTpcDb::instance()->Electronics());
-#if 0
-    assert(StTpcDb::instance()->GlobalPosition());
-#endif
   }
 }
 
@@ -64,19 +54,7 @@ void StTpcCoordinateTransform::operator()(const StTpcLocalSectorCoordinate &a, S
   if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row    = rowFromLocal(a);
 
   Double_t probablePad = padFromLocal(a);
-#if 0 /* Don't apply zOffSet for prompt hits */
-  Double_t zoffset = 0; // Don't apply zOffSet for prompt hits
-
-  if (a.position().z() < 3) zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-
-#else
   Double_t                  zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-#endif /* Don't apply zOffSet for prompt hits */
-#if 0
-
-  if (sector <= 12)         zoffset += (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset_West : mInnerSectorzOffset_West;
-
-#endif
   Double_t t0offset = (useT0 && sector >= 1 && sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(sector, row, TMath::Nint (probablePad)) : 0;
   t0offset *= mTimeBinWidth;
 
@@ -94,19 +72,7 @@ void StTpcCoordinateTransform::operator()(const StTpcPadCoordinate &a,  StTpcLoc
   // useT0 = kTRUE for pad and kFALSE for cluster, useTau = kTRUE for data cluster and = kFALSE for MC
   StThreeVector<double>  tmp = xyFromRow(a);
   Int_t sector = a.sector();
-#if 0 /* Don't apply zOffSet for prompt hits */
-  Double_t zoffset = 0; // Don't apply zOffSet for prompt hits
-
-  if (a.timeBucket() > 6) zoffset =  (a.row() > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-
-#else
   Double_t                zoffset =  (a.row() > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-#endif /* Don't apply zOffSet for prompt hits */
-#if 0
-
-  if (a.sector() <= 12)         zoffset += (a.row() > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset_West : mInnerSectorzOffset_West;
-
-#endif
   Double_t t0offset = useT0 ? St_tpcPadGainT0BC::instance()->T0(a.sector(), a.row(), TMath::Nint(a.pad())) : 0;
   t0offset *= mTimeBinWidth;
 
@@ -211,12 +177,6 @@ Double_t StTpcCoordinateTransform::zFromTB(Double_t tb, Int_t sector, Int_t row,
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
 
   Double_t trigT0 = StTpcDb::instance()->triggerTimeOffset() * 1e6;       // units are s
-#if 0
-
-  if ((sector <= 12 && tb <= 350) || // extra West laser off set, membrane cluster with time bucket > 350
-      (sector >  12 && tb >  350)) {trigT0 +=  StTpcDb::instance()->triggerTimeOffsetWest() * 1e6;}
-
-#endif
   Double_t elecT0 = StTpcDb::instance()->Electronics()->tZero();          // units are us
   Double_t sectT0 = St_tpcPadrowT0C::instance()->T0(sector, row); // units are us
   Double_t t0 = trigT0 + elecT0 + sectT0;
@@ -241,12 +201,6 @@ Double_t StTpcCoordinateTransform::tBFromZ(Double_t z, Int_t sector, Int_t row, 
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
 
   Double_t trigT0 = StTpcDb::instance()->triggerTimeOffset() * 1e6;       // units are s
-#if 0
-
-  if ((sector <= 12 && z < 195) || // extra West laser off set, membrane cluster with time z < 195
-      (sector >  12 && z > 195)) {trigT0 +=  StTpcDb::instance()->triggerTimeOffsetWest() * 1e6;}
-
-#endif
   Double_t elecT0 = StTpcDb::instance()->Electronics()->tZero();          // units are us
   Double_t sectT0 = St_tpcPadrowT0C::instance()->T0(sector, row); // units are us
   Double_t t0 = trigT0 + elecT0 + sectT0;

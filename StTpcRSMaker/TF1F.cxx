@@ -15,16 +15,7 @@ Double_t TF1F::GetSaveL(Double_t* xx)
   if (xx[0] < fXmin || xx[0]  > fXmax || fdX <= 0) return 0.;
 
   Int_t bin     = TMath::Nint((xx[0] - fXmin) / fdX);
-#if 1 /* step function */
   return fSave[bin];
-#else
-  Double_t xlow = fXmin + bin * fdX;
-  Double_t xup  = xlow + fdX;
-  Double_t ylow = fSave[bin];
-  Double_t yup  = fSave[bin + 1];
-  Double_t y    = ((xup * ylow - xlow * yup) + xx[0] * (yup - ylow)) / fdX;
-  return y;
-#endif
 }
 
 

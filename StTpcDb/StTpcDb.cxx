@@ -78,25 +78,6 @@ StTpcDb::~StTpcDb()
   SafeDelete(mFlip);
   gStTpcDb = 0;
 }
-#if 0
-
-
-Float_t StTpcDb::ScaleY() {return St_tpcDriftVelocityC::instance()->scaleY();}
-//-----------------------------------------------------------------------------
-float StTpcDb::DriftVelocity(Int_t sector, Double_t Y)
-{
-  static UInt_t u2007 = TUnixTime(20070101, 0, 1).GetUTime(); //
-  assert(mUc > 0);
-
-  if (mUc < u2007) sector = 24;
-
-  UInt_t kase = 1;
-
-  if (sector <= 12) kase = 0;
-
-  return 1e6 * mDriftVel[kase] * (1 + ScaleY() * Y);
-}
-#else
 
 float StTpcDb::DriftVelocity(Int_t sector)
 {
@@ -111,7 +92,6 @@ float StTpcDb::DriftVelocity(Int_t sector)
 
   return 1e6 * mDriftVel[kase];
 }
-#endif
 
 void StTpcDb::SetDriftVelocity()
 {

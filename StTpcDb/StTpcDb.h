@@ -85,15 +85,8 @@ class StTpcDb
   St_tpcPadResponseC*    PadResponse() {return St_tpcPadResponseC::instance();}
   Float_t                triggerTimeOffset()     {return St_trgTimeOffsetC::instance()->triggerTimeOffset();}
   static Bool_t          IsOldScheme()    {return mOldScheme;}
-#if 0
-  Float_t                ScaleY();
-#endif
   void    SetDriftVelocity();
-#if 0
-  Float_t DriftVelocity(Int_t sector = 24, Double_t Y = 0);
-#else
   Float_t DriftVelocity(Int_t sector = 24);
-#endif
   void SetTpcRotations();
   void SetTpcRotationMatrix(TGeoHMatrix* m, Int_t sector = 0, Int_t k = kSupS2Tpc)
   {

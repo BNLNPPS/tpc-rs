@@ -479,15 +479,11 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
       B[1] = -B[1];
     }
 
-    //LOG_INFO<<B[0]<<" --- "<<B[1]<<" --- "<<B[2]<<" --- "<<'\n';
-
     return;
   }
 
   //end added by Lijuan within the steel
 
-
-  //   LOG_INFO<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<debug--- "<<'\n';
 
   Interpolate2ExtDBfield( r, z, Br_value, Bz_value ) ;
 
@@ -512,7 +508,6 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
     B[1] = Br_value * (x[1] / r) ;
   }
 
-  // LOG_INFO<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<'\n';
   return;
 }
 
@@ -524,9 +519,6 @@ void StarMagField::B3DField( const Float_t x[], Float_t B[] )
   Bphi_value = 0;
   Br_value =  Bz_value = 0;
   B[0] = B[1] = B[2] = 0;
-#if 0
-  Float_t phi1;
-#endif
   z = x[2] ;
   r  = sqrt( x[0] * x[0] + x[1] * x[1] ) ;
 
@@ -535,15 +527,7 @@ void StarMagField::B3DField( const Float_t x[], Float_t B[] )
 
     if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
 
-#if 0
-    //added by Lijuan
-    phi1 = phi * TMath::RadToDeg();
-    //added by Lijuan
-
-    Interpolate3DBfield( r, z, phi1, Br_value, Bz_value, Bphi_value ) ;
-#else
     Interpolate3DBfield( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
-#endif
     B[0] = Br_value * (x[0] / r) - Bphi_value * (x[1] / r) ;
     B[1] = Br_value * (x[1] / r) + Bphi_value * (x[0] / r) ;
     B[2] = Bz_value ;
@@ -599,25 +583,8 @@ void StarMagField::BrBz3DField( const Float_t r, const Float_t z, const Float_t 
   Bphi_value = 0;
   Br_value =  Bz_value = 0;
 
-#if 0
-
-  Float_t phiprime ;
-
-  phiprime = phi ;
-
-  if ( phiprime < 0 ) phiprime += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
-
-  //added by Lijuan
-  phiprime = phiprime * TMath::RadToDeg();
-  //added by Lijuan
-#endif
-
   if (r > 0)  {
-#if 0
-    Interpolate3DBfield( r, z, phiprime, Br_value, Bz_value, Bphi_value ) ;
-#else
     Interpolate3DBfield( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
-#endif
   }
 
   return;
@@ -786,14 +753,6 @@ void StarMagField::ReadField( )
   }
 
   fclose(b3Dfile) ;
-#if 1
-  //LOG_INFO<<"---------------"<<'\n';
-  //   memset(R3DSteel, 0, nRSteel*sizeof(Float_t));
-  //   memset(Z3DSteel, 0, nZSteel*sizeof(Float_t));
-  //   memset(Phi3DSteel, 0, nPhiSteel*sizeof(Float_t));
-  //   memset(Bx3DSteel, 0, nPhiSteel*nZSteel*nRSteel*sizeof(Float_t));
-  //   memset(By3DSteel, 0, nPhiSteel*nZSteel*nRSteel*sizeof(Float_t));
-  //   memset(Bz3DSteel, 0, nPhiSteel*nZSteel*nRSteel*sizeof(Float_t));
   MapLocation = tpcrs::Configurator::Locate("steel_magfieldmap.dat");
   magfile = fopen(MapLocation.c_str(), "r") ;
 
@@ -823,14 +782,6 @@ void StarMagField::ReadField( )
           Br3DSteel[i][j][k] = cos(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + sin(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
 
           Bphi3DSteel[i][j][k] = 0 - sin(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + cos(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
-
-
-          //LOG_INFO<<R3DSteel[k]<<" "<<Z3DSteel[j]<<" "<<Phi3DSteel[i]<<" "<<Bx3DSteel[i][j][k]<<" "<<Bz3DSteel[i][j][k]<<" "<<By3DSteel[i][j][k]<<'\n';
-
-          //end added by Lijuan
-
-          //LOG_INFO<<Br3DSteel[i][j][k]<<"--------------------"<<Bphi3DSteel[i][j][k]<<'\n';
-
         }
       }
     }
@@ -838,9 +789,6 @@ void StarMagField::ReadField( )
     fclose(magfile);
   }
 
-#endif
-#if 1
-#endif
   return ;
 
 }
@@ -1060,94 +1008,7 @@ void StarMagField::Interpolate3DBSteelfield( const Float_t r, const Float_t z, c
 }
 
 
-
-
-
-//end added by Lijuan
-
-
-
-#if 0
-/// Interpolate the E field map - 2D interpolation
-
-void StarMagField::Interpolate2DEdistortion( const Float_t r, const Float_t z,
-    const Float_t Er[neZ][neR], Float_t &Er_value )
-
-{
-
-  const   Int_t ORDER = 1 ;                      // Linear interpolation = 1, Quadratic = 2
-  static  Int_t jlow = 0, klow = 0 ;
-  Float_t save_Er[ORDER + 1] ;
-
-  Search( neZ,   eZList,   z,   jlow   ) ;
-  Search( neR,   eRadius,  r,   klow   ) ;
-
-  if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
-  if ( klow < 0 ) klow = 0 ;
-
-  if ( jlow + ORDER  >=    neZ - 1 ) jlow =   neZ - 1 - ORDER ;
-
-  if ( klow + ORDER  >=    neR - 1 ) klow =   neR - 1 - ORDER ;
-
-  for ( Int_t j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-    save_Er[j - jlow]     = Interpolate( &eRadius[klow], &Er[j][klow], ORDER, r )   ;
-  }
-
-  Er_value = Interpolate( &eZList[jlow], save_Er, ORDER, z )   ;
-
-}
-
-/// Interpolate the E field map - 3D interpolation
-
-void StarMagField::Interpolate3DEdistortion( const Float_t r, const Float_t phi, const Float_t z,
-    const Float_t Er[neZ][nePhi][neR], const Float_t Ephi[neZ][nePhi][neR],
-    Float_t &Er_value, Float_t &Ephi_value )
-
-{
-
-  const   Int_t ORDER = 1 ;                      // Linear interpolation = 1, Quadratic = 2
-  static  Int_t ilow = 0, jlow = 0, klow = 0 ;
-  Float_t save_Er[ORDER + 1],   saved_Er[ORDER + 1] ;
-  Float_t save_Ephi[ORDER + 1], saved_Ephi[ORDER + 1] ;
-
-  Search( neZ,   eZList,   z,   ilow   ) ;
-  Search( nePhi, ePhiList, phi, jlow   ) ;
-  Search( neR,   eRadius,  r,   klow   ) ;
-
-  if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
-  if ( jlow < 0 ) jlow = 0 ;
-
-  if ( klow < 0 ) klow = 0 ;
-
-  if ( ilow + ORDER  >=    neZ - 1 ) ilow =   neZ - 1 - ORDER ;
-
-  if ( jlow + ORDER  >=  nePhi - 1 ) jlow = nePhi - 1 - ORDER ;
-
-  if ( klow + ORDER  >=    neR - 1 ) klow =   neR - 1 - ORDER ;
-
-  for ( Int_t i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    for ( Int_t j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-      save_Er[j - jlow]     = Interpolate( &eRadius[klow], &Er[i][j][klow], ORDER, r )   ;
-      save_Ephi[j - jlow]   = Interpolate( &eRadius[klow], &Ephi[i][j][klow], ORDER, r )   ;
-    }
-
-    saved_Er[i - ilow]     = Interpolate( &ePhiList[jlow], save_Er, ORDER, phi )   ;
-    saved_Ephi[i - ilow]   = Interpolate( &ePhiList[jlow], save_Ephi, ORDER, phi )   ;
-  }
-
-  Er_value     = Interpolate( &eZList[ilow], saved_Er, ORDER, z )    ;
-  Ephi_value   = Interpolate( &eZList[ilow], saved_Ephi, ORDER, z )  ;
-
-}
-#endif
-
-
-
-
 /// Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
-
 Float_t StarMagField::Interpolate( const Float_t Xarray[], const Float_t Yarray[],
                                    const Int_t ORDER, const Float_t x )
 
