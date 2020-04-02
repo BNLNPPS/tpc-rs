@@ -41,7 +41,7 @@
 
 static const char rcsid[] = "$Id: StTpcPadCoordinate.cc,v 1.3 2008/05/27 14:26:40 fisyak Exp $";
 // Non-Member function
-ostream &operator<<(ostream &os, const StTpcPadCoordinate &a)
+std::ostream &operator<<(std::ostream &os, const StTpcPadCoordinate &a)
 {
   return os << "(sector= " << a.sector()
          << ", row= "    << a.row()

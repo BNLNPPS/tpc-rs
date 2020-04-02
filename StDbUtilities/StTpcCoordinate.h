@@ -5,9 +5,10 @@
 #ifndef ST_TPC_COORDINATE_H
 #define ST_TPC_COORDINATE_H
 
+#include <ostream>
+
 #include "Rtypes.h"
 
-#include "St_base/Stiostream.h"
 #include "StarClassLibrary/StThreeVector.hh"
 
 class StTpcCoordinate
@@ -37,5 +38,5 @@ class StTpcCoordinate
   Int_t                 mFromRow;
 };
 // Non-member
-ostream &operator<<(ostream &, const StTpcCoordinate &);
+std::ostream &operator<<(std::ostream &, const StTpcCoordinate &);
 #endif

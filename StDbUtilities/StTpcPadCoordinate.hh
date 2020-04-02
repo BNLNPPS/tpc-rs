@@ -46,7 +46,9 @@
  ***********************************************************************/
 #ifndef ST_TPC_PAD_COORDINATE_HH
 #define ST_TPC_PAD_COORDINATE_HH
-#include <St_base/Stiostream.h>
+
+#include <ostream>
+
 #include "Rtypes.h"
 class StTpcPadCoordinate
 {
@@ -78,6 +80,6 @@ class StTpcPadCoordinate
 
 };
 // Non-member
-ostream &operator<<(ostream &, const StTpcPadCoordinate &);
+std::ostream &operator<<(std::ostream &, const StTpcPadCoordinate &);
 
 #endif

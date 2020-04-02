@@ -52,6 +52,7 @@
 #define ST_HELIX_HH
 
 #include <math.h>
+#include <ostream>
 #include <utility>
 #include <algorithm>
 #include "StarClassLibrary/StThreeVector.hh"
@@ -166,7 +167,7 @@ class StHelix
 //
 int operator== (const StHelix &, const StHelix &);
 int operator!= (const StHelix &, const StHelix &);
-ostream &operator<<(ostream &, const StHelix &);
+std::ostream &operator<<(std::ostream &, const StHelix &);
 
 //
 //     Inline functions

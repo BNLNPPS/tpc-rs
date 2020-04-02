@@ -37,10 +37,11 @@
 #include "Rtypes.h"
 #endif
 
-#include <St_base/Stiostream.h>
+#include <iostream>
 #include <string>
 #include <map>
 #include <vector>
+
 class StParticleDefinition;
 #if !defined(ST_NO_NAMESPACES)
 using std::vector;
@@ -76,7 +77,7 @@ class StParticleTable
   void insert(StParticleDefinition*);
   void erase(StParticleDefinition*);
 
-  void dump(ostream & = cout);
+  void dump(std::ostream & = LOG_INFO);
 
   StVecPtrParticleDefinition allParticles() const;
 

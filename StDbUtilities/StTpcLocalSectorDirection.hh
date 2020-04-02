@@ -7,7 +7,11 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_DIRECTION_HH
 #define ST_TPC_LOCAL_SECTOR_DIRECTION_HH
+
+#include <ostream>
+
 #include "StDbUtilities/StTpcCoordinate.h"
+
 class StTpcLocalSectorDirection : public StTpcCoordinate
 {
  public:
@@ -22,5 +26,5 @@ class StTpcLocalSectorDirection : public StTpcCoordinate
     StTpcCoordinate(xyz, sector, row) {}
   virtual ~StTpcLocalSectorDirection() {}
 };
-ostream &operator<<(ostream &, const StTpcLocalSectorDirection &);
+std::ostream &operator<<(std::ostream &, const StTpcLocalSectorDirection &);
 #endif

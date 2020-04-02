@@ -58,7 +58,7 @@
 #ifndef ST_GLOBAL_COORDINATE_HH
 #define ST_GLOBAL_COORDINATE_HH
 
-#include <St_base/Stiostream.h>
+#include <ostream>
 
 #include "StarClassLibrary/StThreeVectorF.hh"
 
@@ -84,5 +84,5 @@ class StGlobalCoordinate
 
 };
 // Non-Member
-ostream &operator<<(ostream &, const StGlobalCoordinate &);
+std::ostream &operator<<(std::ostream &, const StGlobalCoordinate &);
 #endif

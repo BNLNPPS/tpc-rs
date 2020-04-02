@@ -78,7 +78,7 @@ struct HitPoint_t {
 #define __STOPPED_ELECTRONS__
 #define __DEBUG__
 #if defined(__DEBUG__)
-#define PrPP(A,B) if (Debug()%10 > 2) {LOG_INFO << "StTpcRSMaker::" << (#A) << "\t" << (#B) << " = \t" << (B) << endm;}
+#define PrPP(A,B) if (Debug()%10 > 2) {LOG_INFO << "StTpcRSMaker::" << (#A) << "\t" << (#B) << " = \t" << (B) << '\n';}
 #else
 #define PrPP(A,B)
 #endif
@@ -170,12 +170,12 @@ Int_t StTpcRSMaker::Finish()
 Int_t StTpcRSMaker::InitRun(Int_t runnumber)
 {
   if (!gStTpcDb) {
-    LOG_ERROR << "Database Missing! Can't initialize TpcRS" << endm;
+    LOG_ERROR << "Database Missing! Can't initialize TpcRS\n";
     return kStFatal;
   }
 
   if (TESTBIT(m_Mode, kBICHSEL)) {
-    LOG_INFO << "StTpcRSMaker:: use H.Bichsel model for dE/dx simulation" << endm;
+    LOG_INFO << "StTpcRSMaker:: use H.Bichsel model for dE/dx simulation\n";
 
     TFile inner(tpcrs::Configurator::Locate("dNdE_Bichsel.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
@@ -186,7 +186,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
     mdNdx->SetDirectory(0);
   }
   else if (TESTBIT(m_Mode, kHEED)) {
-    LOG_INFO << "StTpcRSMaker:: use Heed model for dE/dx simulation" << endm;
+    LOG_INFO << "StTpcRSMaker:: use Heed model for dE/dx simulation\n";
 
     TFile inner(tpcrs::Configurator::Locate("dNdx_Heed.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
@@ -196,11 +196,11 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
     mdNdxL10 = (TH1D*) outer.Get("dNdxL10"); assert(mdNdxL10);
     mdNdxL10->SetDirectory(0);
   }
-  else {LOG_INFO << "StTpcRSMaker:: use GEANT321 model for dE/dx simulation" << endm;}
+  else {LOG_INFO << "StTpcRSMaker:: use GEANT321 model for dE/dx simulation\n";}
 
   // Distortions
   if (TESTBIT(m_Mode, kdEdxCorr)) {
-    LOG_INFO << "StTpcRSMaker:: use Tpc dE/dx correction from calibaration" << endm;
+    LOG_INFO << "StTpcRSMaker:: use Tpc dE/dx correction from calibaration\n";
     Int_t Mask = -1; // 22 bits
     CLRBIT(Mask, StTpcdEdxCorrection::kAdcCorrection);
     CLRBIT(Mask, StTpcdEdxCorrection::kAdcCorrectionMDF);
@@ -211,7 +211,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
   }
 
   if (TESTBIT(m_Mode, kDistortion)) {
-    LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction" << endm;
+    LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
   }
 
   if (Debug() && gStTpcDb->PadResponse()) gStTpcDb->PadResponse()->Table()->Print(0, 1);
@@ -262,7 +262,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
     if (! nAliveInner && ! nAliveOuter) {
       LOG_INFO << "Illegal date/time. Tpc sector " << sector << " Anode Voltage is not set to run condition: AliveInner: " << nAliveInner
                << "\tAliveOuter: " << nAliveOuter
-               << "\tStop the run" << endm;
+               << "\tStop the run\n";
       assert(nAliveInner || nAliveOuter);
     }
     else {
@@ -277,7 +277,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
           InnerAlphaVariation[sector - 1] = InnerAlphaVariation[sector - 2];
         }
         else {
-          LOG_INFO << "Inner Sector " << sector << " ======================" << endm;
+          LOG_INFO << "Inner Sector " << sector << " ======================\n";
           InnerAlphaVariation[sector - 1] = InducedCharge(anodeWirePitch,
                                             CathodeAnodeGap[io],
                                             anodeWireRadius,
@@ -289,7 +289,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
           OuterAlphaVariation[sector - 1] = OuterAlphaVariation[sector - 2];
         }
         else {
-          LOG_INFO << "Outer Sector " << sector << " ======================" << endm;
+          LOG_INFO << "Outer Sector " << sector << " ======================\n";
           OuterAlphaVariation[sector - 1] = InducedCharge(anodeWirePitch,
                                             CathodeAnodeGap[io],
                                             anodeWireRadius,
@@ -666,9 +666,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
   if (Debug() > 1) g2t_tpc_hit->Print(0, 10);
 
-  Int_t NoTpcTracks = 0;
-
-  if (g2t_track) NoTpcTracks = g2t_track->GetNRows();
+  Int_t NoTpcTracks = (g2t_track ? g2t_track->GetNRows() : 0);
 
   std::vector<int> mNoTpcHitsAll(NoTpcTracks + 1);
   std::vector<int> mNoTpcHitsReal(NoTpcTracks + 1);
@@ -696,7 +694,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
                << St_tpcGainCorrectionC::instance()->Struct(1)->min
                << "\t"
                << St_tpcGainCorrectionC::instance()->Struct(0)->min
-               << " (V)" << endm;
+               << " (V)\n";
     }
   }
 
@@ -723,7 +721,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
       if (iSector != sector) {
         if (! ( iSector > sector ) ) {
-          LOG_ERROR << "StTpcRSMaker::Make: g2t_tpc_hit table has not been ordered by sector no. " << sector << endm;
+          LOG_ERROR << "StTpcRSMaker::Make: g2t_tpc_hit table has not been ordered by sector no. " << sector << '\n';
           g2t_tpc_hit->Print(indx, 1);
           assert( iSector > sector );
         }
@@ -776,7 +774,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
       Int_t nSegHits = 0;
       Int_t sIndex = sortedIndex;
 
-      if (Debug() > 13) cout << "sortedIndex = " << sortedIndex << "\tno_tpc_hits = " << no_tpc_hits << endl;
+      if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tno_tpc_hits = " << no_tpc_hits << '\n';
 
       Int_t ID = 0;
       Int_t TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
@@ -806,7 +804,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
             break;
         }
 
-        if (Debug() > 13) cout << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << tpc_hitC << endl;
+        if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << tpc_hitC << '\n';
 
         TrackSegmentHits[nSegHits].indx = indx;
         TrackSegmentHits[nSegHits].s = tpc_hitC->length;
@@ -833,11 +831,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
         PrPP(Make, nSegHits);
 
         for (Int_t s = 0; s < nSegHits; s++) {
-          cout << "Seg[" << Form("%2i", s) << "]\tId " << TrackSegmentHits[s].TrackId << "\ts = " << TrackSegmentHits[s].s
+          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << TrackSegmentHits[s].TrackId << "\ts = " << TrackSegmentHits[s].s
                << "\tvolumeID :" <<  Form("%6i", TrackSegmentHits[s].tpc_hitC->volume_id) << "\t" << TrackSegmentHits[s].Pad
                << "\ts1/s2 = " << TrackSegmentHits[s].tpc_hitC->length - TrackSegmentHits[s].tpc_hitC->ds / 2
                << "\t" << TrackSegmentHits[s].tpc_hitC->length + TrackSegmentHits[s].tpc_hitC->ds / 2 << "\tds = " << TrackSegmentHits[s].tpc_hitC->ds
-               << endl;
+               << '\n';
         }
       }
 
@@ -1138,7 +1136,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 #ifdef __DEBUG__
 
           if (Debug() > 12) {
-            LOG_INFO << "s_low/s_upper/dSD\t" << s_low << "/\t" << s_upper << "\t" << dS <<  endm;
+            LOG_INFO << "s_low/s_upper/dSD\t" << s_low << "/\t" << s_upper << "\t" << dS <<  '\n';
           }
 
 #endif
@@ -1160,7 +1158,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 #ifdef __DEBUG__
 
           if (Debug() > 12) {
-            LOG_INFO << "dESum = " << dESum << " /\tdSSum " << dSSum << " /\t newPosition " << newPosition << endm;
+            LOG_INFO << "dESum = " << dESum << " /\tdSSum " << dSSum << " /\t newPosition " << newPosition << '\n';
           }
 
 #endif
@@ -1223,11 +1221,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 #ifdef __DEBUG__
 
               if (Debug() > 13) {
-                LOG_INFO << "xyzRangeL: " << xyzRangeL[0] << " " << xyzRangeL[1] << " " << xyzRangeL[2] << endm;
+                LOG_INFO << "xyzRangeL: " << xyzRangeL[0] << " " << xyzRangeL[1] << " " << xyzRangeL[2] << '\n';
                 LOG_INFO << "L2L: " << L2L[0] << " " << L2L[1] << " " << L2L[2]
                                     << L2L[3] << " " << L2L[4] << " " << L2L[3]
-                                    << L2L[6] << " " << L2L[7] << " " << L2L[8] << endm;
-                LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << endm;
+                                    << L2L[6] << " " << L2L[7] << " " << L2L[8] << '\n';
+                LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << '\n';
               }
 
 #endif
@@ -1332,7 +1330,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
           if (Debug() > 12) {
             LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
-                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t TotalSignal " << TotalSignal << endm;
+                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t TotalSignal " << TotalSignal << '\n';
           }
 
 #endif
@@ -1393,7 +1391,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
     if (nHitsInTheSector) {
       StTpcDigitalSector* digitalSector = DigitizeSector(sector, tpcRawData);
 
-      if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << endm;
+      if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
 
       if (Debug() > 2) digitalSector->Print();
 
@@ -1441,7 +1439,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
                << St_tpcGainCorrectionC::instance()->Struct(1)->min
                << "\t"
                << St_tpcGainCorrectionC::instance()->Struct(0)->min
-               << " (V)" << endm;
+               << " (V)\n";
     }
   }
 
@@ -1693,7 +1691,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
         if (Debug() > 11 && SignalSum[index].Sum > 0) {
           LOG_INFO << "digi R/P/T/I = " << row << " /\t" << pad << " /\t" << bin << " /\t" << index
                    << "\tSum/Adc/TrackId = " << SignalSum[index].Sum << " /\t"
-                   << SignalSum[index].Adc << " /\t" << SignalSum[index].TrackId << endm;
+                   << SignalSum[index].Adc << " /\t" << SignalSum[index].TrackId << '\n';
         }
 
 #endif
@@ -1760,7 +1758,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
 
             if (Debug() > 12) {
               LOG_INFO << "Altro R/P/T/I = " << row << " /\t" << pad << " /\t" << i
-                       << "\tAdc/TrackId = " << ADCs[i] << " /\t" << IDTs[i] << endm;
+                       << "\tAdc/TrackId = " << ADCs[i] << " /\t" << IDTs[i] << '\n';
             }
 
 #endif
@@ -1788,7 +1786,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
 #ifdef __DEBUG__
 
     if (Debug() > 10) {
-      LOG_INFO << "row = " << row << "\tAdcSumBeforeAltro = " << AdcSumBeforeAltro << "\tAdcSumAfterAltro = " << AdcSumAfterAltro << endm;
+      LOG_INFO << "row = " << row << "\tAdcSumBeforeAltro = " << AdcSumBeforeAltro << "\tAdcSumAfterAltro = " << AdcSumAfterAltro << '\n';
     }
 
 #endif /*     __DEBUG__ */
@@ -1836,7 +1834,7 @@ Double_t StTpcRSMaker::InducedCharge(Double_t s, Double_t h, Double_t ra, Double
   LOG_INFO << "wire spacing = " << s << " cm"
            << "\tcathode anode gap = " << h << " cm"
            << "\tanode wire radius = " << ra << " cm"
-           << "\tpotential on anode wire = " << Va << " V" << endm;
+           << "\tpotential on anode wire = " << Va << " V\n";
   const Double_t B  = 30e-3; // 1/V
   const Double_t E0 = 20e3; // V/cm
   const Double_t mu = 2.26; // cm**2/V/sec CH4+ mobility
@@ -1844,34 +1842,34 @@ Double_t StTpcRSMaker::InducedCharge(Double_t s, Double_t h, Double_t ra, Double
   Double_t alpha[2] = {-26., -70.};
   Double_t pi = TMath::Pi();
   // E.Mathieson (3.2b), V.Chernyatin said that it should be used this (Weber ) approximation 07/09/08
-  Double_t rc = s / (2 * pi) * TMath::Exp(pi * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm" << endm;
-  //  Double_t rc = 4*h/pi; LOG_INFO << "rc = " << rc << " cm" << endm;   // E.Mathieson (4.3), no valid for our case
-  Double_t C  = 1. / (2 * TMath::Log(rc / ra)); LOG_INFO << "C = " << C << endm;
-  Double_t E  = 2 * pi * C * Va / s; LOG_INFO << "E = " << E << " V/cm" << endm;
+  Double_t rc = s / (2 * pi) * TMath::Exp(pi * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
+  //  Double_t rc = 4*h/pi; LOG_INFO << "rc = " << rc << " cm\n";   // E.Mathieson (4.3), no valid for our case
+  Double_t C  = 1. / (2 * TMath::Log(rc / ra)); LOG_INFO << "C = " << C << '\n';
+  Double_t E  = 2 * pi * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
   // Gain variation: M = M0*(1 - k*cos(2*alpha))
-  Double_t k = 2 * B / 3.*TMath::Power((pi / E0 / s), 2) * TMath::Power(C * Va, 3); LOG_INFO << "k = " << k << endm;
+  Double_t k = 2 * B / 3.*TMath::Power((pi / E0 / s), 2) * TMath::Power(C * Va, 3); LOG_INFO << "k = " << k << '\n';
   // Induced charge variation
   t0 = ra * ra / (4 * mu * C * Va);
-  LOG_INFO << "t0 = " << 1e9 * t0 << " ns" << endm;                                   // E.Mathieson (2.10)
-  Double_t Tav = t0 * h / s / (2 * pi * C);  LOG_INFO << "Tav = " << 1e9 * Tav << " ns" << endm;
-  //  Double_t t = 5*55e-9;             LOG_INFO << "t = " << 1e9*t << " ns" << endm;
-  Double_t t = 180e-9;             LOG_INFO << "t = " << 1e9 * t << " ns" << endm;
-  Double_t rp = TMath::Sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << endm;
+  LOG_INFO << "t0 = " << 1e9 * t0 << " ns\n";                                   // E.Mathieson (2.10)
+  Double_t Tav = t0 * h / s / (2 * pi * C);  LOG_INFO << "Tav = " << 1e9 * Tav << " ns\n";
+  //  Double_t t = 5*55e-9;             LOG_INFO << "t = " << 1e9*t << " ns\n";
+  Double_t t = 180e-9;             LOG_INFO << "t = " << 1e9 * t << " ns\n";
+  Double_t rp = TMath::Sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << '\n';
   // qc = rp*ra*sin(alpha)/(2*h) + C/2*log(1 + t/t0) = A*sin(alpha) + B
-  Double_t Aconstant = rp * ra / (2 * h);        LOG_INFO << "Aconstant = " << Aconstant << endm;
-  Double_t Bconstant = C / 2 * TMath::Log(1 + t / t0); LOG_INFO << "Bconstant = " << Bconstant << endm;
+  Double_t Aconstant = rp * ra / (2 * h);        LOG_INFO << "Aconstant = " << Aconstant << '\n';
+  Double_t Bconstant = C / 2 * TMath::Log(1 + t / t0); LOG_INFO << "Bconstant = " << Bconstant << '\n';
   Double_t Gains[2];
 
   for (Int_t i = 0; i < 2; i++) {
     Gains[i] = Aconstant * TMath::Sin(pi / 180 * alpha[i]) + Bconstant;
-    LOG_INFO << "Gain = " << Gains[i] << " at alpha = " << alpha[i] << " degree" << endm;
+    LOG_INFO << "Gain = " << Gains[i] << " at alpha = " << alpha[i] << " degree\n";
   }
 
   Double_t GainsAv = TMath::Sqrt(Gains[0] * Gains[1]);
   Double_t r = 0;
 
   for (Int_t i = 0; i < 2; i++) {
-    r = TMath::Log(Gains[i] / GainsAv); LOG_INFO << "Relative gain " << r << " at alpha = " << alpha[i] << endm;
+    r = TMath::Log(Gains[i] / GainsAv); LOG_INFO << "Relative gain " << r << " at alpha = " << alpha[i] << '\n';
   }
 
   return r;
@@ -2291,10 +2289,10 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, Int_t sector, In
                    << SignalSum[index].Adc << " /\t" << SignalSum[index].TrackId
                    << "\tsignal = " << signal
                    << "\trow Min/Max = " << rowMin << "/" << rowMax
-                   << endm;
+                   << '\n';
 
           if (! TMath::Finite(SignalSum[index].Sum)) {
-            LOG_INFO << "Not Finite" << endm;
+            LOG_INFO << "Not Finite\n";
           }
         }
 

@@ -188,61 +188,61 @@ void Altro::ConfigZerosuppression(int Threshold, int MinSamplesaboveThreshold, i
 	*/
 void Altro::PrintParameters()
 {
-  cout << "+-------------------------------------------+" << endl;
-  cout << "| Configured Parameters of the Altro Module |" << endl;
-  cout << "+-------------------------------------------+" << endl << endl;
+  LOG_INFO << "+-------------------------------------------+\n";
+  LOG_INFO << "| Configured Parameters of the Altro Module |\n";
+  LOG_INFO << "+-------------------------------------------+\n" << '\n';
 
-  cout << "Parameters set in the Altro Modules:" << endl << endl;
-  cout << "ONBaselineCorrection1: " << fOnBSL1 << endl;
-  cout << "ONTailcancellation   : " << fOnTCF << endl;
-  cout << "ONBaselineCorrection2: " << fOnBSL2 << endl;
-  cout << "ONClipping           : " << fOnClip << endl;
-  cout << "ONZerosuppression    : " << fOnZSU << endl << endl << endl;
+  LOG_INFO << "Parameters set in the Altro Modules:\n" << '\n';
+  LOG_INFO << "ONBaselineCorrection1: " << fOnBSL1 << '\n';
+  LOG_INFO << "ONTailcancellation   : " << fOnTCF << '\n';
+  LOG_INFO << "ONBaselineCorrection2: " << fOnBSL2 << '\n';
+  LOG_INFO << "ONClipping           : " << fOnClip << '\n';
+  LOG_INFO << "ONZerosuppression    : " << fOnZSU << '\n' << '\n' << '\n';
 
   if (fConfiguredBSL1 == 1) {
-    cout << "Parameters set in the BSL1 (Baseline Correction 1) Module:" << endl << endl;
-    cout << "mode                 : " << fBSL1mode << endl;
-    cout << "ValuePeDestal        : " << fBSL1ValuePeDestal << endl;
-    cout << "polarity             : " << fBSL1ValuePeDestal << endl << endl << endl;
+    LOG_INFO << "Parameters set in the BSL1 (Baseline Correction 1) Module:\n" << '\n';
+    LOG_INFO << "mode                 : " << fBSL1mode << '\n';
+    LOG_INFO << "ValuePeDestal        : " << fBSL1ValuePeDestal << '\n';
+    LOG_INFO << "polarity             : " << fBSL1ValuePeDestal << '\n' << '\n' << '\n';
   }
   else {
-    cout << "BSL1 (Baseline Correction 1) Module not configured!" << endl << endl << endl;
+    LOG_INFO << "BSL1 (Baseline Correction 1) Module not configured!\n" << '\n' << '\n';
   }
 
   if (fConfiguredTCF == 1) {
-    cout << "Parameters set in the TCF (TailCancellation Filter) Module:" << endl << endl;
-    cout << "K1       (int|float) : " << fTCFK1Int << " | " << fTCFK1Int / (float)((1 << 16) - 1) << endl;
-    cout << "K2       (int|float) : " << fTCFK2Int << " | " << fTCFK2Int / (float)((1 << 16) - 1) << endl;
-    cout << "K3       (int|float) : " << fTCFK3Int << " | " << fTCFK3Int / (float)((1 << 16) - 1) << endl;
-    cout << "L1       (int|float) : " << fTCFL1Int << " | " << fTCFL1Int / (float)((1 << 16) - 1) << endl;
-    cout << "L2       (int|float) : " << fTCFL2Int << " | " << fTCFL2Int / (float)((1 << 16) - 1) << endl;
-    cout << "L3       (int|float) : " << fTCFL3Int << " | " << fTCFL3Int / (float)((1 << 16) - 1) << endl << endl << endl;
+    LOG_INFO << "Parameters set in the TCF (TailCancellation Filter) Module:\n" << '\n';
+    LOG_INFO << "K1       (int|float) : " << fTCFK1Int << " | " << fTCFK1Int / (float)((1 << 16) - 1) << '\n';
+    LOG_INFO << "K2       (int|float) : " << fTCFK2Int << " | " << fTCFK2Int / (float)((1 << 16) - 1) << '\n';
+    LOG_INFO << "K3       (int|float) : " << fTCFK3Int << " | " << fTCFK3Int / (float)((1 << 16) - 1) << '\n';
+    LOG_INFO << "L1       (int|float) : " << fTCFL1Int << " | " << fTCFL1Int / (float)((1 << 16) - 1) << '\n';
+    LOG_INFO << "L2       (int|float) : " << fTCFL2Int << " | " << fTCFL2Int / (float)((1 << 16) - 1) << '\n';
+    LOG_INFO << "L3       (int|float) : " << fTCFL3Int << " | " << fTCFL3Int / (float)((1 << 16) - 1) << '\n' << '\n' << '\n';
   }
   else {
-    cout << "TCF (TailCancellation Filter) Module not configured!" << endl << endl << endl;
+    LOG_INFO << "TCF (TailCancellation Filter) Module not configured!\n" << '\n' << '\n';
   }
 
   if (fConfiguredBSL2 == 1) {
-    cout << "Parameters set in the BSL2 (Baseline Correction 2) Module:" << endl << endl;
-    cout << "HighThreshold        : " << fBSL2HighThreshold << endl;
-    cout << "LowThreshold         : " << fBSL2LowThreshold << endl;
-    cout << "Offset               : " << fBSL2Offset << endl;
-    cout << "Presamples           : " << fBSL2Presamples << endl;
-    cout << "Postsamples          : " << fBSL2Postsamples << endl << endl << endl;
+    LOG_INFO << "Parameters set in the BSL2 (Baseline Correction 2) Module:\n" << '\n';
+    LOG_INFO << "HighThreshold        : " << fBSL2HighThreshold << '\n';
+    LOG_INFO << "LowThreshold         : " << fBSL2LowThreshold << '\n';
+    LOG_INFO << "Offset               : " << fBSL2Offset << '\n';
+    LOG_INFO << "Presamples           : " << fBSL2Presamples << '\n';
+    LOG_INFO << "Postsamples          : " << fBSL2Postsamples << '\n' << '\n' << '\n';
   }
   else {
-    cout << "BSL2 (Baseline Correction 2) Module not configured!" << endl << endl << endl;
+    LOG_INFO << "BSL2 (Baseline Correction 2) Module not configured!\n" << '\n' << '\n';
   }
 
   if (fConfiguredZSU == 1) {
-    cout << "Parameters set in the ZSU (Zero Suppression Unit) Module:" << endl << endl;
-    cout << "Threshold            : " << fZSUThreshold << endl;
-    cout << "MinSampaboveThreshold: " << fZSUMinSamplesaboveThreshold << endl;
-    cout << "Presamples           : " << fZSUPresamples << endl;
-    cout << "Postsamples          : " << fZSUPostsamples << endl << endl << endl;
+    LOG_INFO << "Parameters set in the ZSU (Zero Suppression Unit) Module:\n" << '\n';
+    LOG_INFO << "Threshold            : " << fZSUThreshold << '\n';
+    LOG_INFO << "MinSampaboveThreshold: " << fZSUMinSamplesaboveThreshold << '\n';
+    LOG_INFO << "Presamples           : " << fZSUPresamples << '\n';
+    LOG_INFO << "Postsamples          : " << fZSUPostsamples << '\n' << '\n' << '\n';
   }
   else {
-    cout << "ZSU (Zero Suppression Unit) Module not configured!" << endl << endl << endl;
+    LOG_INFO << "ZSU (Zero Suppression Unit) Module not configured!\n" << '\n' << '\n';
   }
 }
 
@@ -253,9 +253,9 @@ void Altro::PrintParameters()
 	*/
 void Altro::RunEmulation()
 {
-  //cout << "Altro::RunEmulation | start" << endl;
+  //LOG_INFO << "Altro::RunEmulation | start\n";
   if (fConfiguredAltro == 0) {
-    cout << "ERROR cant run Altro Emulation because not configured" << endl;
+    LOG_INFO << "ERROR cant run Altro Emulation because not configured\n";
     return;
   }
 
@@ -263,51 +263,51 @@ void Altro::RunEmulation()
     ADCkeep[i] = 0;
   }
 
-  //cout << "Altro::RunEmulation | start BSL1 on: " << fOnBSL1 << " configures: " << fConfiguredBSL1 << endl;
+  //LOG_INFO << "Altro::RunEmulation | start BSL1 on: " << fOnBSL1 << " configures: " << fConfiguredBSL1 << '\n';
   if (fOnBSL1 == 1) {
     if (fConfiguredBSL1 == 1) {
       BaselineCorrection_1(fBSL1mode, fBSL1ValuePeDestal, fBSL1PedestalMem, fBSL1polarity);
     }
     else {
-      cout << "ERROR cant run Baseline Correction 1 because not configured" << endl;
+      LOG_INFO << "ERROR cant run Baseline Correction 1 because not configured\n";
       return;
     }
   }
 
-  //cout << "Altro::RunEmulation | start TCF on: " << fOnTCF << " configures: " << fConfiguredTCF << endl;
+  //LOG_INFO << "Altro::RunEmulation | start TCF on: " << fOnTCF << " configures: " << fConfiguredTCF << '\n';
   if (fOnTCF == 1) {
     if (fConfiguredTCF == 1) {
       TailCancellationFilter_FixedPoint(fTCFK1Int, fTCFK2Int, fTCFK3Int, fTCFL1Int, fTCFL2Int, fTCFL3Int);
     }
     else {
-      cout << "ERROR cant run Tail Cancellation Filter because not configured" << endl;
+      LOG_INFO << "ERROR cant run Tail Cancellation Filter because not configured\n";
       return;
     }
   }
 
-  //cout << "Altro::RunEmulation | start BSL2 on: " << fOnBSL2 << " configures: " << fConfiguredBSL2 << endl;
+  //LOG_INFO << "Altro::RunEmulation | start BSL2 on: " << fOnBSL2 << " configures: " << fConfiguredBSL2 << '\n';
   if (fOnBSL2 == 1) {
     if (fConfiguredBSL2 == 1) {
       BaselineCorrection_2_RTL(fBSL2HighThreshold, fBSL2LowThreshold, fBSL2Offset, fBSL2Presamples, fBSL2Postsamples);
     }
     else {
-      cout << "ERROR cant run Baseline Correction 2 because not configured" << endl;
+      LOG_INFO << "ERROR cant run Baseline Correction 2 because not configured\n";
       return;
     }
   }
 
-  //cout << "Altro::RunEmulation | start CLIP on: " << fOnClip << endl;
+  //LOG_INFO << "Altro::RunEmulation | start CLIP on: " << fOnClip << '\n';
   if (fOnClip == 1) {
     Clipping();
   }
 
-  //cout << "Altro::RunEmulation | start ZSU on: " << fOnZSU << " configures: " << fConfiguredZSU << endl;
+  //LOG_INFO << "Altro::RunEmulation | start ZSU on: " << fOnZSU << " configures: " << fConfiguredZSU << '\n';
   if (fOnZSU == 1) {
     if (fConfiguredZSU == 1) {
       Zerosuppression(fZSUThreshold, fZSUMinSamplesaboveThreshold, fZSUPresamples, fZSUPostsamples);
     }
     else {
-      cout << "ERROR cant run Zero Suppression Unit because not configured" << endl;
+      LOG_INFO << "ERROR cant run Zero Suppression Unit because not configured\n";
       return;
     }
   }
@@ -486,7 +486,7 @@ void Altro::TailCancellationFilter_FixedPoint(int K1, int K2, int K3, int L1, in
 
 void Altro::BaselineCorrection_2_RTL(int HighThreshold, int LowThreshold, int Offset, int Presamples, int Postsamples)
 {
-  //cout << "Altro::BaselineCorrection_2_RTL | HighThreshold: " << HighThreshold << " LowThreshold: " << LowThreshold << " Offset: " << Offset << " Presamples: " << Presamples << " Postsamples: " << Postsamples << endl;
+  //LOG_INFO << "Altro::BaselineCorrection_2_RTL | HighThreshold: " << HighThreshold << " LowThreshold: " << LowThreshold << " Offset: " << Offset << " Presamples: " << Presamples << " Postsamples: " << Postsamples << '\n';
   //more or less direct "translation" of the hdl code.
   //Input signals
   int din;
@@ -546,15 +546,15 @@ void Altro::BaselineCorrection_2_RTL(int HighThreshold, int LowThreshold, int Of
     edges[(3 - i) + 2] = (Postsamples & (1 << i)) >> i;
   }
 
-  /*cout << "edges :";
+  /*LOG_INFO << "edges :";
   for(int i = 0; i < 6 ; i++)
-  	cout << edges[i] << ":";
-  cout << " Presamples: " << Presamples << " Postsamples: " << Postsamples << endl;*/
+  	LOG_INFO << edges[i] << ":";
+  LOG_INFO << " Presamples: " << Presamples << " Postsamples: " << Postsamples << '\n';*/
 
   //Loop
-  //cout << "Altro::BaselineCorrection_2_RTL | starting Loop" << endl;
+  //LOG_INFO << "Altro::BaselineCorrection_2_RTL | starting Loop\n";
   for (int timebin = -12; timebin < ftimebins + 10; timebin++) {
-    //cout << "Altro::BaselineCorrection_2_RTL | in Loop timebin: " << timebin << endl;
+    //LOG_INFO << "Altro::BaselineCorrection_2_RTL | in Loop timebin: " << timebin << '\n';
     din = getElement(channelShort, timebin);
 
     s8 = zxOld + (zOld[8] - zOld[0]);
@@ -680,9 +680,9 @@ void Altro::Zerosuppression(int Threshold, int MinSamplesaboveThreshold, int Pre
       endofClustersInSequence = i;
     }
 
-    //cout << i << " startofclustersequence: " << startofclustersequence << " endofClustersInSequence: " << endofClustersInSequence;
+    //LOG_INFO << i << " startofclustersequence: " << startofclustersequence << " endofClustersInSequence: " << endofClustersInSequence;
     if ( (startofclustersequence != -1) && (endofClustersInSequence != -1) ) {
-      //cout << " found! " <<  (endofClustersInSequence - startofclustersequence + 1);
+      //LOG_INFO << " found! " <<  (endofClustersInSequence - startofclustersequence + 1);
       if ( (endofClustersInSequence - startofclustersequence + 1) < MinSamplesaboveThreshold ) {
         for (int j = startofclustersequence; j <= endofClustersInSequence ; j++) {
           ADCkeep[j] = 0;
@@ -693,7 +693,7 @@ void Altro::Zerosuppression(int Threshold, int MinSamplesaboveThreshold, int Pre
       endofClustersInSequence = -1;
     }
 
-    //cout << endl;
+    //LOG_INFO << '\n';
   }
 
   /*for(int i = 0; i < ftimebins; i++){
@@ -718,15 +718,15 @@ void Altro::Zerosuppression(int Threshold, int MinSamplesaboveThreshold, int Pre
     }
   }
 
-  /*cout << " Postsamplecounter: " << Postsamplecounter;
+  /*LOG_INFO << " Postsamplecounter: " << Postsamplecounter;
   	for(int j = i+1 ; j <= i+Postsamples; j++){
   			setElement(ADCkeep,j,1);
   			i+=Postsamples;
   		}
-  	cout << endl;
+  	LOG_INFO << '\n';
   }
-  	cout << i << " ADCK: " << getElement(ADCkeep,i);
-  	cout << " Postsam: " << Postsamplecounter << " ADCK: " << getElement(ADCkeep,i);*/
+  	LOG_INFO << i << " ADCK: " << getElement(ADCkeep,i);
+  	LOG_INFO << " Postsam: " << Postsamplecounter << " ADCK: " << getElement(ADCkeep,i);*/
 
   for (int i = 0; i < ftimebins; i++) {
     if ( (ADCkeep[i] == 1) && (getElement(ADCkeep, i + 1) == 0) && ( (getElement(ADCkeep, i + 3) == 1) || (getElement(ADCkeep, i + 2) == 1) ) ) {
@@ -811,12 +811,12 @@ int	Altro::inRange(int parameter, int Low, int High, const char* Module, const c
 
   if (parameter > High) {
     sprintf(out, "Error | %s | Parameter %s is to big, has to be %d <= %s <= %d, is %d, now set to %d", Module, ParameterName, Low, ParameterName, High, parameter, High);
-    cout << out << endl;
+    LOG_INFO << out << '\n';
     retval = High;
   }
   else if (parameter < Low) {
     sprintf(out, "Error | %s | Parameter %s is to small, has to be %d <= %s <= %d, is %d, now set to %d", Module, ParameterName, Low, ParameterName, High, parameter, Low);
-    cout << out << endl;
+    LOG_INFO << out << '\n';
     retval = Low;
   }
   else {

@@ -4,6 +4,9 @@
   \class StTpcdEdxCorrection
   StTpcdEdxCorrection class contains utilities
 */
+
+#include <iostream>
+
 #include "StChain/StMaker.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 #include "StTpcDb/StTpcDb.h"
@@ -78,7 +81,7 @@ void StTpcdEdxCorrection::ReSetCorrections()
 
   //  St_tpcGas *tpcGas = (St_tpcGas *) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcGas");
   if (!tpcGas || ! tpcGas->GetNRows()) {
-    LOG_ERROR << "=== tpcGas is missing ===" << endm;
+    LOG_ERROR << "=== tpcGas is missing ===\n";
     assert(tpcGas);
   }
 
@@ -129,10 +132,10 @@ void StTpcdEdxCorrection::ReSetCorrections()
     if (! m_Corrections[k].Chair) continue;
 
     nrows = 0;
-    LOG_INFO << "StTpcdEdxCorrection: " << m_Corrections[k].Name << "/" << m_Corrections[k].Title << endm;
+    LOG_INFO << "StTpcdEdxCorrection: " << m_Corrections[k].Name << "/" << m_Corrections[k].Title << '\n';
 
     if (! TESTBIT(m_Mask, k) || m_Corrections[k].Chair->Table()->IsMarked()) {
-      LOG_INFO << " \tis missing" << endm;
+      LOG_INFO << " \tis missing\n";
       goto CLEAR;
     }
 
@@ -140,7 +143,7 @@ void StTpcdEdxCorrection::ReSetCorrections()
     chairMDF = dynamic_cast<St_MDFCorrectionC*>(m_Corrections[k].Chair);
 
     if (! chair && ! chairMDF) {
-      LOG_WARN << " \tis not tpcCorrection or MDFCorrection type" << endm;
+      LOG_WARN << " \tis not tpcCorrection or MDFCorrection type\n";
       m_Corrections[k].nrows = m_Corrections[k].Chair->Table()->GetNRows();
       continue; // not St_tpcCorrectionC
     }
@@ -174,7 +177,7 @@ void StTpcdEdxCorrection::ReSetCorrections()
       }
 
       if (! npar ) {
-        LOG_INFO << " \thas no significant corrections => switch it off" << endm;
+        LOG_INFO << " \thas no significant corrections => switch it off\n";
         goto CLEAR;
       }
 
@@ -203,14 +206,14 @@ void StTpcdEdxCorrection::ReSetCorrections()
     }
 
     if (! npar ) {
-      LOG_INFO << " \thas no significant corrections => switch it off" << endm;
+      LOG_INFO << " \thas no significant corrections => switch it off\n";
       goto CLEAR;
     }
 
     m_Corrections[k].nrows = nrows;
     continue;
 EMPTY:
-    LOG_INFO << " \tis empty" << endm;
+    LOG_INFO << " \tis empty\n";
 CLEAR:
     CLRBIT(m_Mask, k);
     m_Corrections[k].Chair = 0;
@@ -219,7 +222,7 @@ CLEAR:
   // Use only one ADC correction
   if (m_Corrections[kAdcCorrection         ].Chair &&
       m_Corrections[kAdcCorrectionMDF      ].Chair) {
-    LOG_ERROR << " \tTwo ADC corrections activated ? Keep active only AdcCorrectionMDF" << endm;
+    LOG_ERROR << " \tTwo ADC corrections activated ? Keep active only AdcCorrectionMDF\n";
     m_Corrections[kAdcCorrection         ].Chair = 0;
   }
 }
@@ -652,11 +655,11 @@ void StTpcdEdxCorrection::Print(Option_t* opt) const
 {
   if (! mdEdx) return;
 
-  cout << "StTpcdEdxCorrection:: Sector/row/pad " << mdEdx->sector << "/" << mdEdx->row << "/" << mdEdx->pad << endl;
-  cout << "Npads/Ntbins " << mdEdx->Npads << "/" << mdEdx->Ntbins
-       << "\tdrift distance / O2 / O2W " << mdEdx->ZdriftDistance << "/" << mdEdx->ZdriftDistanceO2 << "/" << mdEdx->ZdriftDistanceO2W << endl;
-  cout << "Local xyz " << mdEdx->xyz[0] << "\t" << mdEdx->xyz[1] << "\t" << mdEdx->xyz[2] << endl;
-  cout << "Local xyzD " << mdEdx->xyzD[0] << "\t" << mdEdx->xyzD[1] << "\t" << mdEdx->xyzD[2] << endl;
+  LOG_INFO << "StTpcdEdxCorrection:: Sector/row/pad " << mdEdx->sector << "/" << mdEdx->row << "/" << mdEdx->pad << '\n';
+  LOG_INFO << "Npads/Ntbins " << mdEdx->Npads << "/" << mdEdx->Ntbins
+       << "\tdrift distance / O2 / O2W " << mdEdx->ZdriftDistance << "/" << mdEdx->ZdriftDistanceO2 << "/" << mdEdx->ZdriftDistanceO2W << '\n';
+  LOG_INFO << "Local xyz " << mdEdx->xyz[0] << "\t" << mdEdx->xyz[1] << "\t" << mdEdx->xyz[2] << '\n';
+  LOG_INFO << "Local xyzD " << mdEdx->xyzD[0] << "\t" << mdEdx->xyzD[1] << "\t" << mdEdx->xyzD[2] << '\n';
   TString Line;
 
   for (Int_t k = (Int_t)kUncorrected; k <= ((Int_t)kTpcLast) + 1; k++) {
@@ -677,6 +680,6 @@ void StTpcdEdxCorrection::Print(Option_t* opt) const
       Line +=  "\tFinal \t ";
     }
 
-    cout << Line.Data() << endl;
+    LOG_INFO << Line.Data() << '\n';
   }
 }

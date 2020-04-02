@@ -4,7 +4,6 @@
 //#define PRINT3 1
 //#define NumDer
 #include <assert.h>
-#include <St_base/Stiostream.h>
 #include "StBichsel/dEdxParameterization.h"
 #include "TSystem.h"
 #include "TROOT.h"
@@ -13,7 +12,7 @@
 #include "TError.h"
 #include "TMath.h"
 
-#define  PrP(A)  cout << "\t" << (#A) << " = \t" << ( A )
+#define  PrP(A)  LOG_INFO << "\t" << (#A) << " = \t" << ( A )
 
 
 
@@ -78,7 +77,7 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
     fnBins[i] = fAXYZ[i]->GetNbins();
     fbinW[i]  = fAXYZ[i]->GetBinWidth(1);
 #ifdef PRINT0
-    PrP(i); PrP(fnBins[i]); PrP(fbinW[i]); cout << endl;
+    PrP(i); PrP(fnBins[i]); PrP(fbinW[i]); LOG_INFO << '\n';
     assert(fnBins[i] != 1);
 #endif
   }
@@ -128,19 +127,19 @@ dEdxParameterization::~dEdxParameterization()
 
 void dEdxParameterization::Print()
 {
-  PrP(fTag); cout << endl;
-  PrP(fP); if (fP) PrP(fP->GetTitle()); cout << endl;
-  PrP(fA); if (fA) PrP(fA->GetTitle()); cout << endl;
-  PrP(fI70); if (fI70) PrP(fI70->GetTitle()); cout << endl;
-  PrP(fI60); if (fI60) PrP(fI60->GetTitle()); cout << endl;
-  PrP(fD); if (fD) PrP(fD->GetTitle()); cout << endl;
-  PrP(fRms); if (fRms) PrP(fRms->GetTitle()); cout << endl;
-  PrP(fW); if (fW) PrP(fW->GetTitle()); cout << endl;
-  PrP(fPhi); if (fPhi) PrP(fPhi->GetTitle()); cout << endl;
-  PrP(fMostProbableZShift); cout << endl;
-  PrP(fAverageZShift); cout << endl;
-  PrP(fI70Shift); cout << endl;
-  PrP(fI60Shift); cout << endl;
+  PrP(fTag); LOG_INFO << '\n';
+  PrP(fP); if (fP) PrP(fP->GetTitle()); LOG_INFO << '\n';
+  PrP(fA); if (fA) PrP(fA->GetTitle()); LOG_INFO << '\n';
+  PrP(fI70); if (fI70) PrP(fI70->GetTitle()); LOG_INFO << '\n';
+  PrP(fI60); if (fI60) PrP(fI60->GetTitle()); LOG_INFO << '\n';
+  PrP(fD); if (fD) PrP(fD->GetTitle()); LOG_INFO << '\n';
+  PrP(fRms); if (fRms) PrP(fRms->GetTitle()); LOG_INFO << '\n';
+  PrP(fW); if (fW) PrP(fW->GetTitle()); LOG_INFO << '\n';
+  PrP(fPhi); if (fPhi) PrP(fPhi->GetTitle()); LOG_INFO << '\n';
+  PrP(fMostProbableZShift); LOG_INFO << '\n';
+  PrP(fAverageZShift); LOG_INFO << '\n';
+  PrP(fI70Shift); LOG_INFO << '\n';
+  PrP(fI60Shift); LOG_INFO << '\n';
 }
 
 

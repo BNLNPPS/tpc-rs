@@ -164,7 +164,7 @@
 #include "St_base/StObject.h"
 
 //#define DEBUG_TPC 0
-//#define idb if(DEBUG_TPC) cout
+//#define idb if(DEBUG_TPC) LOG_INFO
 #include "StDbUtilities/StTpcPadCoordinate.hh"
 #include "StDbUtilities/StTpcLocalCoordinate.hh"
 #include "StDbUtilities/StTpcLocalSectorCoordinate.hh"

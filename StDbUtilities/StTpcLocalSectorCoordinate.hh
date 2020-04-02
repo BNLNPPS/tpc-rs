@@ -5,7 +5,11 @@
  **********************************************************************/
 #ifndef ST_TPC_LOCAL_SECTOR_COORDINATE_HH
 #define ST_TPC_LOCAL_SECTOR_COORDINATE_HH
+
+#include <ostream>
+
 #include "StDbUtilities/StTpcCoordinate.h"
+
 class StTpcLocalSectorCoordinate : public StTpcCoordinate
 {
  public:
@@ -20,5 +24,5 @@ class StTpcLocalSectorCoordinate : public StTpcCoordinate
     StTpcCoordinate(xyz, sector, row) {}
   virtual ~StTpcLocalSectorCoordinate() {}
 };
-ostream &operator<<(ostream &, const StTpcLocalSectorCoordinate &);
+std::ostream &operator<<(std::ostream &, const StTpcLocalSectorCoordinate &);
 #endif

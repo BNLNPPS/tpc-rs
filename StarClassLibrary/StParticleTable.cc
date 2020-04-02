@@ -140,6 +140,7 @@ long _undefined_particle_id = 2000000000; /* Unique PDG ID for each undefined pa
 #include <ospace/stl/src/treeaux.cpp> // CC4.2 with ObjectSpace only
 #endif
 
+#include <iostream>
 #include "Rtypes.h"
 
 #include "StarClassLibrary/StAntiDeuteron.hh"
@@ -574,12 +575,12 @@ void StParticleTable::erase(StParticleDefinition* p)
   if (j != mNameMap.end()) mNameMap.erase(j);
 }
 
-void StParticleTable::dump(ostream &os)
+void StParticleTable::dump(std::ostream &os)
 {
   mNameMapType::iterator i;
 
   for (i = mNameMap.begin(); i != mNameMap.end(); ++i)
-    cout << *((*i).second) << endl;
+    LOG_INFO << *((*i).second) << '\n';
 }
 
 

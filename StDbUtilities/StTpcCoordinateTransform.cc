@@ -252,6 +252,7 @@
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
 #include "StarClassLibrary/StMatrix.hh"
 #include <unistd.h>
+#include <iostream>
 #include "St_base/StMessMgr.h"
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"
 #include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"
@@ -284,7 +285,7 @@ StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer *
 #endif
   }
   else {
-    LOG_ERROR << "StTpcDb IS INCOMPLETE! Cannot contstruct Coordinate transformation." << endm;
+    LOG_ERROR << "StTpcDb IS INCOMPLETE! Cannot contstruct Coordinate transformation.\n";
     assert(St_tpcPadConfigC::instance());
     assert(StTpcDb::instance()->Electronics());
 #if 0
@@ -396,8 +397,8 @@ Double_t StTpcCoordinateTransform::padFromX(Double_t x, Int_t sector, Int_t row)
   }
 
   if (_debug) {
-    cout << "StTpcCoordinateTransform::padFromX(" << x << "," << sector << "," << row << "); npads = " << npads << ", pitch = " << pitch
-         << "\tprobablePad " << probablePad << endl;
+    LOG_INFO << "StTpcCoordinateTransform::padFromX(" << x << "," << sector << "," << row << "); npads = " << npads << ", pitch = " << pitch
+         << "\tprobablePad " << probablePad << '\n';
   }
 
   return (probablePad);
@@ -415,8 +416,8 @@ Double_t StTpcCoordinateTransform::xFromPad(Int_t sector, Int_t row, Double_t pa
   Double_t xPad = -pitch * (pad - (npads + 1.) / 2.);
 
   if (_debug) {
-    cout << "StTpcCoordinateTransform::xFromPad(" << sector << "," << row << "," << pad << "); npads = " << npads << ", pitch = " << pitch
-         << "\txPad = " << xPad << endl;
+    LOG_INFO << "StTpcCoordinateTransform::xFromPad(" << sector << "," << row << "," << pad << "); npads = " << npads << ", pitch = " << pitch
+         << "\txPad = " << xPad << '\n';
   }
 
   Int_t NiRows = St_tpcPadConfigC::instance()->numberOfInnerRows(sector);
