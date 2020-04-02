@@ -10,6 +10,8 @@
  */
 
 #include <assert.h>
+#include <vector>
+
 #include "StTpcRSMaker/StTpcRSMaker.h"
 #include "St_base/StarCallf77.h"
 #include "St_base/Stiostream.h"
@@ -668,8 +670,8 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
   if (g2t_track) NoTpcTracks = g2t_track->GetNRows();
 
-  mNoTpcHitsAll = TArrayI(NoTpcTracks + 1);
-  mNoTpcHitsReal = TArrayI(NoTpcTracks + 1);
+  std::vector<int> mNoTpcHitsAll(NoTpcTracks + 1);
+  std::vector<int> mNoTpcHitsReal(NoTpcTracks + 1);
   g2t_track_st* geantTrack = 0;
 
   if (g2t_track) geantTrack = g2t_track->GetTable();
@@ -812,6 +814,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
         if (tpc_hitC->length == 0 && nSegHits > 0) {
           TrackSegmentHits[nSegHits].s = TrackSegmentHits[nSegHits - 1].s + TrackSegmentHits[nSegHits].tpc_hitC->ds;
         }
+
+        // Increase hit counters
+        mNoTpcHitsAll[tpc_hitC->track_p - 1]++;
+        // Account hits which can be splitted
+        if (tpc_hitC->volume_id < 10000) mNoTpcHitsReal[tpc_hitC->track_p - 1]++;
 
         TrackSegment2Propagate(tpc_hitC, &geantVertex[id3 - 1], TrackSegmentHits[nSegHits]);
 
@@ -1089,7 +1096,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
         memset (padsdE, 0, sizeof(padsdE));
         memset (tbksdE,  0, sizeof(tbksdE));
         Float_t dEr = 0;
-        TArrayF rs(10);
+        std::vector<float> rs(10);
 
         do {// Clusters
           Float_t dS = 0;
@@ -1167,14 +1174,13 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
           Float_t EC;
           Int_t   Nr = 0;
 
-          if (xRange > 0) {Nr = rs.GetSize();}
+          if (xRange > 0) {Nr = rs.size();}
 
           while ((EC = mHeed->GetRandom()) < dEr) {
             dEr -= EC;
 
             if (Nr) {
-              if (Nr <= Nt) {Nr = 2 * Nt + 1; rs.Set(Nr); }
-
+              if (Nr <= Nt) { Nr = 2 * Nt + 1; rs.resize(Nr); }
               rs[Nt] = 1 - dEr / dET;
             }
 
@@ -2046,14 +2052,6 @@ Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex
     iBreak++;
   }
 
-  Int_t Id = tpc_hitC->track_p;
-  mNoTpcHitsAll[Id - 1]++;
-
-  if (tpc_hitC->volume_id < 10000) {
-    // Account hits which can be splitted
-    mNoTpcHitsReal[Id - 1]++;
-  }
-
   if (tpc_hitC->de > 0) {
     mNSplittedHits = 0;
   }
@@ -2076,7 +2074,7 @@ Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex
   Int_t row = coorS.fromRow();
   transform(coorG, coorLT, sector, row); PrPP(Make, coorLT);
   Int_t io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
-  TrackSegmentHits.TrackId    = Id;
+  TrackSegmentHits.TrackId  = tpc_hitC->track_p;
   TrackSegmentHits.tpc_hitC = tpc_hitC;
 
   if (ClusterProfile) {
