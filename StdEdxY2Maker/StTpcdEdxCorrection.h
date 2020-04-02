@@ -4,7 +4,6 @@
 //
 #include "TObject.h"
 #include "TF1.h"
-#include "St_base/Stiostream.h"
 #include "StDetectorDbMaker/St_tpcCorrectionC.h"
 #include "StDetectorDbMaker/St_tpcGasC.h"
 //#include "StDetectorDbMaker/St_trigDetSumsC.h"

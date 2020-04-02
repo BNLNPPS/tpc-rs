@@ -198,7 +198,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <St_base/Stiostream.h>
 
 #include "TArrayF.h"
 #include "TArrayD.h"

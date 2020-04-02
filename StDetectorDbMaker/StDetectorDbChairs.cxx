@@ -634,7 +634,7 @@ void  St_tpcAnodeHVC::sockets(Int_t sector, Int_t padrow, Int_t &e1, Int_t &e2, 
 
 Float_t St_tpcAnodeHVC::voltage(Int_t i) const {
   if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
-     LOG_ERROR << "St_tpcAnodeHVC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists" << endm;
+     LOG_ERROR << "St_tpcAnodeHVC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
 }
@@ -705,7 +705,7 @@ MakeChairInstance(tpcAnodeHVavg,Calibrations/tpc/tpcAnodeHVavg);
 
 Float_t St_tpcAnodeHVavgC::voltage(Int_t i) const {
   if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
-     LOG_ERROR << "St_tpcAnodeHVavgC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists" << endm;
+     LOG_ERROR << "St_tpcAnodeHVavgC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
 }
@@ -997,7 +997,7 @@ UInt_t       St_tpcRDOMasksC::getSectorMask(UInt_t sector) {
   //UInt_t MASK = 0xFFFF; // change to  ON by default ** THIS WAS A HACK
   if(sector < 1 || sector > 24 || getNumRows() == 0){
     LOG_WARN << "St_tpcRDOMasksC:: getSectorMask : return default mask for "
-     << "sector= " << sector << " getNumRows()=" << getNumRows() << endm;
+     << "sector= " << sector << " getNumRows()=" << getNumRows() << '\n';
     return MASK;
   }
   MASK = mask(((sector + 1) / 2) - 1); // does the mapping from sector 1-24 to packed sectors
@@ -1161,10 +1161,10 @@ void St_SurveyC::Normalize(TGeoHMatrix &R) {
   R.SetRotation(Qn.Array()); cout << "New\t"; R.Print();
 #endif
   if (_debug) {
-    LOG_INFO << "Matrix:" << endm; R.Print("");
-    LOG_INFO << "Determinant-1 = " << R.Determinant()-1 << endm;
+    LOG_INFO << "Matrix:\n"; R.Print("");
+    LOG_INFO << "Determinant-1 = " << R.Determinant()-1 << '\n';
     const Double_t *rr = R.GetRotationMatrix();
-    LOG_INFO << "Ortogonality " << IsOrtogonal(rr) << endm;
+    LOG_INFO << "Ortogonality " << IsOrtogonal(rr) << '\n';
   }
   return;
 }
@@ -1183,7 +1183,7 @@ const TGeoHMatrix &St_SurveyC::GetMatrix4Id(Int_t id) {
       return GetMatrix(i);
     }
   }
-  LOG_INFO  << "St_SurveyC::GetMatrix4Id(" << id << ") entry has not been found" << endm;
+  LOG_INFO  << "St_SurveyC::GetMatrix4Id(" << id << ") entry has not been found\n";
   const TTable *table = Table();
   Int_t Nrows = table->GetNRows();
   table->Print(0,Nrows);

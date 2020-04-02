@@ -548,7 +548,7 @@ void    StMagUtilities::SetUnDoDistortionT(TFile* f)
 StMagUtilities::StMagUtilities (StTpcDb* /* dbin */, Int_t mode )
 {
   if (fgInstance) {
-    cout << "ReInstate StMagUtilities. Be sure that this is want you want !" << endl;
+    LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";
     SafeDelete(fgInstance);
   }
 
@@ -573,7 +573,7 @@ StMagUtilities::StMagUtilities (StTpcDb* /* dbin */, Int_t mode )
 StMagUtilities::StMagUtilities ( const StarMagField::EBField map, const Float_t factor, Int_t mode )
 {
   if (fgInstance) {
-    cout << "ReInstate StMagUtilities. Be sure that this is want you want !" << endl;
+    LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";
     SafeDelete(fgInstance);
   }
 
@@ -676,9 +676,9 @@ void StMagUtilities::GetE()
   StarMagE             =  TMath::Abs((CathodeV - GG) / TPC_Z0) ;     // STAR Electric Field (V/cm) Magnitude
 
   if (TMath::Abs(StarMagE) < 1e-6) {
-    cout << "StMagUtilities ERROR **** Calculations fail with extremely small or zero primary E field:" << endl;
-    cout << "StMagUtilities     StarMagE = (CathodeV - GG) / TPC_Z0 = (" << CathodeV
-         << " - " << GG << ") / " << TPC_Z0 << " = " << StarMagE << " V/cm" << endl;
+    LOG_INFO << "StMagUtilities ERROR **** Calculations fail with extremely small or zero primary E field:\n";
+    LOG_INFO << "StMagUtilities     StarMagE = (CathodeV - GG) / TPC_Z0 = (" << CathodeV
+         << " - " << GG << ") / " << TPC_Z0 << " = " << StarMagE << " V/cm\n";
     exit(1);
   }
 }
@@ -724,7 +724,7 @@ void StMagUtilities::GetTPCVoltages (Int_t mode)
 
     double cmnInner = innerVs.GetBinCenter(innerVs.GetMaximumBin());
     double cmnOuter = outerVs.GetBinCenter(outerVs.GetMaximumBin());
-    cout << "StMagUtilities assigning common anode voltages as " << cmnInner << " , " << cmnOuter << endl;
+    LOG_INFO << "StMagUtilities assigning common anode voltages as " << cmnInner << " , " << cmnOuter << '\n';
 
     for (Int_t i = 1 ; i < 25; i++ ) {
       GLWeights[i] = ( ( TMath::Abs(anodeVolts->voltagePadrow(i, INNER[i - 1]  ) - cmnInner) < stepsInner / 2. ) &&
@@ -1025,13 +1025,13 @@ Float_t StMagUtilities::eZList[EMap_nZ] = { -208.5, -208.0, -207.0, -206.0, -205
 /// Initialization method.  This will sort and apply the options received by the tpt Maker
 void StMagUtilities::CommonStart ( Int_t mode )
 {
-  cout << "StMagUtilities::CommonSta  Magnetic Field scale factor is " << gFactor << endl ;
+  LOG_INFO << "StMagUtilities::CommonSta  Magnetic Field scale factor is " << gFactor << '\n' ;
 
   if ( StTpcDb::instance() == 0 ) {
-    cout << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***" << endl ;
-    cout << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***" << endl ;
-    cout << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***" << endl ;
-    cout << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***" << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
     StarDriftV  =     5.54 ;      // Drift Velocity (cm/microSec) Magnitude
     TPC_Z0      =    208.7 ;      // Z location of STAR TPC Gated Grid (cm)
 #ifndef __NO_TWIST__
@@ -1068,9 +1068,9 @@ void StMagUtilities::CommonStart ( Int_t mode )
 
     mCorrectionsMode = 0;
 
-    cout << "StMagUtilities::CommonSta  WARNING -- Using hard-wired TPC parameters. " << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using hard-wired TPC parameters. \n" ;
   }
-  else  cout << "StMagUtilities::CommonSta  Using TPC parameters from DataBase. " << endl ;
+  else  LOG_INFO << "StMagUtilities::CommonSta  Using TPC parameters from DataBase. \n" ;
 
   if ( fTpcVolts == 0 ) {
     CathodeV    = -27950.0 ;      // Cathode Voltage (volts)
@@ -1081,40 +1081,40 @@ void StMagUtilities::CommonStart ( Int_t mode )
 
     for (Int_t i = 0 ; i < 24; i++ ) { Inner_GLW_Voltage[i] = 999; Outer_GLW_Voltage[i] = 999; }
 
-    cout << "StMagUtilities::CommonSta  WARNING -- Using manually selected TpcVoltages setting. " << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected TpcVoltages setting. \n" ;
   }
-  else  cout << "StMagUtilities::CommonSta  Using TPC voltages from the DB."   << endl ;
+  else  LOG_INFO << "StMagUtilities::CommonSta  Using TPC voltages from the DB."   << '\n' ;
 
   if ( fOmegaTau == 0 ) {
     TensorV1    =  1.35 ;  // Drift velocity tensor term: in the ExB direction
     TensorV2    =  1.10 ;  // Drift velocity tensor term: direction perpendicular to Z and ExB
-    cout << "StMagUtilities::CommonSta  WARNING -- Using manually selected OmegaTau parameters. " << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected OmegaTau parameters. \n" ;
   }
-  else  cout << "StMagUtilities::CommonSta  Using OmegaTau parameters from the DB."   << endl ;
+  else  LOG_INFO << "StMagUtilities::CommonSta  Using OmegaTau parameters from the DB."   << '\n' ;
 
-  if (fSpaceCharge) cout << "StMagUtilities::CommonSta  Using SpaceCharge values from the DB." << endl ;
-  else              cout << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceCharge settings. " << endl ;
+  if (fSpaceCharge) LOG_INFO << "StMagUtilities::CommonSta  Using SpaceCharge values from the DB.\n" ;
+  else              LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceCharge settings. \n" ;
 
-  if (fSpaceChargeR2) cout << "StMagUtilities::CommonSta  Using SpaceChargeR2 values from the DB." << endl ;
-  else                cout << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceChargeR2 settings. " << endl ;
+  if (fSpaceChargeR2) LOG_INFO << "StMagUtilities::CommonSta  Using SpaceChargeR2 values from the DB.\n" ;
+  else                LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceChargeR2 settings. \n" ;
 
   if ( fGridLeak == 0 ) {
     ManualGridLeakStrength(0.0, 15.0, 0.0);
     ManualGridLeakRadius(53.0, GAPRADIUS, 195.0);
     ManualGridLeakWidth(0.0, 3.0, 0.0);
-    cout << "StMagUtilities::CommonSta  WARNING -- Using manually selected GridLeak parameters. " << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected GridLeak parameters. \n" ;
   }
-  else  cout << "StMagUtilities::CommonSta  Using GridLeak parameters from the DB."   << endl ;
+  else  LOG_INFO << "StMagUtilities::CommonSta  Using GridLeak parameters from the DB."   << '\n' ;
 
   if ( fHVPlanes == 0 ) {
     ManualGGVoltError(0.0, 0.0);
-    cout << "StMagUtilities::CommonSta  WARNING -- Using manually selected HV planes parameters. " << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected HV planes parameters. \n" ;
   }
-  else  cout << "StMagUtilities::CommonSta  Using HV planes parameters from the DB."   << endl ;
+  else  LOG_INFO << "StMagUtilities::CommonSta  Using HV planes parameters from the DB."   << '\n' ;
 
   if ( fAbortGapCharge == 0 ) {
     IonDriftVel = 181.67; // http://nuclear.ucdavis.edu/~bkimelman/protected/TPC_Meeting_Apr_10.pdf
-    cout << "StMagUtilities::CommonSta  WARNING -- Using default Ion Drift Velocity. " << endl ;
+    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using default Ion Drift Velocity. \n" ;
   }
 
   // Parse the mode switch which was received from the Tpt maker
@@ -1216,83 +1216,83 @@ void StMagUtilities::CommonStart ( Int_t mode )
   Const_1    =  TensorV1 * OmegaTau / ( 1. + TensorV1 * TensorV1 * OmegaTau * OmegaTau ) ;
   Const_2    =  TensorV2 * TensorV2 * OmegaTau * OmegaTau / ( 1. + TensorV2 * TensorV2 * OmegaTau * OmegaTau ) ;
 
-  cout << "StMagUtilities::BField        =  " << B[2] << " kGauss at (0,0,0)" <<  endl ;
-  cout << "StMagUtilities::DriftVel      =  " << StarDriftV << " cm/microsec" <<  endl ;
-  cout << "StMagUtilities::TPC_Z0        =  " << TPC_Z0 << " cm" << endl ;
-  cout << "StMagUtilities::TensorV1+V2   =  " << TensorV1 << " " << TensorV2 << endl ;
-  cout << "StMagUtilities::OmegaTau1+2   =  " << OmegaTau* TensorV1 << " " << OmegaTau* TensorV2 << endl ;
-  cout << "StMagUtilities::XTWIST        =  " << XTWIST << " mrad" << endl ;
-  cout << "StMagUtilities::YTWIST        =  " << YTWIST << " mrad" << endl ;
-  cout << "StMagUtilities::SpaceCharge   =  " << SpaceCharge << " Coulombs/epsilon-nought" << endl ;
-  cout << "StMagUtilities::SpaceChargeR2 =  " << SpaceChargeR2 << " Coulombs/epsilon-nought" << "  EWRatio = "
-       << SpaceChargeEWRatio << endl ;
+  LOG_INFO << "StMagUtilities::BField        =  " << B[2] << " kGauss at (0,0,0)" <<  '\n' ;
+  LOG_INFO << "StMagUtilities::DriftVel      =  " << StarDriftV << " cm/microsec" <<  '\n' ;
+  LOG_INFO << "StMagUtilities::TPC_Z0        =  " << TPC_Z0 << " cm\n" ;
+  LOG_INFO << "StMagUtilities::TensorV1+V2   =  " << TensorV1 << " " << TensorV2 << '\n' ;
+  LOG_INFO << "StMagUtilities::OmegaTau1+2   =  " << OmegaTau* TensorV1 << " " << OmegaTau* TensorV2 << '\n' ;
+  LOG_INFO << "StMagUtilities::XTWIST        =  " << XTWIST << " mrad\n" ;
+  LOG_INFO << "StMagUtilities::YTWIST        =  " << YTWIST << " mrad\n" ;
+  LOG_INFO << "StMagUtilities::SpaceCharge   =  " << SpaceCharge << " Coulombs/epsilon-nought\n" ;
+  LOG_INFO << "StMagUtilities::SpaceChargeR2 =  " << SpaceChargeR2 << " Coulombs/epsilon-nought" << "  EWRatio = "
+       << SpaceChargeEWRatio << '\n' ;
 
   if (mDistortionMode & kDistoSmearing) {
-    cout << "StMagUtilities::SmearCoefSC   =  " << SmearCoefSC << endl;
-    cout << "StMagUtilities::SmearCoefGL   =  " << SmearCoefGL << endl;
+    LOG_INFO << "StMagUtilities::SmearCoefSC   =  " << SmearCoefSC << '\n';
+    LOG_INFO << "StMagUtilities::SmearCoefGL   =  " << SmearCoefGL << '\n';
   }
 
   if (mDistortionMode & kAbortGap) {
-    cout << "StMagUtilities::AbortGapCoef  =  " << AbortGapChargeCoef << endl;
+    LOG_INFO << "StMagUtilities::AbortGapCoef  =  " << AbortGapChargeCoef << '\n';
   }
 
-  cout << "StMagUtilities::IFCShift      =  " << IFCShift << " cm" << endl ;
-  cout << "StMagUtilities::CathodeV      =  " << CathodeV << " volts" << endl ;
-  cout << "StMagUtilities::GG            =  " << GG << " volts" << endl ;
+  LOG_INFO << "StMagUtilities::IFCShift      =  " << IFCShift << " cm\n" ;
+  LOG_INFO << "StMagUtilities::CathodeV      =  " << CathodeV << " volts\n" ;
+  LOG_INFO << "StMagUtilities::GG            =  " << GG << " volts\n" ;
 
   if (mDistortionMode & kPadrow40) {
-    cout << "StMagUtilities::Inner_GLW_V   =  " ;
+    LOG_INFO << "StMagUtilities::Inner_GLW_V   =  " ;
 
-    for ( Int_t i = 0 ; i < 24 ; i++ ) cout << Inner_GLW_Voltage[i] << " " ; cout << "volts" << endl ;
+    for ( Int_t i = 0 ; i < 24 ; i++ ) LOG_INFO << Inner_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
 
-    cout << "StMagUtilities::Outer_GLW_V   =  " ;
+    LOG_INFO << "StMagUtilities::Outer_GLW_V   =  " ;
 
-    for ( Int_t i = 0 ; i < 24 ; i++ ) cout << Outer_GLW_Voltage[i] << " " ; cout << "volts" << endl ;
+    for ( Int_t i = 0 ; i < 24 ; i++ ) LOG_INFO << Outer_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
   }
 
-  cout << "StMagUtilities::EastClock     =  " << EASTCLOCKERROR << " mrad" << endl;
-  cout << "StMagUtilities::WestClock     =  " << WESTCLOCKERROR << " mrad" << endl;
-  cout << "StMagUtilities::Side          =  " ;
+  LOG_INFO << "StMagUtilities::EastClock     =  " << EASTCLOCKERROR << " mrad\n";
+  LOG_INFO << "StMagUtilities::WestClock     =  " << WESTCLOCKERROR << " mrad\n";
+  LOG_INFO << "StMagUtilities::Side          =  " ;
 
-  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) cout << Side[i] << " " ; cout << "Location of Short E=0 / W=1 " << endl;
+  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Side[i] << " " ; LOG_INFO << "Location of Short E=0 / W=1 \n";
 
-  cout << "StMagUtilities::Cage          =  " ;
+  LOG_INFO << "StMagUtilities::Cage          =  " ;
 
-  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) cout << Cage[i] << " " ; cout << "Location of Short IFC = 0 / OFC = 1" << endl;
+  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Cage[i] << " " ; LOG_INFO << "Location of Short IFC = 0 / OFC = 1\n";
 
-  cout << "StMagUtilities::Ring          =  " ;
+  LOG_INFO << "StMagUtilities::Ring          =  " ;
 
-  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) cout << Ring[i] << " " ; cout << "Rings - Location of Short counting from the CM" << endl;
+  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Ring[i] << " " ; LOG_INFO << "Rings - Location of Short counting from the CM\n";
 
-  cout << "StMagUtilities::MissingOhms   =  " ;
+  LOG_INFO << "StMagUtilities::MissingOhms   =  " ;
 
-  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) cout << MissingResistance[i] << " " ; cout << "MOhms Missing Resistance" << endl;
+  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << MissingResistance[i] << " " ; LOG_INFO << "MOhms Missing Resistance\n";
 
-  cout << "StMagUtilities::CompResistor  =  " ;
+  LOG_INFO << "StMagUtilities::CompResistor  =  " ;
 
-  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) cout << Resistor[i] << " " ; cout << "MOhm Compensating Resistor Value" << endl;
+  for ( Int_t i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Resistor[i] << " " ; LOG_INFO << "MOhm Compensating Resistor Value\n";
 
-  cout << "StMagUtilities::InnerGridLeak =  " << InnerGridLeakStrength << " " << InnerGridLeakRadius << " " << InnerGridLeakWidth << endl;
-  cout << "StMagUtilities::MiddlGridLeak =  " << MiddlGridLeakStrength << " " << MiddlGridLeakRadius << " " << MiddlGridLeakWidth << endl;
-  cout << "StMagUtilities::OuterGridLeak =  " << OuterGridLeakStrength << " " << OuterGridLeakRadius << " " << OuterGridLeakWidth << endl;
-  cout << "StMagUtilities::deltaVGG      =  " << deltaVGGEast << " V (east) : " << deltaVGGWest << " V (west)" << endl;
-  cout << "StMagUtilities::GLWeights     =  " ;
+  LOG_INFO << "StMagUtilities::InnerGridLeak =  " << InnerGridLeakStrength << " " << InnerGridLeakRadius << " " << InnerGridLeakWidth << '\n';
+  LOG_INFO << "StMagUtilities::MiddlGridLeak =  " << MiddlGridLeakStrength << " " << MiddlGridLeakRadius << " " << MiddlGridLeakWidth << '\n';
+  LOG_INFO << "StMagUtilities::OuterGridLeak =  " << OuterGridLeakStrength << " " << OuterGridLeakRadius << " " << OuterGridLeakWidth << '\n';
+  LOG_INFO << "StMagUtilities::deltaVGG      =  " << deltaVGGEast << " V (east) : " << deltaVGGWest << " V (west)\n";
+  LOG_INFO << "StMagUtilities::GLWeights     =  " ;
 
   if (mDistortionMode & k3DGridLeak) {
-    for ( Int_t i = 1 ; i < 25 ; i++ ) cout << GLWeights[i] << " " ;
+    for ( Int_t i = 1 ; i < 25 ; i++ ) LOG_INFO << GLWeights[i] << " " ;
 
-    cout << endl;
+    LOG_INFO << '\n';
   }
   else if (mDistortionMode & kFullGridLeak) {
-    cout << endl;
+    LOG_INFO << '\n';
 
     for ( Int_t i = 0 ; i < 24 ; i++ ) {
-      for ( Int_t j = 0 ; j < 96 ; j += 24 ) cout << std::fixed << "    " << std::setprecision(2) << GLWeights[i + j];
+      for ( Int_t j = 0 ; j < 96 ; j += 24 ) LOG_INFO << std::fixed << "    " << std::setprecision(2) << GLWeights[i + j];
 
-      cout << endl;
+      LOG_INFO << '\n';
     }
   }
-  else cout << "N/A" << endl;
+  else LOG_INFO << "N/A\n";
 
   doingDistortion = kFALSE;
   DoOnce = kTRUE;
@@ -1402,14 +1402,14 @@ void StMagUtilities::UndoDistortion( const Float_t x[], Float_t Xprime[], Int_t 
   }
 
   if ((mDistortionMode & kBMap) && (mDistortionMode & kFast2DBMap)) {
-    cout << "StMagUtilities ERROR **** Do not use kBMap and kFast2DBMap at the same time" << endl ;
-    cout << "StMagUtilities ERROR **** These routines have duplicate functionality so don't do both." << endl ;
+    LOG_INFO << "StMagUtilities ERROR **** Do not use kBMap and kFast2DBMap at the same time\n" ;
+    LOG_INFO << "StMagUtilities ERROR **** These routines have duplicate functionality so don't do both.\n" ;
     exit(1) ;
   }
 
   if ((mDistortionMode & kPadrow13) && (mDistortionMode & kPadrow40)) {
-    cout << "StMagUtilities ERROR **** Do not use kPadrow13 and kPadrow40 at the same time" << endl ;
-    cout << "StMagUtilities ERROR **** These routines have duplicate functionality so don't do both." << endl ;
+    LOG_INFO << "StMagUtilities ERROR **** Do not use kPadrow13 and kPadrow40 at the same time\n" ;
+    LOG_INFO << "StMagUtilities ERROR **** These routines have duplicate functionality so don't do both.\n" ;
     exit(1) ;
   }
 
@@ -1659,7 +1659,7 @@ void StMagUtilities::FastUndoBDistortion( const Float_t x[], Float_t Xprime[], I
   Float_t z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::FastUndoD  Please wait for the tables to fill ... ~90 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::FastUndoD  Please wait for the tables to fill ... ~90 seconds\n" ;
 
     for ( k = 0 ; k < EMap_nPhi ; k++ ) {
       for ( i = 0 ; i < EMap_nR ; i++ ) {
@@ -1750,7 +1750,7 @@ void StMagUtilities::FastUndo2DBDistortion( const Float_t x[], Float_t Xprime[],
   Float_t z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::FastUndo2  Please wait for the tables to fill ...  ~5 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::FastUndo2  Please wait for the tables to fill ...  ~5 seconds\n" ;
 
     for ( i = 0 ; i < EMap_nR ; i++ ) {
       xx[0] = eRList[i] ;
@@ -1894,7 +1894,7 @@ void StMagUtilities::UndoPad13Distortion( const Float_t x[], Float_t Xprime[], I
 
   if ( DoOnce ) {
     // Put these coefficients in a table to save time
-    cout << "StMagUtilities::PadRow13   Please wait for the tables to fill ...  ~5 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::PadRow13   Please wait for the tables to fill ...  ~5 seconds\n" ;
     C[0] = WIREGAP * GG * SCALE / ( 2 * BOX ) ;
 
     for ( Int_t i = 1 ; i < TERMS ; i++ )
@@ -2058,7 +2058,7 @@ void StMagUtilities::UndoPad40Distortion( const Float_t x[], Float_t Xprime[], I
   if (fTpcVolts) {DoOnceLocal = UpdateTPCHighVoltages() ;}
 
   if ( DoOnceLocal ) {
-    cout << "StMagUtilities::PadRow40   Filling tables ..." << endl ;
+    LOG_INFO << "StMagUtilities::PadRow40   Filling tables ...\n" ;
     Int_t OFFSET = (COLUMNS - SAVEDCOLUMNS) / 2 ;                                        // Explicitly plan for zero'd out data
 
     for ( Int_t MapID = 0 ; MapID < nMAPS ; MapID++ ) {                                  // Read maps and store locally
@@ -2660,7 +2660,7 @@ void StMagUtilities::UndoClockDistortion( const Float_t x[], Float_t Xprime[], I
 void StMagUtilities::UndoMembraneDistortion( const Float_t x[], Float_t Xprime[], Int_t Sector )
 {
 
-  cout << "StMagUtilities::UndoMembrane  This routine was made obosolete on 10/1/2009.  Do not use it." << endl ;
+  LOG_INFO << "StMagUtilities::UndoMembrane  This routine was made obosolete on 10/1/2009.  Do not use it.\n" ;
   exit(0) ;
 
   // Membrane Distortion correction is Obsolete.  Disabled by JT 2009
@@ -2705,7 +2705,7 @@ void StMagUtilities::UndoMembraneDistortion( const Float_t x[], Float_t Xprime[]
 void StMagUtilities::UndoEndcapDistortion( const Float_t x[], Float_t Xprime[], Int_t Sector )
 {
 
-  cout << "StMagUtilities::UndoEndcap  This routine was made obosolete on 10/1/2009.  Do not use it." << endl ;
+  LOG_INFO << "StMagUtilities::UndoEndcap  This routine was made obosolete on 10/1/2009.  Do not use it.\n" ;
   exit(0) ;
 
   // EndCap Distortion correction is Obsolete.  Disabled by JT 2009
@@ -2761,7 +2761,7 @@ void StMagUtilities::UndoIFCShiftDistortion( const Float_t x[], Float_t Xprime[]
   const   Int_t ORDER = 1 ;                         // Linear interpolation = 1, Quadratic = 2
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::IFCShift   Please wait for the tables to fill ...  ~5 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::IFCShift   Please wait for the tables to fill ...  ~5 seconds\n" ;
     Int_t Nterms = 100 ;
     Double_t Denominator[100];
     memset(Denominator, 0, 100 * sizeof(Double_t));
@@ -2842,8 +2842,8 @@ void StMagUtilities::UndoSpaceChargeDistortion( const Float_t x[], Float_t Xprim
 {
 
   if ((mDistortionMode & kSpaceCharge) && (mDistortionMode & kSpaceChargeR2)) {
-    cout << "StMagUtilities ERROR **** Do not use kSpaceCharge and kSpaceChargeR2 at the same time" << endl ;
-    cout << "StMagUtilities ERROR **** These routines have overlapping functionality." << endl ;
+    LOG_INFO << "StMagUtilities ERROR **** Do not use kSpaceCharge and kSpaceChargeR2 at the same time\n" ;
+    LOG_INFO << "StMagUtilities ERROR **** These routines have overlapping functionality.\n" ;
     exit(1) ;
   }
 
@@ -2981,7 +2981,7 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const Float_t x[], Float_t Xpr
   if (fSpaceChargeR2) { GetSpaceChargeR2();} // need to reset it.
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::UndoSpace  Please wait for the tables to fill ...  ~5 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::UndoSpace  Please wait for the tables to fill ...  ~5 seconds\n" ;
     const Int_t     ROWS        =  257 ;  // (2**n + 1)
     const Int_t     COLUMNS     =  129 ;  // (2**m + 1)
     const Int_t     ITERATIONS  =  100 ;  // About 0.05 seconds per iteration
@@ -3158,7 +3158,7 @@ void StMagUtilities::UndoAbortGapDistortion( const Float_t x[], Float_t Xprime[]
   const Int_t     ROWS        =  257 ;  // (2**n + 1)
   const Int_t     COLUMNS     =  129 ;  // (2**m + 1)
 
-  //cout << "StMagUtilities::UndoAbortGap TimeSinceDeposition=" << TimeSinceDeposition << endl;
+  //LOG_INFO << "StMagUtilities::UndoAbortGap TimeSinceDeposition=" << TimeSinceDeposition << '\n';
 
   Float_t AbortGapCharge = 0.0;
   Int_t AbortGapChargeSize = 1;
@@ -3177,8 +3177,8 @@ void StMagUtilities::UndoAbortGapDistortion( const Float_t x[], Float_t Xprime[]
   Double_t fullDriftTime = TPC_Z0 / IonDriftVel;
 
   if (DoOnceLocal ) {
-    //      cout << "fullDriftTime: " << fullDriftTime << endl;
-    cout << "StMagUtilities::UndoAbortGap  Please wait for the tables to fill ... ~5 seconds" << endl;
+    //      LOG_INFO << "fullDriftTime: " << fullDriftTime << '\n';
+    LOG_INFO << "StMagUtilities::UndoAbortGap  Please wait for the tables to fill ... ~5 seconds\n";
     const Int_t     ITERATIONS  =  100 ;  // About 0.05 seconds per iteration
     const Double_t  GRIDSIZER   =  (OFCRadius - IFCRadius) / (ROWS - 1) ;
     const Double_t  GRIDSIZEZ   =  TPC_Z0 / (COLUMNS - 1) ;
@@ -3292,7 +3292,7 @@ void StMagUtilities::UndoAbortGapDistortion( const Float_t x[], Float_t Xprime[]
     }
 
     if ( timeSlice >= 0 && timeSlice < TIMEBINS) {
-      //	  cout << "timeSlice: " << timeSlice << endl;
+      //	  LOG_INFO << "timeSlice: " << timeSlice << '\n';
       Interpolate2DEdistortion( ORDER, r, z, abortR2Er[timeSlice], Er_integral ) ;
       Ephi_integral = 0.0 ;  // E field is symmetric in phi
 
@@ -3355,7 +3355,7 @@ void StMagUtilities::UndoShortedRingDistortion( const Float_t x[], Float_t Xprim
 
   if ( DoOnceLocal ) {
 
-    cout << "StMagUtilities::UndoShort  Please wait for the tables to fill ...  ~5 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::UndoShort  Please wait for the tables to fill ...  ~5 seconds\n" ;
 
     // Parse the Table and separate out the four different resistor chains
     // Definition: A "missing" resistor is a shorted resistor, an "extra" resistor is a compensating resistor added at the end
@@ -3553,7 +3553,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const Float_t x[], Float_t Xprim
 
   if ( DoOnce ) {
 
-    cout << "StMagUtilities::UndoGG VE  Please wait for the tables to fill ...  ~5 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::UndoGG VE  Please wait for the tables to fill ...  ~5 seconds\n" ;
 
     Int_t Nterms = 100 ;
     Double_t Denominator[100];
@@ -3808,10 +3808,10 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
   //Check that number of ROWS and COLUMNS is suitable for a binary expansion
 
   if ( !IsPowerOfTwo(ROWS - 1) )
-  { cout << "StMagUtilities::PoissonRelaxation - Error in the number of ROWS.  Must be 2**M - 1" << endl ; exit(1) ; }
+  { LOG_INFO << "StMagUtilities::PoissonRelaxation - Error in the number of ROWS.  Must be 2**M - 1\n" ; exit(1) ; }
 
   if ( !IsPowerOfTwo(COLUMNS - 1) )
-  { cout << "StMagUtilities::PoissonRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1" << endl ; exit(1) ; }
+  { LOG_INFO << "StMagUtilities::PoissonRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1\n" ; exit(1) ; }
 
   // Because performance of this relaxation is important, we access the arrays directly
   Float_t* ArrayE, *ArrayV, *Charge, *SumCharge, *EroverEz ;
@@ -3955,7 +3955,7 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
        h1 -> DrawCopy("lego") ;      // JT test
        ArrayVM -> Draw("lego") ; // JT test
        c1 -> Update() ;
-       cout << "Hit any key to continue" << endl ;  // JT test
+       LOG_INFO << "Hit any key to continue\n" ;  // JT test
        Char_t anychar ;    // JT test
        cin  >> anychar ;   // JT test
     */ //End JT test block
@@ -4049,13 +4049,13 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
 
   //Check that the number of ROWS and COLUMNS is suitable for a binary expansion
   if ( !IsPowerOfTwo((ROWS - 1))    )
-  { cout << "StMagUtilities::Poisson3DRelaxation - Error in the number of ROWS.  Must be 2**M - 1" << endl ; exit(1) ; }
+  { LOG_INFO << "StMagUtilities::Poisson3DRelaxation - Error in the number of ROWS.  Must be 2**M - 1\n" ; exit(1) ; }
 
   if ( !IsPowerOfTwo((COLUMNS - 1)) )
-  { cout << "StMagUtilities::Poisson3DRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1" << endl ; exit(1) ; }
+  { LOG_INFO << "StMagUtilities::Poisson3DRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1\n" ; exit(1) ; }
 
   if ( PHISLICES <= 3   )
-  { cout << "StMagUtilities::Poisson3DRelaxation - Error in the number of PHISLICES.  Must be larger than 3" << endl ; exit(1) ; }
+  { LOG_INFO << "StMagUtilities::Poisson3DRelaxation - Error in the number of PHISLICES.  Must be larger than 3\n" ; exit(1) ; }
 
   // Because performance of this relaxation is important, we access the arrays directly
   Float_t* ArrayE, *ArrayV, *ArrayVM, *ArrayVP, *Charge, *SumCharge, *EroverEz, *EPhioverEz ;
@@ -4075,7 +4075,7 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
 
   TMatrix* ArrayofSumCharge[1000] ;    // Create temporary arrays to store low resolution charge arrays
 
-  if  ( PHISLICES > 1000 ) { cout << "StMagUtilities::Poisson3D  PHISLICES > 1000 is not allowed (nor wise) " << endl ; exit(1) ; }
+  if  ( PHISLICES > 1000 ) { LOG_INFO << "StMagUtilities::Poisson3D  PHISLICES > 1000 is not allowed (nor wise) \n" ; exit(1) ; }
 
   for ( Int_t i = 0 ; i < PHISLICES ; i++ ) { ArrayofSumCharge[i] = new TMatrix(ROWS, COLUMNS) ; }
 
@@ -4750,7 +4750,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const Double_t sc, const Int_t 
   Double_t Pt_new  =  TMath::Abs ( R0_new * 0.299792 * B[2] / 1000. ) ;
   //Double_t DCA_new =  TMath::Sqrt( X0_new*X0_new + Y0_new*Y0_new ) - R0_new ;  // Negative means (0,0) is inside the circle
 
-  //cout << "DCA (from inside) = " << DCA_new << endl ; // JT test
+  //LOG_INFO << "DCA (from inside) = " << DCA_new << '\n' ; // JT test
 
   // P in GeV, R in cm, B in kGauss
   if ( TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) <= IFCRadius )
@@ -5563,8 +5563,8 @@ void StMagUtilities::UndoGridLeakDistortion( const Float_t x[], Float_t Xprime[]
   if (((mDistortionMode / kGridLeak)     & 1) +
       ((mDistortionMode / k3DGridLeak)   & 1) +
       ((mDistortionMode / kFullGridLeak) & 1) > 1) {
-    cout << "StMagUtilities ERROR **** Do not use multiple GridLeak modes at the same time" << endl ;
-    cout << "StMagUtilities ERROR **** These routines have overlapping functionality." << endl ;
+    LOG_INFO << "StMagUtilities ERROR **** Do not use multiple GridLeak modes at the same time\n" ;
+    LOG_INFO << "StMagUtilities ERROR **** These routines have overlapping functionality.\n" ;
     exit(1) ;
   }
 
@@ -5612,7 +5612,7 @@ void StMagUtilities::Undo2DGridLeakDistortion( const Float_t x[], Float_t Xprime
   { memcpy(Xprime, x, threeFloats) ; return ; }
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::UndoGridL  Please wait for the tables to fill ... ~30 seconds" << endl ;
+    LOG_INFO << "StMagUtilities::UndoGridL  Please wait for the tables to fill ... ~30 seconds\n" ;
     TMatrix  ArrayV(ROWS, COLUMNS), Charge(ROWS, COLUMNS) ;
     //Fill arrays with initial conditions.  V on the boundary and Charge in the volume.
 
@@ -5756,7 +5756,7 @@ void StMagUtilities::Undo3DGridLeakDistortion( const Float_t x[], Float_t Xprime
   if ( MiddlGridLeakStrength == 0 ) return ;
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::Undo3DGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES" << endl ;
+    LOG_INFO << "StMagUtilities::Undo3DGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
 
     for ( Int_t k = 0 ; k < PHISLICES ; k++ ) {
       ArrayoftiltEr[k]   =  new TMatrix(neR3D, EMap_nZ) ;
@@ -5985,7 +5985,7 @@ void StMagUtilities::UndoFullGridLeakDistortion( const Float_t x[], Float_t Xpri
   if ( MiddlGridLeakStrength == 0 ) return ;
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::UndoFullGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES" << endl ;
+    LOG_INFO << "StMagUtilities::UndoFullGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
     Int_t   SeclistW[PHISLICES1] ;
     Int_t   SeclistE[PHISLICES1] ;
     Float_t SecPhis [PHISLICES1] ;
@@ -6234,7 +6234,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const Float_t x[], Float_t Xprim
   memcpy(Xprime, x, threeFloats) ;
 
   if ( DoOnce ) {
-    cout << "StMagUtilities::UndoSectorAlign Please wait for the tables to fill ...  ~5 seconds * PHISLICES" << endl ;
+    LOG_INFO << "StMagUtilities::UndoSectorAlign Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
     Int_t   SeclistW[PHISLICES1] ;
     Int_t   SeclistE[PHISLICES1] ;
     Float_t SecPhis [PHISLICES1] ;

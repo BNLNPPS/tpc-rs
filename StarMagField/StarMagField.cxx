@@ -658,7 +658,7 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
       B[1] = -B[1];
     }
 
-    //cout<<B[0]<<" --- "<<B[1]<<" --- "<<B[2]<<" --- "<<endl;
+    //LOG_INFO<<B[0]<<" --- "<<B[1]<<" --- "<<B[2]<<" --- "<<'\n';
 
     return;
   }
@@ -666,7 +666,7 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
   //end added by Lijuan within the steel
 
 
-  //   cout<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<debug--- "<<endl;
+  //   LOG_INFO<<" <<<<<<<<<<<<<<<<<<<<<<<<<<<debug--- "<<'\n';
 
   Interpolate2ExtDBfield( r, z, Br_value, Bz_value ) ;
 
@@ -691,7 +691,7 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
     B[1] = Br_value * (x[1] / r) ;
   }
 
-  // cout<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<endl;
+  // LOG_INFO<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<'\n';
   return;
 }
 
@@ -981,7 +981,7 @@ void StarMagField::ReadField( )
 
   fclose(b3Dfile) ;
 #if 1
-  //cout<<"---------------"<<endl;
+  //LOG_INFO<<"---------------"<<'\n';
   //   memset(R3DSteel, 0, nRSteel*sizeof(Float_t));
   //   memset(Z3DSteel, 0, nZSteel*sizeof(Float_t));
   //   memset(Phi3DSteel, 0, nPhiSteel*sizeof(Float_t));
@@ -1019,11 +1019,11 @@ void StarMagField::ReadField( )
           Bphi3DSteel[i][j][k] = 0 - sin(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + cos(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
 
 
-          //cout<<R3DSteel[k]<<" "<<Z3DSteel[j]<<" "<<Phi3DSteel[i]<<" "<<Bx3DSteel[i][j][k]<<" "<<Bz3DSteel[i][j][k]<<" "<<By3DSteel[i][j][k]<<endl;
+          //LOG_INFO<<R3DSteel[k]<<" "<<Z3DSteel[j]<<" "<<Phi3DSteel[i]<<" "<<Bx3DSteel[i][j][k]<<" "<<Bz3DSteel[i][j][k]<<" "<<By3DSteel[i][j][k]<<'\n';
 
           //end added by Lijuan
 
-          //cout<<Br3DSteel[i][j][k]<<"--------------------"<<Bphi3DSteel[i][j][k]<<endl;
+          //LOG_INFO<<Br3DSteel[i][j][k]<<"--------------------"<<Bphi3DSteel[i][j][k]<<'\n';
 
         }
       }
@@ -1152,7 +1152,7 @@ void StarMagField::Interpolate3DBfield( const Float_t r, const Float_t z, const 
 
 
 
-  //cout<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<endl;
+  //LOG_INFO<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<'\n';
   if (r < 0) return;
 
   Search( nPhi, Phi3D, phi, ilow ) ;

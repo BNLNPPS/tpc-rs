@@ -320,13 +320,13 @@ void StTpcDb::SetDriftVelocity()
       dvel0 = (St_tpcDriftVelocity*) St_tpcDriftVelocityC::instance()->Table();
 
       if (! dvel0) {
-        LOG_ERROR << "StTpcDb::Error Finding Tpc DriftVelocity" << endm;
+        LOG_ERROR << "StTpcDb::Error Finding Tpc DriftVelocity" << '\n';
         mUc = 0;
         return;
       }
 
       if (St_db_Maker::GetValidity(dvel0, t) < 0) {
-        LOG_ERROR << "StTpcDb::Error Wrong Validity Tpc DriftVelocity" << endm;
+        LOG_ERROR << "StTpcDb::Error Wrong Validity Tpc DriftVelocity" << '\n';
         mUc = 0;
         return;
       }
@@ -347,7 +347,7 @@ void StTpcDb::SetDriftVelocity()
         dvel1 = (St_tpcDriftVelocity*) StMaker::GetChain()->GetDataBase("Calibrations/tpc/tpcDriftVelocity", &t[1]);
 
         if (! dvel1) {
-          LOG_ERROR << "StTpcDb::Error Finding next Tpc DriftVelocity" << endm;
+          LOG_ERROR << "StTpcDb::Error Finding next Tpc DriftVelocity" << '\n';
         }
       }
     }
@@ -438,10 +438,10 @@ void StTpcDb::SetTpcRotations()
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = kFALSE;
 
   if (! mOldScheme) {
-    LOG_INFO << "StTpcDb::SetTpcRotations use new schema for Rotation matrices" << endm;
+    LOG_INFO << "StTpcDb::SetTpcRotations use new schema for Rotation matrices\n";
   }
   else {
-    LOG_INFO << "StTpcDb::SetTpcRotations use old schema for Rotation matrices" << endm;
+    LOG_INFO << "StTpcDb::SetTpcRotations use old schema for Rotation matrices\n";
   }
 
   for (Int_t sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors

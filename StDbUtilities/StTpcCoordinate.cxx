@@ -20,30 +20,30 @@ StTpcLocalCoordinate::StTpcLocalCoordinate(const StThreeVector<double> &xyz) : S
     << a.position().z() << ") " \
     << ", " << a.fromSector() << "," << a.fromRow() << " )"
 // Non-member Functions
-ostream &operator<<(ostream &os, const StTpcCoordinate &a)
+std::ostream &operator<<(std::ostream &os, const StTpcCoordinate &a)
 {
   return os << OS;
 }
 
 
-ostream &operator<<(ostream &os, const StTpcLocalDirection &a)
+std::ostream &operator<<(std::ostream &os, const StTpcLocalDirection &a)
 {
   return os << "TPC_Local Direction( (" << OS;
 }
 
 
-ostream &operator<<(ostream &os,
+std::ostream &operator<<(std::ostream &os,
                     const StTpcLocalCoordinate &a)
 {
   return os << "TPC_Local( (" << OS;
 }
 
 
-ostream &operator<<(ostream &os, const StTpcLocalSectorCoordinate &a)
+std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorCoordinate &a)
 {
   return os << "TPC_Local_Sector( (" << OS;
 }
-ostream &operator<<(ostream &os, const StTpcLocalSectorDirection &a)
+std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorDirection &a)
 {
   return os << "TPC_Local_Sector Direction( (" << OS;
 }

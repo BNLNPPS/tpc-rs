@@ -27,6 +27,9 @@
  * Initial Revision
  *
  **************************************************************************/
+
+#include <ostream>
+
 #include "StarClassLibrary/StParticleDefinition.hh"
 #include "StarClassLibrary/StParticleTable.hh"
 #include "StarClassLibrary/PhysicalConstants.h"
@@ -121,13 +124,13 @@ int StParticleDefinition::operator!=(const StParticleDefinition &right) const
   return !(*this == right);
 }
 
-ostream &operator<<(ostream &os, const StParticleDefinition &p)
+std::ostream &operator<<(std::ostream &os, const StParticleDefinition &p)
 {
-  //    os << '<' << typeid(p).name() << '>' << endl;   // needs RTTI
-  os << "Particle Name :         " << p.name().c_str() << endl;
-  os << "PDG particle code :     " << p.pdgEncoding()  << endl;
-  os << "Mass [GeV/c2] :         " << p.mass() / GeV     << endl;
-  os << "Width [GeV/c2] :        " << p.width() / GeV    << endl;
+  //    os << '<' << typeid(p).name() << '>' << '\n';   // needs RTTI
+  os << "Particle Name :         " << p.name().c_str() << '\n';
+  os << "PDG particle code :     " << p.pdgEncoding()  << '\n';
+  os << "Mass [GeV/c2] :         " << p.mass() / GeV     << '\n';
+  os << "Width [GeV/c2] :        " << p.width() / GeV    << '\n';
   os << "Lifetime [nsec] :       ";
 
   if (p.lifeTime() < 0)
@@ -135,17 +138,17 @@ ostream &operator<<(ostream &os, const StParticleDefinition &p)
   else
     os << p.lifeTime() / nanosecond;
 
-  os << endl;
-  os << "Charge [e] :            " << p.charge() / eplus << endl;
-  os << "Spin :                  " << p.iSpin() << "/2" << endl;
-  os << "Parity :                " << p.iParity()      << endl;
-  os << "Charge conjugation :    " << p.iConjugation() << endl;
-  os << "Isospin : (I,Iz):       (" << p.iIsospin() << "/2" << " , " << p.iIsospin3() << "/2 ) " << endl;
-  os << "GParity :               " << p.iGParity()     << endl;
-  os << "Lepton number :         " << p.leptonNumber() << endl;
-  os << "Baryon number :         " << p.baryonNumber() << endl;
-  os << "Particle type :         " << p.type().c_str() << endl;
-  os << "Is stable :             " << (p.stable() ? "yes" : "no") << endl;
+  os << '\n';
+  os << "Charge [e] :            " << p.charge() / eplus << '\n';
+  os << "Spin :                  " << p.iSpin() << "/2\n";
+  os << "Parity :                " << p.iParity()      << '\n';
+  os << "Charge conjugation :    " << p.iConjugation() << '\n';
+  os << "Isospin : (I,Iz):       (" << p.iIsospin() << "/2" << " , " << p.iIsospin3() << "/2 ) \n";
+  os << "GParity :               " << p.iGParity()     << '\n';
+  os << "Lepton number :         " << p.leptonNumber() << '\n';
+  os << "Baryon number :         " << p.baryonNumber() << '\n';
+  os << "Particle type :         " << p.type().c_str() << '\n';
+  os << "Is stable :             " << (p.stable() ? "yes" : "no") << '\n';
   return os;
 }
 

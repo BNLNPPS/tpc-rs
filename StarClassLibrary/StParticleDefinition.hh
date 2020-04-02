@@ -33,8 +33,9 @@
 #include "Rtypes.h"
 #endif
 
+#include <ostream>
 #include <string>
-#include <St_base/Stiostream.h>
+
 #if !defined(ST_NO_NAMESPACES)
 using std::string;
 #endif
@@ -123,7 +124,7 @@ class StParticleDefinition
 #endif
 };
 
-ostream &operator<<(ostream &, const StParticleDefinition &);
+std::ostream &operator<<(std::ostream &, const StParticleDefinition &);
 
 #endif
 

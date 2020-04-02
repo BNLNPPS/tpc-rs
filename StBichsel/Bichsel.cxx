@@ -1,7 +1,6 @@
 #include "Riostream.h"
 #include "StBichsel/Bichsel.h"
 #include <assert.h>
-using namespace std;
 TString   Bichsel::m_Tags[kTotal] = {"P10", "Bi", "PAI"};
 dEdxParameterization* Bichsel::m_dEdxParameterizations[kTotal] = {0, 0, 0};
 Bichsel* Bichsel::fgBichsel = 0;
@@ -42,7 +41,7 @@ void Bichsel::Clean()
 
 void Bichsel::Print()
 {
-  cout << "Bichsel:: " << m_Tag << endl;
+  LOG_INFO << "Bichsel:: " << m_Tag << '\n';
 
   if (m_dEdxParameterization) m_dEdxParameterization->Print();
 }

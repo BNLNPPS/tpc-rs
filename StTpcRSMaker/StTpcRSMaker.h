@@ -48,7 +48,6 @@ class StTpcRSMaker
   TF1F* GetPolya(Int_t io = 0)       {return (TF1F*) mPolya[io];}
   TF1F* GetTimeShape0(Int_t io = 0)  {return fgTimeShape0[io];}
   TF1F* GetTimeShape3(Int_t io = 0)  {return fgTimeShape3[io];}
-  TF1*  GetHeed()                    {return mHeed;}
   Double_t GetNoPrimaryClusters(Double_t betaGamma, Int_t charge);
   virtual void Print(Option_t* option = "") const;
   StTpcDigitalSector* DigitizeSector(Int_t sector, StTpcRawData* data);

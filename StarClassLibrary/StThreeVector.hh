@@ -96,7 +96,7 @@
 #include "Rtypes.h"
 #endif
 #ifndef __CINT__
-#include <St_base/Stiostream.h>
+#include <iostream>
 #include <math.h>
 #ifdef GNU_GCC
 #    include <stddef.h>
@@ -424,7 +424,7 @@ inline T StThreeVector<T>::operator() (size_t i) const
 #ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator(): bad index");
 #else
-  cerr << "StThreeVector<T>::operator(): bad index" << endl;
+  std::cerr << "StThreeVector<T>::operator(): bad index" << std::endl;
 #endif
   return 0;
 }
@@ -437,7 +437,7 @@ inline T &StThreeVector<T>::operator() (size_t i)
 #ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator(): bad index");
 #else
-  cerr << "StThreeVector<T>::operator(): bad index" << endl;
+  std::cerr << "StThreeVector<T>::operator(): bad index" << std::endl;
 #endif
   return mX1;
 }
@@ -450,7 +450,7 @@ inline T StThreeVector<T>::operator[] (size_t i) const
 #ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator[]: bad index");
 #else
-  cerr << "StThreeVector<T>::operator[]: bad index" << endl;
+  std::cerr << "StThreeVector<T>::operator[]: bad index" << std::endl;
 #endif
   return 0;
 }
@@ -463,7 +463,7 @@ inline T &StThreeVector<T>::operator[] (size_t i)
 #ifndef ST_NO_EXCEPTIONS
   throw out_of_range("StThreeVector<T>::operator[]: bad index");
 #else
-  cerr << "StThreeVector<T>::operator[]: bad index" << endl;
+  std::cerr << "StThreeVector<T>::operator[]: bad index" << std::endl;
 #endif
   return mX1;
 }
@@ -890,16 +890,16 @@ inline StThreeVector<T> operator/ (const StThreeVector<T> &v, double c)
 }
 #ifndef __CINT__
 template<class T>
-ostream  &operator<<(ostream &os, const StThreeVector<T> &v)
+std::ostream  &operator<<(std::ostream &os, const StThreeVector<T> &v)
 {
   return os << v.x() << '\t' << v.y() << '\t' << v.z();
 }
 #else
-template<> ostream  &operator<<(ostream &os, const StThreeVector<double> &v);
-template<> ostream  &operator<<(ostream &os, const StThreeVector<float> &v);
+template<> std::ostream  &operator<<(std::ostream &os, const StThreeVector<double> &v);
+template<> std::ostream  &operator<<(std::ostream &os, const StThreeVector<float> &v);
 #endif
 template<class T>
-istream  &operator>>(istream &is, StThreeVector<T> &v)
+std::istream  &operator>>(std::istream &is, StThreeVector<T> &v)
 {
   T  x, y, z;
   is >> x >> y >> z;

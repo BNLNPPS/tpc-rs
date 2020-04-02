@@ -683,7 +683,7 @@ int operator== (const StHelix &a, const StHelix &b)
 
 int operator!= (const StHelix &a, const StHelix &b) {return !(a == b);}
 
-ostream &operator<<(ostream &os, const StHelix &h)
+std::ostream &operator<<(std::ostream &os, const StHelix &h)
 {
   return os << '('
          << "curvature = "  << h.curvature() << ", "
