@@ -6,8 +6,6 @@
 #include "TH1.h"
 #include "TTree.h"
 #include "StTpcDb/StTpcDb.h"
-#include "TArrayF.h"
-#include "TArrayI.h"
 class Altro;
 class StTpcdEdxCorrection;
 class StTpcDigitalSector;
@@ -116,8 +114,6 @@ class StTpcRSMaker
   Double_t      mtauCX[2];            //! -"-
   Double_t    mLocalYDirectionCoupling[2][24][7]; //!
   Double_t   msMin, msMax;            //!
-  TArrayI    mNoTpcHitsAll;           //!
-  TArrayI    mNoTpcHitsReal;          //!
   Int_t      mNSplittedHits;          //!
   Double_t xOnWire, yOnWire, zOnWire; //!
   Double_t mGainLocal;                //!
