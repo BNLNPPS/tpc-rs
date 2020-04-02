@@ -26,6 +26,7 @@
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
+#include "TCernLib.h"
 #include "Math/SpecFuncMathMore.h"
 #include "StDbUtilities/StCoordinates.hh"
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
@@ -47,7 +48,6 @@
 #include "StarClassLibrary/StParticleDefinition.hh"
 #include "StMagF/StMagF.h"
 #include "StTpcRSMaker/Altro.h"
-#include "StarRoot/TRVector.h"
 #include "St_base/StMessMgr.h"
 #include "St_base/Stypes.h"
 #include "StBichsel/Bichsel.h"
@@ -926,10 +926,10 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
                                BField[2]*kilogauss * charge, 1);
         StThreeVectorD unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
         Double_t* cxyz = unit.xyz();
-        TRMatrix L2L(3, 3,
+        double L2L[9] = {
                      cxyz[2], - cxyz[0]*cxyz[2], cxyz[0],
                      cxyz[0], - cxyz[1]*cxyz[2], cxyz[1],
-                     0.0,   cxyz[0]*cxyz[0] + cxyz[1]*cxyz[1], cxyz[2]);
+                     0.0,   cxyz[0]*cxyz[0] + cxyz[1]*cxyz[1], cxyz[2]};
 #ifdef __DEBUG__
 
         if (Debug() > 11) PrPP(Make, track);
@@ -1211,18 +1211,21 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
 
             if (xRange > 0) {
               Double_t xR = rs[ie] * xRange;
-              TRVector xyzRangeL(3, xR * rX, xR * rY, 0.);
-              TRVector xyzR(L2L, TRArray::kAxB, xyzRangeL);
+              double xyzRangeL[3] = {xR * rX, xR * rY, 0.};
+              double xyzR[3] = {0};
+              TCL::mxmpy(L2L, xyzRangeL, xyzR, 3, 3, 1);
 #ifdef __DEBUG__
 
               if (Debug() > 13) {
-                LOG_INFO << "xyzRangeL: " << xyzRangeL << endm;
-                LOG_INFO << "L2L: " << L2L << endm;
-                LOG_INFO << "xyzR: " << xyzR << endm;
+                LOG_INFO << "xyzRangeL: " << xyzRangeL[0] << " " << xyzRangeL[1] << " " << xyzRangeL[2] << endm;
+                LOG_INFO << "L2L: " << L2L[0] << " " << L2L[1] << " " << L2L[2]
+                                    << L2L[3] << " " << L2L[4] << " " << L2L[3]
+                                    << L2L[6] << " " << L2L[7] << " " << L2L[8] << endm;
+                LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << endm;
               }
 
 #endif
-              TCL::vadd(xyzE.position().xyz(), xyzR.GetArray(), xyzE.position().xyz(), 3);
+              TCL::vadd(xyzE.position().xyz(), xyzR, xyzE.position().xyz(), 3);
             }
 
             Double_t y = xyzE.position().y();
