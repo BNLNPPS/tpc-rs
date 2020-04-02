@@ -1,4 +1,6 @@
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include "TChain.h"
 #include "Ttypes.h"
@@ -25,7 +27,7 @@
 int main(int argc, char **argv)
 {
   // Process 1st optional argument
-  std::string testName(argc > 1 ? argv[1] : "rcf16000_1_100evts.fzd");
+  std::string testName(argc > 1 ? argv[1] : "starY16_dAu200");
 
   // Process 2nd optional argument
   int maxRecords(argc > 2 ? std::atoi(argv[2]) : -1);
