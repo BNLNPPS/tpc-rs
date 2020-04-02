@@ -26,7 +26,7 @@
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
-#include "TCernLib.h"
+#include "StTpcRSMaker/tcl.h"
 #include "Math/SpecFuncMathMore.h"
 #include "StDbUtilities/StCoordinates.hh"
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
@@ -1225,7 +1225,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
               }
 
 #endif
-              TCL::vadd(xyzE.position().xyz(), xyzR, xyzE.position().xyz(), 3);
+              for (int i=0; i<3; i++) xyzE.position().xyz()[i] += xyzR[i];
             }
 
             Double_t y = xyzE.position().y();

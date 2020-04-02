@@ -29,7 +29,6 @@ using namespace std;
 #define STAR_Stypes
 
 #include <Ttypes.h>
-#include "Star2Root/StTypeDefs.h"
 #ifdef __HP_aCC
 #include "St_HP_aCC.h"
 #endif
