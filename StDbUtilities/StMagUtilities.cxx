@@ -445,6 +445,8 @@ To do:  <br>
 
 */
 #include <assert.h>
+#include <iomanip>
+#include <iostream>
 #include "StDbUtilities/StMagUtilities.h"
 #include "TFile.h"
 #include "TNtuple.h"
