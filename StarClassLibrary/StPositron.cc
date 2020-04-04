@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StPositron.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StPositron::StPositron(const string  &  aName,  
 		       double           mass,     

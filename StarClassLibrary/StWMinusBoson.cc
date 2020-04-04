@@ -23,7 +23,7 @@
  *
  **************************************************************************/
 #include "StWMinusBoson.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StWMinusBoson::StWMinusBoson(const string  &  aName,  
 		 double           mass,     

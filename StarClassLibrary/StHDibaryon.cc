@@ -25,7 +25,7 @@
  *
  **************************************************************************/
 #include "StarClassLibrary/StHDibaryon.hh" 
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 StHDibaryon::StHDibaryon(const string  &  aName,  
 		   double           mass,     

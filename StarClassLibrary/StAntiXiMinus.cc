@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiXiMinus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiXiMinus::StAntiXiMinus(const string  &  aName,  
 			     double           mass,     

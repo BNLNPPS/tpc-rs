@@ -30,7 +30,7 @@
  *
  **************************************************************************/
 #include "StarClassLibrary/StAntiDeuteron.hh" 
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 StAntiDeuteron::StAntiDeuteron(const string  &  aName,  
 		       double           mass,     

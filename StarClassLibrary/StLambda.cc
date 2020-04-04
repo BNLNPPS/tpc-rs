@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StLambda.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StLambda::StLambda(const string  &  aName,  
 		   double           mass,     

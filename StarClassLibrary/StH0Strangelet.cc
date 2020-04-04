@@ -20,7 +20,7 @@
  *
  **************************************************************************/
 #include "StH0Strangelet.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StH0Strangelet::StH0Strangelet(const string  &  aName,  
 		   double           mass,     

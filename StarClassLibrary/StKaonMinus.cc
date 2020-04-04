@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StKaonMinus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StKaonMinus::StKaonMinus(const string  &  aName,  
 			 double           mass,     

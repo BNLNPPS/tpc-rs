@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StKaonZeroLong.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StKaonZeroLong::StKaonZeroLong(const string  &  aName,  
 			       double           mass,     

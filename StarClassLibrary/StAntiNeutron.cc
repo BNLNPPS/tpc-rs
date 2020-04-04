@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiNeutron.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiNeutron::StAntiNeutron(const string  &  aName,  
 			     double           mass,     

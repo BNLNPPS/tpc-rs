@@ -29,7 +29,7 @@
  *
  **************************************************************************/
 #include "StLambda1520.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StLambda1520::StLambda1520(const string  &  aName,  
 		   double           mass,     

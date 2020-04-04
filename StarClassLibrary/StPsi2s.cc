@@ -22,7 +22,7 @@
  *
  **************************************************************************/
 #include "StPsi2s.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StPsi2s::StPsi2s(const string  &  aName,  
 	       double           mass,     

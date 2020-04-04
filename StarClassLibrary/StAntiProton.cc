@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiProton.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiProton::StAntiProton(const string  &  aName,  
 			   double           mass,     

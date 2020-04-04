@@ -29,7 +29,7 @@
  *
  **************************************************************************/
 #include "StAntiLambda1520.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiLambda1520::StAntiLambda1520(const string  &  aName,  
 		   double           mass,     

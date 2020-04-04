@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StEtaPrime.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StEtaPrime::StEtaPrime(const string  &  aName,  
 		       double           mass,     

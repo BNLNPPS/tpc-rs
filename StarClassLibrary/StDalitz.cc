@@ -27,7 +27,7 @@
  *
  **************************************************************************/
 #include "StDalitz.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StDalitz::StDalitz(const string  &  aName,  
 		       double           mass,     

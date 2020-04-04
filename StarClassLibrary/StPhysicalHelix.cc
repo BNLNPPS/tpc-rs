@@ -42,8 +42,10 @@
 #include <cmath>
 #include "StarClassLibrary/StHelix.hh"
 #include "StarClassLibrary/StPhysicalHelix.hh"
-#include "StarClassLibrary/PhysicalConstants.h"
 #include "StarClassLibrary/SystemOfUnits.h"
+
+static const double c_light   = 2.99792458e+8 * meter/second;
+
 StPhysicalHelix::StPhysicalHelix() {}
 
 StPhysicalHelix::~StPhysicalHelix() { /* nop */ }

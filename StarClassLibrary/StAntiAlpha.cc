@@ -27,7 +27,7 @@
  *
  **************************************************************************/
 #include "StarClassLibrary/StAntiAlpha.hh" 
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 StAntiAlpha::StAntiAlpha(const string  &  aName,  
 		 double           mass,     

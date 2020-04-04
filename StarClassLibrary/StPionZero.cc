@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StPionZero.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StPionZero::StPionZero(const string  &  aName,  
 		       double           mass,     

@@ -114,7 +114,7 @@
 #include <limits>
 #include <float.h>
 #include "StarClassLibrary/StHelix.hh"
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 const double StHelix::NoSolution = 3.e+33;
 
 StHelix::StHelix() { /*noop*/ }

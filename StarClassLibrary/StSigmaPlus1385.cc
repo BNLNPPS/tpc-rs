@@ -22,7 +22,7 @@
  *
  **************************************************************************/
 #include "StSigmaPlus1385.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StSigmaPlus1385::StSigmaPlus1385(const string  &  aName,  
 			 double           mass,     

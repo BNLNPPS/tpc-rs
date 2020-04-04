@@ -22,7 +22,7 @@
  *
  **************************************************************************/
 #include "StKStarZero.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StKStarZero::StKStarZero(const string  &  aName,  
 		       double           mass,     

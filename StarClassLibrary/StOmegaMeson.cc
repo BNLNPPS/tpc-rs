@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StOmegaMeson.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StOmegaMeson::StOmegaMeson(const string  &  aName,  
 			   double           mass,     
