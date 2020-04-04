@@ -379,12 +379,8 @@ Double_t St_MDFCorrectionC::EvalFactor(Int_t k, Int_t p, Double_t x) const {
 MakeChairAltInstance(tpcEffectiveGeom,Calibrations/tpc/tpcEffectiveGeom,Calibrations/tpc/tpcEffectiveGeomB,gEnv->GetValue("NewTpcAlignment",0));
 #include "StDetectorDbMaker/St_tpcElectronicsC.h"
 MakeChairAltInstance(tpcElectronics,Calibrations/tpc/tpcElectronics,Calibrations/tpc/tpcElectronicsB,gEnv->GetValue("NewTpcAlignment",0));
-#include "StDetectorDbMaker/St_tpcPedestalC.h"
-MakeChairInstance(tpcPedestal,Calibrations/tpc/tpcPedestal);
 #include "StDetectorDbMaker/St_tpcPadResponseC.h"
 MakeChairInstance(tpcPadResponse,Calibrations/tpc/tpcPadResponse);
-#include "StDetectorDbMaker/St_tpcSlowControlSimC.h"
-MakeChairInstance(tpcSlowControlSim,Calibrations/tpc/tpcSlowControlSim);
 #include "StDetectorDbMaker/St_tpcHighVoltagesC.h"
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"
@@ -956,18 +952,6 @@ MakeChairInstance(starClockOnl,RunLog/onl/starClockOnl);
 
 #include "StDetectorDbMaker/St_starMagOnlC.h"
 MakeChairInstance(starMagOnl,RunLog/onl/starMagOnl);
-#include "St_beamInfoC.h"
-MakeChairInstance(beamInfo,RunLog/onl/beamInfo);
-
-
-Bool_t        St_beamInfoC::IsFixedTarget() {
-  Bool_t isFixTag = kFALSE;
-  Float_t MaxIntensity = TMath::Max(blueIntensity(), yellowIntensity());
-  Float_t MinIntensity = TMath::Min(blueIntensity(), yellowIntensity());
-  if (MaxIntensity > 1.0 && MaxIntensity > 10*MinIntensity) isFixTag = kTRUE;
-  return isFixTag;
-}
-
 
 #include "StDetectorDbMaker/St_tpcRDOMasksC.h"
 MakeChairInstance(tpcRDOMasks,RunLog/onl/tpcRDOMasks);
@@ -999,35 +983,6 @@ MakeChairAltInstance(trgTimeOffset,Conditions/trg/trgTimeOffset,Conditions/trg/t
 MakeChairInstance(tpcDimensions,Geometry/tpc/tpcDimensions);
 #include "StDetectorDbMaker/St_tpcWirePlanesC.h"
 MakeChairInstance(tpcWirePlanes,Geometry/tpc/tpcWirePlanes);
-#include "StDetectorDbMaker/St_tpcSectorPositionC.h"
-St_tpcSectorPositionC *St_tpcSectorPositionC::fgInstance = 0;
-St_tpcSectorPosition  *St_tpcSectorPositionC::fgTables[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-St_tpcSectorPositionC *St_tpcSectorPositionC::instance() {
-  if (fgInstance) return fgInstance;
-  TDataSet *tpc = StMaker::GetChain()->GetDataBase("Geometry/tpc");
-  assert(tpc);
-  for (Int_t sec = 1; sec <= 24; sec++) {
-    TString path = Form("Sector_%02i/tpcSectorPosition",sec);
-    fgTables[sec-1] = (St_tpcSectorPosition  *) tpc->Find(path.Data());
-    if (! fgTables[sec-1]) {
-      LOG_WARN << "St_tpcSectorPositionC::instance " << tpc->GetTitle() << "/" << path.Data()
-       << "\twas not found" << endm;
-      assert(fgTables[sec-1]);
-    }
-    {
-      TDatime t[2];
-      St_db_Maker::GetValidity(fgTables[sec-1],t);
-      Int_t Nrows = fgTables[sec-1]->GetNRows();
-      LOG_WARN << "St_tpcSectorPositionC::instance found table " << fgTables[sec-1]->GetName()
-	       << " with NRows = " << Nrows << " in db" << endm;
-      LOG_WARN << "Validity:" << t[0].GetDate() << "/" << t[0].GetTime()
-	       << " -----   " << t[1].GetDate() << "/" << t[1].GetTime() << endm;
-      fgTables[sec-1]->Print(0,1);
-    }
-  }
-  fgInstance = new St_tpcSectorPositionC();
-  return fgInstance;
-}
 #include "StDetectorDbMaker/St_tpcFieldCageC.h"
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
