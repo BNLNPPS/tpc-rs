@@ -13,18 +13,12 @@
 #include <vector>
 
 #include "StTpcRSMaker/StTpcRSMaker.h"
-#include "St_base/StarCallf77.h"
-#include "St_base/Stiostream.h"
 // SCL
-#include "StarClassLibrary/StGlobals.hh"
 #include "StarClassLibrary/StThreeVector.hh"
 #include "StarClassLibrary/StPhysicalHelix.hh"
 // ROOT
-#include "TClassTable.h"
-#include "TDataSetIter.h"
 #include "TTableSorter.h"
 #include "TRandom.h"
-#include "TSystem.h"
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
@@ -48,7 +42,6 @@
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
 #include "StarClassLibrary/StParticleTable.hh"
 #include "StarClassLibrary/StParticleDefinition.hh"
-#include "StMagF/StMagF.h"
 #include "StTpcRSMaker/Altro.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"

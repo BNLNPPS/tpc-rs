@@ -8,8 +8,6 @@
 #define StarMagField_H
 
 #include <cmath>
-#include <stdio.h>
-#include <stdlib.h>
 #include <Rtypes.h>
 #include "TH2.h"
 #include "TGeoMatrix.h"

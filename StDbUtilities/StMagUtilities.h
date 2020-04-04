@@ -7,8 +7,6 @@
 #define StMagUtilities_H
 #define  __NEW_MagUtilities__
 #include <cmath>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "TArrayF.h"
 #include "TArrayD.h"

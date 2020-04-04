@@ -1,7 +1,6 @@
 #include <cassert>
 #include "StBichsel/dEdxParameterization.h"
 #include "TSystem.h"
-#include "TROOT.h"
 #include "TDirectory.h"
 #include "TF1.h"
 #include "TError.h"

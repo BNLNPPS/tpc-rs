@@ -11,21 +11,15 @@
 #define ClassStTpcDb
 
 class StMagUtilities;
-#include "St_base/StMessMgr.h"
-#include "StEvent/StEnumerations.h"
-#include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcWirePlanesC.h"
 #include "StDetectorDbMaker/St_tpcDimensionsC.h"
 #include "StDetectorDbMaker/St_tpcElectronicsC.h"
 #include "StDetectorDbMaker/St_tpcGlobalPositionC.h"
-#include "StDetectorDbMaker/St_tpcSectorPositionC.h"
 #include "StDetectorDbMaker/St_tpcFieldCageC.h"
 #include "StDetectorDbMaker/St_tpcPadResponseC.h"
-#include "StDetectorDbMaker/St_tpcPadGainT0BC.h"
 #include "StDetectorDbMaker/St_trgTimeOffsetC.h"
 #include "TGeoMatrix.h"
-#include "TString.h"
 class StTpcDb;
 // Global pointers:
 R__EXTERN StTpcDb* gStTpcDb;

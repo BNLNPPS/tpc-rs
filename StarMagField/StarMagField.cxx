@@ -42,16 +42,12 @@ To do:  <br>
 #include <string>
 #include <cassert>
 #include "StarMagField/StarMagField.h"
-#include "St_base/StarCallf77.h"
-#include <string>
 #include "TMath.h"
 #include <cmath>
 StarMagField* StarMagField::fgInstance = 0;
 
 
 
-#include "TString.h"
-#include "TSystem.h"
 #include "TFile.h"
 #include "TError.h"
 #include "TEnv.h"

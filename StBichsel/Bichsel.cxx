@@ -1,4 +1,3 @@
-#include "Riostream.h"
 #include "StBichsel/Bichsel.h"
 #include <cassert>
 TString   Bichsel::m_Tags[kTotal] = {"P10", "Bi", "PAI"};

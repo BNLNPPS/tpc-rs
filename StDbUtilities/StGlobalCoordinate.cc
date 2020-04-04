@@ -5,7 +5,6 @@
  *************************************************************************/
 
 #include "StDbUtilities/StGlobalCoordinate.hh"
-#include "StarClassLibrary/StThreeVectorF.hh"
 
 // Non-member functions
 std::ostream &operator<<(std::ostream &os, const StGlobalCoordinate &a)

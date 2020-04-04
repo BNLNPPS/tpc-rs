@@ -15,23 +15,19 @@
 #include <stdlib.h>
 #include "TMath.h"
 // SCL
-#include "StarClassLibrary/StGlobals.hh"
 #include "StarClassLibrary/SystemOfUnits.h"
 #include "StarClassLibrary/StThreeVector.hh"
 #include "StTpcDb/StTpcDb.h"
-#include "St_base/StObject.h"
 
 //#define DEBUG_TPC 0
 //#define idb if(DEBUG_TPC) LOG_INFO
 #include "StDbUtilities/StTpcPadCoordinate.hh"
 #include "StDbUtilities/StTpcLocalCoordinate.hh"
 #include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
-#include "StDbUtilities/StTpcLocalSectorAlignedCoordinate.hh"
 #include "StDbUtilities/StGlobalCoordinate.hh"
 
 #include "StDbUtilities/StTpcLocalDirection.hh"
 #include "StDbUtilities/StTpcLocalSectorDirection.hh"
-#include "StDbUtilities/StTpcLocalSectorAlignedDirection.hh"
 #include "StDbUtilities/StGlobalDirection.hh"
 // pad              => sector12       =>   subsector => sector => tpc      => global
 // TpcPadCoordinate => TpcSectL => TpcSectLAligned => TpcLocal => Global

@@ -1,7 +1,5 @@
 #include "StDbUtilities/StTpcLocalDirection.hh"
 #include "StDbUtilities/StTpcLocalCoordinate.hh"
-#include "StDbUtilities/StTpcLocalSectorAlignedDirection.hh"
-#include "StDbUtilities/StTpcLocalSectorAlignedCoordinate.hh"
 #include "StDbUtilities/StTpcLocalSectorDirection.hh"
 #include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
 
