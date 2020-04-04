@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StSigmaMinus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StSigmaMinus::StSigmaMinus(const string  &  aName,  
 			   double           mass,     

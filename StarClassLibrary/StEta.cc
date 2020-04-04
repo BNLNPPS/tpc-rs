@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StEta.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StEta::StEta(const string  &  aName,  
 	     double           mass,     

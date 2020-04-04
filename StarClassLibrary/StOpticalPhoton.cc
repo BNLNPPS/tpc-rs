@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StOpticalPhoton.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StOpticalPhoton::StOpticalPhoton(const string  &  aName,  
 				 double           mass,     

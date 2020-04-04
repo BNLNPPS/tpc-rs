@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StTriton.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StTriton::StTriton(const string  &  aName,  
 		   double           mass,     

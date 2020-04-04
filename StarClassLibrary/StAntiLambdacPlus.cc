@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiLambdacPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiLambdacPlus::StAntiLambdacPlus(const string  &  aName,  
 				     double           mass,     

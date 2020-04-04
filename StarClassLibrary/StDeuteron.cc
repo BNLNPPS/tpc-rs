@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StDeuteron.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StDeuteron::StDeuteron(const string  &  aName,  
 		       double           mass,     

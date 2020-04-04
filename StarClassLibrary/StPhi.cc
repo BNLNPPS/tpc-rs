@@ -22,7 +22,7 @@
  *
  **************************************************************************/
 #include "StPhi.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StPhi::StPhi(const string  &  aName,  
 	     double           mass,     

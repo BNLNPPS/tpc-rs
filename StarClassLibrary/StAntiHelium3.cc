@@ -27,7 +27,7 @@
  *
  **************************************************************************/
 #include "StarClassLibrary/StAntiHelium3.hh" 
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 StAntiHelium3::StAntiHelium3(const string  &  aName,  
 		   double           mass,     

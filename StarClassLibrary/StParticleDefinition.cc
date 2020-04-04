@@ -32,7 +32,7 @@
 
 #include "StarClassLibrary/StParticleDefinition.hh"
 #include "StarClassLibrary/StParticleTable.hh"
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 StParticleDefinition::StParticleDefinition(
   const string       &aName,

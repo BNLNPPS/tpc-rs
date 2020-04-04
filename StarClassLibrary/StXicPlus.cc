@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StXicPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StXicPlus::StXicPlus(const string  &  aName,  
 		     double           mass,     

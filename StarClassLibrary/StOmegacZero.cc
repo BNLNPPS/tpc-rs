@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StOmegacZero.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StOmegacZero::StOmegacZero(const string  &  aName,  
 			   double           mass,     

@@ -22,7 +22,7 @@
  *
  **************************************************************************/
 #include "StXiZero1530.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StXiZero1530::StXiZero1530(const string  &  aName,  
 		   double           mass,     

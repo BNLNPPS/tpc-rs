@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StBMesonMinus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StBMesonMinus::StBMesonMinus(const string  &  aName,  
 			     double           mass,     

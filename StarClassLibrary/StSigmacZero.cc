@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StSigmacZero.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StSigmacZero::StSigmacZero(const string  &  aName,  
 			   double           mass,     

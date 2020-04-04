@@ -28,7 +28,7 @@
  *
  **************************************************************************/
 #include "StarClassLibrary/StHyperTriton.hh" 
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 #include "StarClassLibrary/StarPDGEncoding.hh"
 

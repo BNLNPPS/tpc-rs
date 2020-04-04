@@ -23,7 +23,7 @@
  *
  **************************************************************************/
 #include "StWPlusBoson.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StWPlusBoson::StWPlusBoson(const string  &  aName,  
 		 double           mass,     

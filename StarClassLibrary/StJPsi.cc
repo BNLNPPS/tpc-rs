@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StJPsi.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StJPsi::StJPsi(const string  &  aName,  
 	       double           mass,     

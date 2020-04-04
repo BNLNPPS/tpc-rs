@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StKaonPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StKaonPlus::StKaonPlus(const string  &  aName,  
 		       double           mass,     

@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StOmegaMinus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StOmegaMinus::StOmegaMinus(const string  &  aName,  
 			   double           mass,     

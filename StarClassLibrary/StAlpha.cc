@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAlpha.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAlpha::StAlpha(const string  &  aName,  
 		 double           mass,     

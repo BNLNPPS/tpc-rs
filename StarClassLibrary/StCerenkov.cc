@@ -27,7 +27,7 @@
  *
  **************************************************************************/
 #include "StCerenkov.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StCerenkov::StCerenkov(const string  &  aName,  
 		 double           mass,     

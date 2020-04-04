@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiOmegaMinus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiOmegaMinus::StAntiOmegaMinus(const string  &  aName,  
 				   double           mass,     

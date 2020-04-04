@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StHe3.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StHe3::StHe3(const string  &  aName,  
 	     double           mass,     

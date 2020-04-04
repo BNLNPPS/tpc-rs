@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiXicPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiXicPlus::StAntiXicPlus(const string  &  aName,  
 			     double           mass,     

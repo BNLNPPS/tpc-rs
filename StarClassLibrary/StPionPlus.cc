@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StPionPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StPionPlus::StPionPlus(const string  &  aName,  
 		       double           mass,     

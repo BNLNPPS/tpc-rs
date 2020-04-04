@@ -27,7 +27,7 @@
  *
  **************************************************************************/
 #include "StarClassLibrary/StAntiTriton.hh" 
-#include "StarClassLibrary/PhysicalConstants.h"
+#include "StarClassLibrary/SystemOfUnits.h"
 
 StAntiTriton::StAntiTriton(const string  &  aName,  
 		   double           mass,     

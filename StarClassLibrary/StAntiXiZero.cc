@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiXiZero.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiXiZero::StAntiXiZero(const string  &  aName,  
 			   double           mass,     

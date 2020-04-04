@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StAntiOmegacZero.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StAntiOmegacZero::StAntiOmegacZero(const string  &  aName,  
 				   double           mass,     

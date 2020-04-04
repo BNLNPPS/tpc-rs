@@ -23,7 +23,7 @@
  *
  **************************************************************************/
 #include "StUpsilon2S.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StUpsilon2S::StUpsilon2S(const string  &  aName,  
 	       double           mass,     

@@ -27,7 +27,7 @@
  *
  **************************************************************************/
 #include "StHelium3.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StHelium3::StHelium3(const string  &  aName,  
 		   double           mass,     

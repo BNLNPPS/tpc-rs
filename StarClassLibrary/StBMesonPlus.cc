@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StBMesonPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StBMesonPlus::StBMesonPlus(const string  &  aName,  
 			   double           mass,     

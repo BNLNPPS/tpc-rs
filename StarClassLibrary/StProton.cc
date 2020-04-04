@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StProton.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StProton::StProton(const string  &  aName,  
 		   double           mass,     

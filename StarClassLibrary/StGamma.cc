@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StGamma.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StGamma::StGamma(const string  &  aName,  
 		 double           mass,     

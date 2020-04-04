@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StLambdacPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StLambdacPlus::StLambdacPlus(const string  &  aName,  
 			     double           mass,     

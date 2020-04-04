@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 #include "StSigmaPlus.hh" 
-#include "PhysicalConstants.h"
+#include "SystemOfUnits.h"
 
 StSigmaPlus::StSigmaPlus(const string  &  aName,  
 			 double           mass,     
