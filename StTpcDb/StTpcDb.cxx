@@ -201,6 +201,7 @@
 //                                                                      //
 
 #include "TDatime.h"
+#include "TString.h"
 
 #include "StTpcDb/StTpcDb.h"
 #include "tables/St_trgTimeOffset_Table.h"
