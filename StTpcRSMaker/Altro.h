@@ -8,8 +8,6 @@
 	*	\verbinclude Altro/Altro.h.log
 */
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
 #include <string>
 
 /*

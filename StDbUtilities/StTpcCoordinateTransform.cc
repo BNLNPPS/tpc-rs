@@ -10,8 +10,6 @@
  * These Routines deal positions ONLY!
  ***********************************************************************/
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
-#include "StarClassLibrary/StMatrix.hh"
-#include <unistd.h>
 #include <iostream>
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"
 #include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"

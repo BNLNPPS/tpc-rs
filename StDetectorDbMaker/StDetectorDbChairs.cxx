@@ -1,10 +1,8 @@
 #include <cassert>
-#include <string.h>
 #include "TEnv.h"
 #include "TF1.h"
 #include "TMath.h"
 #include "TString.h"
-#include "Math/SMatrix.h"
 #include "tpcrs/logger.h"
 
 using namespace ROOT::Math;

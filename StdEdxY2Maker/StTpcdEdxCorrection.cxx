@@ -7,7 +7,6 @@
 
 #include <iostream>
 
-#include "StChain/StMaker.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 #include "StTpcDb/StTpcDb.h"
 #include "StBichsel/Bichsel.h"
@@ -44,7 +43,6 @@
 #include "StDetectorDbMaker/St_TpcAvgPowerSupplyC.h"
 #include "StDetectorDbMaker/St_tpcTimeDependenceC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
-#include "StarRoot/TUnixTime.h"
 #include "tpcrs/logger.h"
 
 
