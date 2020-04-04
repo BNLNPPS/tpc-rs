@@ -44,7 +44,6 @@
 #include "StDetectorDbMaker/St_TpcAvgPowerSupplyC.h"
 #include "StDetectorDbMaker/St_tpcTimeDependenceC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
-#include "StDetectorDbMaker/St_beamInfoC.h"
 #include "StarRoot/TUnixTime.h"
 #include "tpcrs/logger.h"
 
@@ -65,12 +64,6 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(Int_t option, Int_t debug) :
                                       "TpcZCorrectionB"
                                      };
   static Int_t NT = sizeof(FXTtables) / sizeof(const Char_t*);
-  Bool_t isFixedTarget = St_beamInfoC::instance()->IsFixedTarget();
-  TString flavor("sim+ofl");
-
-  if (isFixedTarget) flavor = "sim+ofl+FXT";
-
-
 
   ReSetCorrections();
 }

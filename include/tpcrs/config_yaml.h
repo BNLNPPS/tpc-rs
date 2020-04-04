@@ -151,42 +151,6 @@ struct convert<tpcGlobalPosition_st> {
 };
 }
 
-#include "tpcSectorPosition.h"
-
-namespace YAML {
-template<>
-struct convert<tpcSectorPosition_st> {
-  static Node encode(const tpcSectorPosition_st& st) {
-    Node node;
-    
-    node["innerSectorLocalxShift"] = st.innerSectorLocalxShift;
-    node["innerSectorLocalyShift"] = st.innerSectorLocalyShift;
-    node["innerSectorRotationAngle"] = st.innerSectorRotationAngle;
-    node["innerSectorCovMatrix"] = st.innerSectorCovMatrix;
-    node["outerSectorLocalxShift"] = st.outerSectorLocalxShift;
-    node["outerSectorLocalyShift"] = st.outerSectorLocalyShift;
-    node["outerSectorRotationAngle"] = st.outerSectorRotationAngle;
-    node["outerSectorCovMatrix"] = st.outerSectorCovMatrix;
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcSectorPosition_st& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.innerSectorLocalxShift = node["innerSectorLocalxShift"].as<float>();
-    st.innerSectorLocalyShift = node["innerSectorLocalyShift"].as<float>();
-    st.innerSectorRotationAngle = node["innerSectorRotationAngle"].as<float>();
-    st.innerSectorCovMatrix = node["innerSectorCovMatrix"].as<float>();
-    st.outerSectorLocalxShift = node["outerSectorLocalxShift"].as<float>();
-    st.outerSectorLocalyShift = node["outerSectorLocalyShift"].as<float>();
-    st.outerSectorRotationAngle = node["outerSectorRotationAngle"].as<float>();
-    st.outerSectorCovMatrix = node["outerSectorCovMatrix"].as<float>();
-    return true;
-  }
-};
-}
 
 #include "tpcRDOMasks.h"
 
@@ -1375,62 +1339,6 @@ struct convert<tpcSCGL_st> {
 };
 }
 
-#include "beamInfo.h"
-
-namespace YAML {
-template<>
-struct convert<beamInfo_st> {
-  static Node encode(const beamInfo_st& st) {
-    Node node;
-    
-    node["runNumber"] = st.runNumber;
-    node["entryTag"] = st.entryTag;
-    node["blueSpecies"] = string(st.blueSpecies);
-    node["blueMassNumber"] = st.blueMassNumber;
-    node["blueEnergy"] = st.blueEnergy;
-    node["blueIntensity"] = st.blueIntensity;
-    node["blueLifeTime"] = st.blueLifeTime;
-    node["blueBunchIntensity"] = st.blueBunchIntensity;
-    node["yellowSpecies"] = string(st.yellowSpecies);
-    node["yellowMassNumber"] = st.yellowMassNumber;
-    node["yellowEnergy"] = st.yellowEnergy;
-    node["yellowIntensity"] = st.yellowIntensity;
-    node["yellowLifeTime"] = st.yellowLifeTime;
-    node["yellowBunchIntensity"] = st.yellowBunchIntensity;
-    node["blueFillNumber"] = st.blueFillNumber;
-    node["yellowFillNumber"] = st.yellowFillNumber;
-    return node;
-  };
-
-  static bool decode(const Node& node, beamInfo_st& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.runNumber = node["runNumber"].as<unsigned int>();
-    st.entryTag = node["entryTag"].as<int>();
-    auto blueSpecies = node["blueSpecies"].as<string>();
-    copy(begin(blueSpecies), end(blueSpecies), st.blueSpecies);
-    st.blueSpecies[blueSpecies.size()] ='\0';
-    st.blueMassNumber = node["blueMassNumber"].as<unsigned int>();
-    st.blueEnergy = node["blueEnergy"].as<float>();
-    st.blueIntensity = node["blueIntensity"].as<float>();
-    st.blueLifeTime = node["blueLifeTime"].as<float>();
-    st.blueBunchIntensity = node["blueBunchIntensity"].as<float>();
-    auto yellowSpecies = node["yellowSpecies"].as<string>();
-    copy(begin(yellowSpecies), end(yellowSpecies), st.yellowSpecies);
-    st.yellowSpecies[yellowSpecies.size()] ='\0';
-    st.yellowMassNumber = node["yellowMassNumber"].as<unsigned int>();
-    st.yellowEnergy = node["yellowEnergy"].as<float>();
-    st.yellowIntensity = node["yellowIntensity"].as<float>();
-    st.yellowLifeTime = node["yellowLifeTime"].as<float>();
-    st.yellowBunchIntensity = node["yellowBunchIntensity"].as<float>();
-    st.blueFillNumber = node["blueFillNumber"].as<float>();
-    st.yellowFillNumber = node["yellowFillNumber"].as<float>();
-    return true;
-  }
-};
-}
 
 #include "tpcHVPlanes.h"
 
@@ -1535,34 +1443,6 @@ struct convert<tpcAltroParams_st> {
 };
 }
 
-#include "tpcPedestal.h"
-
-namespace YAML {
-template<>
-struct convert<tpcPedestal_st> {
-  static Node encode(const tpcPedestal_st& st) {
-    Node node;
-    
-    node["Pedestal"] = reinterpret_cast<const array<float, 18200>&>( st.Pedestal );
-    node["Pedestal"].SetStyle(YAML::EmitterStyle::Flow);
-    node["Rms"] = reinterpret_cast<const array<float, 18200>&>( st.Rms );
-    node["Rms"].SetStyle(YAML::EmitterStyle::Flow);
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcPedestal_st& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    auto Pedestal = node["Pedestal"].as<array<float, 18200>>();
-    copy(begin(Pedestal), end(Pedestal), reinterpret_cast<float*>(st.Pedestal));
-    auto Rms = node["Rms"].as<array<float, 18200>>();
-    copy(begin(Rms), end(Rms), reinterpret_cast<float*>(st.Rms));
-    return true;
-  }
-};
-}
 
 #include "itpcPadGainT0.h"
 
@@ -1697,54 +1577,6 @@ struct convert<g2t_vertex_st> {
 };
 }
 
-#include "tpcSlowControlSim.h"
-
-namespace YAML {
-template<>
-struct convert<tpcSlowControlSim_st> {
-  static Node encode(const tpcSlowControlSim_st& st) {
-    Node node;
-    
-    node["driftVelocity"] = st.driftVelocity;
-    node["driftVoltage"] = st.driftVoltage;
-    node["innerSectorAnodeVoltage"] = st.innerSectorAnodeVoltage;
-    node["innerSectorGatingGridV"] = st.innerSectorGatingGridV;
-    node["outerSectorAnodeVoltage"] = st.outerSectorAnodeVoltage;
-    node["outerSectorGatingGridV"] = st.outerSectorGatingGridV;
-    node["innerSectorGasGain"] = st.innerSectorGasGain;
-    node["innerSectorGasGainVzero"] = st.innerSectorGasGainVzero;
-    node["innerSectorGasGainb"] = st.innerSectorGasGainb;
-    node["outerSectorGasGain"] = st.outerSectorGasGain;
-    node["outerSectorGasGainVzero"] = st.outerSectorGasGainVzero;
-    node["outerSectorGasGainb"] = st.outerSectorGasGainb;
-    node["hallPressure"] = st.hallPressure;
-    node["hallTemperature"] = st.hallTemperature;
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcSlowControlSim_st& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.driftVelocity = node["driftVelocity"].as<double>();
-    st.driftVoltage = node["driftVoltage"].as<double>();
-    st.innerSectorAnodeVoltage = node["innerSectorAnodeVoltage"].as<double>();
-    st.innerSectorGatingGridV = node["innerSectorGatingGridV"].as<double>();
-    st.outerSectorAnodeVoltage = node["outerSectorAnodeVoltage"].as<double>();
-    st.outerSectorGatingGridV = node["outerSectorGatingGridV"].as<double>();
-    st.innerSectorGasGain = node["innerSectorGasGain"].as<double>();
-    st.innerSectorGasGainVzero = node["innerSectorGasGainVzero"].as<double>();
-    st.innerSectorGasGainb = node["innerSectorGasGainb"].as<double>();
-    st.outerSectorGasGain = node["outerSectorGasGain"].as<double>();
-    st.outerSectorGasGainVzero = node["outerSectorGasGainVzero"].as<double>();
-    st.outerSectorGasGainb = node["outerSectorGasGainb"].as<double>();
-    st.hallPressure = node["hallPressure"].as<double>();
-    st.hallTemperature = node["hallTemperature"].as<double>();
-    return true;
-  }
-};
-}
 
 #include "TpcAvgCurrent.h"
 
