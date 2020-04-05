@@ -10,7 +10,22 @@
 #include "TH3.h"
 #include "TProfile2D.h"
 #include "TString.h"
-#include "StEvent/StPidParticleDefinition.h"
+
+
+enum StPidParticle {
+  kPidElectron,
+  kPidProton,
+  kPidKaon,
+  kPidPion,
+  kPidMuon,
+  kPidDeuteron,
+  kPidTriton,
+  kPidHe3,
+  kPidAlpha,
+  KPidParticles
+};
+
+
 class dEdxParameterization
 {
  private:

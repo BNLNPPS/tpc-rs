@@ -56,7 +56,6 @@
 #include <utility>
 #include <algorithm>
 #include "StarClassLibrary/StThreeVector.hh"
-#include "StarClassLibrary/SystemOfUnits.h"
 
 class StHelix
 {
@@ -113,10 +112,10 @@ class StHelix
   /// path length at distance of closest approach in the xy-plane to a given point
   double       pathLength(double x, double y) const;
 
-  /// path lengths at dca between two helices
+  /// path lengths in centimeters at dca between two helices
   std::pair<double, double> pathLengths(const StHelix &,
-                                        double minStepSize = 10 * micrometer,
-                                        double minRange = 10 * centimeter) const;
+                                        double minStepSize = 1.e-3,
+                                        double minRange = 10) const;
 
   /// minimal distance between point and helix
   double       distance(const StThreeVector<double> &p, bool scanPeriods = true) const;
