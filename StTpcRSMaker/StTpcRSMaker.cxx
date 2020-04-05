@@ -889,9 +889,11 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
                              (Float_t ) TrackSegmentHits[iSegHits].BLS.position().y(),
                              (Float_t ) TrackSegmentHits[iSegHits].BLS.position().z()
                             };
+        // Magnetic field BField must be in kilogauss
+        // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
         StPhysicalHelixD track(TrackSegmentHits[iSegHits].dirLS.position(),
                                TrackSegmentHits[iSegHits].coorLS.position(),
-                               BField[2]*kilogauss * charge, 1);
+                               BField[2]* 1e-14 * charge, 1);
         StThreeVectorD unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
         Double_t* cxyz = unit.xyz();
         double L2L[9] = {
@@ -939,6 +941,7 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
         StThreeVectorD       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
         Double_t bg = 0;
         static const Double_t m_e = .51099907e-3;
+        static const double eV = 1e-9; // electronvolt in GeV
         Double_t eKin = -1;
 #ifdef __STOPPED_ELECTRONS__
 

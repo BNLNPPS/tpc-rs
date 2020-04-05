@@ -36,7 +36,7 @@
 class StPhysicalHelix : public StHelix
 {
  public:
-  // Requires: momentum, origin, signed Magnetic Field
+  // Requires: momentum, origin, signed Magnetic Field in kilogausses
   //           and Charge of particle (+/- 1)
   StPhysicalHelix(const StThreeVector<double> &,
                   const StThreeVector<double> &,
