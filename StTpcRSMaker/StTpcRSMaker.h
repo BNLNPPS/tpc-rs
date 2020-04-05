@@ -47,7 +47,7 @@ class StTpcRSMaker
   Double_t GetNoPrimaryClusters(Double_t betaGamma, Int_t charge);
   virtual void Print(Option_t* option = "") const;
   StTpcDigitalSector* DigitizeSector(Int_t sector, StTpcRawData* data);
-  static Int_t    AsicThresholds(Short_t ADCs[__MaxNumberOfTimeBins__]);
+  static Int_t    AsicThresholds(Short_t* ADCs);
   static Int_t    SearchT(const void* elem1, const void** elem2);
   static Int_t    CompareT(const void** elem1, const void** elem2);
   static Double_t shapeEI(Double_t* x, Double_t* par = 0);
@@ -115,9 +115,9 @@ class StTpcRSMaker
   const Double_t ElectronRange;       //!
   const Double_t ElectronRangeEnergy; //!
   const Double_t ElectronRangePower;  //!
-  const Int_t NoOfSectors;            //!
-  const Int_t NoOfPads;               //!
-  const Int_t NoOfTimeBins;           //!
+  const Int_t max_sectors;            //!
+  const Int_t max_pads;               //!
+  static const Int_t max_timebins = 512;
   Double_t   mCutEle;                 //! cut for delta electrons
 };
 #endif
