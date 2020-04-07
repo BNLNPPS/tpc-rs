@@ -2,7 +2,8 @@
 #define StTpcSurveyC_h
 
 #include "StDetectorDbMaker/St_SurveyC.h"
-#include "StEvent/StEnumerations.h"
+#include "tpcrs/enums.h"
+
 class StTpcInnerSectorPosition : public St_SurveyC {// Inner part of sector to Super Sector
  public:
   static StTpcInnerSectorPosition* 	instance();
@@ -34,10 +35,10 @@ class StTpcHalfPosition : public St_SurveyC {// Extra rotation for half of Tpc  
   static StTpcHalfPosition* 	instance();
   StTpcHalfPosition(St_Survey *table=0) : St_SurveyC(table) {}
   virtual ~StTpcHalfPosition() {fgInstance = 0;}
-  const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(east);}
-  const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(west);}
-  const TGeoHMatrix  &GetEastMatrixR() {return  GetMatrixR(east);}
-  const TGeoHMatrix  &GetWestMatrixR() {return  GetMatrixR(west);}
+  const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(TPC::Half::first);}
+  const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(TPC::Half::second);}
+  const TGeoHMatrix  &GetEastMatrixR() {return  GetMatrixR(TPC::Half::first);}
+  const TGeoHMatrix  &GetWestMatrixR() {return  GetMatrixR(TPC::Half::second);}
   static void Normalize(TGeoHMatrix &R) {}
  private:
   static StTpcHalfPosition* fgInstance;
