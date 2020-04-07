@@ -98,10 +98,10 @@ class StHelix
   double       period()       const;
 
   /// path length at given r (cylindrical r)
-  pair<double, double> pathLength(double r)   const;
+  std::pair<double, double> pathLength(double r)   const;
 
   /// path length at given r (cylindrical r, cylinder axis at x,y)
-  pair<double, double> pathLength(double r, double x, double y);
+  std::pair<double, double> pathLength(double r, double x, double y);
 
   /// path length at distance of closest approach to a given point
   double       pathLength(const StThreeVector<double> &p, bool scanPeriods = true) const;
@@ -114,9 +114,9 @@ class StHelix
   double       pathLength(double x, double y) const;
 
   /// path lengths at dca between two helices
-  pair<double, double> pathLengths(const StHelix &,
-                                   double minStepSize = 10 * micrometer,
-                                   double minRange = 10 * centimeter) const;
+  std::pair<double, double> pathLengths(const StHelix &,
+                                        double minStepSize = 10 * micrometer,
+                                        double minRange = 10 * centimeter) const;
 
   /// minimal distance between point and helix
   double       distance(const StThreeVector<double> &p, bool scanPeriods = true) const;

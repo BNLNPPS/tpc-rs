@@ -169,7 +169,7 @@ void StHelix::setCurvature(double val)
   else
     mCurvature = val;
 
-  if (fabs(mCurvature) <= numeric_limits<double>::epsilon())
+  if (fabs(mCurvature) <= std::numeric_limits<double>::epsilon())
     mSingularity = true;			// straight line
   else
     mSingularity = false;            	// curved
@@ -331,15 +331,15 @@ double StHelix::pathLength(const StThreeVector<double> &p, bool scanPeriods) con
 double StHelix::period() const
 {
   if (mSingularity)
-    return numeric_limits<double>::max();
+    return std::numeric_limits<double>::max();
   else
     return fabs(2 * M_PI / (mH * mCurvature * mCosDipAngle));
 }
 
-pair<double, double> StHelix::pathLength(double r) const
+std::pair<double, double> StHelix::pathLength(double r) const
 {
-  pair<double, double> value;
-  pair<double, double> VALUE(999999999., 999999999.);
+  std::pair<double, double> value;
+  std::pair<double, double> VALUE(999999999., 999999999.);
 
   //
   // The math is taken from Maple with C(expr,optimized) and
@@ -414,18 +414,18 @@ pair<double, double> StHelix::pathLength(double r) const
   }
 
   if (value.first > value.second)
-    swap(value.first, value.second);
+    std::swap(value.first, value.second);
 
   return (value);
 }
 
-pair<double, double> StHelix::pathLength(double r, double x, double y)
+std::pair<double, double> StHelix::pathLength(double r, double x, double y)
 {
   double x0 = mOrigin.x();
   double y0 = mOrigin.y();
   mOrigin.setX(x0 - x);
   mOrigin.setY(y0 - y);
-  pair<double, double> result = this->pathLength(r);
+  std::pair<double, double> result = this->pathLength(r);
   mOrigin.setX(x0);
   mOrigin.setY(y0);
   return result;
@@ -516,7 +516,7 @@ double StHelix::pathLength(const StThreeVector<double> &r,
   return s;
 }
 
-pair<double, double>
+std::pair<double, double>
 StHelix::pathLengths(const StHelix &h, double minStepSize, double minRange) const
 {
   //
@@ -524,7 +524,7 @@ StHelix::pathLengths(const StHelix &h, double minStepSize, double minRange) cons
   //  and the other one is a straight line.
   //
   if (mSingularity != h.mSingularity)
-    return pair<double, double>(NoSolution, NoSolution);
+    return std::pair<double, double>(NoSolution, NoSolution);
 
   double s1, s2;
 
@@ -544,7 +544,7 @@ StHelix::pathLengths(const StHelix &h, double minStepSize, double minRange) cons
     double k  = dv * b;
     s2 = (k - ab * g) / (ab * ab - 1.);
     s1 = g + s2 * ab;
-    return pair<double, double>(s1, s2);
+    return std::pair<double, double>(s1, s2);
   }
   else {
     //
@@ -586,7 +586,7 @@ StHelix::pathLengths(const StHelix &h, double minStepSize, double minRange) cons
     //   They have default values defined in the header file.
     //
     double dmin              = h.distance(at(s));
-    double range             = max(2 * dmin, minRange);
+    double range             = std::max(2 * dmin, minRange);
     double ds                = range / 10;
     double slast = -999999, ss, d;
     s1 = s - range / 2.;
@@ -628,7 +628,7 @@ StHelix::pathLengths(const StHelix &h, double minStepSize, double minRange) cons
       }
     }
 
-    return pair<double, double>(s, h.pathLength(at(s)));
+    return std::pair<double, double>(s, h.pathLength(at(s)));
   }
 }
 

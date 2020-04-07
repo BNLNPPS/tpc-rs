@@ -228,7 +228,6 @@ Bool_t StTpcDb::mOldScheme = kTRUE;
 StTpcDb::StTpcDb()
 {
   assert(gStTpcDb == 0);
-  memset(mBeg, 0, mEnd - mBeg + 1);
   mTpc2GlobMatrix = new TGeoHMatrix("Default Tpc2Glob");
 
   for (Int_t i = 1; i <= 24; i++) {
