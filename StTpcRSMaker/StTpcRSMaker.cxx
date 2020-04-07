@@ -606,7 +606,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
   return kStOK;
 }
 
-Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, StTpcRawData* tpcRawData)
+Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -1292,11 +1292,9 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
     }  // hits in the sector
 
     if (nHitsInTheSector) {
-      StTpcDigitalSector* digitalSector = DigitizeSector(sector, tpcRawData);
+      DigitizeSector(sector, digi_data);
 
       if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
-
-      if (Debug() > 2) digitalSector->Print();
     }
   } // sector
 
@@ -1470,27 +1468,17 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 }
 
 
-StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tpcRawData)
+void StTpcRSMaker::DigitizeSector(Int_t sector, tpcrs::DigiData& digi_data)
 {
   static Int_t iBreak = 0;
   static Int_t AdcCut = 500;
 
-  assert(tpcRawData);
   SignalSum_t* SignalSum = GetSignalSum(sector);
   Double_t ped    = 0;
   Int_t adc = 0;
   Int_t index = 0;
   Double_t gain = 1;
   Int_t row, pad, bin;
-  Int_t Sector = TMath::Abs(sector);
-  StTpcDigitalSector* digitalSector = tpcRawData->GetSector(Sector);
-
-  if (! digitalSector) {
-    digitalSector = new StTpcDigitalSector(Sector);
-    tpcRawData->setSector(Sector, digitalSector);
-  }
-  else
-    digitalSector->clear();
 
   for (row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
     Int_t nPadsPerRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
@@ -1513,7 +1501,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
 
       ped    = St_TpcResponseSimulatorC::instance()->AveragePedestal();
       static  Short_t ADCs[max_timebins];
-      static UShort_t IDTs[max_timebins];
+      static  Short_t IDTs[max_timebins];
       memset(ADCs, 0, sizeof(ADCs));
       memset(IDTs, 0, sizeof(IDTs));
       Int_t NoTB = 0;
@@ -1610,8 +1598,8 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
         if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) NoTB = AsicThresholds(ADCs);
       }
 
-      if (NoTB > 0 && digitalSector) {
-        digitalSector->putTimeAdc(row, pad, ADCs, IDTs);
+      if (NoTB > 0) {
+        digi_data.Add(sector, row, pad, ADCs, IDTs, max_timebins);
       }
     } // pads
 
@@ -1621,8 +1609,6 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
     }
 #endif
   } // row
-
-  return digitalSector;
 }
 
 
