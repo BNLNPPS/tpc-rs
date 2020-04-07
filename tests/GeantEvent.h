@@ -31,12 +31,8 @@ struct DigitizedHit
   DigitizedHit(int s, int r, int p, std::vector<Short_t> adcs, std::vector<UShort_t> idts) :
     sector(s), row(r), pad(p), ADCs(adcs), IDTs(idts) { }
 
-  void Print(std::ostream &os, bool resetIndex=false)
+  void Print(std::ostream &os)
   {
-    static int index = 0;
-
-    index = resetIndex ? 0 : index;
-
     // Print only when hit has values
     std::ostringstream oss;
     for (int i = 0; i < ADCs.size(); i++) {
@@ -45,10 +41,8 @@ struct DigitizedHit
     }
 
     if (!oss.str().empty())
-      os << index  << "\ts/r/p: " << sector << "/" << row << "/" << pad
+      os << "s/r/p: " << sector << "/" << row << "/" << pad
          << ":" << oss.str() << "\n";
-
-    index++;
   }
 
   ClassDef(DigitizedHit, 1)
@@ -121,10 +115,8 @@ struct GeantEvent
       os << hit.id << ", " << hit.x[0] << ", " << hit.x[1] << ", " << hit.x[2] << ", " << hit.de << ", " << hit.ds << "\n";
     }
 
-    bool resetIndex = true;
     for (auto digiHit : digiHits) {
-      digiHit.Print(os, resetIndex);
-      resetIndex = false;
+      digiHit.Print(os);
     }
 
     os << std::setprecision(6);
