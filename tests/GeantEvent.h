@@ -1,19 +1,20 @@
 #ifndef GeantEvent_h
 #define GeantEvent_h
 
+#include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <sstream>
 #include <vector>
 
 #include "Rtypes.h"
 
-#include "StEvent/StTpcRawData.h"
-
 #include "g2t_tpc_hit.h"
 #include "g2t_track.h"
 #include "g2t_vertex.h"
+#include "tpcrs/digi_data.h"
 
 #define __MaxNumberOfTimeBins__ 512
 
@@ -79,30 +80,27 @@ struct GeantEvent
       vertices.push_back(*vertex);
   }
 
-  void Fill(StTpcRawData& tpcrd)
+  void Fill(tpcrs::DigiData& digi_data)
   {
     digiHits.clear();
 
-    for (int sector = 1; sector <= tpcrd.getNoSectors(); sector++)
+    static  Short_t ADCs[__MaxNumberOfTimeBins__];
+    static UShort_t IDTs[__MaxNumberOfTimeBins__];
+
+    for (auto tc = digi_data.channels().begin(); tc != digi_data.channels().end(); ++tc)
     {
-      StTpcDigitalSector *digitalSector = tpcrd.GetSector(sector);
+      ADCs[tc->timebin] = tc->adc;
+      IDTs[tc->timebin] = tc->idt;
 
-      if (!digitalSector) continue;
+      auto next_tc = std::next(tc);
+      bool same_pad = (tc->sector == next_tc->sector && tc->row == next_tc->row && tc->pad == next_tc->pad);
 
-      int nRows = St_tpcPadConfigC::instance()->numberOfRows(sector);
-      for (int row = 1; row <= nRows; row++)
-      {
-        Int_t nPads = digitalSector->numberOfPadsInRow(row);
-        for(Int_t pad = 1; pad <= nPads; pad++)
-        {
-          static  Short_t ADCs[__MaxNumberOfTimeBins__];
-          static UShort_t IDTs[__MaxNumberOfTimeBins__];
-          digitalSector->getTimeAdc(row, pad, ADCs, IDTs);
-
-          digiHits.push_back( DigitizedHit(sector, row, pad,
+      if (!same_pad) {
+        digiHits.push_back( DigitizedHit(tc->sector, tc->row, tc->pad,
             std::vector<Short_t>(ADCs, ADCs + __MaxNumberOfTimeBins__),
             std::vector<UShort_t>(IDTs, IDTs + __MaxNumberOfTimeBins__) ) );
-        }
+        std::memset(ADCs, 0, __MaxNumberOfTimeBins__*sizeof(short));
+        std::memset(IDTs, 0, __MaxNumberOfTimeBins__*sizeof(unsigned short));
       }
     }
   }

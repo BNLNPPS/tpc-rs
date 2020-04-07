@@ -7,7 +7,6 @@
 #include "TBenchmark.h"
 
 #include "StarMagField/StarMagField.h"
-#include "StEvent/StTpcRawData.h"
 #include "StTpcDb/StTpcDb.h"
 #include "StTpcRSMaker/StTpcRSMaker.h"
 #include "tables/St_g2t_tpc_hit_Table.h"
@@ -22,6 +21,7 @@
 
 #include "tpcrs/configurator.h"
 #include "tpcrs/config_yaml.h"
+#include "tpcrs/digi_data.h"
 
 
 int main(int argc, char **argv)
@@ -89,11 +89,11 @@ int main(int argc, char **argv)
     for (auto vertex : geantEvent_inp->vertices)
       g2t_vertex->AddAt(&vertex);
 
-    StTpcRawData tpcraw;
+    tpcrs::DigiData  digidata;
 
-    tpcrs.Make(g2t_tpc_hit, g2t_track, g2t_vertex, &tpcraw);
+    tpcrs.Make(g2t_tpc_hit, g2t_track, g2t_vertex, digidata);
 
-    geantEvent_out.Fill(tpcraw);
+    geantEvent_out.Fill(digidata);
     geantEvent_out.Print(logFile_out);
   }
 
