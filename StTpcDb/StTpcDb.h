@@ -194,7 +194,6 @@ class StTpcDb
                                kTotalTpcSectorRotaions = 14
                               };
  private:
-  Char_t                mBeg[1];        //!
   StMagUtilities*       mExB;           //!
   Int_t                 m_Debug;        //!
   TGeoTranslation*      mSwap[2];       //!
@@ -206,12 +205,11 @@ class StTpcDb
   UInt_t                mUc;            //! time for which above mDriftVel have been calculated
   Int_t                 mTriggerId;     //! to distinguish local clock and RHIC clock
   Double_t              mzGG;           //! Gating Grid z
-  Char_t                mEnd[1];        //!
   static Bool_t         mOldScheme;     //! switch between Old and New alignment scheme
  private:
   StTpcDb();
  public:
-  virtual ~StTpcDb();
+  ~StTpcDb();
   St_tpcPadPlanesC*      PadPlaneGeometry() {return St_tpcPadPlanesC::instance();}
   St_tpcWirePlanesC*     WirePlaneGeometry() {return St_tpcWirePlanesC::instance();}
   St_tpcDimensionsC*     Dimensions() {return St_tpcDimensionsC::instance();}

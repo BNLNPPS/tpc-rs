@@ -1628,7 +1628,7 @@ StTpcDigitalSector*  StTpcRSMaker::DigitizeSector(Int_t sector, StTpcRawData* tp
 #endif /*     __DEBUG__ */
 
     for (pad = 1; pad <= nPadsPerRow; pad++) {
-      gain = St_tpcPadGainT0BC::instance()->Gain(Sector, row, pad);
+      gain = St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
 
       if (gain <= 0.0) continue;
 

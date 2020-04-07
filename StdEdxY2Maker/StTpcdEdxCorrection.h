@@ -1,19 +1,13 @@
-// $Id: StTpcdEdxCorrection.h,v 1.15 2019/11/19 14:44:41 fisyak Exp $
 #ifndef STAR_StTpcdEdxCorrection
 #define STAR_StTpcdEdxCorrection
-//
+
 #include "TObject.h"
 #include "TF1.h"
 #include "StDetectorDbMaker/St_tpcCorrectionC.h"
 #include "StDetectorDbMaker/St_tpcGasC.h"
-//#include "StDetectorDbMaker/St_trigDetSumsC.h"
-#include "StEvent/StTrackPidTraits.h"
-//class St_trigDetSums;
-//class trigDetSums_st;
 
 
 struct dE_t {
- public:
   Float_t dE;
   Float_t dx;
   Float_t dEdx;
@@ -112,16 +106,12 @@ class StTpcdEdxCorrection : public TObject
 };
 
 
-class dEdxY2_t
+struct dEdxY2_t
 {
- public:
-  dEdxY2_t() {}
-  virtual ~dEdxY2_t() {}
   /* U->R->S->P->O->Z->X
      U->R (TpcAdcCorrection) -> P (tpcPressure) ->
      S (TpcSecRowB/TpcSecRowC) ->  O (TpcDriftDistOxygen) ->
      Z (TpcZCorrection) -> X(TpcdXCorrection) */
-  Char_t   first[1];
   Int_t    sector;
   Int_t    row;
   Int_t    channel;
@@ -163,7 +153,6 @@ class dEdxY2_t
   dE_t     F;     //!
   Int_t    npads; // cluster size in pads
   Int_t    ntmbks;// clustre size in time buckets
-  Char_t   last[1];
-  void Reset() {memset(first, 0, last - first);}
 };
+
 #endif
