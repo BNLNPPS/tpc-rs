@@ -1,10 +1,10 @@
 #ifndef STAR_ST_TRS_MAKER_HH
 #define STAR_ST_TRS_MAKER_HH
 
-#include "StEvent/StTpcRawData.h"
 #include "StTpcRSMaker/TF1F.h"
 #include "TH1.h"
 #include "StTpcDb/StTpcDb.h"
+#include "tpcrs/digi_data.h"
 
 class Altro;
 class StTpcdEdxCorrection;
@@ -39,7 +39,7 @@ class StTpcRSMaker
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   virtual              ~StTpcRSMaker();
   virtual Int_t         InitRun(int runnumber = 0);
-  virtual Int_t Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, StTpcRawData* tpcRawData);
+  virtual Int_t Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, tpcrs::DigiData& digi_data);
   virtual Int_t Finish();
   Int_t         Debug() const {return 1;}
   TF1F* GetPolya(Int_t io = 0)       {return (TF1F*) mPolya[io];}
@@ -47,7 +47,7 @@ class StTpcRSMaker
   TF1F* GetTimeShape3(Int_t io = 0)  {return fgTimeShape3[io];}
   Double_t GetNoPrimaryClusters(Double_t betaGamma, Int_t charge);
   virtual void Print(Option_t* option = "") const;
-  StTpcDigitalSector* DigitizeSector(Int_t sector, StTpcRawData* data);
+  void DigitizeSector(Int_t sector, tpcrs::DigiData& digi_data);
   static Int_t    AsicThresholds(Short_t* ADCs);
   static Int_t    SearchT(const void* elem1, const void** elem2);
   static Int_t    CompareT(const void** elem1, const void** elem2);
