@@ -217,6 +217,7 @@
 #include "StDbUtilities/StMagUtilities.h"
 #include "TEnv.h"
 #include "tpcrs/logger.h"
+#include "tpcrs/enums.h"
 
 StTpcDb* gStTpcDb = 0;
 Bool_t StTpcDb::mOldScheme = kTRUE;
@@ -475,15 +476,15 @@ void StTpcDb::SetTpcRotations()
         }
         else {
           rotA = StTpcPosition::instance()->GetMatrix();
-          *mHalf[east] = StTpcHalfPosition::instance()->GetEastMatrix();
-          *mHalf[west] = StTpcHalfPosition::instance()->GetWestMatrix();
+          *mHalf[TPC::Half::first] = StTpcHalfPosition::instance()->GetEastMatrix();
+          *mHalf[TPC::Half::second] = StTpcHalfPosition::instance()->GetWestMatrix();
         }
       }
       else {
         Id = 10 * sector + k;
-        StBeamDirection part = east;
+        TPC::Half part = TPC::Half::first;
 
-        if (sector <= 12) part = west;
+        if (sector <= 12) part = TPC::Half::second;
 
         switch (k) {
         case kSupS2Tpc: // SupS => Tpc
