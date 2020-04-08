@@ -234,7 +234,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
   anodeWireRadius                = gStTpcDb->WirePlaneGeometry()->anodeWireRadius();
   Float_t BFieldG[3];
   Float_t xyz[3] = {0, 0, 0};
-  StMagF::Agufld(xyz, BFieldG);
+  StarMagField::Instance()->BField(xyz, BFieldG);
   // Shapers
   Double_t timeBinMin = -0.5;
   Double_t timeBinMax = 44.5;
@@ -2094,7 +2094,7 @@ Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex
 
   // move up, calculate field at center of TPC
   static Float_t BFieldG[3];
-  StMagF::Agufld(tpc_hitC->x, BFieldG);
+  StarMagField::Instance()->BField(tpc_hitC->x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   StThreeVectorD       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
