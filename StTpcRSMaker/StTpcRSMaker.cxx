@@ -18,7 +18,7 @@
 // SCL
 #include "StarClassLibrary/StGlobals.hh"
 #include "StarClassLibrary/StThreeVectorD.hh"
-#include "StarClassLibrary/StPhysicalHelixD.hh"
+#include "StarClassLibrary/StPhysicalHelix.hh"
 // ROOT
 #include "TClassTable.h"
 #include "TDataSetIter.h"
@@ -873,9 +873,9 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
                             };
         // Magnetic field BField must be in kilogauss
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-        StPhysicalHelixD track(TrackSegmentHits[iSegHits].dirLS.position(),
-                               TrackSegmentHits[iSegHits].coorLS.position(),
-                               BField[2]* 1e-14 * charge, 1);
+        StPhysicalHelix track(TrackSegmentHits[iSegHits].dirLS.position(),
+                              TrackSegmentHits[iSegHits].coorLS.position(),
+                              BField[2]* 1e-14 * charge, 1);
         StThreeVectorD unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
         Double_t* cxyz = unit.xyz();
         double L2L[9] = {
