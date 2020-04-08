@@ -5,6 +5,8 @@
 #include "TMath.h"
 #include "TString.h"
 #include "Math/SMatrix.h"
+#include "tpcrs/logger.h"
+
 using namespace ROOT::Math;
 
 #include "St_base/StarChairDefs.h"

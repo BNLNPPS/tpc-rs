@@ -473,6 +473,9 @@ To do:  <br>
 #include "StDetectorDbMaker/St_tpcSCGLC.h"
 #include "StDbUtilities/StTpcCoordinateTransform.hh"
 //#include "StDetectorDbMaker/StDetectorDbMagnet.h"
+
+#include "tpcrs/logger.h"
+
 static Float_t  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
 StMagUtilities* StMagUtilities::fgInstance = 0 ;
 static const Float_t  PiOver12 = TMath::Pi() / 12. ; // Commonly used constant

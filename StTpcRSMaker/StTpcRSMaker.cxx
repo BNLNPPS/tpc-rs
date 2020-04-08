@@ -50,7 +50,6 @@
 #include "StarClassLibrary/StParticleDefinition.hh"
 #include "StMagF/StMagF.h"
 #include "StTpcRSMaker/Altro.h"
-#include "St_base/StMessMgr.h"
 #include "St_base/Stypes.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
@@ -60,6 +59,7 @@
 #include "tables/St_g2t_tpc_hit_Table.h"
 
 #include "tpcrs/configurator.h"
+#include "tpcrs/logger.h"
 
 struct HitPoint_t {
   Int_t indx;
