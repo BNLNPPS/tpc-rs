@@ -70,7 +70,6 @@ class StTpcDb
   TGeoHMatrix*          mHalf[2];       //!
   TGeoHMatrix*          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
   Float_t               mDriftVel[2];   //!
-  UInt_t                mUc;            //! time for which above mDriftVel have been calculated
   Double_t              mzGG;           //! Gating Grid z
   static Bool_t         mOldScheme;     //! switch between Old and New alignment scheme
  private:
