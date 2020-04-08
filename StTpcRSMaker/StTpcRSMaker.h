@@ -38,9 +38,9 @@ class StTpcRSMaker
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   virtual              ~StTpcRSMaker();
-  virtual Int_t         InitRun(int runnumber = 0);
-  virtual Int_t Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, tpcrs::DigiData& digi_data);
-  virtual Int_t Finish();
+  virtual void InitRun(int runnumber = 0);
+  virtual void Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, tpcrs::DigiData& digi_data);
+  virtual void Finish();
   Int_t         Debug() const {return 1;}
   TF1F* GetPolya(Int_t io = 0)       {return (TF1F*) mPolya[io];}
   TF1F* GetTimeShape0(Int_t io = 0)  {return fgTimeShape0[io];}

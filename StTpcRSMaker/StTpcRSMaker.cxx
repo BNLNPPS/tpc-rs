@@ -50,7 +50,6 @@
 #include "StarClassLibrary/StParticleDefinition.hh"
 #include "StMagF/StMagF.h"
 #include "StTpcRSMaker/Altro.h"
-#include "St_base/Stypes.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 // g2t tables
@@ -129,7 +128,7 @@ StTpcRSMaker::~StTpcRSMaker()
 }
 
 
-Int_t StTpcRSMaker::Finish()
+void StTpcRSMaker::Finish()
 {
   if (m_SignalSum) {free(m_SignalSum); m_SignalSum = 0;}
 
@@ -151,16 +150,14 @@ Int_t StTpcRSMaker::Finish()
   if (m_TpcdEdxCorrection && m_TpcdEdxCorrection->TestBit(kCanDelete)) delete m_TpcdEdxCorrection;
 
   m_TpcdEdxCorrection = 0;
-
-  return 0;
 }
 
 
-Int_t StTpcRSMaker::InitRun(Int_t runnumber)
+void StTpcRSMaker::InitRun(Int_t runnumber)
 {
   if (!gStTpcDb) {
     LOG_ERROR << "Database Missing! Can't initialize TpcRS\n";
-    return kStFatal;
+    return;
   }
 
   if (TESTBIT(m_Mode, kBICHSEL)) {
@@ -494,9 +491,7 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
 
   mHeed = fEc(St_TpcResponseSimulatorC::instance()->W());
 
-  if ( ! ClusterProfile) {
-    return kStOK;
-  }
+  if (!ClusterProfile) return;
 
   Int_t color = 1;
   struct Name_t {
@@ -603,10 +598,9 @@ Int_t StTpcRSMaker::InitRun(Int_t runnumber)
 
   delete [] pbins;
   delete [] pbinsL;
-  return kStOK;
 }
 
-Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, tpcrs::DigiData& digi_data)
+void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -624,11 +618,8 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
   Double_t vminI = St_tpcGainCorrectionC::instance()->Struct(1)->min;
   Double_t vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
-  if (!g2t_tpc_hit) return kStWarn;
-
+  // TODO: Confirm proper handling of empty input containers
   Int_t no_tpc_hits = g2t_tpc_hit->GetNRows();
-
-  if (no_tpc_hits < 1) return kStOK;
 
   if (Debug() > 1) g2t_tpc_hit->Print(0, 10);
 
@@ -1324,8 +1315,6 @@ Int_t StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* 
       geantTrack->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
     }
   }
-
-  return kStOK;
 }
 
 
