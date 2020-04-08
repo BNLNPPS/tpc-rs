@@ -18,6 +18,7 @@
 	*/
 
 #include "StTpcRSMaker/Altro.h"
+#include "tpcrs/logger.h"
 
 /**	@brief Consturctor of Altro Class
 	*

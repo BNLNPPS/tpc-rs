@@ -11,7 +11,6 @@
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
 #include "StTpcDb/StTpcDb.h"
 #include "StBichsel/Bichsel.h"
-#include "St_base/StMessMgr.h"
 #include "StDetectorDbMaker/St_tss_tssparC.h"
 #include "StDetectorDbMaker/St_TpcEdgeC.h"
 #include "StDetectorDbMaker/St_TpcAdcCorrectionBC.h"
@@ -46,6 +45,7 @@
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
 #include "StDetectorDbMaker/St_beamInfoC.h"
 #include "StarRoot/TUnixTime.h"
+#include "tpcrs/logger.h"
 
 
 StTpcdEdxCorrection::StTpcdEdxCorrection(Int_t option, Int_t debug) :

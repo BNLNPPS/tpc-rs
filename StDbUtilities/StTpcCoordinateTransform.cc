@@ -253,7 +253,6 @@
 #include "StarClassLibrary/StMatrix.hh"
 #include <unistd.h>
 #include <iostream>
-#include "St_base/StMessMgr.h"
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"
 #include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"
 #include "StDetectorDbMaker/St_tpcRDOT0offsetC.h"
@@ -264,6 +263,8 @@
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 #include "TMath.h"
 #include "StarClassLibrary/StThreeVectorD.hh"
+#include "tpcrs/logger.h"
+
 static Int_t _debug = 0;
 StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer */)
 {

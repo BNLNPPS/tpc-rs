@@ -40,6 +40,8 @@
 #include <map>
 #include <vector>
 
+#include "tpcrs/logger.h"
+
 class StParticleDefinition;
 using std::vector;
 using std::map;

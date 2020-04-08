@@ -216,6 +216,8 @@
 #include "StarMagField/StarMagField.h"
 #include "StDbUtilities/StMagUtilities.h"
 #include "TEnv.h"
+#include "tpcrs/logger.h"
+
 StTpcDb* gStTpcDb = 0;
 Bool_t StTpcDb::mOldScheme = kTRUE;
 // C++ routines:
