@@ -9,13 +9,9 @@ Double_t St_spaceChargeCorC::getSpaceChargeCoulombs(Double_t scaleFactor)
     Double_t zf = zeroField(0); // potential validity margin for scalers
     if (zf>0 && zf<1) scalers->setValidityMargin(zf);
     Double_t coulombs = 0;
-//    StMemStat::PrintMem("Space charge before GetDate");
-    int idate  = StMaker::GetChain()->GetDate();
-//    StMemStat::PrintMem("Space charge AFTER int GetDate() conversion");  
 
-    bool use_powers = idate > 20090101;
-//    bool use_powers = (StMaker::GetChain()->GetDate() > 20090101);
-//    StMemStat::PrintMem("Space charge AFTER comparision");
+    bool use_powers = true;
+
     for (int row=0;row< (int) getNumRows();row++) {
       Double_t mult = 0;
       switch ((int) getSpaceChargeDetector(row)) {
