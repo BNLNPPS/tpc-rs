@@ -114,33 +114,23 @@ StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
 
 StTpcRSMaker::~StTpcRSMaker()
 {
-  SafeDelete(mAltro);
-  Finish();
-}
-
-
-void StTpcRSMaker::Finish()
-{
-  if (m_SignalSum) {free(m_SignalSum); m_SignalSum = 0;}
-
-  SafeDelete(mdNdx);
-  SafeDelete(mdNdxL10);
-  SafeDelete(mdNdEL10);
+  delete mAltro;
+  delete m_SignalSum;
+  delete mdNdx;
+  delete mdNdxL10;
+  delete mdNdEL10;
 
   for (int io = 0; io < 2; io++) {// Inner/Outer
     for (int sec = 0; sec < max_sectors; sec++) {
-      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {SafeDelete(mShaperResponses[io][sec]);}
+      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
 
-      SafeDelete(mChargeFraction[io][sec]);
-      SafeDelete(mPadResponseFunction[io][sec]);
+      delete mChargeFraction[io][sec];
+      delete mPadResponseFunction[io][sec];
     }
-
-    SafeDelete(mPolya[io]);
+    delete mPolya[io];
   }
 
-  if (m_TpcdEdxCorrection && m_TpcdEdxCorrection->TestBit(kCanDelete)) delete m_TpcdEdxCorrection;
-
-  m_TpcdEdxCorrection = 0;
+  delete m_TpcdEdxCorrection;
 }
 
 
