@@ -7,7 +7,6 @@
 class St_SurveyC : public TChair {
  public:
   virtual  ~St_SurveyC();
-  static St_SurveyC   *instance(const Char_t *name);
   Survey_st    *Struct(Int_t i = 0) 	const {return ((St_Survey*) Table())->GetTable()+i;}
   UInt_t     	getNumRows()            const {return GetNRows();}
   Int_t 	Id(Int_t i = 0) 	const {return Struct(i)->Id;}

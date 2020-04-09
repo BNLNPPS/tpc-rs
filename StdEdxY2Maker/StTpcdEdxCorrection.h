@@ -69,8 +69,6 @@ class StTpcdEdxCorrection : public TObject
   StTpcdEdxCorrection(Int_t Option = 0, Int_t debug = 0);
   ~StTpcdEdxCorrection();
   Int_t dEdxCorrection(dEdxY2_t &dEdx, Bool_t doIT = kTRUE);
-  Int_t dEdxTrackCorrection(Int_t type, dst_dedx_st &dedx);
-  Int_t dEdxTrackCorrection(EOptions k, Int_t type, dst_dedx_st &dedx);
   void SettpcGas               (St_tpcGas*          m = 0) {m_tpcGas = m;}
 
   void SetDebug(Int_t m = 0) {m_Debug = m;}
@@ -79,19 +77,6 @@ class StTpcdEdxCorrection : public TObject
   St_tpcGas*         tpcGas()              {return m_tpcGas;}
   //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
 
-  St_tpcCorrectionC* Correction(Int_t k = 0) { return dynamic_cast<St_tpcCorrectionC*>(m_Corrections[k].Chair);}
-  St_tpcCorrectionC* drift()               {return Correction(kDrift);}
-  St_tpcCorrectionC* Multiplicity()        {return Correction(kMultiplicity);}
-  St_tpcCorrectionC* AdcCorrection()       {return Correction(kAdcCorrection);}
-  St_tpcCorrectionC* zCorrection()         {return Correction(kzCorrection);}
-  St_tpcCorrectionC* dXCorrection()        {return Correction(kdXCorrection);}
-  St_tpcCorrectionC* TpcdEdxCor()          {return Correction(kTpcdEdxCor);}
-  St_tpcCorrectionC* TpcLengthCorrection() {return Correction(kTpcLengthCorrection);}
-  St_tpcCorrectionC* tpcPressure()         {return Correction(ktpcPressure);}
-  St_tpcCorrectionC* tpcMethaneIn()        {return Correction(ktpcMethaneIn);}
-  St_tpcCorrectionC* tpcGasTemperature()   {return Correction(ktpcGasTemperature);}
-  St_tpcCorrectionC* tpcWaterOut()         {return Correction(ktpcWaterOut);}
-  St_tpcCorrectionC* TpcPadTBins()         {return Correction(kTpcPadTBins);}
   Int_t Debug()                            {return m_Debug;}
   Int_t Mask()                             {return m_Mask;}
   Float_t           Adc2GeV()              {return mAdc2GeV;}

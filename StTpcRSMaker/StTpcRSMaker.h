@@ -4,7 +4,6 @@
 #include "StEvent/StTpcRawData.h"
 #include "StTpcRSMaker/TF1F.h"
 #include "TH1.h"
-#include "TTree.h"
 #include "StTpcDb/StTpcDb.h"
 class Altro;
 class StTpcdEdxCorrection;
@@ -42,16 +41,12 @@ class StTpcRSMaker
   virtual Int_t Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, StTpcRawData* tpcRawData);
   virtual Int_t  	Finish();
   Int_t         Debug() const {return 1;}
-  TF1F* GetShaperResponse(Int_t io = 0, Int_t sector = 1) {return (TF1F*) mShaperResponses[io][sector - 1];}
-  TF1F* GetChargeFraction(Int_t io = 0, Int_t sector = 20)     {return (TF1F*) mChargeFraction[io][sector - 1];}
-  TF1F* GetPadResponseFunction(Int_t io = 0, Int_t sector = 20) {return (TF1F*) mPadResponseFunction[io][sector - 1];}
   TF1F* GetPolya(Int_t io = 0)       {return (TF1F*) mPolya[io];}
   TF1F* GetTimeShape0(Int_t io = 0)  {return fgTimeShape0[io];}
   TF1F* GetTimeShape3(Int_t io = 0)  {return fgTimeShape3[io];}
   Double_t GetNoPrimaryClusters(Double_t betaGamma, Int_t charge);
   virtual void Print(Option_t* option = "") const;
   StTpcDigitalSector* DigitizeSector(Int_t sector, StTpcRawData* data);
-  void SetLaserScale(Double_t m = 1) {mLaserScale = m;}
   static Int_t    AsicThresholds(Short_t ADCs[__MaxNumberOfTimeBins__]);
   static Int_t    SearchT(const void* elem1, const void** elem2);
   static Int_t    CompareT(const void** elem1, const void** elem2);
@@ -63,8 +58,6 @@ class StTpcRSMaker
   static Double_t polya(Double_t* x, Double_t* par);
   SignalSum_t*  GetSignalSum(Int_t sector);
   SignalSum_t*  ResetSignalSum(Int_t sector);
-  void SettauIntegrationX(Double_t p =      74.6e-9, Int_t io = 0) {mtauIntegrationX[io] = p;}
-  void SettauCX(Double_t           p =    1000.0e-9, Int_t io = 0) {mtauCX[io] = p;}
   static Double_t Ec(Double_t* x, Double_t* p); // minimal energy to create an ion pair
   static TF1* fEc(Double_t w = 26.2);           // HEED function to generate Ec
  private:
@@ -78,7 +71,6 @@ class StTpcRSMaker
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
   Int_t    m_Mode;
-  TTree*   fTree;                     //!
   SignalSum_t*     m_SignalSum;       //!
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
@@ -94,10 +86,6 @@ class StTpcRSMaker
   Double_t InnerAlphaVariation[24];   //!
   Double_t OuterAlphaVariation[24];   //!
   Altro* mAltro;                      //!
-  // local variables
-  Int_t numberOfSectors;              //!
-  Int_t NoPads;                       //!
-  Int_t numberOfTimeBins;             //!
   Int_t    numberOfInnerSectorAnodeWires; //!
   Double_t firstInnerSectorAnodeWire; //!
   Double_t lastInnerSectorAnodeWire;  //!
@@ -105,12 +93,9 @@ class StTpcRSMaker
   Double_t firstOuterSectorAnodeWire; //!
   Double_t lastOuterSectorAnodeWire;  //!
   Double_t anodeWirePitch;            //!
-  Double_t numberOfElectronsPerADCcount; //!
   Double_t anodeWireRadius;           //!
   Double_t innerSectorAnodeVoltage[24];//!
   Double_t outerSectorAnodeVoltage[24];//!
-  Double_t      mtauIntegrationX[2];  //! for TPX inner=0/outer=1
-  Double_t      mtauCX[2];            //! -"-
   Double_t    mLocalYDirectionCoupling[2][24][7]; //!
   Double_t   msMin, msMax;            //!
   Int_t      mNSplittedHits;          //!

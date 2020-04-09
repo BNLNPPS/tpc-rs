@@ -176,8 +176,6 @@ StarMagField* StarMagField::fgInstance = 0;
 
 
 
-#define agufld           F77_NAME(agufld,AGUFLD)
-#define mfldgeo          F77_NAME(mfldgeo,MFLDGEO)
 #include "TString.h"
 #include "TSystem.h"
 #include "TFile.h"
@@ -187,40 +185,6 @@ StarMagField* StarMagField::fgInstance = 0;
 #include "tpcrs/configurator.h"
 
 StarMagField* StarMagField::Instance() {return fgInstance;}
-
-
-R__EXTERN  "C" {
-
-  Float_t type_of_call agufld(Float_t* x, Float_t* bf)
-  {
-    bf[0] = bf[1] = bf[2] = 0;
-
-    if (StarMagField::Instance())
-      StarMagField::Instance()->BField(x, bf);
-    else {
-      printf("agufld:: request for non initialized mag.field, return 0\n");
-      assert(StarMagField::Instance());
-    }
-
-    return 0;
-  }
-  
-
-  void type_of_call mfldgeo(Float_t &factor)
-  {
-    if (StarMagField::Instance()) {
-      printf("StarMagField  mfldgeo: The field has been already instantiated.\n");
-    }
-    else {
-      printf("StarMagField  instantiate starsim field=%g\n", factor);
-      (new StarMagField(StarMagField::kMapped, factor / 5.))->SetLock();
-    }
-
-    Float_t x[3] = {0}, b[3];
-    agufld(x, b);
-    printf("StarMagField:mfldgeo(%g) Bz=%g\n", factor, b[2]);
-  }
-}
 
 
 struct BFLD_t {

@@ -600,10 +600,6 @@ void StTpcDb::SetTpcRotations()
       if (sector == 0) rotA.SetName("Tpc2Glob");
       else             rotA.SetName(Form(names[k], sector));
 
-      if (Debug() > 1) {
-        cout << "Id : " << Id << " "; rotA.Print();
-      }
-
       SetTpcRotationMatrix(&rotA, sector, k);
     }
   }

@@ -177,7 +177,7 @@
 #include "StDbUtilities/StGlobalDirection.hh"
 // pad              => sector12       =>   subsector => sector => tpc      => global
 // TpcPadCoordinate => TpcSectL => TpcSectLAligned => TpcLocal => Global
-class StTpcCoordinateTransform  //: public StObject {
+class StTpcCoordinateTransform
 {
  public:
   StTpcCoordinateTransform(StTpcDb* globalDbPointer = 0);
@@ -196,10 +196,8 @@ class StTpcCoordinateTransform  //: public StObject {
   //     StTpcDb::instance()->Pad2Tpc(a.sector(),a.row()).LocalToMaster(xyzS,b.position().xyz());
   //     b.position().setZ(b.position().z() + a.position().z());
   //     b.setSector(a.sector()); b.setRow(a.row());}
-  void  operator()(const        StTpcLocalSectorCoordinate &a, StTpcLocalSectorAlignedCoordinate &b) {b = a;}
   void  operator()(const        StTpcLocalSectorDirection  &a, StTpcLocalDirection               &b)
   {StTpcDb::instance()->Pad2Tpc(a.sector(), a.row()).LocalToMasterVect(a.position().xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());}
-  void  operator()(const        StTpcLocalSectorDirection &a, StTpcLocalSectorAlignedDirection &b)   {b = a;}
   void  operator()(const        StTpcLocalSectorCoordinate &a, StGlobalCoordinate &b)
   { StTpcLocalCoordinate c;    this->operator()(a, c);    this->operator()(c, b);  }
   void  operator()(const  StTpcLocalSectorDirection &a, StGlobalDirection &b)
