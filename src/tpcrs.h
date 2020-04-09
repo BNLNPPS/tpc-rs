@@ -42,7 +42,6 @@ class StTpcRSMaker
   void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                   std::vector<g2t_track_st>& g2t_track,
             const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
-  virtual void Finish();
   int         Debug() const {return 1;}
   TF1F* GetPolya(int io = 0)       {return (TF1F*) mPolya[io];}
   TF1F* GetTimeShape0(int io = 0)  {return fgTimeShape0[io];}
