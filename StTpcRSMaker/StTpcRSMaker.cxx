@@ -134,7 +134,6 @@ StTpcRSMaker::~StTpcRSMaker()
 
 Int_t StTpcRSMaker::Finish()
 {
-  //  SafeDelete(fTree);
   if (m_SignalSum) {free(m_SignalSum); m_SignalSum = 0;}
 
   SafeDelete(mdNdx);
