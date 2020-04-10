@@ -200,8 +200,6 @@ void StTpcRSMaker::InitRun(Int_t runnumber)
     LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
   }
 
-  if (Debug() && gStTpcDb->PadResponse()) gStTpcDb->PadResponse()->Table()->Print(0, 1);
-
   Double_t samplingFrequency     = 1.e6 * gStTpcDb->Electronics()->samplingFrequency(); // Hz
   Double_t TimeBinWidth          = 1. / samplingFrequency;
   /*
