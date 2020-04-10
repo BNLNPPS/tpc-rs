@@ -120,8 +120,6 @@ void StTpcdEdxCorrection::ReSetCorrections()
   m_Corrections[kTpcdEdxCor            ] = dEdxCorrection_t("TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"			, St_TpcdEdxCorC::instance());
   const St_tpcCorrectionC* chair = 0;
   const St_MDFCorrectionC* chairMDF = 0;
-  const St_tpcCorrection*  table = 0;
-  const St_MDFCorrection*  tableMDF = 0;
   const tpcCorrection_st* cor = 0;
   const MDFCorrection_st* corMDF = 0;
   Int_t N = 0;
@@ -134,7 +132,7 @@ void StTpcdEdxCorrection::ReSetCorrections()
     nrows = 0;
     LOG_INFO << "StTpcdEdxCorrection: " << m_Corrections[k].Name << "/" << m_Corrections[k].Title << '\n';
 
-    if (! TESTBIT(m_Mask, k) || m_Corrections[k].Chair->Table()->IsMarked()) {
+    if (! TESTBIT(m_Mask, k) || m_Corrections[k].Chair->IsMarked()) {
       LOG_INFO << " \tis missing\n";
       goto CLEAR;
     }
@@ -144,19 +142,16 @@ void StTpcdEdxCorrection::ReSetCorrections()
 
     if (! chair && ! chairMDF) {
       LOG_WARN << " \tis not tpcCorrection or MDFCorrection type\n";
-      m_Corrections[k].nrows = m_Corrections[k].Chair->Table()->GetNRows();
+      m_Corrections[k].nrows = m_Corrections[k].Chair->GetNRows();
       continue; // not St_tpcCorrectionC
     }
 
     npar = 0;
 
     if (chair) {
-      table = (const St_tpcCorrection*) chair->Table();
 
-      if (! table) goto EMPTY;
-
-      cor = table->GetTable();
-      N = table->GetNRows();
+      cor = chair->Struct();
+      N = chair->GetNRows();
 
       if (! cor || ! N) {
         goto EMPTY;
@@ -185,12 +180,9 @@ void StTpcdEdxCorrection::ReSetCorrections()
       continue;
     }
 
-    tableMDF = (const St_MDFCorrection*) chairMDF->Table();
 
-    if (! tableMDF) goto EMPTY;
-
-    corMDF = tableMDF->GetTable();
-    N = tableMDF->GetNRows();
+    corMDF = chairMDF->Struct();
+    N = chairMDF->GetNRows();
 
     if (! corMDF || ! N) {
       goto EMPTY;
@@ -336,11 +328,11 @@ Int_t  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, Bool_t doIT)
     if (! m_Corrections[k].Chair) goto ENDL;
 
     if (k == kTpcSecRowB || k == kTpcSecRowC ) {
-      const St_TpcSecRowCor* table = (const St_TpcSecRowCor*) m_Corrections[k].Chair->Table();
+      const St_TpcSecRowCorC* chair = (const St_TpcSecRowCorC*) m_Corrections[k].Chair;
 
-      if (! table) goto ENDL;
+      if (! chair) goto ENDL;
 
-      const TpcSecRowCor_st* gain = table->GetTable() + sector - 1;
+      const TpcSecRowCor_st* gain = chair->Struct(sector - 1);
       gc =  gain->GainScale[row - 1];
 
       if (gc <= 0.0) return 1;
@@ -384,7 +376,7 @@ Int_t  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, Bool_t doIT)
       goto ENDL;
     }
 
-    cor = ((St_tpcCorrection*) m_Corrections[k].Chair->Table())->GetTable();
+    cor = ((St_tpcCorrectionC*) m_Corrections[k].Chair)->Struct();
 
     if (! cor) goto ENDL;
 

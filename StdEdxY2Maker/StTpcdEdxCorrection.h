@@ -4,8 +4,10 @@
 #include "TObject.h"
 #include "TF1.h"
 #include "StDetectorDbMaker/St_tpcCorrectionC.h"
+#include "StDetectorDbMaker/St_MDFCorrectionC.h"
 #include "StDetectorDbMaker/St_tpcGasC.h"
 
+#include "tpcrs/config_structs.h"
 
 struct dE_t {
   Float_t dE;
@@ -17,11 +19,11 @@ struct dE_t {
 
 
 struct dEdxCorrection_t {
-  dEdxCorrection_t(const Char_t* name = "", const  Char_t* title = "", TChair* chair = 0, Int_t n = 0) :
+  dEdxCorrection_t(const Char_t* name = "", const  Char_t* title = "", tpcrs::IConfigStruct* chair = 0, Int_t n = 0) :
     Name(name), Title(title), Chair(chair), nrows(n), dE(0) {}
   const Char_t* Name;
   const Char_t* Title;
-  TChair*       Chair;
+  tpcrs::IConfigStruct* Chair;
   Int_t   nrows;
   Float_t dE;
 };
