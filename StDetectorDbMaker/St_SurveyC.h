@@ -6,6 +6,23 @@
 #include "TGeoMatrix.h"
 struct St_SurveyC : tpcrs::IConfigStruct {
   virtual Survey_st* Struct(int i = 0) const = 0;
+
+  void Initialize()
+  {
+    UInt_t N = GetNRows();
+    fRotations = new TGeoHMatrix*[N];
+    for (UInt_t i = 0; i < N; i++) {
+      fRotations[i] = new TGeoHMatrix;
+      TGeoHMatrix &rot = *fRotations[i];
+      if (N == 1) rot.SetName(GetName().c_str());
+      else        rot.SetName(Form("%s_%i",GetName().c_str(),i+1));
+      rot.SetRotation(Rotation(i));
+      rot.SetTranslation(Translation(i));
+      Normalize(rot);
+      assert(TMath::Abs(rot.Determinant())-1 < 1.e-3);
+    }
+  }
+
   virtual  ~St_SurveyC();
   Int_t 	Id(Int_t i = 0) 	const {return Struct(i)->Id;}
   Double_t 	r00(Int_t i = 0) 	const {return Struct(i)->r00;} // 0

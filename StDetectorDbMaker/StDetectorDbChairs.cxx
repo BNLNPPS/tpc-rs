@@ -240,9 +240,6 @@ St_MDFCorrectionC *St_MDFCorrectionC::fgMDFCorrectionC = 0;
 
 
 St_MDFCorrectionC::St_MDFCorrectionC() : fFunc(0) {
-  UInt_t N = GetNRows();
-  fFunc = new TF1*[N];
-  memset(fFunc, 0, N*sizeof(TF1*));
 }
 
 
@@ -1060,20 +1057,7 @@ MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 MakeChairInstance(iTPCSurvey,Geometry/tpc/iTPCSurvey);
 
-St_SurveyC::St_SurveyC() : fRotations(0)  {
-  UInt_t N = GetNRows();
-  fRotations = new TGeoHMatrix*[N];
-  for (UInt_t i = 0; i < N; i++) {
-    fRotations[i] = new TGeoHMatrix;
-    TGeoHMatrix &rot = *fRotations[i];
-    if (N == 1) rot.SetName(Table()->GetName());
-    else        rot.SetName(Form("%s_%i",Table()->GetName(),i+1));
-    rot.SetRotation(Rotation(i));
-    rot.SetTranslation(Translation(i));
-    Normalize(rot);
-    assert(TMath::Abs(rot.Determinant())-1 < 1.e-3);
-  }
-}
+St_SurveyC::St_SurveyC() : fRotations(0)  { }
 
 
 St_SurveyC::~St_SurveyC() {

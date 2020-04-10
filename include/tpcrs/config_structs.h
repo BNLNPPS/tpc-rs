@@ -17,6 +17,7 @@ struct IConfigStruct
   void Mark(bool mark=true) { isMarked = mark; }
   void UnMark() { isMarked = false; }
 
+  void Initialize() {}
   virtual unsigned int GetNRows() const { return 0; }
   virtual ~IConfigStruct() = default;
   virtual std::string GetName() const { return "noname"; }
@@ -60,6 +61,8 @@ struct ConfigStruct : Base_t
         IConfigStruct::UnMark();
       }
     }
+
+    Base_t::Initialize();
   }
 
   /**
