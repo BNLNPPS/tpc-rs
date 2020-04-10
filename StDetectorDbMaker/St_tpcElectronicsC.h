@@ -1,15 +1,11 @@
 #ifndef St_tpcElectronicsC_h
 #define St_tpcElectronicsC_h
 
-#include "TChair.h"
-#include "tables/St_tpcElectronics_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcElectronics.h"
 #include "StDetectorDbMaker/St_starClockOnlC.h"
-class St_tpcElectronicsC : public TChair
+struct St_tpcElectronicsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcElectronicsC, tpcElectronics_st>
 {
- public:
-  static St_tpcElectronicsC* 	instance();
-  tpcElectronics_st* 	Struct(Int_t i = 0) 	{return ((St_tpcElectronics*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
   Int_t 	numberOfTimeBins(Int_t i = 0) 	{return Struct(i)->numberOfTimeBins;}
   Double_t 	nominalGain(Int_t i = 0) 	{return Struct(i)->nominalGain;}
   //  Double_t 	samplingFrequency(Int_t i = 0) 	{return Struct(i)->samplingFrequency;}  obsolete
@@ -20,11 +16,5 @@ class St_tpcElectronicsC : public TChair
   Double_t 	averagePedestal(Int_t i = 0) 	{return Struct(i)->averagePedestal;}
   Double_t 	shapingTime(Int_t i = 0) 	{return Struct(i)->shapingTime;}
   Double_t 	tau(Int_t i = 0) 	        {return Struct(i)->tau;}
- protected:
-  St_tpcElectronicsC(St_tpcElectronics* table = 0) : TChair(table) {}
-  virtual ~St_tpcElectronicsC() {fgInstance = 0;}
- private:
-  static St_tpcElectronicsC* fgInstance;
-  ClassDefChair(St_tpcElectronics, tpcElectronics_st )
 };
 #endif

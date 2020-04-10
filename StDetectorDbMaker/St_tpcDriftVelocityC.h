@@ -1,23 +1,13 @@
 #ifndef St_tpcDriftVelocityC_h
 #define St_tpcDriftVelocityC_h
 
-#include "TChair.h"
-#include "tables/St_tpcDriftVelocity_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcDriftVelocity.h"
 
-class St_tpcDriftVelocityC : public TChair {
- public:
-  static St_tpcDriftVelocityC* 	instance();
-  tpcDriftVelocity_st 	*Struct(Int_t i = 0) 	        {return ((St_tpcDriftVelocity*) Table())->GetTable()+i;}
-  UInt_t     	getNumRows()                	        {return GetNRows();}
+struct St_tpcDriftVelocityC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDriftVelocityC, tpcDriftVelocity_st> {
   Float_t 	laserDriftVelocityEast(Int_t i = 0) 	{return Struct(i)->laserDriftVelocityEast;}
   Float_t 	laserDriftVelocityWest(Int_t i = 0) 	{return Struct(i)->laserDriftVelocityWest;}
   Float_t 	cathodeDriftVelocityEast(Int_t i = 0) 	{return Struct(i)->cathodeDriftVelocityEast;}
   Float_t 	cathodeDriftVelocityWest(Int_t i = 0) 	{return Struct(i)->cathodeDriftVelocityWest;}
- protected:
-  St_tpcDriftVelocityC(St_tpcDriftVelocity *table=0) : TChair(table) {}
-  virtual ~St_tpcDriftVelocityC() {fgInstance = 0;}
- private:
-  static St_tpcDriftVelocityC* fgInstance;
-  ClassDefChair(St_tpcDriftVelocity, tpcDriftVelocity_st )
 };
 #endif

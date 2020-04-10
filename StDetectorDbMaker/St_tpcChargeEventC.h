@@ -1,16 +1,12 @@
 #ifndef St_tpcChargeEventC_h
 #define St_tpcChargeEventC_h
-#include "TChair.h"
-#include "tables/St_tpcChargeEvent_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcChargeEvent.h"
 #include "TArrayD.h"
 #include "TArrayF.h"
 
 
-class St_tpcChargeEventC : public TChair {
- public:
-  static St_tpcChargeEventC* 	instance();
-
-  tpcChargeEvent_st *Struct(Int_t i = 0)         {return ((St_tpcChargeEvent*) Table())->GetTable()+i;}
+struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent_st> {
   int nChargeEvents()                            {return Struct()->nChargeEvents;}
   unsigned int* eventBunchCrossingsLow()         {return Struct()->eventBunchCrossingsLow;}
   unsigned int* eventBunchCrossingsHigh()        {return Struct()->eventBunchCrossingsHigh;}
@@ -47,8 +43,6 @@ class St_tpcChargeEventC : public TChair {
   TArrayD* getTimes() { return &localStoreTimesSinceCharges; }
 
  protected:
-  St_tpcChargeEventC(St_tpcChargeEvent *table=0) : TChair(table) {}
-  virtual ~St_tpcChargeEventC() {fgInstance = 0;}
   double timeDifference(unsigned long long bunchCrossingNumber, int idx);
   int indexBeforeBunchCrossing(unsigned long long bunchCrossingNumber);
  private:
@@ -58,6 +52,5 @@ class St_tpcChargeEventC : public TChair {
   double localStoreTimeSinceCharge = 0; //!
   TArrayF localStoreCharges; //!
   TArrayD localStoreTimesSinceCharges; //!
-  static St_tpcChargeEventC* fgInstance;
 };
 #endif

@@ -1,15 +1,11 @@
 #ifndef St_TpcAvgPowerSupplyC_h
 #define St_TpcAvgPowerSupplyC_h
 
-#include "TChair.h"
-#include "tables/St_TpcAvgPowerSupply_Table.h"
+#include "tpcrs/config_structs.h"
+#include "TpcAvgPowerSupply.h"
 #include "StDetectorDbMaker/St_TpcAvgCurrentC.h"
-class St_TpcAvgPowerSupplyC : public TChair
+struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgPowerSupplyC, TpcAvgPowerSupply_st>
 {
- public:
-  static St_TpcAvgPowerSupplyC* 	instance();
-  TpcAvgPowerSupply_st* 	Struct(Int_t i = 0) 	const {return ((St_TpcAvgPowerSupply*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	const {return GetNRows();}
   Int_t 	run(Int_t i = 0) 	const {return Struct(i)->run;}
   Int_t 	start_time(Int_t i = 0) 	const {return Struct(i)->start_time;}
   Int_t 	stop_time(Int_t i = 0) 	const {return Struct(i)->stop_time;}
@@ -39,11 +35,5 @@ class St_TpcAvgPowerSupplyC : public TChair
   Float_t       AcChargeL(Int_t sector = 1, Int_t channel = 1); // C/cm
   Float_t       AcChargeRowL(Int_t sector = 1, Int_t row = 1) {return AcChargeL(sector, ChannelFromRow(sector, row));}
   Bool_t        livePadrow(Int_t sec = 1, Int_t padrow = 1) const { return voltagePadrow(sec, padrow) >  500;}
- protected:
-  St_TpcAvgPowerSupplyC(St_TpcAvgPowerSupply* table = 0) : TChair(table) {}
-  virtual ~St_TpcAvgPowerSupplyC() {fgInstance = 0;}
- private:
-  static St_TpcAvgPowerSupplyC* fgInstance;
-  ClassDefChair(St_TpcAvgPowerSupply, TpcAvgPowerSupply_st )
 };
 #endif

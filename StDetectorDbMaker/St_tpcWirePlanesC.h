@@ -1,15 +1,11 @@
 #ifndef St_tpcWirePlanesC_h
 #define St_tpcWirePlanesC_h
 
-#include "TChair.h"
-#include "tables/St_tpcWirePlanes_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcWirePlanes.h"
 
-class St_tpcWirePlanesC : public TChair
+struct St_tpcWirePlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcWirePlanesC, tpcWirePlanes_st>
 {
- public:
-  static St_tpcWirePlanesC* 	instance();
-  tpcWirePlanes_st* 	Struct(Int_t i = 0) 	            {return ((St_tpcWirePlanes*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	            {return GetNRows();}
   Double_t 	anodeWireRadius(Int_t i = 0) 	            {return Struct(i)->anodeWireRadius;}
   Double_t 	frischGridWireRadius(Int_t i = 0) 	    {return Struct(i)->frischGridWireRadius;}
   Double_t 	gatingGridWireRadius(Int_t i = 0) 	    {return Struct(i)->gatingGridWireRadius;}
@@ -54,12 +50,5 @@ class St_tpcWirePlanesC : public TChair
   Int_t   	numberOfOuterSectorAnodeWires(Int_t i = 0)      {return numOuterSectorAnodeWires(i);}
   Int_t   	numberOfOuterSectorFrischGridWires(Int_t i = 0) {return numOuterSectorFrischGridWires(i);}
   Int_t   	numberOfOuterSectorGatingGridWires(Int_t i = 0) {return numOuterSectorGatingGridWires(i);}
-
- protected:
-  St_tpcWirePlanesC(St_tpcWirePlanes* table = 0) : TChair(table) {}
-  virtual ~St_tpcWirePlanesC() {fgInstance = 0;}
- private:
-  static St_tpcWirePlanesC* fgInstance;
-  ClassDefChair(St_tpcWirePlanes, tpcWirePlanes_st )
 };
 #endif

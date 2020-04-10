@@ -1,15 +1,11 @@
 #ifndef St_tpcGlobalPositionC_h
 #define St_tpcGlobalPositionC_h
 
-#include "TChair.h"
-#include "tables/St_tpcGlobalPosition_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcGlobalPosition.h"
 
-class St_tpcGlobalPositionC : public TChair
+struct St_tpcGlobalPositionC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGlobalPositionC, tpcGlobalPosition_st>
 {
- public:
-  static St_tpcGlobalPositionC* 	instance();
-  tpcGlobalPosition_st* 	Struct(Int_t i = 0)   const {return ((St_tpcGlobalPosition*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                   const {return GetNRows();}
   Float_t 	LocalxShift(Int_t i = 0)       const {return Struct(i)->LocalxShift;}
   Float_t 	LocalyShift(Int_t i = 0)       const {return Struct(i)->LocalyShift;}
   Float_t 	LocalzShift(Int_t i = 0)       const {return Struct(i)->LocalzShift;}
@@ -42,11 +38,5 @@ class St_tpcGlobalPositionC : public TChair
   Double_t      alpha()                        const {return PhiYZ_geom();}
   Double_t      beta()                         const {return PhiXZ_geom();}
   Double_t      gamma()                        const {return PhiXY_geom();}
- protected:
-  St_tpcGlobalPositionC(St_tpcGlobalPosition* table = 0) : TChair(table) {}
-  virtual ~St_tpcGlobalPositionC() {fgInstance = 0;}
- private:
-  static St_tpcGlobalPositionC* fgInstance;
-  ClassDefChair(St_tpcGlobalPosition, tpcGlobalPosition_st )
 };
 #endif

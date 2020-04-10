@@ -1,19 +1,15 @@
 #ifndef St_tpcGridLeakC_h
 #define St_tpcGridLeakC_h
 
-#include "TChair.h"
-#include "tables/St_tpcGridLeak_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcGridLeak.h"
 
 enum StGLpos {
   kGLinner=0,
   kGLmiddl=1,
   kGLouter=2
 };
-class St_tpcGridLeakC : public TChair {
- public:
-  static St_tpcGridLeakC* 	instance();
-  tpcGridLeak_st 	*Struct(Int_t i = 0) 	{return ((St_tpcGridLeak*) Table())->GetTable()+i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
+struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLeakC, tpcGridLeak_st> {
   Double_t 	InnerGLRadius(Int_t i = 0) 	{return Struct(i)->InnerGLRadius;}
   Double_t 	MiddlGLRadius(Int_t i = 0) 	{return Struct(i)->MiddlGLRadius;}
   Double_t 	OuterGLRadius(Int_t i = 0) 	{return Struct(i)->OuterGLRadius;}
@@ -47,11 +43,5 @@ class St_tpcGridLeakC : public TChair {
     }
     return 0;
   }
- protected:
-  St_tpcGridLeakC(St_tpcGridLeak *table=0) : TChair(table) {}
-  virtual ~St_tpcGridLeakC() {fgInstance = 0;}
- private:
-  static St_tpcGridLeakC* fgInstance;
-  ClassDefChair(St_tpcGridLeak, tpcGridLeak_st )
 };
 #endif

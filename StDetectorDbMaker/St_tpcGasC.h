@@ -1,15 +1,11 @@
 #ifndef St_tpcGasC_h
 #define St_tpcGasC_h
 
-#include "TChair.h"
-#include "tables/St_tpcGas_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcGas.h"
 
-class St_tpcGasC : public TChair
+struct St_tpcGasC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGasC, tpcGas_st>
 {
- public:
-  static St_tpcGasC* 	instance();
-  tpcGas_st* 	Struct(Int_t i = 0) 	        {return ((St_tpcGas*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
   Float_t 	barometricPressure(Int_t i = 0) {return Struct(i)->barometricPressure;}
   Float_t 	inputTPCGasPressure(Int_t i = 0) {return Struct(i)->inputTPCGasPressure;}
   Float_t 	nitrogenPressure(Int_t i = 0) 	{return Struct(i)->nitrogenPressure;}
@@ -26,11 +22,5 @@ class St_tpcGasC : public TChair
   Float_t 	ppmWaterOut(Int_t i = 0) 	{return Struct(i)->ppmWaterOut;}
   Float_t 	ppmOxygenOut(Int_t i = 0) 	{return Struct(i)->ppmOxygenOut;}
   Float_t 	flowRateRecirculation(Int_t i = 0) {return Struct(i)->flowRateRecirculation;}
- protected:
-  St_tpcGasC(St_tpcGas* table = 0) : TChair(table) {}
-  virtual ~St_tpcGasC() {fgInstance = 0;}
- private:
-  static St_tpcGasC* fgInstance;
-  ClassDefChair(St_tpcGas, tpcGas_st )
 };
 #endif

@@ -1,17 +1,13 @@
 #ifndef St_tpcDimensionsC_h
 #define St_tpcDimensionsC_h
 
-#include "TChair.h"
-#include "tables/St_tpcDimensions_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcDimensions.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcEffectiveGeomC.h"
 #include "StDetectorDbMaker/St_tpcWirePlanesC.h"
-class St_tpcDimensionsC : public TChair
+struct St_tpcDimensionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDimensionsC, tpcDimensions_st>
 {
- public:
-  static St_tpcDimensionsC* 	instance();
-  tpcDimensions_st* 	Struct(Int_t i = 0) 	{return ((St_tpcDimensions*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
   Int_t 	numberOfSectors(Int_t i = 0) 	{return Struct(i)->numberOfSectors;}
   Double_t 	tpcInnerRadius(Int_t i = 0) 	{return Struct(i)->tpcInnerRadius;}
   Double_t 	tpcOuterRadius(Int_t i = 0) 	{return Struct(i)->tpcOuterRadius;}
@@ -93,12 +89,5 @@ class St_tpcDimensionsC : public TChair
   //TPC field cage parameters:
   Double_t ifcRadius() {return tpcInnerRadius();}
   Double_t ofcRadius() {return tpcOuterRadius();}
-
- protected:
-  St_tpcDimensionsC(St_tpcDimensions* table = 0) : TChair(table) {}
-  virtual ~St_tpcDimensionsC() {fgInstance = 0;}
- private:
-  static St_tpcDimensionsC* fgInstance;
-  ClassDefChair(St_tpcDimensions, tpcDimensions_st )
 };
 #endif

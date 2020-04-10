@@ -1,15 +1,11 @@
 #ifndef St_tpcPadPlanesC_h
 #define St_tpcPadPlanesC_h
 
-#include "TChair.h"
-#include "tables/St_tpcPadPlanes_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcPadPlanes.h"
 
-class St_tpcPadPlanesC : public TChair
+struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPlanesC, tpcPadPlanes_st>
 {
- public:
-  static St_tpcPadPlanesC* 	instance();
-  tpcPadPlanes_st* 	Struct(Int_t i = 0) 	 {return ((St_tpcPadPlanes*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	 {return GetNRows();}
   Int_t 	padRows(Int_t i = 0) 	         {return Struct(i)->padRows;}
   Int_t 	innerPadRows(Int_t i = 0) 	 {return Struct(i)->innerPadRows;}
   Int_t 	innerPadRows48(Int_t i = 0) 	 {return Struct(i)->innerPadRows48;}
@@ -114,11 +110,5 @@ class St_tpcPadPlanesC : public TChair
     index += pad - 1;
     return index;
   }
- protected:
-  St_tpcPadPlanesC(St_tpcPadPlanes* table = 0) : TChair(table) {}
-  virtual ~St_tpcPadPlanesC() {fgInstance = 0;}
- private:
-  static St_tpcPadPlanesC* fgInstance;
-  ClassDefChair(St_tpcPadPlanes, tpcPadPlanes_st )
 };
 #endif

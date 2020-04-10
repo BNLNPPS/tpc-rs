@@ -1,14 +1,10 @@
 #ifndef St_tss_tssparC_h
 #define St_tss_tssparC_h
 
-#include "TChair.h"
-#include "tables/St_tss_tsspar_Table.h"
-class St_tss_tssparC : public TChair
+#include "tpcrs/config_structs.h"
+#include "tss_tsspar.h"
+struct St_tss_tssparC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tss_tssparC, tss_tsspar_st>
 {
- public:
-  static St_tss_tssparC* 	instance();
-  tss_tsspar_st* 	Struct(Int_t i = 0) 	{return ((St_tss_tsspar*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
   Char_t* 	fileout(Int_t i = 0) 	{return Struct(i)->fileout;}
   Int_t 	dynam(Int_t i = 0) 	{return Struct(i)->dynam;}
   Int_t 	format(Int_t i = 0) 	{return Struct(i)->format;}
@@ -53,11 +49,5 @@ class St_tss_tssparC : public TChair
   Float_t 	x_laser(Int_t i = 0) 	{return Struct(i)->x_laser;}
   Float_t 	y_laser(Int_t i = 0) 	{return Struct(i)->y_laser;}
   Float_t 	z_laser(Int_t i = 0) 	{return Struct(i)->z_laser;}
- protected:
-  St_tss_tssparC(St_tss_tsspar* table = 0) : TChair(table) {}
-  virtual ~St_tss_tssparC() {fgInstance = 0;}
- private:
-  static St_tss_tssparC* fgInstance;
-  ClassDefChair(St_tss_tsspar, tss_tsspar_st )
 };
 #endif

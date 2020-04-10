@@ -1,21 +1,19 @@
 #ifndef St_MDFCorrectionC_h
 #define St_MDFCorrectionC_h
 #include <string>
-#include "TChair.h"
-#include "tables/St_MDFCorrection_Table.h"
+#include "tpcrs/config_structs.h"
+#include "MDFCorrection.h"
 #include "TF3.h"
 #include "TF2.h"
 #include "TF1.h"
-class St_MDFCorrectionC : public TChair {
- public:
+struct St_MDFCorrectionC : tpcrs::IConfigStruct {
+  virtual MDFCorrection_st* Struct(int i = 0) const = 0;
   enum EMDFPolyType {
     kMonomials,
     kChebyshev,
     kLegendre
   };
-  St_MDFCorrectionC(St_MDFCorrection *table=0); 
-  MDFCorrection_st 	*Struct(Int_t k = 0) 	const {return ((St_MDFCorrection*) Table())->GetTable()+k;}
-  UInt_t     	getNumRows()                	const {return GetNRows();}
+  St_MDFCorrectionC();
   UChar_t 	idx(Int_t k = 0)        	const {return Struct(k)->idx;}
   UChar_t 	nrows(Int_t k = 0) 	        const {return Struct(k)->nrows;}
   UChar_t 	PolyType(Int_t k = 0) 	        const {return Struct(k)->PolyType;}
@@ -37,7 +35,5 @@ class St_MDFCorrectionC : public TChair {
  private:
   Double_t EvalFactor(Int_t k = 0, Int_t p = 0, Double_t x = 0) const;
   TF1         **fFunc;
-  ClassDefChair(St_MDFCorrection, MDFCorrection_st )
-  ClassDef(St_MDFCorrectionC,1) //C++ TChair for MDFCorrection table class
 };
 #endif
