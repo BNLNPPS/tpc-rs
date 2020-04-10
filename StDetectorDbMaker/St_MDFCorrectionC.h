@@ -14,6 +14,14 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
     kLegendre
   };
   St_MDFCorrectionC();
+
+  void Initialize()
+  {
+    UInt_t N = GetNRows();
+    fFunc = new TF1*[N];
+    memset(fFunc, 0, N*sizeof(TF1*));
+  }
+
   UChar_t 	idx(Int_t k = 0)        	const {return Struct(k)->idx;}
   UChar_t 	nrows(Int_t k = 0) 	        const {return Struct(k)->nrows;}
   UChar_t 	PolyType(Int_t k = 0) 	        const {return Struct(k)->PolyType;}
