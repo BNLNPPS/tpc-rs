@@ -1,16 +1,12 @@
 #ifndef St_tpcRDOMasksC_h
 #define St_tpcRDOMasksC_h
 
-#include "TChair.h"
-#include "tables/St_tpcRDOMasks_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcRDOMasks.h"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
-class St_tpcRDOMasksC : public TChair
+struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMasksC, tpcRDOMasks_st>
 {
- public:
-  static St_tpcRDOMasksC* 	instance();
-  tpcRDOMasks_st* 	Struct(Int_t i = 0) 	{return ((St_tpcRDOMasks*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
   UInt_t 	runNumber(Int_t i = 0) 	        {return Struct(i)->runNumber;}
   UInt_t 	sector(Int_t i = 0) 	        {return Struct(i)->sector;}
   UInt_t 	mask(Int_t i = 0) 	        {return Struct(i)->mask;}
@@ -46,11 +42,5 @@ class St_tpcRDOMasksC : public TChair
     return MASK;
   }
   Bool_t       isRowOn(Int_t sector, Int_t row) {return isOn(sector, rdoForPadrow(sector, row));}
- protected:
-  St_tpcRDOMasksC(St_tpcRDOMasks* table = 0) : TChair(table) {}
-  virtual ~St_tpcRDOMasksC() {fgInstance = 0;}
- private:
-  static St_tpcRDOMasksC* fgInstance;
-  ClassDefChair(St_tpcRDOMasks, tpcRDOMasks_st )
 };
 #endif

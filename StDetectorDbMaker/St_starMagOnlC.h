@@ -1,20 +1,16 @@
 #ifndef St_starMagOnlC_h
 #define St_starMagOnlC_h
 
-#include "TChair.h"
+#include "tpcrs/config_structs.h"
 #include "TMath.h"
-#include "tables/St_starMagOnl_Table.h"
+#include "starMagOnl.h"
 
 enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,
                        eZeroMField, eHalfMFieldPolA, eFullMFieldPolA
                       };
 
-class St_starMagOnlC : public TChair
+struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC, starMagOnl_st>
 {
- public:
-  static St_starMagOnlC* 	instance();
-  starMagOnl_st* Struct(Int_t i = 0) 	{return ((St_starMagOnl*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()            {return GetNRows();}
   UInt_t 	runNumber(Int_t i = 0) 	{return Struct(i)->runNumber;}
   UInt_t 	time(Int_t i = 0) 	{return Struct(i)->time;}
   Double_t 	current(Int_t i = 0) 	{return Struct(i)->current;}
@@ -71,11 +67,5 @@ class St_starMagOnlC : public TChair
 
     return value;
   }
- protected:
-  St_starMagOnlC(St_starMagOnl* table = 0) : TChair(table) {}
-  virtual ~St_starMagOnlC() {fgInstance = 0;}
- private:
-  static St_starMagOnlC* fgInstance;
-  ClassDefChair(St_starMagOnl, starMagOnl_st )
 };
 #endif

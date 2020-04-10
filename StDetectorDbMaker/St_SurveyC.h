@@ -1,14 +1,12 @@
 #ifndef St_SurveyC_h
 #define St_SurveyC_h
 
-#include "TChair.h"
-#include "tables/St_Survey_Table.h"
+#include "tpcrs/config_structs.h"
+#include "Survey.h"
 #include "TGeoMatrix.h"
-class St_SurveyC : public TChair {
- public:
+struct St_SurveyC : tpcrs::IConfigStruct {
+  virtual Survey_st* Struct(int i = 0) const = 0;
   virtual  ~St_SurveyC();
-  Survey_st    *Struct(Int_t i = 0) 	const {return ((St_Survey*) Table())->GetTable()+i;}
-  UInt_t     	getNumRows()            const {return GetNRows();}
   Int_t 	Id(Int_t i = 0) 	const {return Struct(i)->Id;}
   Double_t 	r00(Int_t i = 0) 	const {return Struct(i)->r00;} // 0
   Double_t 	r01(Int_t i = 0) 	const {return Struct(i)->r01;} // 1
@@ -40,9 +38,8 @@ class St_SurveyC : public TChair {
   static void Normalize(TGeoHMatrix &rot);
   static Double_t IsOrtogonal(const Double_t *r);
  protected:
-  St_SurveyC(St_Survey *table=0);
+  St_SurveyC();
  private:
   TGeoHMatrix  **fRotations;
-  ClassDefChair(St_Survey, Survey_st )
 };
 #endif

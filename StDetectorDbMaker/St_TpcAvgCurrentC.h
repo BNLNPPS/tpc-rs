@@ -1,15 +1,11 @@
 #ifndef St_TpcAvgCurrentC_h
 #define St_TpcAvgCurrentC_h
 
-#include "TChair.h"
-#include "tables/St_TpcAvgCurrent_Table.h"
+#include "tpcrs/config_structs.h"
+#include "TpcAvgCurrent.h"
 #include "StDetectorDbMaker/St_tpcAnodeHVC.h"
-class St_TpcAvgCurrentC : public TChair
+struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent_st>
 {
- public:
-  static St_TpcAvgCurrentC* 	instance();
-  TpcAvgCurrent_st* 	Struct(Int_t i = 0) 	const {return ((St_TpcAvgCurrent*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	const {return GetNRows();}
   Int_t 	run(Int_t i = 0) 	const {return Struct(i)->run;}
   Int_t 	start_time(Int_t i = 0) 	const {return Struct(i)->start_time;}
   Int_t 	stop_time(Int_t i = 0) 	const {return Struct(i)->stop_time;}
@@ -32,11 +28,5 @@ class St_TpcAvgCurrentC : public TChair
   Float_t       AcChargeRow(Int_t sector = 1, Int_t row = 1) {return AcCharge(sector, ChannelFromRow(sector, row));}
   Float_t       AcChargeL(Int_t sector = 1, Int_t channel = 1); // C/cm
   Float_t       AcChargeRowL(Int_t sector = 1, Int_t row = 1) {return AcChargeL(sector, ChannelFromRow(sector, row));}
- protected:
-  St_TpcAvgCurrentC(St_TpcAvgCurrent* table = 0) : TChair(table) {}
-  virtual ~St_TpcAvgCurrentC() {fgInstance = 0;}
- private:
-  static St_TpcAvgCurrentC* fgInstance;
-  ClassDefChair(St_TpcAvgCurrent, TpcAvgCurrent_st )
 };
 #endif

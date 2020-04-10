@@ -1,15 +1,11 @@
 #ifndef St_tpcPadResponseC_h
 #define St_tpcPadResponseC_h
 
-#include "TChair.h"
-#include "tables/St_tpcPadResponse_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcPadResponse.h"
 
-class St_tpcPadResponseC : public TChair
+struct St_tpcPadResponseC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadResponseC, tpcPadResponse_st>
 {
- public:
-  static St_tpcPadResponseC* 	instance();
-  tpcPadResponse_st* 	Struct(Int_t i = 0) 	        {return ((St_tpcPadResponse*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	        {return GetNRows();}
   Float_t 	innerGasGainFluctuation(Int_t i = 0) 	{return Struct(i)->innerGasGainFluctuation;}
   Float_t 	outerGasGainFluctuation(Int_t i = 0) 	{return Struct(i)->outerGasGainFluctuation;}
   Float_t 	innerPadResponseSigma(Int_t i = 0) 	{return Struct(i)->innerPadResponseSigma;}
@@ -26,11 +22,5 @@ class St_tpcPadResponseC : public TChair
   Float_t 	longitudinalDiffusionConstant(Int_t i = 0) {return Struct(i)->longitudinalDiffusionConstant;}
   Float_t 	transverseDiffusionConstant(Int_t i = 0) {return Struct(i)->transverseDiffusionConstant;}
   Float_t 	InnerOuterFactor(Int_t i = 0) 	        {return Struct(i)->InnerOuterFactor;}
- protected:
-  St_tpcPadResponseC(St_tpcPadResponse* table = 0) : TChair(table) {}
-  virtual ~St_tpcPadResponseC() {fgInstance = 0;}
- private:
-  static St_tpcPadResponseC* fgInstance;
-  ClassDefChair(St_tpcPadResponse, tpcPadResponse_st )
 };
 #endif

@@ -1,13 +1,11 @@
 #ifndef St_starClockOnlC_h
 #define St_starClockOnlC_h
 
-#include "TChair.h"
-#include "tables/St_starClockOnl_Table.h"
+#include "tpcrs/config_structs.h"
+#include "starClockOnl.h"
 
-class St_starClockOnlC : public TChair
+struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClockOnlC, starClockOnl_st>
 {
- public:
-  static St_starClockOnlC*   instance();
   starClockOnl_st* 	Struct(Int_t i = 0);
   UInt_t    getNumRows()                      {return GetNRows();}
   UInt_t    RunNumber(Int_t i = 0)           {return Struct(i)->runNumber;}
@@ -20,11 +18,5 @@ class St_starClockOnlC : public TChair
   UInt_t    getTime(Int_t i = 0)             {return Time(i);}
   Double_t  getFrequency(Int_t i = 0)        {return Frequency(i);}
   Double_t  samplingFrequency(Int_t i = 0)   {return 1e-6 * CurrentFrequency(i);}
- protected:
-  St_starClockOnlC(St_starClockOnl* table = 0) : TChair(table) {}
-  virtual ~St_starClockOnlC() {fgInstance = 0;}
- private:
-  static St_starClockOnlC* fgInstance;
-  ClassDefChair(St_starClockOnl, starClockOnl_st )
 };
 #endif

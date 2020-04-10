@@ -1,14 +1,10 @@
 #ifndef St_tpcSCGLC_h
 #define St_tpcSCGLC_h
-#include "TChair.h"
-#include "tables/St_tpcSCGL_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcSCGL.h"
 
 
-class St_tpcSCGLC : public TChair {
- public:
-  static St_tpcSCGLC* 	instance();
-
-  tpcSCGL_st *Struct(Int_t i = 0)         {return ((St_tpcSCGL*) Table())->GetTable()+i;}
+struct St_tpcSCGLC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSCGLC, tpcSCGL_st> {
   float* SC()                             {return Struct()->SC;}
   float* SCoffset()                       {return Struct()->SCoffset;}
   float* SCexponent()                     {return Struct()->SCexponent;}
@@ -19,11 +15,5 @@ class St_tpcSCGLC : public TChair {
   float  GLwidth()                        {return Struct()->GLwidth;}
   int    mode()                           {return Struct()->mode;}
   char*  comment()                        {return Struct()->comment;}
-
- protected:
-  St_tpcSCGLC(St_tpcSCGL *table=0) : TChair(table) {}
-  virtual ~St_tpcSCGLC() {fgInstance = 0;}
- private:
-  static St_tpcSCGLC* fgInstance;
 };
 #endif

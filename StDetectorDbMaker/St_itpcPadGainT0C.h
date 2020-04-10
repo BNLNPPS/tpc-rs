@@ -1,15 +1,11 @@
 #ifndef St_itpcPadGainT0C_h
 #define St_itpcPadGainT0C_h
 
-#include "TChair.h"
-#include "tables/St_itpcPadGainT0_Table.h"
+#include "tpcrs/config_structs.h"
+#include "itpcPadGainT0.h"
 
-class St_itpcPadGainT0C : public TChair
+struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0_st>
 {
- public:
-  static St_itpcPadGainT0C* 	instance();
-  itpcPadGainT0_st* 	Struct(Int_t i = 0) 	const {return ((St_itpcPadGainT0*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	const {return GetNRows();}
   Int_t 	run(Int_t i = 0) 	const {return Struct(i)->run;}
   Float_t 	Gain(Int_t sector, Int_t row, Int_t pad) const
   {
@@ -27,11 +23,5 @@ class St_itpcPadGainT0C : public TChair
 
     return kFALSE;
   }
- protected:
-  St_itpcPadGainT0C(St_itpcPadGainT0* table = 0) : TChair(table) {}
-  virtual ~St_itpcPadGainT0C() {fgInstance = 0;}
- private:
-  static St_itpcPadGainT0C* fgInstance;
-  ClassDefChair(St_itpcPadGainT0, itpcPadGainT0_st )
 };
 #endif

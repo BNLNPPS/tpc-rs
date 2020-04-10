@@ -1,15 +1,11 @@
 #ifndef St_TpcResponseSimulatorC_h
 #define St_TpcResponseSimulatorC_h
 
-#include "TChair.h"
-#include "tables/St_TpcResponseSimulator_Table.h"
+#include "tpcrs/config_structs.h"
+#include "TpcResponseSimulator.h"
 
-class St_TpcResponseSimulatorC : public TChair
+struct St_TpcResponseSimulatorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcResponseSimulatorC, TpcResponseSimulator_st>
 {
- public:
-  static St_TpcResponseSimulatorC* 	instance();
-  TpcResponseSimulator_st* 	Struct(Int_t i = 0) 	const {return ((St_TpcResponseSimulator*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	const {return GetNRows();}
   Float_t 	I0(Int_t i = 0) 	const {return Struct(i)->I0;}
   Float_t 	Cluster(Int_t i = 0) 	const {return Struct(i)->Cluster;}
   Float_t 	W(Int_t i = 0) 	const {return Struct(i)->W;}
@@ -61,12 +57,5 @@ class St_TpcResponseSimulatorC : public TChair
   Float_t       T0offsetI(Int_t i = 0)      const {return  Struct(i)->T0offsetI;}
   Float_t       T0offsetO(Int_t i = 0)      const {return  Struct(i)->T0offsetO;}
   Float_t       FirstRowC(Int_t i = 0)      const {return  Struct(i)->FirstRowC;}
-
- protected:
-  St_TpcResponseSimulatorC(St_TpcResponseSimulator* table = 0) : TChair(table) {}
-  virtual ~St_TpcResponseSimulatorC() {fgInstance = 0;}
- private:
-  static St_TpcResponseSimulatorC* fgInstance;
-  ClassDefChair(St_TpcResponseSimulator, TpcResponseSimulator_st )
 };
 #endif

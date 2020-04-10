@@ -1,16 +1,11 @@
 #ifndef St_tpcPadConfigC_h
 #define St_tpcPadConfigC_h
 
-#include "TChair.h"
-#include "tables/St_tpcPadConfig_Table.h"
+#include "tpcrs/config_structs.h"
+#include "tpcPadConfig.h"
 
-class St_tpcPadConfigC : public TChair
+struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig_st>
 {
- public:
-  static St_tpcPadConfigC* 	instance();
-  tpcPadConfig_st* Struct(Int_t i = 0);
-  UInt_t     	   getNumRows();
-  UChar_t*         itpc(Int_t i = 0) {return (((St_tpcPadConfig*) Table())->GetTable(i))->itpc;}
   UChar_t          iTpc(Int_t sector);
   UChar_t          iTPC(Int_t sector) {return iTpc(sector);}
   Int_t 	   padRows(Int_t sector);
@@ -63,11 +58,5 @@ class St_tpcPadConfigC : public TChair
   bool             isiTpcPadRow(Int_t sector, Int_t row) { return iTpc(sector) && row >= 1 && row <= numberOfInnerRows(sector); }
   bool             isInnerPadRow(Int_t sector, Int_t row) { return row <= numberOfInnerRows(sector); }
   Int_t            IsRowInner(Int_t sector, Int_t row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
- protected:
-  St_tpcPadConfigC(St_tpcPadConfig* table = 0) : TChair(table) {}
-  virtual ~St_tpcPadConfigC() {fgInstance = 0;}
- private:
-  static St_tpcPadConfigC* fgInstance;
-  ClassDefChair(St_tpcPadConfig, tpcPadConfig_st )
 };
 #endif

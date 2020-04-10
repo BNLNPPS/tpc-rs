@@ -1,21 +1,14 @@
 #ifndef St_trigDetSumsC_h
 #define St_trigDetSumsC_h
 
-#include "TChair.h"
+#include "tpcrs/config_structs.h"
 #include <cmath>
-#include "tables/St_trigDetSums_Table.h"
+#include "trigDetSums.h"
 #include "StDetectorDbMaker/StDetectorDbClock.h"
 #include "StDetectorDbMaker/St_richvoltagesC.h"
 #include "TMath.h"
-class St_trigDetSumsC : public TChair
+struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums_st>
 {
- public:
-  St_trigDetSumsC(St_trigDetSums* table = 0) : TChair(table) {SafeDelete(fgInstance); fgInstance = this; fMargin = 0;}
-  virtual ~St_trigDetSumsC() {fgInstance = 0;}
-  static St_trigDetSumsC* 	instance();
-  static St_trigDetSumsC*      GetInstance() {return fgInstance;}
-  trigDetSums_st* 	Struct(Int_t i = 0) 	{return ((St_trigDetSums*) Table())->GetTable() + i;}
-  UInt_t     	getNumRows()                	{return GetNRows();}
   UInt_t 	runNumber(Int_t i = 0) 	        {return Struct(i)->runNumber;}
   UInt_t 	timeOffset(Int_t i = 0) 	{return Struct(i)->timeOffset;}
   Double_t 	ctbWest(Int_t i = 0) 	        {return Struct(i)->ctbWest;}
@@ -70,9 +63,6 @@ class St_trigDetSumsC : public TChair
     return -Nbc * TMath::Log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
   }
  private:
-  static St_trigDetSumsC* fgInstance;
   Double_t	fMargin;
-
-  ClassDefChair(St_trigDetSums, trigDetSums_st )
 };
 #endif
