@@ -909,7 +909,6 @@ Float_t St_tpcRDOT0offsetC::T0(Int_t sector, Int_t padrow, Int_t pad) const {
 
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
 MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
-St_trigDetSums* St_trigDetSumsC::fgTableCopy = 0;
 //___________________tpc_____________________________________________________________
 #include "StDetectorDbMaker/St_tss_tssparC.h"
 MakeChairInstance(tss_tsspar,tpc/tsspars/tsspar);
