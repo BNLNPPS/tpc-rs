@@ -39,7 +39,9 @@ class StTpcRSMaker
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   virtual              ~StTpcRSMaker();
   virtual void InitRun(int runnumber = 0);
-  virtual void Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex*  g2t_ver, tpcrs::DigiData& digi_data);
+  void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
+                  std::vector<g2t_track_st>& g2t_track,
+            const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
   virtual void Finish();
   Int_t         Debug() const {return 1;}
   TF1F* GetPolya(Int_t io = 0)       {return (TF1F*) mPolya[io];}
@@ -66,7 +68,7 @@ class StTpcRSMaker
   static Double_t PadResponseFunc(Double_t* x, Double_t* p);
   static Double_t Gatti(Double_t* x, Double_t* p);
   static Double_t InducedCharge(Double_t s, Double_t h, Double_t ra, Double_t Va, Double_t &t0);
-  Bool_t TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
+  Bool_t TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
   void   GenerateSignal(HitPoint_t &TrackSegmentHits, Int_t sector, Int_t rowMin, Int_t rowMax, Double_t sigmaJitterT, Double_t sigmaJitterX);
   Double_t dEdxCorrection(HitPoint_t &TrackSegmentHits);
   static TF1F*     fgTimeShape3[2];  //!

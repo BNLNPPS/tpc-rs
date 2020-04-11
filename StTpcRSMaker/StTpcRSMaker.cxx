@@ -9,7 +9,9 @@
  *  \Author Y.Fisyak, fisyak@bnl.gov
  */
 
+#include <algorithm>
 #include <cassert>
+#include <numeric>
 #include <vector>
 
 #include "StTpcRSMaker/StTpcRSMaker.h"
@@ -45,10 +47,6 @@
 #include "StTpcRSMaker/Altro.h"
 #include "StBichsel/Bichsel.h"
 #include "StdEdxY2Maker/StTpcdEdxCorrection.h"
-// g2t tables
-#include "tables/St_g2t_track_Table.h"
-#include "tables/St_g2t_vertex_Table.h"
-#include "tables/St_g2t_tpc_hit_Table.h"
 
 #include "tpcrs/configurator.h"
 #include "tpcrs/logger.h"
@@ -591,7 +589,27 @@ void StTpcRSMaker::InitRun(Int_t runnumber)
   delete [] pbinsL;
 }
 
-void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g2t_track, const St_g2t_vertex* g2t_vertex, tpcrs::DigiData& digi_data)
+
+inline bool operator< (const g2t_tpc_hit_st& lhs, const g2t_tpc_hit_st& rhs)
+{
+  // sectors
+  if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
+    return (lhs.volume_id % 100000) / 100 < (rhs.volume_id % 100000) / 100;
+
+  // track id
+  if (lhs.track_p != rhs.track_p)
+    return lhs.track_p < rhs.track_p;
+
+  // pad rows
+  //  if (lhs.volume_id%100 != rhs.volume_id%100) return lhs.volume_id%100 - rhs.volume_id%100;
+  // track length
+  return lhs.length < rhs.length;
+}
+
+
+void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
+                        std::vector<g2t_track_st>& g2t_track,
+                        const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -610,27 +628,19 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
   Double_t vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-  Int_t no_tpc_hits = g2t_tpc_hit->GetNRows();
+  Int_t no_tpc_hits = g2t_tpc_hit.size();
 
-  if (Debug() > 1) g2t_tpc_hit->Print(0, 10);
-
-  Int_t NoTpcTracks = (g2t_track ? g2t_track->GetNRows() : 0);
+  Int_t NoTpcTracks = g2t_track.size();
 
   std::vector<int> mNoTpcHitsAll(NoTpcTracks + 1);
   std::vector<int> mNoTpcHitsReal(NoTpcTracks + 1);
-  g2t_track_st* geantTrack = 0;
 
-  if (g2t_track) geantTrack = g2t_track->GetTable();
+  g2t_track_st* geantTrack = &g2t_track.front();
 
-  g2t_vertex_st* geantVertex = 0;
-  Int_t NV = 0;
+  const g2t_vertex_st* geantVertex = &g2t_vertex.front();
+  Int_t NV = g2t_vertex.size();
 
-  if (g2t_vertex) {
-    geantVertex = g2t_vertex->GetTable();
-    NV = g2t_vertex->GetNRows();
-  }
-
-  g2t_tpc_hit_st* tpc_hit_begin = g2t_tpc_hit->GetTable();
+  g2t_tpc_hit_st* tpc_hit_begin = const_cast<g2t_tpc_hit_st*>(&g2t_tpc_hit.front());
   g2t_tpc_hit_st* tpc_hit = tpc_hit_begin;
 
   if (m_TpcdEdxCorrection) {
@@ -648,9 +658,12 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
 
   mNSplittedHits = 0;
   // sort
-  TTableSorter sorter(g2t_tpc_hit, &SearchT, &CompareT); //, 0, no_tpc_hits);
+  // initialize original index locations
+  std::vector<size_t> sorted_index(no_tpc_hits);
+  std::iota(sorted_index.begin(), sorted_index.end(), 0);
+  std::stable_sort(sorted_index.begin(), sorted_index.end(), [&g2t_tpc_hit](size_t i1, size_t i2) {return g2t_tpc_hit[i1] < g2t_tpc_hit[i2];}); 
+
   Int_t sortedIndex = 0;
-  tpc_hit = tpc_hit_begin;
 
   for (Int_t sector = 1; sector <= max_sectors; sector++) {
     Int_t nHitsInTheSector = 0;
@@ -659,7 +672,7 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
 
     // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
     for (; sortedIndex < no_tpc_hits; sortedIndex++) {
-      Int_t indx = sorter.GetIndex(sortedIndex);
+      Int_t indx = sorted_index[sortedIndex];
 
       if (indx < 0) break;
 
@@ -670,7 +683,6 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
       if (iSector != sector) {
         if (! ( iSector > sector ) ) {
           LOG_ERROR << "StTpcRSMaker::Make: g2t_tpc_hit table has not been ordered by sector no. " << sector << '\n';
-          g2t_tpc_hit->Print(indx, 1);
           assert( iSector > sector );
         }
 
@@ -729,7 +741,7 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
 
       for (nSegHits = 0, sIndex = sortedIndex; sIndex < no_tpc_hits && nSegHits < NoMaxTrackSegmentHits; sIndex++)
       {
-        indx = sorter.GetIndex(sIndex);
+        indx = sorted_index[sIndex];
         g2t_tpc_hit_st* tpc_hitC = tpc_hit_begin + indx;
 
         if ((tpc_hitC->volume_id % 10000) / 100 != sector) break;
@@ -1297,15 +1309,13 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
     }
   }
 
-  if (g2t_track) {
     // Reset no. Tpc hits in g2t_track
-    geantTrack = g2t_track->GetTable();
+    geantTrack = &g2t_track.front();
 
     for (Int_t i = 0; i < NoTpcTracks; i++, geantTrack++) {
       Int_t Id = geantTrack->id;
       geantTrack->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
     }
-  }
 }
 
 
@@ -1839,7 +1849,7 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(Double_t w)
 }
 
 
-Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex_st* geantVertex, HitPoint_t &TrackSegmentHits)
+Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geantVertex, HitPoint_t &TrackSegmentHits)
 {
   static Int_t iBreak = 0;
 
