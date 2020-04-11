@@ -9,7 +9,17 @@
 
 using namespace ROOT::Math;
 
-#include "St_base/StarChairDefs.h"
+#define MakeChairInstance(STRUCT,PATH) \
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT ## _st>::name(# PATH);
+
+#define MakeChairInstance2(STRUCT,CLASS,PATH) \
+template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT ## _st>::name(# PATH);
+
+#define MakeChairAltInstance(STRUCT,PATHA,PATHB,AorB)	\
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C, STRUCT ## _st>::name(AorB==0 ? # PATHA : # PATHB);
+
+#define MakeChairAltInstance2(STRUCT,CLASS,PATHA,PATHB,AorB)	\
+template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT ## _st>::name(AorB==0 ? # PATHA : # PATHB);
 
 static Int_t _debug = 0;
 //__________________Calibrations/tpc______________________________________________________________
