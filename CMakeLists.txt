@@ -176,10 +176,6 @@ add_library(tpcrs
 	StarClassLibrary/StXicZero.cc
 	StarClassLibrary/StZZeroBoson.cc
 	StarMagField/StarMagField.cxx
-	StarRoot/TRArray.cxx
-	StarRoot/TRMatrix.cxx
-	StarRoot/TRVector.cxx
-	StarRoot/TUnixTime.cxx
 	StdEdxY2Maker/StTpcdEdxCorrection.cxx
 	StDbUtilities/StGlobalCoordinate.cc
 	StDbUtilities/StGlobalDirection.cc
@@ -193,14 +189,7 @@ add_library(tpcrs
 	StDetectorDbMaker/StDetectorDbChairs.cxx
 	StDetectorDbMaker/St_tpcChargeEventC.cxx
 	StDetectorDbMaker/St_spaceChargeCorC.cxx
-	StEvent/StTpcRawData.cxx
-	StEvent/StTpcPixel.cxx
-	St_base/StObject.cxx
-	St_db_Maker/St_db_Maker.cxx
-	St_db_Maker/StValiSet.cxx
 	StTpcDb/StTpcDb.cxx
-	StChain/StMaker.cxx
-	src/tpcrs_tables.cxx
 	src/configurator.cpp
 	src/logger.cpp
 )
