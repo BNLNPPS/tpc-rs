@@ -9,12 +9,6 @@
 #include "StarMagField/StarMagField.h"
 #include "StTpcDb/StTpcDb.h"
 #include "StTpcRSMaker/StTpcRSMaker.h"
-#include "tables/St_g2t_tpc_hit_Table.h"
-#include "tables/St_g2t_track_Table.h"
-#include "tables/St_g2t_vertex_Table.h"
-#include "tables/St_trigDetSums_Table.h"
-#include "tables/St_TpcAvgPowerSupply_Table.h"
-#include "tables/St_tpcCorrection_Table.h"
 #include "MagFactor.h"
 
 #include "tests/GeantEvent.h"
@@ -77,21 +71,8 @@ int main(int argc, char **argv)
 
     std::cout << geantEvent_inp->hits.size() << "\n";
 
-    St_g2t_tpc_hit* g2t_tpc_hit = new St_g2t_tpc_hit("g2t_tpc_hit");
-    for (auto hit : geantEvent_inp->hits)
-      g2t_tpc_hit->AddAt(&hit);
-
-    St_g2t_track* g2t_track = new St_g2t_track("g2t_track");
-    for (auto track : geantEvent_inp->tracks)
-      g2t_track->AddAt(&track);
-
-    St_g2t_vertex* g2t_vertex = new St_g2t_vertex("g2t_vertex");
-    for (auto vertex : geantEvent_inp->vertices)
-      g2t_vertex->AddAt(&vertex);
-
     tpcrs::DigiData  digidata;
-
-    tpcrs.Make(g2t_tpc_hit, g2t_track, g2t_vertex, digidata);
+    tpcrs.Make(geantEvent_inp->hits, geantEvent_inp->tracks, geantEvent_inp->vertices, digidata);
 
     geantEvent_out.Fill(digidata);
     geantEvent_out.Print(logFile_out);
