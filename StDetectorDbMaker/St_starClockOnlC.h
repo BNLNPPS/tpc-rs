@@ -7,7 +7,6 @@
 struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClockOnlC, starClockOnl_st>
 {
   starClockOnl_st* 	Struct(Int_t i = 0);
-  UInt_t    getNumRows()                      {return GetNRows();}
   UInt_t    RunNumber(Int_t i = 0)           {return Struct(i)->runNumber;}
   Double_t  CurrentFrequency(Int_t i = 0)    {return Struct(i)->frequency;}
   UInt_t    Time(Int_t i = 0)                {return Struct(i)->time;}

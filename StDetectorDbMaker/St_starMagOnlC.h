@@ -19,11 +19,11 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
   {
     if (! instance()) return 0;
 
-    if (getNumRows() == 1 || time == 0) return current();
+    if (GetNRows() == 1 || time == 0) return current();
 
     Double_t tempCurrent = -9999;
 
-    for (UInt_t i = 0; i < getNumRows() - 1; i++)
+    for (UInt_t i = 0; i < GetNRows() - 1; i++)
       if ( time >= getTimeEntry(i) && time <= getTimeEntry(i + 1) )
         if ( TMath::Abs(getMagnetCurrentEntry(i) - getMagnetCurrentEntry(i + 1)) < 50 )
           tempCurrent = getMagnetCurrentEntry(i);
