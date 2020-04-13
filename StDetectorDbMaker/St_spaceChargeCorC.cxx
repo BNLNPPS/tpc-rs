@@ -12,7 +12,7 @@ Double_t St_spaceChargeCorC::getSpaceChargeCoulombs(Double_t scaleFactor)
 
     bool use_powers = true;
 
-    for (int row=0;row< (int) getNumRows();row++) {
+    for (int row=0;row< (int) GetNRows();row++) {
       Double_t mult = 0;
       switch ((int) getSpaceChargeDetector(row)) {
         case (0) : mult = scalers->getMult(); break; // vpdx as of 2007-12-19

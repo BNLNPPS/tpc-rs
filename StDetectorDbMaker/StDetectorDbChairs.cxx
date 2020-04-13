@@ -47,7 +47,7 @@ MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
 
 
 Double_t St_tpcCorrectionC::CalcCorrection(Int_t i, Double_t x, Double_t z, Int_t NparMax) {
-  tpcCorrection_st *cor =  ((St_tpcCorrection *) Table())->GetTable() + i;
+  tpcCorrection_st *cor =  Struct(i);
   return SumSeries(cor, x, z, NparMax);
 }
 
@@ -239,15 +239,15 @@ MakeChairInstance2(MDFCorrection,St_TpcPadCorrectionMDF,Calibrations/tpc/TpcPadC
 St_MDFCorrectionC *St_MDFCorrectionC::fgMDFCorrectionC = 0;
 
 
-St_MDFCorrectionC::St_MDFCorrectionC(St_MDFCorrection *table) : TChair(table), fFunc(0) {
-  UInt_t N = table->GetNRows();
+St_MDFCorrectionC::St_MDFCorrectionC() : fFunc(0) {
+  UInt_t N = GetNRows();
   fFunc = new TF1*[N];
   memset(fFunc, 0, N*sizeof(TF1*));
 }
 
 
 St_MDFCorrectionC::~St_MDFCorrectionC() {
-  UInt_t N = Table()->GetNRows();
+  UInt_t N = GetNRows();
   for (UInt_t i = 0; i < N; i++) {SafeDelete(fFunc[i]);}
   delete [] fFunc;
 }
@@ -259,7 +259,7 @@ Double_t St_MDFCorrectionC::MDFunc(Double_t *x, Double_t *p) {
   // elements long.
   assert(x);
   UInt_t k = p[0];
-  assert(k >= 0 && k < fgMDFCorrectionC->getNumRows());
+  assert(k >= 0 && k < fgMDFCorrectionC->GetNRows());
   Double_t returnValue = fgMDFCorrectionC->DMean(k);
   Double_t term        = 0;
   UChar_t    i, j;
@@ -297,17 +297,17 @@ Double_t St_MDFCorrectionC::Eval(Int_t k, Double_t *x) const {
     if (NVariables(k) <= 0) {
       return 0;
     } else if (NVariables(k) == 1) {
-      fFunc[k] = new TF1(Form("%s_%i",Table()->GetName(),k),St_MDFCorrectionC::MDFunc,
+      fFunc[k] = new TF1(Form("%s_%i",GetName().c_str(),k),St_MDFCorrectionC::MDFunc,
 			 XMin(k)[0],XMax(k)[0],1);
       fFunc[k]->SetParameter(0,k);
       fFunc[k]->Save(XMin(k)[0],XMax(k)[0],0,0,0,0);
     } else if (NVariables(k) == 2) {
-      fFunc[k] = new TF2(Form("%s_%i",Table()->GetName(),k),St_MDFCorrectionC::MDFunc,
+      fFunc[k] = new TF2(Form("%s_%i",GetName().c_str(),k),St_MDFCorrectionC::MDFunc,
 			 XMin(k)[0],XMax(k)[0],XMin(k)[1],XMax(k)[1],1);
       fFunc[k]->SetParameter(0,k);
       ((TF2 *) fFunc[k])->Save(XMin(k)[0],XMax(k)[0],XMin(k)[1],XMax(k)[1],0,0);
     } else if (NVariables(k) == 3) {
-      fFunc[k] = new TF3(Form("%s_%i",Table()->GetName(),k),St_MDFCorrectionC::MDFunc,
+      fFunc[k] = new TF3(Form("%s_%i",GetName().c_str(),k),St_MDFCorrectionC::MDFunc,
 			 XMin(k)[0],XMax(k)[0],XMin(k)[1],XMax(k)[1],XMin(k)[2],XMax(k)[2],1);
       fFunc[k]->SetParameter(0,k);
       ((TF3 *) fFunc[k])->Save(XMin(k)[0],XMax(k)[0],XMin(k)[1],XMax(k)[1],XMin(k)[2],XMax(k)[2]);
@@ -402,8 +402,6 @@ MakeChairInstance(asic_thresholds,Calibrations/tpc/asic_thresholds);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
-tpcPadConfig_st *St_tpcPadConfigC::Struct(Int_t i)                        {return ((St_tpcPadConfig*) Table())->GetTable(i);}
-UInt_t           St_tpcPadConfigC::getNumRows()                	          {return GetNRows();}
 UChar_t          St_tpcPadConfigC::iTpc(Int_t sector)                     {UChar_t iTPC = Struct()->itpc[sector-1];  return iTPC;}
 Int_t 	         St_tpcPadConfigC::padRows(Int_t sector) 	          {return St_tpcPadPlanesC::instance()->padRows()               ;}
 Int_t 	         St_tpcPadConfigC::innerPadRows(Int_t sector) 	          {return St_tpcPadPlanesC::instance()->innerPadRows() 	   ;}
@@ -636,7 +634,7 @@ void  St_tpcAnodeHVC::sockets(Int_t sector, Int_t padrow, Int_t &e1, Int_t &e2, 
 
 
 Float_t St_tpcAnodeHVC::voltage(Int_t i) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
      LOG_ERROR << "St_tpcAnodeHVC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
@@ -644,7 +642,7 @@ Float_t St_tpcAnodeHVC::voltage(Int_t i) const {
 
 
 Float_t St_tpcAnodeHVC::voltagePadrow(Int_t sector, Int_t padrow) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
     return St_TpcAvgPowerSupplyC::instance()->voltagePadrow(sector,padrow);
   }
   Int_t e1 = 0, e2 = 0;
@@ -707,7 +705,7 @@ MakeChairInstance(tpcAnodeHVavg,Calibrations/tpc/tpcAnodeHVavg);
 
 
 Float_t St_tpcAnodeHVavgC::voltage(Int_t i) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
      LOG_ERROR << "St_tpcAnodeHVavgC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
@@ -715,7 +713,7 @@ Float_t St_tpcAnodeHVavgC::voltage(Int_t i) const {
 
 
 Bool_t St_tpcAnodeHVavgC::tripped(Int_t sector, Int_t padrow) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
     return St_TpcAvgPowerSupplyC::instance()->tripped(sector,padrow);
   }
   return (voltage() < -100);
@@ -723,7 +721,7 @@ Bool_t St_tpcAnodeHVavgC::tripped(Int_t sector, Int_t padrow) const {
 
 
 Float_t St_tpcAnodeHVavgC::voltagePadrow(Int_t sector, Int_t padrow) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
     return St_TpcAvgPowerSupplyC::instance()->voltagePadrow(sector,padrow);
   }
   Int_t e1 = 0, e2 = 0;
@@ -854,7 +852,7 @@ Int_t St_TpcAvgCurrentC::ChannelFromSocket(Int_t socket) {
 
 
 Float_t St_TpcAvgCurrentC::AcChargeL(Int_t sector, Int_t channel) {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
     return St_TpcAvgPowerSupplyC::instance()->AcChargeL(sector,channel);
   }
   //  static const Double_t RA[2]        = { 154.484, 81.42}; // Outer/ Inner average Radii
@@ -874,7 +872,7 @@ Float_t St_TpcAvgCurrentC::AcChargeL(Int_t sector, Int_t channel) {
 
 
 Float_t St_TpcAvgCurrentC::AvCurrent(Int_t sector, Int_t channel) {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
     return St_TpcAvgPowerSupplyC::instance()->AvCurrent(sector,channel);
   }
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
@@ -883,7 +881,7 @@ Float_t St_TpcAvgCurrentC::AvCurrent(Int_t sector, Int_t channel) {
 
 
 Float_t St_TpcAvgCurrentC::AcCharge(Int_t sector, Int_t channel) {
-  if (! St_TpcAvgPowerSupplyC::instance()->Table()->IsMarked()) {
+  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
     return St_TpcAvgPowerSupplyC::instance()->AcCharge(sector,channel);
   }
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
@@ -961,8 +959,8 @@ MakeChairInstance(starClockOnl,RunLog/onl/starClockOnl);
 
 
 starClockOnl_st *St_starClockOnlC::Struct(Int_t i) {
-  starClockOnl_st *s = ((St_starClockOnl* ) instance()->Table())->GetTable();
-  Int_t N =  getNumRows(); // with i < 0 look for positive frequency
+  starClockOnl_st *s = instance()->GetTable();
+  Int_t N =  GetNRows(); // with i < 0 look for positive frequency
   if (i >= 0 && i < N) return s + i;
   for (Int_t j = 0; j < N; j++, s++) if (s->frequency > 0) break;
   assert(s->frequency > 0 && s->frequency < 1e7);
@@ -990,9 +988,9 @@ MakeChairInstance(tpcRDOMasks,RunLog/onl/tpcRDOMasks);
 UInt_t       St_tpcRDOMasksC::getSectorMask(UInt_t sector) {
   UInt_t MASK = 0x0000; // default is to mask it out
   //UInt_t MASK = 0xFFFF; // change to  ON by default ** THIS WAS A HACK
-  if(sector < 1 || sector > 24 || getNumRows() == 0){
+  if(sector < 1 || sector > 24 || GetNRows() == 0){
     LOG_WARN << "St_tpcRDOMasksC:: getSectorMask : return default mask for "
-     << "sector= " << sector << " getNumRows()=" << getNumRows() << '\n';
+     << "sector= " << sector << " GetNRows()=" << GetNRows() << '\n';
     return MASK;
   }
   MASK = mask(((sector + 1) / 2) - 1); // does the mapping from sector 1-24 to packed sectors
@@ -1062,8 +1060,8 @@ MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 MakeChairInstance(iTPCSurvey,Geometry/tpc/iTPCSurvey);
 
-St_SurveyC::St_SurveyC(St_Survey *table) : TChair(table), fRotations(0)  {
-  UInt_t N = getNumRows();
+St_SurveyC::St_SurveyC() : fRotations(0)  {
+  UInt_t N = GetNRows();
   fRotations = new TGeoHMatrix*[N];
   for (UInt_t i = 0; i < N; i++) {
     fRotations[i] = new TGeoHMatrix;
@@ -1080,7 +1078,7 @@ St_SurveyC::St_SurveyC(St_Survey *table) : TChair(table), fRotations(0)  {
 
 St_SurveyC::~St_SurveyC() {
   if (fRotations) {
-    for (UInt_t i = 0; i < getNumRows(); i++) {
+    for (UInt_t i = 0; i < GetNRows(); i++) {
       SafeDelete(fRotations[0]);
     }
     SafeDelete(fRotations);
@@ -1125,15 +1123,12 @@ const TGeoHMatrix &St_SurveyC::GetMatrix(Int_t i) {
 
 
 const TGeoHMatrix &St_SurveyC::GetMatrix4Id(Int_t id) {
-  for (UInt_t i = 0; i < getNumRows(); i++) {
+  for (UInt_t i = 0; i < GetNRows(); i++) {
     if (Id(i) == id) {
       return GetMatrix(i);
     }
   }
   LOG_INFO  << "St_SurveyC::GetMatrix4Id(" << id << ") entry has not been found\n";
-  const TTable *table = Table();
-  Int_t Nrows = table->GetNRows();
-  table->Print(0,Nrows);
   assert(0);
   return GetMatrix(0);
 }
@@ -1145,7 +1140,7 @@ const TGeoHMatrix &St_SurveyC::GetMatrixR(Int_t i) {
     r00(i), r01(i),      0,
     r10(i), r11(i),      0,
     0     ,      0, r22(i)};
-  rot.SetName(Form("%s_%i",Table()->GetName(),i));
+  rot.SetName(Form("%s_%i",GetName().c_str(),i));
   rot.SetRotation(rotations);
   rot.SetTranslation(Translation(i));
   return *&rot;
