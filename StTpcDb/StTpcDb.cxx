@@ -114,12 +114,6 @@ void StTpcDb::SetDriftVelocity()
         return;
       }
 
-      if (St_db_Maker::GetValidity(dvel0, t) < 0) {
-        LOG_ERROR << "StTpcDb::Error Wrong Validity Tpc DriftVelocity" << '\n';
-        mUc = 0;
-        return;
-      }
-
       u0 = TUnixTime(t[0], 1).GetUTime();
       u1 = TUnixTime(t[1], 1).GetUTime();
       SafeDelete(dvel1);
