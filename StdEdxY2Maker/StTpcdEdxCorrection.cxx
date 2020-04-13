@@ -257,7 +257,6 @@ Int_t  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, Bool_t doIT)
   CdEdx.Crow    = St_TpcAvgCurrentC::instance()->AvCurrRow(sector, row);
   Double_t    Qcm      = St_TpcAvgCurrentC::instance()->AcChargeRowL(sector, row); // C/cm
   CdEdx.Qcm     = 1e6 * Qcm; // uC/cm
-  TUnixTime u(StMaker::GetChain()->GetDateTime(), kTRUE); // GMT
 
   Double_t ZdriftDistance = CdEdx.ZdriftDistance;
   ESector kTpcOutIn = kTpcOuter;
