@@ -9,7 +9,7 @@
 
 #include <ostream>
 
-#include "StarClassLibrary/StThreeVectorF.hh"
+#include "StarClassLibrary/StThreeVector.hh"
 
 class StGlobalCoordinate
 {
@@ -18,7 +18,7 @@ class StGlobalCoordinate
   StGlobalCoordinate(const double x, const double y, const double z) : mPosition(x, y, z) { }
   StGlobalCoordinate(const double* x) : mPosition(x) { }
   StGlobalCoordinate(const StThreeVector<double> &x) : mPosition(x) {}
-  StGlobalCoordinate(const StThreeVectorF &x) : mPosition(x.x(), x.y(), x.z()) {}
+  StGlobalCoordinate(const StThreeVector<float> &x) : mPosition(x.x(), x.y(), x.z()) {}
 
   virtual ~StGlobalCoordinate() {}
   int operator==(const StGlobalCoordinate &p) const {return p.mPosition == mPosition;}

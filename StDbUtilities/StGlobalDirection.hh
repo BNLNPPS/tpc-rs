@@ -11,7 +11,7 @@ class StGlobalDirection : public StGlobalCoordinate
   StGlobalDirection(const double x, const double y, const double z) :
     StGlobalCoordinate(x, y, z) {}
   StGlobalDirection(const StThreeVector<double> &xyz) : StGlobalCoordinate(xyz) {}
-  StGlobalDirection(const StThreeVectorF &xyz) :  StGlobalCoordinate(xyz) {}
+  StGlobalDirection(const StThreeVector<float> &xyz) :  StGlobalCoordinate(xyz) {}
   virtual ~StGlobalDirection() {};
 };
 // Non-Member
