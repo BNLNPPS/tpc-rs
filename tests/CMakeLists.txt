@@ -1,5 +1,5 @@
 add_executable(test_tpcrs
-	test_tpcrs.cxx
+	test_tpcrs.cpp
 	test_tpcrs_dict.cxx
 )
 

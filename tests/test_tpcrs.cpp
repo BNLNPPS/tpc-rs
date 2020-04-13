@@ -18,8 +18,8 @@
 
 #include "tests/GeantEvent.h"
 
-#include "tpcrs/Configurator.h"
-#include "config_yaml.h"
+#include "tpcrs/configurator.h"
+#include "tpcrs/config_yaml.h"
 
 
 int main(int argc, char **argv)

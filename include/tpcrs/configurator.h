@@ -1,5 +1,5 @@
-#ifndef tpcrs_Configurator_h
-#define tpcrs_Configurator_h
+#ifndef tpcrs_configurator_h
+#define tpcrs_configurator_h
 
 #include <string>
 #include <vector>

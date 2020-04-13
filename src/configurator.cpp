@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sys/stat.h>
 
-#include "tpcrs/Configurator.h"
+#include "tpcrs/configurator.h"
 #include "tpcrs/config.h"
 
 namespace tpcrs {
