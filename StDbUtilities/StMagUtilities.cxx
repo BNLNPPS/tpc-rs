@@ -109,7 +109,6 @@ To do:  <br>
 #include "TH2.h"
 #include "TRandom.h"
 #include "StTpcDb/StTpcDb.h"
-#include "tables/St_MagFactor_Table.h"
 #include "StDetectorDbMaker/St_tpcHVPlanesC.h"
 #include "StDetectorDbMaker/St_tpcAnodeHVavgC.h"
 #include "StDetectorDbMaker/St_tpcHighVoltagesC.h"
