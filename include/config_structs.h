@@ -64,7 +64,7 @@
 #include "tables/St_trigDetSums_Table.h"
 #include "tables/St_tss_tsspar_Table.h"
 
-#include "config_yaml.h"
+#include "tpcrs/config_yaml.h"
 
 
 namespace tpcrs {

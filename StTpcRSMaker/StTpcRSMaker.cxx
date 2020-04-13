@@ -57,7 +57,7 @@
 #include "tables/St_g2t_vertex_Table.h"
 #include "tables/St_g2t_tpc_hit_Table.h"
 
-#include "tpcrs/Configurator.h"
+#include "tpcrs/configurator.h"
 
 struct HitPoint_t {
   Int_t indx;

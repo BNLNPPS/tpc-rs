@@ -8,7 +8,7 @@
 #include "St_db_Maker/StValiSet.h"
 
 #include "config_structs.h"
-#include "tpcrs/Configurator.h"
+#include "tpcrs/configurator.h"
 
 
 StChain* StMaker::gStChain = new StChain();

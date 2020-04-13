@@ -186,7 +186,7 @@ StarMagField* StarMagField::fgInstance = 0;
 #include "TEnv.h"
 #endif
 
-#include "tpcrs/Configurator.h"
+#include "tpcrs/configurator.h"
 
 StarMagField* StarMagField::Instance() {return fgInstance;}
 

@@ -204,7 +204,7 @@ add_library(tpcrs
 	StTpcDb/StTpcDb.cxx
 	StChain/StMaker.cxx
 	src/tpcrs_tables.cxx
-	src/Configurator.cpp
+	src/configurator.cpp
 	tpcrs_tables_dict.cxx
 )
 
