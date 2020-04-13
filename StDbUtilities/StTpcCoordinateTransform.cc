@@ -22,7 +22,7 @@
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 #include "TMath.h"
-#include "StarClassLibrary/StThreeVectorD.hh"
+#include "StarClassLibrary/StThreeVector.hh"
 #include "tpcrs/logger.h"
 
 static Int_t _debug = 0;
@@ -283,7 +283,7 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
 
 void  StTpcCoordinateTransform::operator()(const        StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b           )
 {
-  StThreeVectorD xGG;
+  StThreeVector<double> xGG;
   Int_t row    = a.fromRow();
   Int_t sector = a.fromSector();
 
@@ -303,14 +303,14 @@ void  StTpcCoordinateTransform::operator()(const              StTpcLocalCoordina
   Int_t sector = a.fromSector();
 
   if ( ! (row >= 1 && row <= St_tpcPadConfigC::instance()->numberOfRows(sector))) {
-    StThreeVectorD xyzS;
+    StThreeVector<double> xyzS;
     StTpcDb::instance()->SupS2Tpc(sector).MasterToLocalVect(a.position().xyz(), xyzS.xyz());
     row = rowFromLocalY(xyzS[0], sector);
   }
 
   const Double_t* trans = StTpcDb::instance()->Pad2Tpc(a.sector(), row).GetTranslation(); // 4
   TGeoTranslation GG2TPC(trans[0], trans[1], trans[2]);
-  StThreeVectorD xGG;
+  StThreeVector<double> xGG;
   GG2TPC.MasterToLocal(a.position().xyz(), xGG.xyz());
   StTpcDb::instance()->Pad2Tpc(a.sector(), row).MasterToLocalVect(xGG.xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(row);
 }

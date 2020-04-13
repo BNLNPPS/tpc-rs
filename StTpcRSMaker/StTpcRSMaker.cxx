@@ -17,7 +17,7 @@
 #include "St_base/Stiostream.h"
 // SCL
 #include "StarClassLibrary/StGlobals.hh"
-#include "StarClassLibrary/StThreeVectorD.hh"
+#include "StarClassLibrary/StThreeVector.hh"
 #include "StarClassLibrary/StPhysicalHelix.hh"
 // ROOT
 #include "TClassTable.h"
@@ -876,7 +876,7 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
         StPhysicalHelix track(TrackSegmentHits[iSegHits].dirLS.position(),
                               TrackSegmentHits[iSegHits].coorLS.position(),
                               BField[2]* 1e-14 * charge, 1);
-        StThreeVectorD unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
+        StThreeVector<double> unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
         Double_t* cxyz = unit.xyz();
         double L2L[9] = {
                      cxyz[2], - cxyz[0]*cxyz[2], cxyz[0],
@@ -889,15 +889,15 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
         Double_t s_low   = -dStep / 2;
         Double_t s_upper = s_low + dStep;
         Double_t newPosition = s_low;
-        static StThreeVectorD normal(0, 1, 0);
+        static StThreeVector<double> normal(0, 1, 0);
         static StTpcCoordinateTransform transform(gStTpcDb);
-        StThreeVectorD rowPlane(0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector(), TrackSegmentHits[iSegHits].Pad.row()), 0);
+        StThreeVector<double> rowPlane(0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector(), TrackSegmentHits[iSegHits].Pad.row()), 0);
         Double_t sR = track.pathLength(rowPlane, normal);
 
         if (sR < 1e10) {
           PrPP(Maker, sR);
           PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
-          StThreeVectorD xyzP = track.at(sR);
+          StThreeVector<double> xyzP = track.at(sR);
           TrackSegmentHits[iSegHits].coorLS.setPosition(xyzP);
           PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
           // don't useT0, don't useTau
@@ -919,7 +919,7 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
 
         Double_t gamma = TMath::Power(10., lgam) + 1;
         Double_t betaGamma = TMath::Sqrt(gamma * gamma - 1.);
-        StThreeVectorD       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
+        StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
         Double_t bg = 0;
         static const Double_t m_e = .51099907e-3;
         static const double eV = 1e-9; // electronvolt in GeV
@@ -1118,7 +1118,7 @@ void StTpcRSMaker::Make(const St_g2t_tpc_hit* g2t_tpc_hit, const St_g2t_track* g
             checkList[io][11]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Nt);
           }
 
-          StThreeVectorD xyzC = track.at(newPosition);
+          StThreeVector<double> xyzC = track.at(newPosition);
           Double_t phiXY = 2 * TMath::Pi() * gRandom->Rndm();
           Double_t rX = TMath::Cos(phiXY);
           Double_t rY = TMath::Sin(phiXY);
@@ -1898,7 +1898,7 @@ Bool_t StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, g2t_vertex
   StarMagField::Instance()->BField(tpc_hitC->x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
-  StThreeVectorD       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
+  StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
   StGlobalDirection    dirG(pxyzG.unit());                                    PrPP(Make, dirG);
   StGlobalDirection    BG(BFieldG[0], BFieldG[1], BFieldG[2]);                PrPP(Make, BG);
   transform( dirG,  dirLT, sector, row);                                      PrPP(Make, dirLT);
