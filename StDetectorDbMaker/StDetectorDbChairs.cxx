@@ -211,16 +211,7 @@ MakeChairOptionalInstance2(tpcCorrection,St_TpcrChargeC,Calibrations/tpc/TpcrCha
 #include "St_TpcTanLC.h"
 MakeChairInstance2(tpcCorrection,St_TpcTanLC,Calibrations/tpc/TpcTanL);
 #include "St_TpcCurrentCorrectionC.h"
-//MakeChairInstance2(tpcCorrection,St_TpcCurrentCorrectionC,Calibrations/tpc/TpcCurrentCorrection);
-St_TpcCurrentCorrectionC *St_TpcCurrentCorrectionC::fgInstance = 0;
-St_TpcCurrentCorrectionC *St_TpcCurrentCorrectionC::instance() {
-  if (fgInstance) return fgInstance;
-  St_tpcCorrection *table = (St_tpcCorrection *) StMaker::GetChain()->GetDataBase("Calibrations/tpc/TpcCurrentCorrectionX");
-  if (! table)      table = (St_tpcCorrection *) StMaker::GetChain()->GetDataBase("Calibrations/tpc/TpcCurrentCorrection");
-  assert(table);	  DEBUGTABLE(tpcCorrection);
-  fgInstance = new St_TpcCurrentCorrectionC(table);
-  return fgInstance;
-}
+MakeChairInstance2(tpcCorrection,St_TpcCurrentCorrectionC,Calibrations/tpc/TpcCurrentCorrectionX);
 #include "St_TpcZDCC.h"
 MakeChairInstance2(tpcCorrection,St_TpcZDCC,Calibrations/tpc/TpcZDC);
 #include "St_TpcSpaceChargeC.h"
