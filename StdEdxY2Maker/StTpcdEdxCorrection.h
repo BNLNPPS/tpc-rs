@@ -10,22 +10,22 @@
 #include "tpcrs/config_structs.h"
 
 struct dE_t {
-  Float_t dE;
-  Float_t dx;
-  Float_t dEdx;
-  Float_t dEdxL;
-  Float_t dEdxN;
+  float dE;
+  float dx;
+  float dEdx;
+  float dEdxL;
+  float dEdxN;
 };
 
 
 struct dEdxCorrection_t {
-  dEdxCorrection_t(const Char_t* name = "", const  Char_t* title = "", tpcrs::IConfigStruct* chair = 0, Int_t n = 0) :
+  dEdxCorrection_t(const char* name = "", const  char* title = "", tpcrs::IConfigStruct* chair = 0, int n = 0) :
     Name(name), Title(title), Chair(chair), nrows(n), dE(0) {}
-  const Char_t* Name;
-  const Char_t* Title;
+  const char* Name;
+  const char* Title;
   tpcrs::IConfigStruct* Chair;
-  Int_t   nrows;
-  Float_t dE;
+  int   nrows;
+  float dE;
 };
 
 
@@ -68,28 +68,28 @@ class StTpcdEdxCorrection : public TObject
     kTpcdEdxCor            = 30,//
     kTpcAllCorrections     = 31 //
   };
-  StTpcdEdxCorrection(Int_t Option = 0, Int_t debug = 0);
+  StTpcdEdxCorrection(int Option = 0, int debug = 0);
   ~StTpcdEdxCorrection();
-  Int_t dEdxCorrection(dEdxY2_t &dEdx, Bool_t doIT = kTRUE);
+  int dEdxCorrection(dEdxY2_t &dEdx, bool doIT = true);
   void SettpcGas               (St_tpcGasC*          m = 0) {m_tpcGas = m;}
 
-  void SetDebug(Int_t m = 0) {m_Debug = m;}
-  void SetMask (Int_t m = 0) {m_Mask = m;}
+  void SetDebug(int m = 0) {m_Debug = m;}
+  void SetMask (int m = 0) {m_Mask = m;}
   void ReSetCorrections();
   St_tpcGasC*         tpcGas()              {return m_tpcGas;}
   //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
 
-  Int_t Debug()                            {return m_Debug;}
-  Int_t Mask()                             {return m_Mask;}
-  Float_t           Adc2GeV()              {return mAdc2GeV;}
+  int Debug()                            {return m_Debug;}
+  int Mask()                             {return m_Mask;}
+  float           Adc2GeV()              {return mAdc2GeV;}
   void Print(Option_t* opt = "") const;
  private:
-  Int_t                m_Mask;                  //!
+  int                m_Mask;                  //!
   St_tpcGasC*          m_tpcGas;                //!
   dEdxY2_t*            mdEdx;
-  Float_t              mAdc2GeV;                //! Outer/Inner conversion factors from ADC -> GeV
+  float              mAdc2GeV;                //! Outer/Inner conversion factors from ADC -> GeV
   dEdxCorrection_t     m_Corrections[kTpcAllCorrections];//!
-  Int_t                m_Debug;                 //!
+  int                m_Debug;                 //!
 };
 
 
@@ -99,47 +99,47 @@ struct dEdxY2_t
      U->R (TpcAdcCorrection) -> P (tpcPressure) ->
      S (TpcSecRowB/TpcSecRowC) ->  O (TpcDriftDistOxygen) ->
      Z (TpcZCorrection) -> X(TpcdXCorrection) */
-  Int_t    sector;
-  Int_t    row;
-  Int_t    channel;
-  Float_t  pad;
-  Int_t    Npads;
-  Int_t    Ntbins;
-  Float_t  ZdriftDistance;     // drift distance
-  Float_t  ZdriftDistanceO2;   // ZdriftDistance*ppmOxygenIn
-  Float_t  ZdriftDistanceO2W;  // ZdriftDistance*ppmOxygenIn*ppmWaterOut
-  Float_t  DeltaZ;             // distance to privious cluster
-  Float_t  QRatio;             // Ratio to previous cluster Charge
-  Float_t  QRatioA;            // Ratio to Sum of all previous cluster Charge
-  Float_t  QSumA;              // Sum of all previous cluster Charge
-  Float_t  dxC;                // corrected dx which should be used with FitN
-  Float_t  xyz[3];  // local
-  Float_t  xyzD[3]; // local direction
-  Float_t  edge;    // distance to sector edge
-  Float_t  PhiR;    // relative phi
-  Float_t  resXYZ[3]; // track SectorLocal residual wrt local track
-  Float_t  Prob;
-  Float_t  zdev;
-  Float_t  zP;      // the most probable value from Bichsel
-  Float_t  zG;      // global z oh Hit
-  Float_t  sigmaP;  // sigma from Bichsel
-  Float_t  dCharge; // d_undershoot_Q/Q = ratio of modified - original charge normalized on original charge
-  Float_t  rCharge; // d_rounding_Q/Q   = estimated rounding normalized on original charge
-  Int_t    lSimulated;
-  Float_t  Qcm;     // accumulated charge uC/cm
-  Float_t  Crow;    // Current per row;
-  Float_t  Zdc;     // ZDC rate from trigger
-  Float_t  Weight;  // 1/.sigma^2 of TpcSecRow gas gain correction
-  Float_t  adc;     //  adc count from cluster finder
-  Float_t  TanL;
-  Float_t  Voltage; // Anode Voltage
-  Float_t  xpad;    // relative position in pad [-1.0,1.0]
-  Float_t  yrow;    // relative position in row [-0.5,0.0] inner, and [0.0,0.5] outer
-  Float_t  tpcTime;
+  int    sector;
+  int    row;
+  int    channel;
+  float  pad;
+  int    Npads;
+  int    Ntbins;
+  float  ZdriftDistance;     // drift distance
+  float  ZdriftDistanceO2;   // ZdriftDistance*ppmOxygenIn
+  float  ZdriftDistanceO2W;  // ZdriftDistance*ppmOxygenIn*ppmWaterOut
+  float  DeltaZ;             // distance to privious cluster
+  float  QRatio;             // Ratio to previous cluster Charge
+  float  QRatioA;            // Ratio to Sum of all previous cluster Charge
+  float  QSumA;              // Sum of all previous cluster Charge
+  float  dxC;                // corrected dx which should be used with FitN
+  float  xyz[3];  // local
+  float  xyzD[3]; // local direction
+  float  edge;    // distance to sector edge
+  float  PhiR;    // relative phi
+  float  resXYZ[3]; // track SectorLocal residual wrt local track
+  float  Prob;
+  float  zdev;
+  float  zP;      // the most probable value from Bichsel
+  float  zG;      // global z oh Hit
+  float  sigmaP;  // sigma from Bichsel
+  float  dCharge; // d_undershoot_Q/Q = ratio of modified - original charge normalized on original charge
+  float  rCharge; // d_rounding_Q/Q   = estimated rounding normalized on original charge
+  int    lSimulated;
+  float  Qcm;     // accumulated charge uC/cm
+  float  Crow;    // Current per row;
+  float  Zdc;     // ZDC rate from trigger
+  float  Weight;  // 1/.sigma^2 of TpcSecRow gas gain correction
+  float  adc;     //  adc count from cluster finder
+  float  TanL;
+  float  Voltage; // Anode Voltage
+  float  xpad;    // relative position in pad [-1.0,1.0]
+  float  yrow;    // relative position in row [-0.5,0.0] inner, and [0.0,0.5] outer
+  float  tpcTime;
   dE_t     C[StTpcdEdxCorrection::kTpcAllCorrections + 1];
   dE_t     F;     //!
-  Int_t    npads; // cluster size in pads
-  Int_t    ntmbks;// clustre size in time buckets
+  int    npads; // cluster size in pads
+  int    ntmbks;// clustre size in time buckets
 };
 
 #endif

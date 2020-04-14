@@ -9,6 +9,7 @@
  **************************************************************************/
 
 #include "TDatime.h"
+#include "TMath.h"
 #include "TString.h"
 
 #include "StTpcDb/StTpcDb.h"
@@ -23,7 +24,7 @@
 #include "tpcrs/enums.h"
 
 StTpcDb* gStTpcDb = 0;
-Bool_t StTpcDb::mOldScheme = kTRUE;
+bool StTpcDb::mOldScheme = true;
 
 
 
@@ -33,19 +34,19 @@ StTpcDb::StTpcDb()
   assert(gStTpcDb == 0);
   mTpc2GlobMatrix = new TGeoHMatrix("Default Tpc2Glob");
 
-  for (Int_t i = 1; i <= 24; i++) {
-    for (Int_t k = 0; k < kTotalTpcSectorRotaions; k++) {
+  for (int i = 1; i <= 24; i++) {
+    for (int k = 0; k < kTotalTpcSectorRotaions; k++) {
       mTpcSectorRotations[i - 1][k] = new TGeoHMatrix(Form("Default %02i %i", i, k));
     }
   }
 
   mFlip = new TGeoHMatrix;
   mzGG = Dimensions()->gatingGridZ(); // zGG
-  Double_t Rotation[9] = {0, 1, 0,
+  double Rotation[9] = {0, 1, 0,
                           1, 0, 0,
                           0, 0, -1
                          };
-  //  Double_t Translation[3] = {0, 0, mzGG};
+  //  double Translation[3] = {0, 0, mzGG};
   mFlip->SetName("Flip"); mFlip->SetRotation(Rotation);// mFlip->SetTranslation(Translation);
   mSwap[0] = new TGeoTranslation("Signed Drift distance to z for East", 0, 0, -mzGG);
   mSwap[1] = new TGeoTranslation("Signed Drift distance to z for West", 0, 0,  mzGG);
@@ -59,8 +60,8 @@ StTpcDb::StTpcDb()
 
 StTpcDb::~StTpcDb()
 {
-  for (Int_t i = 0; i < 24; i++) {
-    for (Int_t k = 0; k < kTotalTpcSectorRotaions; k++)
+  for (int i = 0; i < 24; i++) {
+    for (int k = 0; k < kTotalTpcSectorRotaions; k++)
       SafeDelete(mTpcSectorRotations[i][k]);
   }
 
@@ -74,7 +75,7 @@ StTpcDb::~StTpcDb()
   gStTpcDb = 0;
 }
 
-float StTpcDb::DriftVelocity(Int_t sector)
+float StTpcDb::DriftVelocity(int sector)
 {
   TPC::Half half = (sector <= 12 ? TPC::Half::first : TPC::Half::second);
   return 1e6 * mDriftVel[half];
@@ -125,14 +126,14 @@ void StTpcDb::SetTpcRotations()
    */
   //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
   assert(Dimensions()->numberOfSectors() == 24);
-  Float_t gFactor = StarMagField::Instance()->GetFactor();
-  Double_t phi, theta, psi;
-  Int_t iphi;
+  float gFactor = StarMagField::Instance()->GetFactor();
+  double phi, theta, psi;
+  int iphi;
   TGeoRotation* rotm = 0;
   TObjArray* listOfMatrices = 0;
   TString Rot;
 
-  if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = kFALSE;
+  if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = false;
 
   if (! mOldScheme) {
     LOG_INFO << "StTpcDb::SetTpcRotations use new schema for Rotation matrices\n";
@@ -141,15 +142,15 @@ void StTpcDb::SetTpcRotations()
     LOG_INFO << "StTpcDb::SetTpcRotations use old schema for Rotation matrices\n";
   }
 
-  for (Int_t sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors
-    Int_t k;
-    Int_t k1 = kSupS2Tpc;
-    Int_t k2 = kTotalTpcSectorRotaions;
+  for (int sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors
+    int k;
+    int k1 = kSupS2Tpc;
+    int k2 = kTotalTpcSectorRotaions;
 
     if (sector == 0) {k2 = k1; k1 = kUndefSector;}
 
     for (k = k1; k < k2; k++) {
-      Int_t Id     = 0;
+      int Id     = 0;
       TGeoHMatrix rotA; // After alignment
 
       if (!sector ) { // TPC Reference System
@@ -163,7 +164,7 @@ void StTpcDb::SetTpcRotations()
           rotA.RotateX(-psi);
           rotA.RotateY(-theta);
           rotA.RotateZ(-phi);
-          Double_t transTpcRefSys[3] = {tpcGlobalPosition->LocalxShift(),
+          double transTpcRefSys[3] = {tpcGlobalPosition->LocalxShift(),
                                         tpcGlobalPosition->LocalyShift(),
                                         tpcGlobalPosition->LocalzShift()
                                        };
@@ -261,8 +262,8 @@ void StTpcDb::SetTpcRotations()
       }
 
       // Normalize
-      Double_t* r = rotA.GetRotationMatrix();
-      Double_t norm;
+      double* r = rotA.GetRotationMatrix();
+      double norm;
       TVector3 d(r[0], r[3], r[6]); norm = 1 / d.Mag(); d *= norm;
       TVector3 t(r[2], r[5], r[8]); norm = 1 / t.Mag(); t *= norm;
       TVector3 n(r[1], r[4], r[7]);
@@ -270,13 +271,13 @@ void StTpcDb::SetTpcRotations()
 
       if (c.Dot(n) < 0) c *= -1;
 
-      Double_t rot[9] = {
+      double rot[9] = {
         d[0], c[0], t[0],
         d[1], c[1], t[1],
         d[2], c[2], t[2]
       };
       rotA.SetRotation(rot);
-      const Char_t* names[kTotalTpcSectorRotaions] = {
+      const char* names[kTotalTpcSectorRotaions] = {
         "SupS_%02itoTpc",
         "SupS_%02itoGlob",
         "SubS_%02iInner2SupS",

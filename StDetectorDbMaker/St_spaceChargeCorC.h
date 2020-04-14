@@ -7,18 +7,18 @@
 
 struct St_spaceChargeCorC : tpcrs::IConfigStruct {
   virtual spaceChargeCor_st* Struct(int i = 0) const = 0;
-  Double_t 	fullFieldB(Int_t i = 0) 	{return Struct(i)->fullFieldB;}
-  Double_t 	halfFieldB(Int_t i = 0) 	{return Struct(i)->halfFieldB;}
-  Double_t 	zeroField(Int_t i = 0) 	        {return Struct(i)->zeroField;}
-  Double_t 	halfFieldA(Int_t i = 0) 	{return Struct(i)->halfFieldA;}
-  Double_t 	fullFieldA(Int_t i = 0) 	{return Struct(i)->fullFieldA;}
-  Double_t 	satRate(Int_t i = 0) 	        {return Struct(i)->satRate;}
-  Float_t 	factor(Int_t i = 0) 	        {return Struct(i)->factor;}
-  Float_t 	detector(Int_t i = 0) 	        {return Struct(i)->detector;}
-  Float_t 	offset(Int_t i = 0) 	        {return Struct(i)->offset;}
-  Float_t 	getEWRatio(Int_t i = 0)	        {return Struct(i)->ewratio;}
-  Double_t      getSpaceChargeCorrection(Double_t scaleFactor, Int_t i = 0){
-    Double_t value = 0;
+  double 	fullFieldB(int i = 0) 	{return Struct(i)->fullFieldB;}
+  double 	halfFieldB(int i = 0) 	{return Struct(i)->halfFieldB;}
+  double 	zeroField(int i = 0) 	        {return Struct(i)->zeroField;}
+  double 	halfFieldA(int i = 0) 	{return Struct(i)->halfFieldA;}
+  double 	fullFieldA(int i = 0) 	{return Struct(i)->fullFieldA;}
+  double 	satRate(int i = 0) 	        {return Struct(i)->satRate;}
+  float 	factor(int i = 0) 	        {return Struct(i)->factor;}
+  float 	detector(int i = 0) 	        {return Struct(i)->detector;}
+  float 	offset(int i = 0) 	        {return Struct(i)->offset;}
+  float 	getEWRatio(int i = 0)	        {return Struct(i)->ewratio;}
+  double      getSpaceChargeCorrection(double scaleFactor, int i = 0){
+    double value = 0;
     if(scaleFactor < -.75 && scaleFactor > -1.25) value = fullFieldB(i);
     else if(scaleFactor < -0.25)	          value = halfFieldB(i);
     else if(scaleFactor < .25)	                  value = zeroField(i);
@@ -26,13 +26,13 @@ struct St_spaceChargeCorC : tpcrs::IConfigStruct {
     else if(scaleFactor < 1.25)	                  value = fullFieldA(i);
     return value;
   }
-  Double_t getSpaceChargeCorrection(){return  getSpaceChargeCorrection(StDetectorDbMagnet::instance()->getScaleFactor());}
-  Double_t getSpaceChargeCoulombs(Double_t scaleFactor);
-  Double_t getSpaceChargeCoulombs(){return getSpaceChargeCoulombs(StDetectorDbMagnet::instance()->getScaleFactor());}
-  Double_t getSpaceChargeSatRate(Int_t i = 0) {return satRate(i);}
-  Float_t  getSpaceChargeFactor(Int_t i = 0)  {return factor(i);}
-  Float_t  getSpaceChargeDetector(Int_t i = 0){return detector(i);}
-  Float_t  getSpaceChargeOffset(Int_t i = 0)  {return offset(i);}
+  double getSpaceChargeCorrection(){return  getSpaceChargeCorrection(StDetectorDbMagnet::instance()->getScaleFactor());}
+  double getSpaceChargeCoulombs(double scaleFactor);
+  double getSpaceChargeCoulombs(){return getSpaceChargeCoulombs(StDetectorDbMagnet::instance()->getScaleFactor());}
+  double getSpaceChargeSatRate(int i = 0) {return satRate(i);}
+  float  getSpaceChargeFactor(int i = 0)  {return factor(i);}
+  float  getSpaceChargeDetector(int i = 0){return detector(i);}
+  float  getSpaceChargeOffset(int i = 0)  {return offset(i);}
 
 };
 

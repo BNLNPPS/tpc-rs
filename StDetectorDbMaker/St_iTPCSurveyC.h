@@ -5,12 +5,12 @@
 #include "iTPCSurvey.h"
 
 struct St_iTPCSurveyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_iTPCSurveyC, iTPCSurvey_st> {
-  Int_t 	Id(Int_t i = 0) 	const {return Struct(i)->Id;}
-  Float_t 	Angle(Int_t i = 0) 	const {return Struct(i)->Angle;}
-  Float_t 	dx(Int_t i = 0) 	const {return Struct(i)->dx;}
-  Float_t 	dy(Int_t i = 0) 	const {return Struct(i)->dy;}
-  Float_t 	ScaleX(Int_t i = 0) 	const {return Struct(i)->ScaleX;}
-  Float_t 	ScaleY(Int_t i = 0) 	const {return Struct(i)->ScaleY;}
-  Char_t* 	comment(Int_t i = 0) 	const {return Struct(i)->comment;}
+  int 	Id(int i = 0) 	const {return Struct(i)->Id;}
+  float 	Angle(int i = 0) 	const {return Struct(i)->Angle;}
+  float 	dx(int i = 0) 	const {return Struct(i)->dx;}
+  float 	dy(int i = 0) 	const {return Struct(i)->dy;}
+  float 	ScaleX(int i = 0) 	const {return Struct(i)->ScaleX;}
+  float 	ScaleY(int i = 0) 	const {return Struct(i)->ScaleY;}
+  char* 	comment(int i = 0) 	const {return Struct(i)->comment;}
 };
 #endif

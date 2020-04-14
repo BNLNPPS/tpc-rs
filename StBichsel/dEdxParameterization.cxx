@@ -10,11 +10,11 @@
 
 
 
-dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
-    const Double_t MostProbableZShift,
-    const Double_t AverageZShift,
-    const Double_t I70Shift,
-    const Double_t I60Shift):
+dEdxParameterization::dEdxParameterization(const char* Tag, int keep3D,
+    const double MostProbableZShift,
+    const double AverageZShift,
+    const double I70Shift,
+    const double I60Shift):
   fTag (Tag), fP(0), fA(0), fI70 (0), fI60(0), fD(0),
   fRms (0), fW(0), fPhi(0),
   fMostProbableZShift(MostProbableZShift),
@@ -27,7 +27,7 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
 {
   memset (fTrs, 0, sizeof(fTrs));
   TDirectory* dir = gDirectory;
-  const Char_t*                                   rootf = "P10T.root";
+  const char*                                   rootf = "P10T.root";
 
   if (fTag.Contains("pai", TString::kIgnoreCase)) rootf = "PaiT.root";
 
@@ -35,8 +35,8 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
 
   if (fTag.Contains("bich", TString::kIgnoreCase)) rootf = "BichselT.root";
 
-  static const Char_t* path  = ".:./StarDb/dEdxModel:./StarDb/global/dEdx:./StRoot/StBichsel:$STAR/StarDb/dEdxModel:$STAR/StarDb/global/dEdx:$STAR/StRoot/StBichsel";
-  Char_t* file = gSystem->Which(path, rootf, kReadPermission);
+  static const char* path  = ".:./StarDb/dEdxModel:./StarDb/global/dEdx:./StRoot/StBichsel:$STAR/StarDb/dEdxModel:$STAR/StarDb/global/dEdx:$STAR/StRoot/StBichsel";
+  char* file = gSystem->Which(path, rootf, kReadPermission);
 
   if (! file) Fatal("dEdxParameterization::GetFile", "File %s has not been found in path %s", rootf, path);
   else        Warning("dEdxParameterization::GetFile", "File %s has been found as %s", rootf, file);
@@ -61,7 +61,7 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
 
   if (dir) dir->cd();
 
-  for (Int_t i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     if (i == 0) fAXYZ[i] = fPhi->GetXaxis();
 
     if (i == 1) fAXYZ[i] = fPhi->GetYaxis();
@@ -76,21 +76,21 @@ dEdxParameterization::dEdxParameterization(const Char_t* Tag, Int_t keep3D,
 
   //  if (! keep3D) SafeDelete(fPhi);
   // set normalization factor to 2.3976 keV/cm at beta*gamma = 4;
-  static const Double_t dEdxMIP = 2.39761562607903311; // [keV/cm]
-  static const Double_t MIPBetaGamma10 = TMath::Log10(4.);
+  static const double dEdxMIP = 2.39761562607903311; // [keV/cm]
+  static const double MIPBetaGamma10 = TMath::Log10(4.);
   //  fMostProbableZShift = TMath::Log(dEdxMIP) - Interpolation(fP,MIPBetaGamma10,1,0);
   //  fAverageZShift      = TMath::Log(dEdxMIP) - Interpolation(fA,MIPBetaGamma10,1,0);
   fI70Shift           *= dEdxMIP / GetI70(MIPBetaGamma10, 1);
   fI60Shift           *= dEdxMIP / GetI60(MIPBetaGamma10, 1);
   fMostProbableZShift  = TMath::Log(fI70Shift);
   fAverageZShift       = fMostProbableZShift;
-  const Char_t* Names[KPidParticles + 1] = {"e", "proton", "kaon", "pi", "mu", "deuteron", "triton", "He3", "alpha", "all"};
+  const char* Names[KPidParticles + 1] = {"e", "proton", "kaon", "pi", "mu", "deuteron", "triton", "He3", "alpha", "all"};
 
-  for (Int_t i = 0; i <= KPidParticles; i++) {
+  for (int i = 0; i <= KPidParticles; i++) {
     TString name(Names[i]);
-    const Char_t* type[6] = {"70p", "70", "70S", "zp", "z", "zS"};
+    const char* type[6] = {"70p", "70", "70S", "zp", "z", "zS"};
 
-    for (Int_t j = 0; j < 6; j++) {
+    for (int j = 0; j < 6; j++) {
       fTrs[i][j] = (TH1D*) pFile->Get(name + type[j]);
 
       if (fTrs[i][j])  fTrs[i][j]->SetDirectory(0);
@@ -112,8 +112,8 @@ dEdxParameterization::~dEdxParameterization()
   SafeDelete(fW);
   SafeDelete(fPhi);
 
-  for (Int_t i = 0; i <= KPidParticles; i++)
-    for (Int_t j = 0; j < 6; j++) {SafeDelete(fTrs[i][j]);}
+  for (int i = 0; i <= KPidParticles; i++)
+    for (int j = 0; j < 6; j++) {SafeDelete(fTrs[i][j]);}
 }
 
 
@@ -135,29 +135,29 @@ void dEdxParameterization::Print()
 }
 
 
-Double_t dEdxParameterization::MostProbableZCorrection(Double_t log10bg)
+double dEdxParameterization::MostProbableZCorrection(double log10bg)
 {
-  static const Double_t pars[2] = {-3.68846e-03, 4.72944e+00}; // FitHzAllHist012P05id  FitH + Prof 050905
+  static const double pars[2] = {-3.68846e-03, 4.72944e+00}; // FitHzAllHist012P05id  FitH + Prof 050905
   return pars[0] * TMath::Exp(-pars[1] * log10bg);
 }
 
-Double_t dEdxParameterization::I70Correction(Double_t log10bg)
+double dEdxParameterization::I70Correction(double log10bg)
 {
-  static const Double_t pars[2] = {-1.65714e-02, 3.27271e+00}; //  FitH70AllHist012P05id FitH + Prof 050905
+  static const double pars[2] = {-1.65714e-02, 3.27271e+00}; //  FitH70AllHist012P05id FitH + Prof 050905
   return TMath::Exp(pars[0] * TMath::Exp(-pars[1] * log10bg));
 }
 
 
-Double_t dEdxParameterization::Get(const TH1D* hist, Double_t log10bg) const
+double dEdxParameterization::Get(const TH1D* hist, double log10bg) const
 {
   static TH1D* hsave = 0;
-  static Double_t xmin = -100, xmax = 100;
+  static double xmin = -100, xmax = 100;
 
   if (hist != hsave) {
     hsave = (TH1D*) hist;
     TAxis* x = hsave->GetXaxis();
-    Int_t f = x->GetFirst();
-    Int_t l = x->GetLast();
+    int f = x->GetFirst();
+    int l = x->GetLast();
 
     xmin = x->GetBinUpEdge(f);
     xmax = x->GetBinLowEdge(l);

@@ -6,15 +6,15 @@
 
 struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClockOnlC, starClockOnl_st>
 {
-  UInt_t    RunNumber(Int_t i = 0)           {return Struct(i)->runNumber;}
-  Double_t  CurrentFrequency(Int_t i = 0)    {return Struct(i)->frequency;}
-  UInt_t    Time(Int_t i = 0)                {return Struct(i)->time;}
-  Double_t  Frequency(Int_t i = 0)           {return CurrentFrequency(i);}
+  unsigned int    RunNumber(int i = 0)           {return Struct(i)->runNumber;}
+  double  CurrentFrequency(int i = 0)    {return Struct(i)->frequency;}
+  unsigned int    Time(int i = 0)                {return Struct(i)->time;}
+  double  Frequency(int i = 0)           {return CurrentFrequency(i);}
   // depreciated
-  UInt_t    getRunNumber(Int_t i = 0)        {return RunNumber(i);}
-  Double_t  getCurrentFrequency(Int_t i = 0) {return CurrentFrequency(i);}
-  UInt_t    getTime(Int_t i = 0)             {return Time(i);}
-  Double_t  getFrequency(Int_t i = 0)        {return Frequency(i);}
-  Double_t  samplingFrequency(Int_t i = 0)   {return 1e-6 * CurrentFrequency(i);}
+  unsigned int    getRunNumber(int i = 0)        {return RunNumber(i);}
+  double  getCurrentFrequency(int i = 0) {return CurrentFrequency(i);}
+  unsigned int    getTime(int i = 0)             {return Time(i);}
+  double  getFrequency(int i = 0)        {return Frequency(i);}
+  double  samplingFrequency(int i = 0)   {return 1e-6 * CurrentFrequency(i);}
 };
 #endif

@@ -6,57 +6,57 @@
 
 struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig_st>
 {
-  UChar_t          iTpc(Int_t sector);
-  UChar_t          iTPC(Int_t sector) {return iTpc(sector);}
-  Int_t 	   padRows(Int_t sector);
-  Int_t 	   innerPadRows(Int_t sector);
-  Int_t 	   innerPadRows48(Int_t sector);
-  Int_t 	   innerPadRows52(Int_t sector);
-  Int_t 	   outerPadRows(Int_t sector);
-  Int_t 	   superInnerPadRows(Int_t sector);
-  Int_t 	   superOuterPadRows(Int_t sector);
-  Double_t 	   innerSectorPadWidth(Int_t sector);
-  Double_t 	   innerSectorPadLength(Int_t sector);
-  Double_t 	   innerSectorPadPitch(Int_t sector);
-  Double_t 	   innerSectorRowPitch1(Int_t sector);
-  Double_t 	   innerSectorRowPitch2(Int_t sector);
-  Double_t 	   firstPadRow(Int_t sector);
-  Double_t 	   firstOuterSectorPadRow(Int_t sector);
-  Double_t 	   lastOuterSectorPadRow(Int_t sector);
-  Double_t 	   firstRowWidth(Int_t sector);
-  Double_t 	   lastRowWidth(Int_t sector);
-  Double_t 	   outerSectorPadWidth(Int_t sector);
-  Double_t 	   outerSectorPadLength(Int_t sector);
-  Double_t 	   outerSectorPadPitch(Int_t sector);
-  Double_t 	   outerSectorRowPitch(Int_t sector);
-  Double_t 	   outerSectorLength(Int_t sector);
-  Double_t 	   ioSectorSeparation(Int_t sector);
-  Double_t 	   innerSectorEdge(Int_t sector);
-  Double_t 	   outerSectorEdge(Int_t sector);
-  Double_t 	   innerSectorPadPlaneZ(Int_t sector);
-  Double_t 	   outerSectorPadPlaneZ(Int_t sector);
-  Int_t* 	   innerPadsPerRow(Int_t sector);
-  Int_t* 	   outerPadsPerRow(Int_t sector);
-  Int_t            padsPerRow(Int_t sector, Int_t row = 1);
-  Double_t* 	   innerRowRadii(Int_t sector);
-  Double_t* 	   outerRowRadii(Int_t sector);
+  unsigned char          iTpc(int sector);
+  unsigned char          iTPC(int sector) {return iTpc(sector);}
+  int 	   padRows(int sector);
+  int 	   innerPadRows(int sector);
+  int 	   innerPadRows48(int sector);
+  int 	   innerPadRows52(int sector);
+  int 	   outerPadRows(int sector);
+  int 	   superInnerPadRows(int sector);
+  int 	   superOuterPadRows(int sector);
+  double 	   innerSectorPadWidth(int sector);
+  double 	   innerSectorPadLength(int sector);
+  double 	   innerSectorPadPitch(int sector);
+  double 	   innerSectorRowPitch1(int sector);
+  double 	   innerSectorRowPitch2(int sector);
+  double 	   firstPadRow(int sector);
+  double 	   firstOuterSectorPadRow(int sector);
+  double 	   lastOuterSectorPadRow(int sector);
+  double 	   firstRowWidth(int sector);
+  double 	   lastRowWidth(int sector);
+  double 	   outerSectorPadWidth(int sector);
+  double 	   outerSectorPadLength(int sector);
+  double 	   outerSectorPadPitch(int sector);
+  double 	   outerSectorRowPitch(int sector);
+  double 	   outerSectorLength(int sector);
+  double 	   ioSectorSeparation(int sector);
+  double 	   innerSectorEdge(int sector);
+  double 	   outerSectorEdge(int sector);
+  double 	   innerSectorPadPlaneZ(int sector);
+  double 	   outerSectorPadPlaneZ(int sector);
+  int* 	   innerPadsPerRow(int sector);
+  int* 	   outerPadsPerRow(int sector);
+  int            padsPerRow(int sector, int row = 1);
+  double* 	   innerRowRadii(int sector);
+  double* 	   outerRowRadii(int sector);
   //               taken from StRItpcPadPlane
-  Int_t            numberOfRows(Int_t sector);
-  Int_t            numberOfInnerRows(Int_t sector);
-  Int_t            numberOfInnerRows48(Int_t sector);
-  Int_t            numberOfInnerRows52(Int_t sector);
-  Int_t            numberOfOuterRows(Int_t sector);
-  Bool_t           isRowInRange(Int_t sector, Int_t row);
-  Double_t         radialDistanceAtRow(Int_t sector, Int_t row);
-  Int_t            numberOfPadsAtRow(Int_t sector, Int_t row);
-  Double_t         PadWidthAtRow(Int_t sector, Int_t row);
-  Double_t 	   PadLengthAtRow(Int_t sector, Int_t row);
-  Double_t 	   PadPitchAtRow(Int_t sector, Int_t row);
-  Double_t 	   RowPitchAtRow(Int_t sector, Int_t row);
-  Int_t            indexForRowPad(Int_t sector, Int_t row, Int_t pad);
-  bool             isiTpcSector(Int_t sector) { return iTpc(sector) == 1; }
-  bool             isiTpcPadRow(Int_t sector, Int_t row) { return iTpc(sector) && row >= 1 && row <= numberOfInnerRows(sector); }
-  bool             isInnerPadRow(Int_t sector, Int_t row) { return row <= numberOfInnerRows(sector); }
-  Int_t            IsRowInner(Int_t sector, Int_t row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
+  int            numberOfRows(int sector);
+  int            numberOfInnerRows(int sector);
+  int            numberOfInnerRows48(int sector);
+  int            numberOfInnerRows52(int sector);
+  int            numberOfOuterRows(int sector);
+  bool           isRowInRange(int sector, int row);
+  double         radialDistanceAtRow(int sector, int row);
+  int            numberOfPadsAtRow(int sector, int row);
+  double         PadWidthAtRow(int sector, int row);
+  double 	   PadLengthAtRow(int sector, int row);
+  double 	   PadPitchAtRow(int sector, int row);
+  double 	   RowPitchAtRow(int sector, int row);
+  int            indexForRowPad(int sector, int row, int pad);
+  bool             isiTpcSector(int sector) { return iTpc(sector) == 1; }
+  bool             isiTpcPadRow(int sector, int row) { return iTpc(sector) && row >= 1 && row <= numberOfInnerRows(sector); }
+  bool             isInnerPadRow(int sector, int row) { return row <= numberOfInnerRows(sector); }
+  int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };
 #endif

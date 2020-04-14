@@ -5,12 +5,12 @@
 #include "tpcRDOMap.h"
 
 struct St_tpcRDOMapC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMapC, tpcRDOMap_st> {
-  UChar_t 	nrows(Int_t i = 0) 	const {return Struct(i)->nrows;}
-  UChar_t 	index(Int_t i = 0) 	const {return Struct(i)->idx;}
-  UChar_t 	row(Int_t i = 0) 	const {return Struct(i)->row;}
-  UChar_t 	padMin(Int_t i = 0) 	const {return Struct(i)->padMin;}
-  UChar_t 	padMax(Int_t i = 0) 	const {return Struct(i)->padMax;}
-  UChar_t 	rdoI(Int_t i = 0) 	const {return Struct(i)->rdo;}
-  Int_t         rdo(Int_t padrow, Int_t pad = 0) const;
+  unsigned char 	nrows(int i = 0) 	const {return Struct(i)->nrows;}
+  unsigned char 	index(int i = 0) 	const {return Struct(i)->idx;}
+  unsigned char 	row(int i = 0) 	const {return Struct(i)->row;}
+  unsigned char 	padMin(int i = 0) 	const {return Struct(i)->padMin;}
+  unsigned char 	padMax(int i = 0) 	const {return Struct(i)->padMax;}
+  unsigned char 	rdoI(int i = 0) 	const {return Struct(i)->rdo;}
+  int         rdo(int padrow, int pad = 0) const;
 };
 #endif

@@ -6,13 +6,13 @@
 
 struct St_trgTimeOffsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeOffsetC, trgTimeOffset_st>
 {
-  Float_t 	offset(Int_t i = 0)     	   {return Struct(i)->offset;}
-  Float_t 	laserOffset(Int_t i = 0) 	   {return Struct(i)->laserOffset;}
-  Float_t 	laserOffsetW(Int_t i = 0) 	   {return Struct(i)->laserOffsetW;}
-  Float_t       triggerTimeOffset(Int_t i = 0)     {return 1e-6 * (mLaser ? laserOffset(i)  : offset(i));} // usec
-  Float_t       triggerTimeOffsetWest(Int_t i = 0) {return 1e-6 * (mLaser ? laserOffsetW(i) :         0);} // usec
-  void          SetLaser(Bool_t k = kTRUE)         {mLaser = k;}
+  float 	offset(int i = 0)     	   {return Struct(i)->offset;}
+  float 	laserOffset(int i = 0) 	   {return Struct(i)->laserOffset;}
+  float 	laserOffsetW(int i = 0) 	   {return Struct(i)->laserOffsetW;}
+  float       triggerTimeOffset(int i = 0)     {return 1e-6 * (mLaser ? laserOffset(i)  : offset(i));} // usec
+  float       triggerTimeOffsetWest(int i = 0) {return 1e-6 * (mLaser ? laserOffsetW(i) :         0);} // usec
+  void          SetLaser(bool k = true)         {mLaser = k;}
  private:
-  Bool_t        mLaser;
+  bool        mLaser;
 };
 #endif

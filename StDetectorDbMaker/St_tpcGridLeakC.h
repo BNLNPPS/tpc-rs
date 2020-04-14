@@ -10,16 +10,16 @@ enum StGLpos {
   kGLouter=2
 };
 struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLeakC, tpcGridLeak_st> {
-  Double_t 	InnerGLRadius(Int_t i = 0) 	{return Struct(i)->InnerGLRadius;}
-  Double_t 	MiddlGLRadius(Int_t i = 0) 	{return Struct(i)->MiddlGLRadius;}
-  Double_t 	OuterGLRadius(Int_t i = 0) 	{return Struct(i)->OuterGLRadius;}
-  Double_t 	InnerGLWidth(Int_t i = 0) 	{return Struct(i)->InnerGLWidth;}
-  Double_t 	MiddlGLWidth(Int_t i = 0) 	{return Struct(i)->MiddlGLWidth;}
-  Double_t 	OuterGLWidth(Int_t i = 0) 	{return Struct(i)->OuterGLWidth;}
-  Double_t 	InnerGLStrength(Int_t i = 0) 	{return Struct(i)->InnerGLStrength;}
-  Double_t 	MiddlGLStrength(Int_t i = 0) 	{return Struct(i)->MiddlGLStrength;}
-  Double_t 	OuterGLStrength(Int_t i = 0) 	{return Struct(i)->OuterGLStrength;}
-  Double_t      getGridLeakStrength(StGLpos pos){
+  double 	InnerGLRadius(int i = 0) 	{return Struct(i)->InnerGLRadius;}
+  double 	MiddlGLRadius(int i = 0) 	{return Struct(i)->MiddlGLRadius;}
+  double 	OuterGLRadius(int i = 0) 	{return Struct(i)->OuterGLRadius;}
+  double 	InnerGLWidth(int i = 0) 	{return Struct(i)->InnerGLWidth;}
+  double 	MiddlGLWidth(int i = 0) 	{return Struct(i)->MiddlGLWidth;}
+  double 	OuterGLWidth(int i = 0) 	{return Struct(i)->OuterGLWidth;}
+  double 	InnerGLStrength(int i = 0) 	{return Struct(i)->InnerGLStrength;}
+  double 	MiddlGLStrength(int i = 0) 	{return Struct(i)->MiddlGLStrength;}
+  double 	OuterGLStrength(int i = 0) 	{return Struct(i)->OuterGLStrength;}
+  double      getGridLeakStrength(StGLpos pos){
     switch (pos) {
       case (kGLinner) : return InnerGLStrength();
       case (kGLmiddl) : return MiddlGLStrength();
@@ -27,7 +27,7 @@ struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLea
     }
     return 0;
   }
-  Double_t      getGridLeakRadius(StGLpos pos) {
+  double      getGridLeakRadius(StGLpos pos) {
     switch (pos) {
       case (kGLinner) : return InnerGLRadius();
       case (kGLmiddl) : return MiddlGLRadius();
@@ -35,7 +35,7 @@ struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLea
     }
     return 0;
   }
-  Double_t      getGridLeakWidth(StGLpos pos) {
+  double      getGridLeakWidth(StGLpos pos) {
     switch (pos) {
       case (kGLinner) : return InnerGLWidth();
       case (kGLmiddl) : return MiddlGLWidth();

@@ -17,31 +17,31 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
 
   void Initialize()
   {
-    UInt_t N = GetNRows();
+    unsigned int N = GetNRows();
     fFunc = new TF1*[N];
     memset(fFunc, 0, N*sizeof(TF1*));
   }
 
-  UChar_t 	idx(Int_t k = 0)        	const {return Struct(k)->idx;}
-  UChar_t 	nrows(Int_t k = 0) 	        const {return Struct(k)->nrows;}
-  UChar_t 	PolyType(Int_t k = 0) 	        const {return Struct(k)->PolyType;}
-  UChar_t 	NVariables(Int_t k = 0) 	const {return Struct(k)->NVariables;}
-  UChar_t 	NCoefficients(Int_t k = 0) 	const {return Struct(k)->NCoefficients;}
-  UChar_t* 	Powers(Int_t k = 0) 	        const {return Struct(k)->Power;}
-  Double_t 	DMean(Int_t k = 0)           	const {return Struct(k)->DMean;}
-  Double_t* 	XMin(Int_t k = 0)         	const {return Struct(k)->XMin;}
-  Double_t* 	XMax(Int_t k = 0)       	const {return Struct(k)->XMax;}
-  Double_t* 	Coefficients(Int_t k = 0) 	const {return Struct(k)->Coefficients;}
-  Double_t* 	CoefficientsRMS(Int_t k = 0) 	const {return Struct(k)->CoefficientsRMS;}
-  Double_t      Eval(Int_t k = 0, Double_t *x = 0) const;
-  Double_t      Eval(Int_t k, Double_t x0, Double_t x1) const;
-  Double_t      EvalError(Int_t k = 0, Double_t *x = 0) const;
-  static Double_t MDFunc(Double_t *x = 0, Double_t *p = 0);
+  unsigned char 	idx(int k = 0)        	const {return Struct(k)->idx;}
+  unsigned char 	nrows(int k = 0) 	        const {return Struct(k)->nrows;}
+  unsigned char 	PolyType(int k = 0) 	        const {return Struct(k)->PolyType;}
+  unsigned char 	NVariables(int k = 0) 	const {return Struct(k)->NVariables;}
+  unsigned char 	NCoefficients(int k = 0) 	const {return Struct(k)->NCoefficients;}
+  unsigned char* 	Powers(int k = 0) 	        const {return Struct(k)->Power;}
+  double 	DMean(int k = 0)           	const {return Struct(k)->DMean;}
+  double* 	XMin(int k = 0)         	const {return Struct(k)->XMin;}
+  double* 	XMax(int k = 0)       	const {return Struct(k)->XMax;}
+  double* 	Coefficients(int k = 0) 	const {return Struct(k)->Coefficients;}
+  double* 	CoefficientsRMS(int k = 0) 	const {return Struct(k)->CoefficientsRMS;}
+  double      Eval(int k = 0, double *x = 0) const;
+  double      Eval(int k, double x0, double x1) const;
+  double      EvalError(int k = 0, double *x = 0) const;
+  static double MDFunc(double *x = 0, double *p = 0);
   static St_MDFCorrectionC *fgMDFCorrectionC;
  protected:
   virtual ~St_MDFCorrectionC();
  private:
-  Double_t EvalFactor(Int_t k = 0, Int_t p = 0, Double_t x = 0) const;
+  double EvalFactor(int k = 0, int p = 0, double x = 0) const;
   TF1         **fFunc;
 };
 #endif

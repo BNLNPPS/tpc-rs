@@ -8,7 +8,7 @@ struct St_TpcSecRowCorC : tpcrs::IConfigStruct
 {
   virtual TpcSecRowCor_st* Struct(int i = 0) const = 0;
 
-  Float_t* 	GainScale(Int_t i = 0) 	        {return Struct(i)->GainScale;}
-  Float_t* 	GainRms(Int_t i = 0) 	        {return Struct(i)->GainRms;}
+  float* 	GainScale(int i = 0) 	        {return Struct(i)->GainScale;}
+  float* 	GainRms(int i = 0) 	        {return Struct(i)->GainRms;}
 };
 #endif

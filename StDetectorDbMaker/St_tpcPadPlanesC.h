@@ -6,58 +6,58 @@
 
 struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPlanesC, tpcPadPlanes_st>
 {
-  Int_t 	padRows(Int_t i = 0) 	         {return Struct(i)->padRows;}
-  Int_t 	innerPadRows(Int_t i = 0) 	 {return Struct(i)->innerPadRows;}
-  Int_t 	innerPadRows48(Int_t i = 0) 	 {return Struct(i)->innerPadRows48;}
-  Int_t 	innerPadRows52(Int_t i = 0) 	 {return Struct(i)->innerPadRows52;}
-  Int_t 	outerPadRows(Int_t i = 0) 	 {return Struct(i)->outerPadRows;}
-  Int_t 	superInnerPadRows(Int_t i = 0) 	 {return Struct(i)->superInnerPadRows;}
-  Int_t 	superOuterPadRows(Int_t i = 0) 	 {return Struct(i)->superOuterPadRows;}
-  Double_t 	innerSectorPadWidth(Int_t i = 0) {return Struct(i)->innerSectorPadWidth;}
-  Double_t 	innerSectorPadLength(Int_t i = 0) {return Struct(i)->innerSectorPadLength;}
-  Double_t 	innerSectorPadPitch(Int_t i = 0) {return Struct(i)->innerSectorPadPitch;}
-  Double_t 	innerSectorRowPitch1(Int_t i = 0) {return Struct(i)->innerSectorRowPitch1;}
-  Double_t 	innerSectorRowPitch2(Int_t i = 0) {return Struct(i)->innerSectorRowPitch2;}
-  Double_t 	firstPadRow(Int_t i = 0) 	 {return Struct(i)->firstPadRow;}
-  Double_t 	firstOuterSectorPadRow(Int_t i = 0) {return Struct(i)->firstOuterSectorPadRow;}
-  Double_t 	lastOuterSectorPadRow(Int_t i = 0) {return Struct(i)->lastOuterSectorPadRow;}
-  Double_t 	firstRowWidth(Int_t i = 0) 	 {return Struct(i)->firstRowWidth;}
-  Double_t 	lastRowWidth(Int_t i = 0) 	 {return Struct(i)->lastRowWidth;}
-  Double_t 	outerSectorPadWidth(Int_t i = 0) {return Struct(i)->outerSectorPadWidth;}
-  Double_t 	outerSectorPadLength(Int_t i = 0) {return Struct(i)->outerSectorPadLength;}
-  Double_t 	outerSectorPadPitch(Int_t i = 0) {return Struct(i)->outerSectorPadPitch;}
-  Double_t 	outerSectorRowPitch(Int_t i = 0) {return Struct(i)->outerSectorRowPitch;}
-  Double_t 	outerSectorLength(Int_t i = 0) 	 {return Struct(i)->outerSectorLength;}
-  Double_t 	ioSectorSeparation(Int_t i = 0)  {return Struct(i)->ioSectorSeparation;}
-  Double_t 	innerSectorEdge(Int_t i = 0) 	 {return Struct(i)->innerSectorEdge;}
-  Double_t 	outerSectorEdge(Int_t i = 0) 	 {return Struct(i)->outerSectorEdge;}
-  Double_t 	innerSectorPadPlaneZ(Int_t i = 0) {return Struct(i)->innerSectorPadPlaneZ;}
-  Double_t 	outerSectorPadPlaneZ(Int_t i = 0) {return Struct(i)->outerSectorPadPlaneZ;}
-  Int_t* 	innerPadsPerRow(Int_t i = 0) 	 {return Struct(i)->innerPadsPerRow;}
-  Int_t* 	outerPadsPerRow(Int_t i = 0) 	 {return Struct(i)->outerPadsPerRow;}
-  Int_t         padsPerRow(Int_t row = 1)
+  int 	padRows(int i = 0) 	         {return Struct(i)->padRows;}
+  int 	innerPadRows(int i = 0) 	 {return Struct(i)->innerPadRows;}
+  int 	innerPadRows48(int i = 0) 	 {return Struct(i)->innerPadRows48;}
+  int 	innerPadRows52(int i = 0) 	 {return Struct(i)->innerPadRows52;}
+  int 	outerPadRows(int i = 0) 	 {return Struct(i)->outerPadRows;}
+  int 	superInnerPadRows(int i = 0) 	 {return Struct(i)->superInnerPadRows;}
+  int 	superOuterPadRows(int i = 0) 	 {return Struct(i)->superOuterPadRows;}
+  double 	innerSectorPadWidth(int i = 0) {return Struct(i)->innerSectorPadWidth;}
+  double 	innerSectorPadLength(int i = 0) {return Struct(i)->innerSectorPadLength;}
+  double 	innerSectorPadPitch(int i = 0) {return Struct(i)->innerSectorPadPitch;}
+  double 	innerSectorRowPitch1(int i = 0) {return Struct(i)->innerSectorRowPitch1;}
+  double 	innerSectorRowPitch2(int i = 0) {return Struct(i)->innerSectorRowPitch2;}
+  double 	firstPadRow(int i = 0) 	 {return Struct(i)->firstPadRow;}
+  double 	firstOuterSectorPadRow(int i = 0) {return Struct(i)->firstOuterSectorPadRow;}
+  double 	lastOuterSectorPadRow(int i = 0) {return Struct(i)->lastOuterSectorPadRow;}
+  double 	firstRowWidth(int i = 0) 	 {return Struct(i)->firstRowWidth;}
+  double 	lastRowWidth(int i = 0) 	 {return Struct(i)->lastRowWidth;}
+  double 	outerSectorPadWidth(int i = 0) {return Struct(i)->outerSectorPadWidth;}
+  double 	outerSectorPadLength(int i = 0) {return Struct(i)->outerSectorPadLength;}
+  double 	outerSectorPadPitch(int i = 0) {return Struct(i)->outerSectorPadPitch;}
+  double 	outerSectorRowPitch(int i = 0) {return Struct(i)->outerSectorRowPitch;}
+  double 	outerSectorLength(int i = 0) 	 {return Struct(i)->outerSectorLength;}
+  double 	ioSectorSeparation(int i = 0)  {return Struct(i)->ioSectorSeparation;}
+  double 	innerSectorEdge(int i = 0) 	 {return Struct(i)->innerSectorEdge;}
+  double 	outerSectorEdge(int i = 0) 	 {return Struct(i)->outerSectorEdge;}
+  double 	innerSectorPadPlaneZ(int i = 0) {return Struct(i)->innerSectorPadPlaneZ;}
+  double 	outerSectorPadPlaneZ(int i = 0) {return Struct(i)->outerSectorPadPlaneZ;}
+  int* 	innerPadsPerRow(int i = 0) 	 {return Struct(i)->innerPadsPerRow;}
+  int* 	outerPadsPerRow(int i = 0) 	 {return Struct(i)->outerPadsPerRow;}
+  int         padsPerRow(int row = 1)
   {
     return (row <= innerPadRows()) ?
            innerPadsPerRow()[row - 1] :
            outerPadsPerRow()[row - 1 - innerPadRows()];
   }
-  Double_t* 	innerRowRadii(Int_t i = 0) 	 {return Struct(i)->innerRowRadii;}
-  Double_t* 	outerRowRadii(Int_t i = 0) 	 {return Struct(i)->outerRowRadii;}
+  double* 	innerRowRadii(int i = 0) 	 {return Struct(i)->innerRowRadii;}
+  double* 	outerRowRadii(int i = 0) 	 {return Struct(i)->outerRowRadii;}
   // taken from StRTpcPadPlane
-  Int_t         numberOfRows()                   {return padRows();}
-  Int_t         numberOfInnerRows()              {return innerPadRows();}
-  Int_t         numberOfInnerRows48()            {return innerPadRows48();}
-  Int_t         numberOfInnerRows52()            {return innerPadRows52();}
-  Int_t         numberOfOuterRows()              {return outerPadRows();}
-  Bool_t        isRowInRange(Int_t row)          {return (row >= 1 && row <= numberOfRows()) ? kTRUE : kFALSE;}
-  Double_t      radialDistanceAtRow(Int_t row)
+  int         numberOfRows()                   {return padRows();}
+  int         numberOfInnerRows()              {return innerPadRows();}
+  int         numberOfInnerRows48()            {return innerPadRows48();}
+  int         numberOfInnerRows52()            {return innerPadRows52();}
+  int         numberOfOuterRows()              {return outerPadRows();}
+  bool        isRowInRange(int row)          {return (row >= 1 && row <= numberOfRows()) ? kTRUE : kFALSE;}
+  double      radialDistanceAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
     if ( row <= numberOfInnerRows() ) return innerRowRadii()[row - 1];
     else                            return outerRowRadii()[row - 1 - numberOfInnerRows()];
   }
-  Int_t   numberOfPadsAtRow(Int_t row)
+  int   numberOfPadsAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
@@ -65,7 +65,7 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
 
     return outerPadsPerRow()[row - 1 - numberOfInnerRows()];
   }
-  Double_t PadWidthAtRow(Int_t row)
+  double PadWidthAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
@@ -73,7 +73,7 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
 
     return outerSectorPadWidth();
   }
-  Double_t PadLengthAtRow(Int_t row)
+  double PadLengthAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
@@ -81,7 +81,7 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
 
     return outerSectorPadLength();
   }
-  Double_t PadPitchAtRow(Int_t row)
+  double PadPitchAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
@@ -89,7 +89,7 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
 
     return outerSectorPadPitch();
   }
-  Double_t RowPitchAtRow(Int_t row)
+  double RowPitchAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
@@ -98,14 +98,14 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
 
     return outerSectorRowPitch();
   }
-  Int_t indexForRowPad(Int_t row, Int_t pad)
+  int indexForRowPad(int row, int pad)
   {
     if (pad > numberOfPadsAtRow(row)) return -1;
 
-    Int_t index = 0;
+    int index = 0;
 
-    if (row > 0 && row <= numberOfInnerRows() )             for (Int_t i = 1; i < row; i++) index += numberOfPadsAtRow(i);
-    else if (row > numberOfInnerRows() && row <= numberOfRows()) for (Int_t i = numberOfInnerRows() + 1; i < row; i++)  index += numberOfPadsAtRow(i);
+    if (row > 0 && row <= numberOfInnerRows() )             for (int i = 1; i < row; i++) index += numberOfPadsAtRow(i);
+    else if (row > numberOfInnerRows() && row <= numberOfRows()) for (int i = numberOfInnerRows() + 1; i < row; i++)  index += numberOfPadsAtRow(i);
 
     index += pad - 1;
     return index;

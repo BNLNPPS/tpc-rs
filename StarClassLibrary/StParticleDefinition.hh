@@ -29,7 +29,6 @@
  **************************************************************************/
 #ifndef StParticleDefinition_hh
 #define StParticleDefinition_hh
-#include "Rtypes.h"
 
 #include <ostream>
 #include <string>

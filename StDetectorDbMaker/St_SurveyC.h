@@ -9,9 +9,9 @@ struct St_SurveyC : tpcrs::IConfigStruct {
 
   void Initialize()
   {
-    UInt_t N = GetNRows();
+    unsigned int N = GetNRows();
     fRotations = new TGeoHMatrix*[N];
-    for (UInt_t i = 0; i < N; i++) {
+    for (unsigned int i = 0; i < N; i++) {
       fRotations[i] = new TGeoHMatrix;
       TGeoHMatrix &rot = *fRotations[i];
       if (N == 1) rot.SetName(GetName().c_str());
@@ -24,36 +24,36 @@ struct St_SurveyC : tpcrs::IConfigStruct {
   }
 
   virtual  ~St_SurveyC();
-  Int_t 	Id(Int_t i = 0) 	const {return Struct(i)->Id;}
-  Double_t 	r00(Int_t i = 0) 	const {return Struct(i)->r00;} // 0
-  Double_t 	r01(Int_t i = 0) 	const {return Struct(i)->r01;} // 1
-  Double_t 	r02(Int_t i = 0) 	const {return Struct(i)->r02;} // 2
-  Double_t 	r10(Int_t i = 0) 	const {return Struct(i)->r10;} // 3
-  Double_t 	r11(Int_t i = 0) 	const {return Struct(i)->r11;} // 4
-  Double_t 	r12(Int_t i = 0) 	const {return Struct(i)->r12;} // 5
-  Double_t 	r20(Int_t i = 0) 	const {return Struct(i)->r20;} // 6
-  Double_t 	r21(Int_t i = 0) 	const {return Struct(i)->r21;} // 7
-  Double_t 	r22(Int_t i = 0) 	const {return Struct(i)->r22;} // 8
-  Double_t 	t0(Int_t i = 0) 	const {return Struct(i)->t0;}
-  Double_t 	t1(Int_t i = 0) 	const {return Struct(i)->t1;}
-  Double_t 	t2(Int_t i = 0) 	const {return Struct(i)->t2;}
-  Double_t 	sigmaRotX(Int_t i = 0) 	const {return Struct(i)->sigmaRotX;}
-  Double_t 	sigmaRotY(Int_t i = 0) 	const {return Struct(i)->sigmaRotY;}
-  Double_t 	sigmaRotZ(Int_t i = 0) 	const {return Struct(i)->sigmaRotZ;}
-  Double_t 	sigmaTrX(Int_t i = 0) 	const {return Struct(i)->sigmaTrX;}
-  Double_t 	sigmaTrY(Int_t i = 0) 	const {return Struct(i)->sigmaTrY;}
-  Double_t 	sigmaTrZ(Int_t i = 0) 	const {return Struct(i)->sigmaTrZ;}
-  Char_t* 	comment(Int_t i = 0) 	const {return Struct(i)->comment;}
-  void          GetAngles(Double_t &phi, Double_t &the, Double_t &psi, Int_t i = 0);
-  const Double_t  *Rotation(Int_t i = 0)     const {return &Struct(i)->r00;} 
-  const Double_t  *Translation(Int_t i = 0)  const {return &Struct(i)->t0;} 
-  const TGeoHMatrix  &GetMatrix(Int_t i = 0);
-  const TGeoHMatrix  &GetMatrix4Id(Int_t id);
-  const TGeoHMatrix  &GetMatrixR(Int_t i); // ignoring rotation alpha and beta
-  const Double_t *r(Int_t i = 0)        const {return &Struct(i)->r00;}
-  const Double_t *t(Int_t i = 0)        const {return &Struct(i)->t0;}
+  int 	Id(int i = 0) 	const {return Struct(i)->Id;}
+  double 	r00(int i = 0) 	const {return Struct(i)->r00;} // 0
+  double 	r01(int i = 0) 	const {return Struct(i)->r01;} // 1
+  double 	r02(int i = 0) 	const {return Struct(i)->r02;} // 2
+  double 	r10(int i = 0) 	const {return Struct(i)->r10;} // 3
+  double 	r11(int i = 0) 	const {return Struct(i)->r11;} // 4
+  double 	r12(int i = 0) 	const {return Struct(i)->r12;} // 5
+  double 	r20(int i = 0) 	const {return Struct(i)->r20;} // 6
+  double 	r21(int i = 0) 	const {return Struct(i)->r21;} // 7
+  double 	r22(int i = 0) 	const {return Struct(i)->r22;} // 8
+  double 	t0(int i = 0) 	const {return Struct(i)->t0;}
+  double 	t1(int i = 0) 	const {return Struct(i)->t1;}
+  double 	t2(int i = 0) 	const {return Struct(i)->t2;}
+  double 	sigmaRotX(int i = 0) 	const {return Struct(i)->sigmaRotX;}
+  double 	sigmaRotY(int i = 0) 	const {return Struct(i)->sigmaRotY;}
+  double 	sigmaRotZ(int i = 0) 	const {return Struct(i)->sigmaRotZ;}
+  double 	sigmaTrX(int i = 0) 	const {return Struct(i)->sigmaTrX;}
+  double 	sigmaTrY(int i = 0) 	const {return Struct(i)->sigmaTrY;}
+  double 	sigmaTrZ(int i = 0) 	const {return Struct(i)->sigmaTrZ;}
+  char* 	comment(int i = 0) 	const {return Struct(i)->comment;}
+  void          GetAngles(double &phi, double &the, double &psi, int i = 0);
+  const double  *Rotation(int i = 0)     const {return &Struct(i)->r00;} 
+  const double  *Translation(int i = 0)  const {return &Struct(i)->t0;} 
+  const TGeoHMatrix  &GetMatrix(int i = 0);
+  const TGeoHMatrix  &GetMatrix4Id(int id);
+  const TGeoHMatrix  &GetMatrixR(int i); // ignoring rotation alpha and beta
+  const double *r(int i = 0)        const {return &Struct(i)->r00;}
+  const double *t(int i = 0)        const {return &Struct(i)->t0;}
   static void Normalize(TGeoHMatrix &rot);
-  static Double_t IsOrtogonal(const Double_t *r);
+  static double IsOrtogonal(const double *r);
  protected:
   St_SurveyC();
  private:

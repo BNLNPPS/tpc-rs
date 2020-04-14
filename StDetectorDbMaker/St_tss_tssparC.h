@@ -5,49 +5,49 @@
 #include "tss_tsspar.h"
 struct St_tss_tssparC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tss_tssparC, tss_tsspar_st>
 {
-  Char_t* 	fileout(Int_t i = 0) 	{return Struct(i)->fileout;}
-  Int_t 	dynam(Int_t i = 0) 	{return Struct(i)->dynam;}
-  Int_t 	format(Int_t i = 0) 	{return Struct(i)->format;}
-  Int_t 	max_itime(Int_t i = 0) 	{return Struct(i)->max_itime;}
-  Int_t 	max_pads(Int_t i = 0) 	{return Struct(i)->max_pads;}
-  Int_t 	max_row(Int_t i = 0) 	{return Struct(i)->max_row;}
-  Int_t 	max_sect(Int_t i = 0) 	{return Struct(i)->max_sect;}
-  Int_t 	min_itime(Int_t i = 0) 	{return Struct(i)->min_itime;}
-  Int_t 	min_pads(Int_t i = 0) 	{return Struct(i)->min_pads;}
-  Int_t 	min_row(Int_t i = 0) 	{return Struct(i)->min_row;}
-  Int_t 	min_sect(Int_t i = 0) 	{return Struct(i)->min_sect;}
-  Int_t 	mode(Int_t i = 0) 	{return Struct(i)->mode;}
-  Int_t 	nele_laser(Int_t i = 0) {return Struct(i)->nele_laser;}
-  Int_t 	ngain(Int_t i = 0) 	{return Struct(i)->ngain;}
-  Int_t 	nseg(Int_t i = 0) 	{return Struct(i)->nseg;}
-  Int_t 	ntime(Int_t i = 0) 	{return Struct(i)->ntime;}
-  Int_t 	printout(Int_t i = 0) 	{return Struct(i)->printout;}
-  Int_t 	tpc_half(Int_t i = 0) 	{return Struct(i)->tpc_half;}
-  Int_t 	reset(Int_t i = 0) 	{return Struct(i)->reset;}
-  Float_t 	ave_ion_pot(Int_t i = 0) {return Struct(i)->ave_ion_pot;}
-  Float_t 	bfield(Int_t i = 0) 	{return Struct(i)->bfield;}
-  Float_t 	c_test(Int_t i = 0) 	{return Struct(i)->c_test;}
-  Float_t 	diff_long(Int_t i = 0) 	{return Struct(i)->diff_long;}
-  Float_t 	diff_trans(Int_t i = 0) {return Struct(i)->diff_trans;}
-  Float_t 	gain_in(Int_t i = 0)    {return Struct(i)->gain_in;}
-  Float_t 	gain_in(Int_t sec, Int_t row) {return gain(sec, row);}
-  Float_t 	gain_out(Int_t i = 0)   {return Struct(i)->gain_out;}
-  Float_t 	gain_out(Int_t sec, Int_t row)  {return gain(sec, row);}
-  Float_t 	gain(Int_t sec, Int_t row);
-  Float_t 	prf_in(Int_t i = 0) 	{return Struct(i)->prf_in;}
-  Float_t 	prf_out(Int_t i = 0) 	{return Struct(i)->prf_out;}
-  Float_t 	sca_rms(Int_t i = 0) 	{return Struct(i)->sca_rms;}
-  Float_t 	scale(Int_t i = 0) 	{return Struct(i)->scale;}
-  Float_t 	step_size(Int_t i = 0) 	{return Struct(i)->step_size;}
-  Float_t 	tau(Int_t i = 0) 	{return Struct(i)->tau;}
-  Float_t 	threshold(Int_t i = 0) 	{return Struct(i)->threshold;}
-  Float_t 	time_offset(Int_t i = 0) {return Struct(i)->time_offset;}
-  Float_t 	v_test(Int_t i = 0) 	{return Struct(i)->v_test;}
-  Float_t 	white_rms(Int_t i = 0) 	{return Struct(i)->white_rms;}
-  Float_t 	wire_coupling_in(Int_t i = 0) 	{return Struct(i)->wire_coupling_in;}
-  Float_t 	wire_coupling_out(Int_t i = 0) 	{return Struct(i)->wire_coupling_out;}
-  Float_t 	x_laser(Int_t i = 0) 	{return Struct(i)->x_laser;}
-  Float_t 	y_laser(Int_t i = 0) 	{return Struct(i)->y_laser;}
-  Float_t 	z_laser(Int_t i = 0) 	{return Struct(i)->z_laser;}
+  char* 	fileout(int i = 0) 	{return Struct(i)->fileout;}
+  int 	dynam(int i = 0) 	{return Struct(i)->dynam;}
+  int 	format(int i = 0) 	{return Struct(i)->format;}
+  int 	max_itime(int i = 0) 	{return Struct(i)->max_itime;}
+  int 	max_pads(int i = 0) 	{return Struct(i)->max_pads;}
+  int 	max_row(int i = 0) 	{return Struct(i)->max_row;}
+  int 	max_sect(int i = 0) 	{return Struct(i)->max_sect;}
+  int 	min_itime(int i = 0) 	{return Struct(i)->min_itime;}
+  int 	min_pads(int i = 0) 	{return Struct(i)->min_pads;}
+  int 	min_row(int i = 0) 	{return Struct(i)->min_row;}
+  int 	min_sect(int i = 0) 	{return Struct(i)->min_sect;}
+  int 	mode(int i = 0) 	{return Struct(i)->mode;}
+  int 	nele_laser(int i = 0) {return Struct(i)->nele_laser;}
+  int 	ngain(int i = 0) 	{return Struct(i)->ngain;}
+  int 	nseg(int i = 0) 	{return Struct(i)->nseg;}
+  int 	ntime(int i = 0) 	{return Struct(i)->ntime;}
+  int 	printout(int i = 0) 	{return Struct(i)->printout;}
+  int 	tpc_half(int i = 0) 	{return Struct(i)->tpc_half;}
+  int 	reset(int i = 0) 	{return Struct(i)->reset;}
+  float 	ave_ion_pot(int i = 0) {return Struct(i)->ave_ion_pot;}
+  float 	bfield(int i = 0) 	{return Struct(i)->bfield;}
+  float 	c_test(int i = 0) 	{return Struct(i)->c_test;}
+  float 	diff_long(int i = 0) 	{return Struct(i)->diff_long;}
+  float 	diff_trans(int i = 0) {return Struct(i)->diff_trans;}
+  float 	gain_in(int i = 0)    {return Struct(i)->gain_in;}
+  float 	gain_in(int sec, int row) {return gain(sec, row);}
+  float 	gain_out(int i = 0)   {return Struct(i)->gain_out;}
+  float 	gain_out(int sec, int row)  {return gain(sec, row);}
+  float 	gain(int sec, int row);
+  float 	prf_in(int i = 0) 	{return Struct(i)->prf_in;}
+  float 	prf_out(int i = 0) 	{return Struct(i)->prf_out;}
+  float 	sca_rms(int i = 0) 	{return Struct(i)->sca_rms;}
+  float 	scale(int i = 0) 	{return Struct(i)->scale;}
+  float 	step_size(int i = 0) 	{return Struct(i)->step_size;}
+  float 	tau(int i = 0) 	{return Struct(i)->tau;}
+  float 	threshold(int i = 0) 	{return Struct(i)->threshold;}
+  float 	time_offset(int i = 0) {return Struct(i)->time_offset;}
+  float 	v_test(int i = 0) 	{return Struct(i)->v_test;}
+  float 	white_rms(int i = 0) 	{return Struct(i)->white_rms;}
+  float 	wire_coupling_in(int i = 0) 	{return Struct(i)->wire_coupling_in;}
+  float 	wire_coupling_out(int i = 0) 	{return Struct(i)->wire_coupling_out;}
+  float 	x_laser(int i = 0) 	{return Struct(i)->x_laser;}
+  float 	y_laser(int i = 0) 	{return Struct(i)->y_laser;}
+  float 	z_laser(int i = 0) 	{return Struct(i)->z_laser;}
 };
 #endif
