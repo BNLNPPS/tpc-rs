@@ -58,11 +58,11 @@ StarMagField* StarMagField::Instance() {return fgInstance;}
 
 
 struct BFLD_t {
-  Int_t version;
-  const Char_t* code;
-  Float_t date; Int_t kz; Float_t rmaxx, zmaxx, rrm, zz1, zz2;
-  Float_t RmaxInn, ZmaxInn;
-  Int_t   nrp, nzp;
+  int version;
+  const char* code;
+  float date; int kz; float rmaxx, zmaxx, rrm, zz1, zz2;
+  float RmaxInn, ZmaxInn;
+  int   nrp, nzp;
 };
 static const BFLD_t BFLD = {// real field
   3,         // version
@@ -81,11 +81,11 @@ static const BFLD_t BFLD = {// real field
 };
 
 struct BDAT_t {
-  Int_t N;
-  Float_t Zi, Ri[20], Bzi[20], Bri[20];
+  int N;
+  float Zi, Ri[20], Bzi[20], Bri[20];
 };
 
-static const Int_t nZext = 23;
+static const int nZext = 23;
 static const BDAT_t BDAT[nZext] = { // calculated STAR field
   {
     15,    // Number of field points
@@ -351,7 +351,7 @@ void StarMagField::SetStarMagFieldRotation(TGeoRotation &rot)
 }
 
 
-void StarMagField::SetStarMagFieldRotation(Double_t* r)
+void StarMagField::SetStarMagFieldRotation(double* r)
 {
   TGeoRotation rot;
   rot.SetMatrix(r);
@@ -362,10 +362,10 @@ bool StarMagField::mConstBz = false;
 
 
 
-StarMagField::StarMagField ( EBField map, Float_t factor,
-                             Bool_t lock, Float_t rescale,
-                             Float_t BDipole, Float_t RmaxDip,
-                             Float_t ZminDip, Float_t ZmaxDip) :
+StarMagField::StarMagField ( EBField map, float factor,
+                             bool lock, float rescale,
+                             float BDipole, float RmaxDip,
+                             float ZminDip, float ZmaxDip) :
   fBzdZCorrection(0),
   fBrdZCorrection(0),
   fMap(map),
@@ -394,22 +394,22 @@ StarMagField::StarMagField ( EBField map, Float_t factor,
 
 
 /// B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
-void StarMagField::BField( const Double_t x[], Double_t B[] )
+void StarMagField::BField( const double x[], double B[] )
 {
-  Float_t xx[3] = {(Float_t) x[0], (Float_t) x[1], (Float_t) x[2]};
-  Float_t bb[3];
+  float xx[3] = {(float) x[0], (float) x[1], (float) x[2]};
+  float bb[3];
   BField(xx, bb);
   B[0] = bb[0]; B[1] = bb[1]; B[2] = bb[2];
 }
 
 
-void StarMagField::BField( const Float_t x[], Float_t B[] )
+void StarMagField::BField( const float x[], float B[] )
 
 {
 
 
-  Float_t r, z, Br_value, Bz_value ;
-  Float_t phi, Bphi_value, phi1;
+  float r, z, Br_value, Bz_value ;
+  float phi, Bphi_value, phi1;
   Bphi_value = 0;
   Br_value =  Bz_value = 0;
   B[0] = B[1] = B[2] = 0;
@@ -431,7 +431,7 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
 
 
 
-  Float_t za = fabs(z);
+  float za = fabs(z);
 
   if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {//     beam Dipole
     B[1] = TMath::Sign(fBDipole, z);
@@ -441,17 +441,17 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
 
   if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1]) { // within Map
     Interpolate2DBfield( r, z, Br_value, Bz_value ) ;
-    Double_t BL[3] = {0, 0, Bz_value};
+    double BL[3] = {0, 0, Bz_value};
 
     if ( r != 0.0 )      {
       BL[0] = Br_value * (x[0] / r) ;
       BL[1] = Br_value * (x[1] / r) ;
     }
 
-    Double_t BG[3];
+    double BG[3];
     fStarMagFieldRotation.LocalToMaster(BL, BG);
 
-    for (Int_t i = 0; i < 3; i++) B[i] = BG[i];
+    for (int i = 0; i < 3; i++) B[i] = BG[i];
 
     return;
   }
@@ -484,14 +484,14 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
   Interpolate2ExtDBfield( r, z, Br_value, Bz_value ) ;
 
   if (za <= BFLD.zmaxx && r <= BFLD.rmaxx) {
-    static const Float_t zero = 0;
-    static const Float_t one = 1;
-    Float_t wz = (za - ZList[nZ - 1] ) / (BFLD.zmaxx - ZList[nZ - 1]);
-    Float_t wr = (r  - Radius[nR - 1]) / (BFLD.rmaxx - Radius[nR - 1]);
-    Float_t w  = TMath::Min(TMath::Max(zero, TMath::Max(wz, wr)), one);
-    Float_t rm = TMath::Min(r, Radius[nR - 1]);
-    Float_t zm = TMath::Sign(TMath::Min(za, ZList[nZ - 1]), z);
-    Float_t BrI, BzI;
+    static const float zero = 0;
+    static const float one = 1;
+    float wz = (za - ZList[nZ - 1] ) / (BFLD.zmaxx - ZList[nZ - 1]);
+    float wr = (r  - Radius[nR - 1]) / (BFLD.rmaxx - Radius[nR - 1]);
+    float w  = TMath::Min(TMath::Max(zero, TMath::Max(wz, wr)), one);
+    float rm = TMath::Min(r, Radius[nR - 1]);
+    float zm = TMath::Sign(TMath::Min(za, ZList[nZ - 1]), z);
+    float BrI, BzI;
     Interpolate2DBfield( rm, zm, BrI, BzI ) ;
     Br_value = (1 - w) * BrI + w * Br_value;
     Bz_value = (1 - w) * BzI + w * Bz_value;
@@ -509,9 +509,9 @@ void StarMagField::BField( const Float_t x[], Float_t B[] )
 
 
 /// Bfield in Cartesian coordinates - 3D field
-void StarMagField::B3DField( const Float_t x[], Float_t B[] )
+void StarMagField::B3DField( const float x[], float B[] )
 {
-  Float_t r, z, phi, Br_value, Bz_value, Bphi_value ;
+  float r, z, phi, Br_value, Bz_value, Bphi_value ;
   Bphi_value = 0;
   Br_value =  Bz_value = 0;
   B[0] = B[1] = B[2] = 0;
@@ -536,26 +536,26 @@ void StarMagField::B3DField( const Float_t x[], Float_t B[] )
     B[2] = Bz_value ;
   }
 
-  Double_t BL[3] = {B[0], B[1], B[2]};
-  Double_t BG[3];
+  double BL[3] = {B[0], B[1], B[2]};
+  double BG[3];
   fStarMagFieldRotation.LocalToMaster(BL, BG);
 
-  for (Int_t i = 0; i < 3; i++) B[i] = BG[i];
+  for (int i = 0; i < 3; i++) B[i] = BG[i];
 
   return ;
 
 }
-void StarMagField::B3DField( const Double_t x[], Double_t B[] )
+void StarMagField::B3DField( const double x[], double B[] )
 {
-  Float_t xx[3] = {(Float_t) x[0], (Float_t) x[1], (Float_t) x[2]};
-  Float_t bb[3];
+  float xx[3] = {(float) x[0], (float) x[1], (float) x[2]};
+  float bb[3];
   B3DField(xx, bb);
   B[0] = bb[0]; B[1] = bb[1]; B[2] = bb[2];
 }
 
 /// B field in Radial coordinates - 2D field (ie Phi symmetric)
 
-void StarMagField::BrBzField( const Float_t r, const Float_t z, Float_t &Br_value, Float_t &Bz_value )
+void StarMagField::BrBzField( const float r, const float z, float &Br_value, float &Bz_value )
 
 {
 
@@ -571,8 +571,8 @@ void StarMagField::BrBzField( const Float_t r, const Float_t z, Float_t &Br_valu
 
 // /// B field in Radial coordinates - 3D field
 
-void StarMagField::BrBz3DField( const Float_t r, const Float_t z, const Float_t phi,
-                                Float_t &Br_value, Float_t &Bz_value, Float_t &Bphi_value )
+void StarMagField::BrBz3DField( const float r, const float z, const float phi,
+                                float &Br_value, float &Bz_value, float &Bphi_value )
 
 {
 
@@ -666,15 +666,15 @@ void StarMagField::ReadField( )
   if (magfile)
 
   {
-    Char_t cname[128] ;
+    char cname[128] ;
     fgets  ( cname, sizeof(cname), magfile ) ;     // Read comment lines at begining of file
     fgets  ( cname, sizeof(cname), magfile ) ;
     fgets  ( cname, sizeof(cname), magfile ) ;
     fgets  ( cname, sizeof(cname), magfile ) ;
     fgets  ( cname, sizeof(cname), magfile ) ;
 
-    for ( Int_t j = 0 ; j < nZ ; j++ ) {
-      for ( Int_t k = 0 ; k < nR ; k++ ) {
+    for ( int j = 0 ; j < nZ ; j++ ) {
+      for ( int k = 0 ; k < nR ; k++ ) {
         fgets  ( cname, sizeof(cname), magfile ) ;
         sscanf ( cname, " %f %f %f %f ", &Radius[k], &ZList[j], &Br[j][k], &Bz[j][k] ) ;
 
@@ -702,7 +702,7 @@ void StarMagField::ReadField( )
   if (b3Dfile)
 
   {
-    Char_t cname[128] ;
+    char cname[128] ;
     fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
     fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
     fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
@@ -710,9 +710,9 @@ void StarMagField::ReadField( )
     fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
     fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
 
-    for ( Int_t i = 0 ; i < nPhi ; i++ ) {
-      for ( Int_t j = 0 ; j < nZ ; j++ ) {
-        for ( Int_t k = 0 ; k < nR ; k++ ) {
+    for ( int i = 0 ; i < nPhi ; i++ ) {
+      for ( int j = 0 ; j < nZ ; j++ ) {
+        for ( int k = 0 ; k < nR ; k++ ) {
           fgets  ( cname, sizeof(cname), b3Dfile ) ;
           sscanf ( cname, " %f %f %f %f %f %f ",
                    &R3D[k], &Z3D[j], &Phi3D[i], &Br3D[i][j][k], &Bz3D[i][j][k], &Bphi3D[i][j][k] ) ;
@@ -730,9 +730,9 @@ void StarMagField::ReadField( )
   else if ( fMap == kConstant )             // Constant field values
 
   {
-    for ( Int_t i = 0 ; i < nPhi ; i++ ) {
-      for ( Int_t j = 0 ; j < nZ ; j++ ) {
-        for ( Int_t k = 0 ; k < nR ; k++ ) {
+    for ( int i = 0 ; i < nPhi ; i++ ) {
+      for ( int j = 0 ; j < nZ ; j++ ) {
+        for ( int k = 0 ; k < nR ; k++ ) {
           Br3D[i][j][k] = Br[j][k] ;
           Bz3D[i][j][k] = Bz[j][k] ;
           Bphi3D[i][j][k] = 0 ;
@@ -754,7 +754,7 @@ void StarMagField::ReadField( )
 
   if (magfile) {
     printf("StarMagField::ReadField  Reading  3D Magnetic Field file: %s \n", filename.c_str());
-    Char_t cname[128] ;
+    char cname[128] ;
 
     for (;;) {
       fgets  ( cname, sizeof(cname), magfile ) ;     // Read comment lines at begining of file
@@ -764,10 +764,10 @@ void StarMagField::ReadField( )
       break;
     }
 
-    for ( Int_t i = 0 ; i < nPhiSteel ; i++ ) {
+    for ( int i = 0 ; i < nPhiSteel ; i++ ) {
 
-      for ( Int_t k = 0 ; k < nRSteel ; k++ ) {
-        for ( Int_t j = 0 ; j < nZSteel ; j++ ) {
+      for ( int k = 0 ; k < nRSteel ; k++ ) {
+        for ( int j = 0 ; j < nZSteel ; j++ ) {
 
 
           fgets  ( cname, sizeof(cname), magfile ) ;
@@ -795,19 +795,19 @@ void StarMagField::ReadField( )
 
 /// Interpolate the B field map - 2D interpolation
 
-void StarMagField::Interpolate2DBfield( const Float_t r, const Float_t z, Float_t &Br_value, Float_t &Bz_value )
+void StarMagField::Interpolate2DBfield( const float r, const float z, float &Br_value, float &Bz_value )
 
 {
 
-  Float_t fscale ;
+  float fscale ;
 
   fscale = 0.001 * fFactor * fRescale ;           // Scale STAR maps to work in kGauss, cm
 
 
-  const   Int_t ORDER = 1  ;                      // Linear interpolation = 1, Quadratic = 2
-  static  Int_t jlow = 0, klow = 0 ;
-  Float_t save_Br[ORDER + 1] ;
-  Float_t save_Bz[ORDER + 1] ;
+  const   int ORDER = 1  ;                      // Linear interpolation = 1, Quadratic = 2
+  static  int jlow = 0, klow = 0 ;
+  float save_Br[ORDER + 1] ;
+  float save_Bz[ORDER + 1] ;
 
   Search ( nZ, ZList,  z, jlow ) ;
   Search ( nR, Radius, r, klow ) ;
@@ -820,7 +820,7 @@ void StarMagField::Interpolate2DBfield( const Float_t r, const Float_t z, Float_
 
   if ( klow + ORDER  >=    nR - 1 ) klow =   nR - 1 - ORDER ;
 
-  for ( Int_t j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
+  for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
     save_Br[j - jlow]   = Interpolate( &Radius[klow], &Br[j][klow], ORDER, r )   ;
     save_Bz[j - jlow]   = Interpolate( &Radius[klow], &Bz[j][klow], ORDER, r )   ;
   }
@@ -831,18 +831,18 @@ void StarMagField::Interpolate2DBfield( const Float_t r, const Float_t z, Float_
 }
 
 
-void StarMagField::Interpolate2ExtDBfield( const Float_t r, const Float_t z, Float_t &Br_value, Float_t &Bz_value )
+void StarMagField::Interpolate2ExtDBfield( const float r, const float z, float &Br_value, float &Bz_value )
 {
-  static Float_t ZExtList[nZext];
-  static Bool_t  first = kTRUE;
+  static float ZExtList[nZext];
+  static bool  first = true;
 
   if (first) {
-    for (Int_t j = 0; j < nZext; j++) ZExtList[j] = BDAT[j].Zi;
+    for (int j = 0; j < nZext; j++) ZExtList[j] = BDAT[j].Zi;
 
-    first = kFALSE;
+    first = false;
   }
 
-  Float_t za = fabs(z);
+  float za = fabs(z);
 
   if (za > BFLD.zz2 || r > BFLD.rrm) return;
 
@@ -854,21 +854,21 @@ void StarMagField::Interpolate2ExtDBfield( const Float_t r, const Float_t z, Flo
   //end added by Lijuan
 
 
-  Float_t fscale  = 0.001 * fFactor; // Scale STAR maps to work in kGauss, cm. Table only for Full Field, no Rescale !
+  float fscale  = 0.001 * fFactor; // Scale STAR maps to work in kGauss, cm. Table only for Full Field, no Rescale !
 
-  const   Int_t ORDER = 1  ;                      // Linear interpolation = 1, Quadratic = 2
-  static  Int_t jlow = 0, klow = 0 ;
-  Float_t save_Br[ORDER + 1] ;
-  Float_t save_Bz[ORDER + 1] ;
+  const   int ORDER = 1  ;                      // Linear interpolation = 1, Quadratic = 2
+  static  int jlow = 0, klow = 0 ;
+  float save_Br[ORDER + 1] ;
+  float save_Bz[ORDER + 1] ;
   Search ( nZext, ZExtList,  za, jlow ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
   if ( jlow + ORDER  >=    nZext - 1 ) jlow =   nZext - 1 - ORDER ;
 
-  for ( Int_t j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-    Int_t N = BDAT[j].N;
-    Search ( N, (Float_t*) (&BDAT[j].Ri[0]), r, klow ) ;
+  for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
+    int N = BDAT[j].N;
+    Search ( N, (float*) (&BDAT[j].Ri[0]), r, klow ) ;
 
     if ( klow < 0 ) klow = 0 ;
 
@@ -886,19 +886,19 @@ void StarMagField::Interpolate2ExtDBfield( const Float_t r, const Float_t z, Flo
 
 /// Interpolate the B field map - 3D interpolation
 
-void StarMagField::Interpolate3DBfield( const Float_t r, const Float_t z, const Float_t phi,
-                                        Float_t &Br_value, Float_t &Bz_value, Float_t &Bphi_value )
+void StarMagField::Interpolate3DBfield( const float r, const float z, const float phi,
+                                        float &Br_value, float &Bz_value, float &Bphi_value )
 {
 
-  Float_t fscale ;
+  float fscale ;
 
   fscale = 0.001 * fFactor * fRescale ;           // Scale STAR maps to work in kGauss, cm
 
-  const   Int_t ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
-  static  Int_t ilow = 0, jlow = 0, klow = 0 ;
-  Float_t save_Br[ORDER + 1],   saved_Br[ORDER + 1] ;
-  Float_t save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
-  Float_t save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
+  const   int ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
+  static  int ilow = 0, jlow = 0, klow = 0 ;
+  float save_Br[ORDER + 1],   saved_Br[ORDER + 1] ;
+  float save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
+  float save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
 
 
 
@@ -921,8 +921,8 @@ void StarMagField::Interpolate3DBfield( const Float_t r, const Float_t z, const 
 
   if ( klow + ORDER  >=    nR - 1 ) klow =   nR - 1 - ORDER ;
 
-  for ( Int_t i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    for ( Int_t j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
+  for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
+    for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
       save_Br[j - jlow]   = Interpolate( &R3D[klow], &Br3D[i][j][klow], ORDER, r )   ;
       save_Bz[j - jlow]   = Interpolate( &R3D[klow], &Bz3D[i][j][klow], ORDER, r )   ;
       save_Bphi[j - jlow] = Interpolate( &R3D[klow], &Bphi3D[i][j][klow], ORDER, r ) ;
@@ -951,22 +951,22 @@ void StarMagField::Interpolate3DBfield( const Float_t r, const Float_t z, const 
 
 /// Interpolate the B field map - 3D interpolation
 
-void StarMagField::Interpolate3DBSteelfield( const Float_t r, const Float_t z, const Float_t phi,
-    Float_t &Br_value, Float_t &Bz_value, Float_t &Bphi_value )
+void StarMagField::Interpolate3DBSteelfield( const float r, const float z, const float phi,
+    float &Br_value, float &Bz_value, float &Bphi_value )
 {
 
-  Float_t fscale ;
+  float fscale ;
 
   //This is different from the usual bfield map, changed by Lijuan
 
   //   fscale = 0.001*fFactor*fRescale ;               // Scale STAR maps to work in kGauss, cm
   fscale = 0.001 * fFactor;             // Scale STAR maps to work in kGauss, cm
 
-  const   Int_t ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
-  static  Int_t ilow = 0, jlow = 0, klow = 0 ;
-  Float_t save_Br[ORDER + 1],   saved_Br[ORDER + 1] ;
-  Float_t save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
-  Float_t save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
+  const   int ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
+  static  int ilow = 0, jlow = 0, klow = 0 ;
+  float save_Br[ORDER + 1],   saved_Br[ORDER + 1] ;
+  float save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
+  float save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
   //  phi=phi+1;
 
   Search( nPhiSteel, Phi3DSteel, phi, ilow ) ;
@@ -985,8 +985,8 @@ void StarMagField::Interpolate3DBSteelfield( const Float_t r, const Float_t z, c
 
   if ( klow + ORDER  >=    nRSteel - 1 ) klow =   nRSteel - 1 - ORDER ;
 
-  for ( Int_t i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    for ( Int_t j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
+  for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
+    for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
       save_Br[j - jlow]   = Interpolate( &R3DSteel[klow], &Br3DSteel[i][j][klow], ORDER, r )   ;
       save_Bz[j - jlow]   = Interpolate( &R3DSteel[klow], &Bz3DSteel[i][j][klow], ORDER, r )   ;
       save_Bphi[j - jlow] = Interpolate( &R3DSteel[klow], &Bphi3DSteel[i][j][klow], ORDER, r ) ;
@@ -1005,12 +1005,12 @@ void StarMagField::Interpolate3DBSteelfield( const Float_t r, const Float_t z, c
 
 
 /// Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
-Float_t StarMagField::Interpolate( const Float_t Xarray[], const Float_t Yarray[],
-                                   const Int_t ORDER, const Float_t x )
+float StarMagField::Interpolate( const float Xarray[], const float Yarray[],
+                                   const int ORDER, const float x )
 
 {
 
-  Float_t y ;
+  float y ;
 
 
   if ( ORDER == 2 )                // Quadratic Interpolation = 2
@@ -1038,24 +1038,24 @@ Float_t StarMagField::Interpolate( const Float_t Xarray[], const Float_t Yarray[
 
 /// Search an ordered table by starting at the most recently used point
 
-void StarMagField::Search( Int_t N, const Float_t Xarray[], Float_t x, Int_t &low )
+void StarMagField::Search( int N, const float Xarray[], float x, int &low )
 
 {
   assert(! TMath::IsNaN(x));
-  Long_t middle, high ;
-  Int_t  ascend = 0, increment = 1 ;
+  long middle, high ;
+  int  ascend = 0, increment = 1 ;
 
   if ( Xarray[N - 1] >= Xarray[0] ) ascend = 1 ; // Ascending ordered table if true
 
   if ( low < 0 || low > N - 1 ) { low = -1 ; high = N ; }
 
   else {                                          // Ordered Search phase
-    if ( (Int_t)( x >= Xarray[low] ) == ascend ) {
+    if ( (int)( x >= Xarray[low] ) == ascend ) {
       if ( low == N - 1 ) return ;
 
       high = low + 1 ;
 
-      while ( (Int_t)( x >= Xarray[high] ) == ascend ) {
+      while ( (int)( x >= Xarray[high] ) == ascend ) {
         low = high ;
         increment *= 2 ;
         high = low + increment ;
@@ -1068,7 +1068,7 @@ void StarMagField::Search( Int_t N, const Float_t Xarray[], Float_t x, Int_t &lo
 
       high = low - 1 ;
 
-      while ( (Int_t)( x < Xarray[low] ) == ascend ) {
+      while ( (int)( x < Xarray[low] ) == ascend ) {
         high = low ;
         increment *= 2 ;
 
@@ -1081,7 +1081,7 @@ void StarMagField::Search( Int_t N, const Float_t Xarray[], Float_t x, Int_t &lo
   while ( (high - low) != 1 ) {                  // Binary Search Phase
     middle = ( high + low ) / 2 ;
 
-    if ( (Int_t)( x >= Xarray[middle] ) == ascend )
+    if ( (int)( x >= Xarray[middle] ) == ascend )
       low = middle ;
     else
       high = middle ;
@@ -1095,7 +1095,7 @@ void StarMagField::Search( Int_t N, const Float_t Xarray[], Float_t x, Int_t &lo
 
 
 #define PPLOCK(A) \
-  void StarMagField::Set ## A (Float_t m) {				\
+  void StarMagField::Set ## A (float m) {				\
     if (!fLock) f ## A  = m;					\
     else printf("StarMagField::Set"#A"() "#A" is locked at %f; Set to %f is ignored\n", f ## A ,m); \
   }
@@ -1111,7 +1111,7 @@ PPLOCK(ZmaxDip)
 void StarMagField::SetLock ()
 {
   if (! fLock) {
-    fLock = kTRUE;
+    fLock = true;
     printf("StarMagField::SetLock lock StarMagField parameters\n");
     Print();
   }

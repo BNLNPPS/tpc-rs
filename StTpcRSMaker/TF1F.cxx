@@ -2,33 +2,33 @@
 #include "TMath.h"
 
 
-void TF1F::Save(Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax, Double_t zmin, Double_t zmax)
+void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)
 {
   fXmin = xmin; fXmax = xmax; fStep = 20, fdX = 1. / fStep; fNpx = TMath::Nint((fXmax - fXmin) / fdX);
   TF1::Save(xmin, xmax, ymin, ymax, zmin, zmax);
 }
 
 
-Double_t TF1F::GetSaveL(Double_t* xx)
+double TF1F::GetSaveL(double* xx)
 {
   // Get value corresponding to X in array of fSave values
   if (xx[0] < fXmin || xx[0]  > fXmax || fdX <= 0) return 0.;
 
-  Int_t bin     = TMath::Nint((xx[0] - fXmin) / fdX);
+  int bin     = TMath::Nint((xx[0] - fXmin) / fdX);
   return fSave[bin];
 }
 
 
-Double_t TF1F::GetSaveL(Int_t N, Double_t x, Double_t* y)
+double TF1F::GetSaveL(int N, double x, double* y)
 {
   // Get values y[N] corresponding to x+i, i = [0, ..., N-1];
-  //  memset(y, 0, N*sizeof(Double_t));
-  Int_t bin     = TMath::Nint((x - fXmin) / fdX);
-  Int_t i1 = 0;
+  //  memset(y, 0, N*sizeof(double));
+  int bin     = TMath::Nint((x - fXmin) / fdX);
+  int i1 = 0;
 
   while (bin < 0) {i1++; bin += fStep;}
 
-  for (Int_t i = i1; i < N && bin < GetNpx() - 3; i++, bin += fStep) {
+  for (int i = i1; i < N && bin < GetNpx() - 3; i++, bin += fStep) {
     y[i] = fSave[bin];
   }
 
@@ -36,16 +36,16 @@ Double_t TF1F::GetSaveL(Int_t N, Double_t x, Double_t* y)
 }
 
 
-Double_t TF1F::GetSaveL(Int_t N, Double_t* x, Double_t* y)
+double TF1F::GetSaveL(int N, double* x, double* y)
 {
   // Get values y[N] corresponding to x[N] in array of fSave values
-  memset(y, 0, N * sizeof(Double_t));
+  memset(y, 0, N * sizeof(double));
 
   if (GetNpx() <= 0) return 0.;
 
-  for (Int_t i = 0; i < N; i++) {
+  for (int i = 0; i < N; i++) {
     if (x[i] > fXmin) {
-      Int_t bin     = Int_t((x[i] - fXmin) / fdX);
+      int bin     = int((x[i] - fXmin) / fdX);
 
       if (bin < GetNpx() - 3) y[i] = fSave[bin];
     }
@@ -55,8 +55,8 @@ Double_t TF1F::GetSaveL(Int_t N, Double_t* x, Double_t* y)
 }
 #if ROOT_VERSION_CODE >= 393216 /* = ROOT_VERSION(6,0,0) */
 TF1F::TF1F(): TF1() {fNpx = 200;}
-TF1F::TF1F(const char* name, const char* formula, Double_t xmin, Double_t xmax)
+TF1F::TF1F(const char* name, const char* formula, double xmin, double xmax)
   : TF1(name, formula, xmax, xmin) {fNpx = 200;}
-TF1F::TF1F(const char* name, Double_t (*fcn)(Double_t*, Double_t*), Double_t xmin, Double_t xmax, Int_t npar, Int_t ndim)
+TF1F::TF1F(const char* name, double (*fcn)(double*, double*), double xmin, double xmax, int npar, int ndim)
   : TF1(name, fcn, xmin, xmax, npar, ndim) {fNpx = 200;}
 #endif /* ROOT 6 */

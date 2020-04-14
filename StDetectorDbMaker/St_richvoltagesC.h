@@ -6,9 +6,9 @@
 
 struct St_richvoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages_st>
 {
-  UInt_t 	runNumber(Int_t i = 0) 	        {return Struct(i)->runNumber;}
-  UInt_t 	startStatusTime(Int_t i = 0) 	{return Struct(i)->startStatusTime;}
-  UInt_t 	endStatusTime(Int_t i = 0) 	{return Struct(i)->endStatusTime;}
-  UInt_t 	status(Int_t i = 0) 	        {return Struct(i)->status;}
+  unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
+  unsigned int 	startStatusTime(int i = 0) 	{return Struct(i)->startStatusTime;}
+  unsigned int 	endStatusTime(int i = 0) 	{return Struct(i)->endStatusTime;}
+  unsigned int 	status(int i = 0) 	        {return Struct(i)->status;}
 };
 #endif

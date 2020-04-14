@@ -15,7 +15,6 @@
 long _undefined_particle_id = 2000000000; /* Unique PDG ID for each undefined particle */
 
 #include <iostream>
-#include "Rtypes.h"
 
 #include "StarClassLibrary/StAntiDeuteron.hh"
 #include "StarClassLibrary/StAntiTriton.hh"
@@ -34,7 +33,7 @@ StParticleTable::~StParticleTable() {/* noop */}
 /// @param z Charge of the heavy ion
 /// @param a Atomic number of the heavy ion
 /// @param l Number of lambdas in a hypernucleus
-Int_t hid( Int_t z, Int_t a, Int_t l = 0 )
+int hid( int z, int a, int l = 0 )
 {
   //         10LZZZAAAI
   return (   1000000000

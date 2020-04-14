@@ -6,37 +6,37 @@
 
 struct St_tpcGlobalPositionC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGlobalPositionC, tpcGlobalPosition_st>
 {
-  Float_t 	LocalxShift(Int_t i = 0)       const {return Struct(i)->LocalxShift;}
-  Float_t 	LocalyShift(Int_t i = 0)       const {return Struct(i)->LocalyShift;}
-  Float_t 	LocalzShift(Int_t i = 0)       const {return Struct(i)->LocalzShift;}
-  /*  Float_t 	PhiXY(Int_t i = 0)  	       const {return Struct(i)->PhiXY;}	   */
-  Float_t 	PhiXZ(Int_t i = 0)  	       const {return Struct(i)->PhiXZ;}
-  Float_t 	PhiYZ(Int_t i = 0)  	       const {return Struct(i)->PhiYZ;}
-  /*  Float_t 	XX(Int_t i = 0)  	       const {return Struct(i)->XX;}
-      Float_t 	YY(Int_t i = 0)  	       const {return Struct(i)->YY;}
-      Float_t 	ZZ(Int_t i = 0)  	       const {return Struct(i)->ZZ;}	    */
-  Float_t 	PhiXY_geom(Int_t i = 0)        const {return Struct(i)->PhiXY_geom;}
-  Float_t 	PhiXZ_geom(Int_t i = 0)        const {return Struct(i)->PhiXZ_geom;}
-  Float_t 	PhiYZ_geom(Int_t i = 0)        const {return Struct(i)->PhiYZ_geom;}
-  /*  Float_t 	XX_geom(Int_t i = 0)  	       const {return Struct(i)->XX_geom;}
-      Float_t 	YY_geom(Int_t i = 0)  	       const {return Struct(i)->YY_geom;}
-      Float_t 	ZZ_geom(Int_t i = 0)  	       const {return Struct(i)->ZZ_geom;}   */
-  Double_t  	TpcCenterPositionX()           const {return LocalxShift();}
-  Double_t  	TpcCenterPositionY()           const {return LocalyShift();}
-  Double_t  	TpcCenterPositionZ()           const {return LocalzShift();}
-  Double_t  	TpcRotationAroundGlobalAxisX() const {return PhiYZ_geom();}
-  Double_t  	TpcRotationAroundGlobalAxisY() const {return PhiXZ_geom();}
-  Double_t  	TpcRotationAroundGlobalAxisZ() const {return PhiXY_geom();}
-  Double_t  	TpcEFieldRotationX()           const {return PhiYZ();} /* YTWIST */
-  Double_t  	TpcEFieldRotationY() 	       const {return PhiXZ();} /* XTWIST */
-  Double_t      XTWIST()                       const {return  1e3 * TpcEFieldRotationY();}
-  Double_t      YTWIST()                       const {return -1e3 * TpcEFieldRotationX();}
-  /* Double_t  	TpcEFieldRotationZ() 	       const {return PhiXY();}              */
-  Double_t      X0()                           const {return LocalxShift();}
-  Double_t      Y0()                           const {return LocalyShift();}
-  Double_t      Z0()                           const {return LocalzShift();}
-  Double_t      alpha()                        const {return PhiYZ_geom();}
-  Double_t      beta()                         const {return PhiXZ_geom();}
-  Double_t      gamma()                        const {return PhiXY_geom();}
+  float 	LocalxShift(int i = 0)       const {return Struct(i)->LocalxShift;}
+  float 	LocalyShift(int i = 0)       const {return Struct(i)->LocalyShift;}
+  float 	LocalzShift(int i = 0)       const {return Struct(i)->LocalzShift;}
+  /*  float 	PhiXY(int i = 0)  	       const {return Struct(i)->PhiXY;}	   */
+  float 	PhiXZ(int i = 0)  	       const {return Struct(i)->PhiXZ;}
+  float 	PhiYZ(int i = 0)  	       const {return Struct(i)->PhiYZ;}
+  /*  float 	XX(int i = 0)  	       const {return Struct(i)->XX;}
+      float 	YY(int i = 0)  	       const {return Struct(i)->YY;}
+      float 	ZZ(int i = 0)  	       const {return Struct(i)->ZZ;}	    */
+  float 	PhiXY_geom(int i = 0)        const {return Struct(i)->PhiXY_geom;}
+  float 	PhiXZ_geom(int i = 0)        const {return Struct(i)->PhiXZ_geom;}
+  float 	PhiYZ_geom(int i = 0)        const {return Struct(i)->PhiYZ_geom;}
+  /*  float 	XX_geom(int i = 0)  	       const {return Struct(i)->XX_geom;}
+      float 	YY_geom(int i = 0)  	       const {return Struct(i)->YY_geom;}
+      float 	ZZ_geom(int i = 0)  	       const {return Struct(i)->ZZ_geom;}   */
+  double  	TpcCenterPositionX()           const {return LocalxShift();}
+  double  	TpcCenterPositionY()           const {return LocalyShift();}
+  double  	TpcCenterPositionZ()           const {return LocalzShift();}
+  double  	TpcRotationAroundGlobalAxisX() const {return PhiYZ_geom();}
+  double  	TpcRotationAroundGlobalAxisY() const {return PhiXZ_geom();}
+  double  	TpcRotationAroundGlobalAxisZ() const {return PhiXY_geom();}
+  double  	TpcEFieldRotationX()           const {return PhiYZ();} /* YTWIST */
+  double  	TpcEFieldRotationY() 	       const {return PhiXZ();} /* XTWIST */
+  double      XTWIST()                       const {return  1e3 * TpcEFieldRotationY();}
+  double      YTWIST()                       const {return -1e3 * TpcEFieldRotationX();}
+  /* double  	TpcEFieldRotationZ() 	       const {return PhiXY();}              */
+  double      X0()                           const {return LocalxShift();}
+  double      Y0()                           const {return LocalyShift();}
+  double      Z0()                           const {return LocalzShift();}
+  double      alpha()                        const {return PhiYZ_geom();}
+  double      beta()                         const {return PhiXZ_geom();}
+  double      gamma()                        const {return PhiXY_geom();}
 };
 #endif

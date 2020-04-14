@@ -11,32 +11,32 @@ enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,
 
 struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC, starMagOnl_st>
 {
-  UInt_t 	runNumber(Int_t i = 0) 	{return Struct(i)->runNumber;}
-  UInt_t 	time(Int_t i = 0) 	{return Struct(i)->time;}
-  Double_t 	current(Int_t i = 0) 	{return Struct(i)->current;}
-  Double_t      getScaleFactor(UInt_t time = 0) {return currentToScaleFactor(getMagnetCurrent(time));}
-  Double_t      getMagnetCurrent(UInt_t time = 0)
+  unsigned int 	runNumber(int i = 0) 	{return Struct(i)->runNumber;}
+  unsigned int 	time(int i = 0) 	{return Struct(i)->time;}
+  double 	current(int i = 0) 	{return Struct(i)->current;}
+  double      getScaleFactor(unsigned int time = 0) {return currentToScaleFactor(getMagnetCurrent(time));}
+  double      getMagnetCurrent(unsigned int time = 0)
   {
     if (! instance()) return 0;
 
     if (GetNRows() == 1 || time == 0) return current();
 
-    Double_t tempCurrent = -9999;
+    double tempCurrent = -9999;
 
-    for (UInt_t i = 0; i < GetNRows() - 1; i++)
+    for (unsigned int i = 0; i < GetNRows() - 1; i++)
       if ( time >= getTimeEntry(i) && time <= getTimeEntry(i + 1) )
         if ( TMath::Abs(getMagnetCurrentEntry(i) - getMagnetCurrentEntry(i + 1)) < 50 )
           tempCurrent = getMagnetCurrentEntry(i);
 
     return tempCurrent;
   }
-  StMagnetPolarity           getMagneticField(UInt_t time = 0)
+  StMagnetPolarity           getMagneticField(unsigned int time = 0)
   {
     StMagnetPolarity value = eUnknownMField;
 
     if (! instance()) return value;
 
-    Double_t scaleFactor = getScaleFactor(time);
+    double scaleFactor = getScaleFactor(time);
 
     if (scaleFactor == 1.0)	value = eFullMFieldPolA;
 
@@ -50,12 +50,12 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
 
     return value;
   }
-  UInt_t        getRunNumber() {return runNumber();}
-  UInt_t        getTimeEntry(UInt_t i = 0) {return time(i);}
-  Double_t      getMagnetCurrentEntry(UInt_t i = 0) {return current(i);}
-  static Double_t  currentToScaleFactor(Double_t current)
+  unsigned int        getRunNumber() {return runNumber();}
+  unsigned int        getTimeEntry(unsigned int i = 0) {return time(i);}
+  double      getMagnetCurrentEntry(unsigned int i = 0) {return current(i);}
+  static double  currentToScaleFactor(double current)
   {
-    Double_t value = -9999;
+    double value = -9999;
 
     if (! instance()) return value;
 

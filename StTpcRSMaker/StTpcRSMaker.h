@@ -19,9 +19,9 @@ class St_g2t_track;
 class St_g2t_vertex;
 
 struct SignalSum_t {
-  Float_t      Sum;
-  Short_t      Adc;
-  Short_t  TrackId;
+  float      Sum;
+  short      Adc;
+  short  TrackId;
 };
 
 class StTpcRSMaker
@@ -43,37 +43,37 @@ class StTpcRSMaker
                   std::vector<g2t_track_st>& g2t_track,
             const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
   virtual void Finish();
-  Int_t         Debug() const {return 1;}
-  TF1F* GetPolya(Int_t io = 0)       {return (TF1F*) mPolya[io];}
-  TF1F* GetTimeShape0(Int_t io = 0)  {return fgTimeShape0[io];}
-  TF1F* GetTimeShape3(Int_t io = 0)  {return fgTimeShape3[io];}
-  Double_t GetNoPrimaryClusters(Double_t betaGamma, Int_t charge);
+  int         Debug() const {return 1;}
+  TF1F* GetPolya(int io = 0)       {return (TF1F*) mPolya[io];}
+  TF1F* GetTimeShape0(int io = 0)  {return fgTimeShape0[io];}
+  TF1F* GetTimeShape3(int io = 0)  {return fgTimeShape3[io];}
+  double GetNoPrimaryClusters(double betaGamma, int charge);
   virtual void Print(Option_t* option = "") const;
-  void DigitizeSector(Int_t sector, tpcrs::DigiData& digi_data);
-  static Int_t    AsicThresholds(Short_t* ADCs);
-  static Int_t    SearchT(const void* elem1, const void** elem2);
-  static Int_t    CompareT(const void** elem1, const void** elem2);
-  static Double_t shapeEI(Double_t* x, Double_t* par = 0);
-  static Double_t shapeEI_I(Double_t* x, Double_t* par = 0);
-  static Double_t shapeEI3(Double_t* x, Double_t* par = 0);
-  static Double_t shapeEI3_I(Double_t* x, Double_t* par = 0);
-  static Double_t fei(Double_t t, Double_t t0, Double_t T);
-  static Double_t polya(Double_t* x, Double_t* par);
-  SignalSum_t*  GetSignalSum(Int_t sector);
-  SignalSum_t*  ResetSignalSum(Int_t sector);
-  static Double_t Ec(Double_t* x, Double_t* p); // minimal energy to create an ion pair
-  static TF1* fEc(Double_t w = 26.2);           // HEED function to generate Ec
+  void DigitizeSector(int sector, tpcrs::DigiData& digi_data);
+  static int    AsicThresholds(short* ADCs);
+  static int    SearchT(const void* elem1, const void** elem2);
+  static int    CompareT(const void** elem1, const void** elem2);
+  static double shapeEI(double* x, double* par = 0);
+  static double shapeEI_I(double* x, double* par = 0);
+  static double shapeEI3(double* x, double* par = 0);
+  static double shapeEI3_I(double* x, double* par = 0);
+  static double fei(double t, double t0, double T);
+  static double polya(double* x, double* par);
+  SignalSum_t*  GetSignalSum(int sector);
+  SignalSum_t*  ResetSignalSum(int sector);
+  static double Ec(double* x, double* p); // minimal energy to create an ion pair
+  static TF1* fEc(double w = 26.2);           // HEED function to generate Ec
  private:
-  static Double_t ShaperFunc(Double_t* x, Double_t* p);
-  static Double_t PadResponseFunc(Double_t* x, Double_t* p);
-  static Double_t Gatti(Double_t* x, Double_t* p);
-  static Double_t InducedCharge(Double_t s, Double_t h, Double_t ra, Double_t Va, Double_t &t0);
-  Bool_t TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
-  void   GenerateSignal(HitPoint_t &TrackSegmentHits, Int_t sector, Int_t rowMin, Int_t rowMax, Double_t sigmaJitterT, Double_t sigmaJitterX);
-  Double_t dEdxCorrection(HitPoint_t &TrackSegmentHits);
+  static double ShaperFunc(double* x, double* p);
+  static double PadResponseFunc(double* x, double* p);
+  static double Gatti(double* x, double* p);
+  static double InducedCharge(double s, double h, double ra, double Va, double &t0);
+  bool TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
+  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX);
+  double dEdxCorrection(HitPoint_t &TrackSegmentHits);
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
-  Int_t    m_Mode;
+  int    m_Mode;
   SignalSum_t*     m_SignalSum;       //!
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
@@ -86,41 +86,41 @@ class StTpcRSMaker
   TF1F*  mGG;                         //! Gating Grid Transperency
   TF1*   mHeed;                       //!
   StTpcdEdxCorrection* m_TpcdEdxCorrection; // !
-  Double_t InnerAlphaVariation[24];   //!
-  Double_t OuterAlphaVariation[24];   //!
+  double InnerAlphaVariation[24];   //!
+  double OuterAlphaVariation[24];   //!
   Altro* mAltro;                      //!
-  Int_t    numberOfInnerSectorAnodeWires; //!
-  Double_t firstInnerSectorAnodeWire; //!
-  Double_t lastInnerSectorAnodeWire;  //!
-  Int_t    numberOfOuterSectorAnodeWires; //!
-  Double_t firstOuterSectorAnodeWire; //!
-  Double_t lastOuterSectorAnodeWire;  //!
-  Double_t anodeWirePitch;            //!
-  Double_t anodeWireRadius;           //!
-  Double_t innerSectorAnodeVoltage[24];//!
-  Double_t outerSectorAnodeVoltage[24];//!
-  Double_t    mLocalYDirectionCoupling[2][24][7]; //!
-  Double_t   msMin, msMax;            //!
-  Int_t      mNSplittedHits;          //!
-  Double_t xOnWire, yOnWire, zOnWire; //!
-  Double_t mGainLocal;                //!
-  Double_t QAv;                       //!
-  Double_t TotalSignal;               //!
-  Int_t pad0;                         //!
-  Int_t tbk0;                         //!
-  Double_t TotalSignalInCluster;      //!
-  Double_t padsdE[kPadMax];           //!
-  Double_t tbksdE[kTimeBacketMax];    //!
-  Double_t rowsdEH[kRowMax];          //!
-  Double_t rowsdE[kRowMax];           //!
-  Double_t             mLaserScale;   //!
-  const Double_t minSignal;           //!
-  const Double_t ElectronRange;       //!
-  const Double_t ElectronRangeEnergy; //!
-  const Double_t ElectronRangePower;  //!
-  const Int_t max_sectors;            //!
-  const Int_t max_pads;               //!
-  static const Int_t max_timebins = 512;
-  Double_t   mCutEle;                 //! cut for delta electrons
+  int    numberOfInnerSectorAnodeWires; //!
+  double firstInnerSectorAnodeWire; //!
+  double lastInnerSectorAnodeWire;  //!
+  int    numberOfOuterSectorAnodeWires; //!
+  double firstOuterSectorAnodeWire; //!
+  double lastOuterSectorAnodeWire;  //!
+  double anodeWirePitch;            //!
+  double anodeWireRadius;           //!
+  double innerSectorAnodeVoltage[24];//!
+  double outerSectorAnodeVoltage[24];//!
+  double    mLocalYDirectionCoupling[2][24][7]; //!
+  double   msMin, msMax;            //!
+  int      mNSplittedHits;          //!
+  double xOnWire, yOnWire, zOnWire; //!
+  double mGainLocal;                //!
+  double QAv;                       //!
+  double TotalSignal;               //!
+  int pad0;                         //!
+  int tbk0;                         //!
+  double TotalSignalInCluster;      //!
+  double padsdE[kPadMax];           //!
+  double tbksdE[kTimeBacketMax];    //!
+  double rowsdEH[kRowMax];          //!
+  double rowsdE[kRowMax];           //!
+  double             mLaserScale;   //!
+  const double minSignal;           //!
+  const double ElectronRange;       //!
+  const double ElectronRangeEnergy; //!
+  const double ElectronRangePower;  //!
+  const int max_sectors;            //!
+  const int max_pads;               //!
+  static const int max_timebins = 512;
+  double   mCutEle;                 //! cut for delta electrons
 };
 #endif

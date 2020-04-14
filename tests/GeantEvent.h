@@ -24,12 +24,12 @@ struct DigitizedHit
   int sector;
   int row;
   int pad;
-  std::vector<Short_t>  ADCs;
-  std::vector<UShort_t> IDTs;
+  std::vector<short>  ADCs;
+  std::vector<unsigned short> IDTs;
 
   DigitizedHit() : sector(0), row(0), pad(0), ADCs(), IDTs() { }
 
-  DigitizedHit(int s, int r, int p, std::vector<Short_t> adcs, std::vector<UShort_t> idts) :
+  DigitizedHit(int s, int r, int p, std::vector<short> adcs, std::vector<unsigned short> idts) :
     sector(s), row(r), pad(p), ADCs(adcs), IDTs(idts) { }
 
   void Print(std::ostream &os)
@@ -84,8 +84,8 @@ struct GeantEvent
   {
     digiHits.clear();
 
-    static  Short_t ADCs[__MaxNumberOfTimeBins__];
-    static UShort_t IDTs[__MaxNumberOfTimeBins__];
+    static  short ADCs[__MaxNumberOfTimeBins__];
+    static unsigned short IDTs[__MaxNumberOfTimeBins__];
 
     for (auto tc = digi_data.channels().begin(); tc != digi_data.channels().end(); ++tc)
     {
@@ -97,8 +97,8 @@ struct GeantEvent
 
       if (!same_pad) {
         digiHits.push_back( DigitizedHit(tc->sector, tc->row, tc->pad,
-            std::vector<Short_t>(ADCs, ADCs + __MaxNumberOfTimeBins__),
-            std::vector<UShort_t>(IDTs, IDTs + __MaxNumberOfTimeBins__) ) );
+            std::vector<short>(ADCs, ADCs + __MaxNumberOfTimeBins__),
+            std::vector<unsigned short>(IDTs, IDTs + __MaxNumberOfTimeBins__) ) );
         std::memset(ADCs, 0, __MaxNumberOfTimeBins__*sizeof(short));
         std::memset(IDTs, 0, __MaxNumberOfTimeBins__*sizeof(unsigned short));
       }

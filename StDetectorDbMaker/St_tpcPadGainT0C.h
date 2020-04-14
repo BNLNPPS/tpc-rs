@@ -6,10 +6,10 @@
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0_st>
 {
-  Int_t 	run()           	const {return Struct()->run;}
-  Float_t 	Gain(Int_t sector, Int_t row, Int_t pad) const
+  int 	run()           	const {return Struct()->run;}
+  float 	Gain(int sector, int row, int pad) const
   {
-    Float_t gain = 0;
+    float gain = 0;
 
     if ((sector > 0 && sector <= 24) && (row > 0 && row <= St_tpcPadConfigC::instance()->padRows(sector)) && (pad > 0 && pad <= 182)) {
       gain = Struct()->Gain[sector - 1][row - 1][pad - 1];
@@ -17,9 +17,9 @@ struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGai
 
     return gain;
   }
-  Float_t 	  T0(Int_t sector, Int_t row, Int_t pad) const
+  float 	  T0(int sector, int row, int pad) const
   {
-    Float_t t0 = 0;
+    float t0 = 0;
 
     if ((sector > 0 && sector <= 24) && (row > 0 && row <= St_tpcPadConfigC::instance()->padRows(sector)) && (pad > 0 && pad <= 182)) {
       t0 = Struct()->T0[sector - 1][row - 1][pad - 1];
@@ -27,9 +27,9 @@ struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGai
 
     return t0;
   }
-  Bool_t    livePadrow(Int_t sector, Int_t row)
+  bool    livePadrow(int sector, int row)
   {
-    for (Int_t pad = 1; pad <= 182; pad++) if (Gain(sector, row, pad) > 0) return kTRUE;
+    for (int pad = 1; pad <= 182; pad++) if (Gain(sector, row, pad) > 0) return kTRUE;
 
     return kFALSE;
   }

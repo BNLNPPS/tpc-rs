@@ -5,10 +5,10 @@ dEdxParameterization* Bichsel::m_dEdxParameterizations[kTotal] = {0, 0, 0};
 Bichsel* Bichsel::fgBichsel = 0;
 
 
-Bichsel::Bichsel(const Char_t* tag, Int_t keep3D) : m_Type(-1), m_Tag(tag), m_dEdxParameterization(0)
+Bichsel::Bichsel(const char* tag, int keep3D) : m_Type(-1), m_Tag(tag), m_dEdxParameterization(0)
 {
 
-  for (Int_t k = 0; k < kTotal; k++) if (m_Tag.Contains(m_Tags[k].Data(), TString::kIgnoreCase)) {m_Type = k; break;}
+  for (int k = 0; k < kTotal; k++) if (m_Tag.Contains(m_Tags[k].Data(), TString::kIgnoreCase)) {m_Type = k; break;}
 
   assert(m_Type >= 0);
 
@@ -20,7 +20,7 @@ Bichsel::Bichsel(const Char_t* tag, Int_t keep3D) : m_Type(-1), m_Tag(tag), m_dE
 }
 
 
-Bichsel* Bichsel::Instance(const Char_t* tag, Int_t keep3D)
+Bichsel* Bichsel::Instance(const char* tag, int keep3D)
 {
   if (!fgBichsel) new Bichsel(tag, keep3D);
 
@@ -30,7 +30,7 @@ Bichsel* Bichsel::Instance(const Char_t* tag, Int_t keep3D)
 
 void Bichsel::Clean()
 {
-  for (Int_t k = 0; k < kTotal; k++)
+  for (int k = 0; k < kTotal; k++)
     if (m_dEdxParameterizations[k]) {
       delete m_dEdxParameterizations[k];
       m_dEdxParameterizations[k] = 0;

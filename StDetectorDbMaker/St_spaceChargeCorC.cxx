@@ -1,18 +1,18 @@
 #include "StDetectorDbMaker/St_spaceChargeCorC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
 
-Double_t St_spaceChargeCorC::getSpaceChargeCoulombs(Double_t scaleFactor)
+double St_spaceChargeCorC::getSpaceChargeCoulombs(double scaleFactor)
   {
     St_trigDetSumsC* scalers = St_trigDetSumsC::instance();
     if (! scalers ) return 0;
-    Double_t zf = zeroField(0); // potential validity margin for scalers
+    double zf = zeroField(0); // potential validity margin for scalers
     if (zf>0 && zf<1) scalers->setValidityMargin(zf);
-    Double_t coulombs = 0;
+    double coulombs = 0;
 
     bool use_powers = true;
 
     for (int row=0;row< (int) GetNRows();row++) {
-      Double_t mult = 0;
+      double mult = 0;
       switch ((int) getSpaceChargeDetector(row)) {
         case (0) : mult = scalers->getMult(); break; // vpdx as of 2007-12-19
         case (1) : mult = scalers->getBBCX(); break;
@@ -37,11 +37,11 @@ Double_t St_spaceChargeCorC::getSpaceChargeCoulombs(Double_t scaleFactor)
         Mark();
         return 0; // Unphysical scaler rates will be uncorrected
       } else UnMark();
-      Double_t saturation = getSpaceChargeSatRate(row);
-      Double_t correction = getSpaceChargeCorrection(scaleFactor,row);
-      Double_t factor     = getSpaceChargeFactor(row);
-      Double_t offset     = getSpaceChargeOffset(row);
-      Double_t intens = (mult < saturation) ? mult : saturation;
+      double saturation = getSpaceChargeSatRate(row);
+      double correction = getSpaceChargeCorrection(scaleFactor,row);
+      double factor     = getSpaceChargeFactor(row);
+      double offset     = getSpaceChargeOffset(row);
+      double intens = (mult < saturation) ? mult : saturation;
       if (use_powers) coulombs += ::pow(intens-offset,factor) * correction ;
       else coulombs += factor * (intens-offset) * correction ;
     }

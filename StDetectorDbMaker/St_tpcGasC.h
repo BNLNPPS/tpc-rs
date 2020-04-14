@@ -6,21 +6,21 @@
 
 struct St_tpcGasC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGasC, tpcGas_st>
 {
-  Float_t 	barometricPressure(Int_t i = 0) {return Struct(i)->barometricPressure;}
-  Float_t 	inputTPCGasPressure(Int_t i = 0) {return Struct(i)->inputTPCGasPressure;}
-  Float_t 	nitrogenPressure(Int_t i = 0) 	{return Struct(i)->nitrogenPressure;}
-  Float_t 	gasPressureDiff(Int_t i = 0) 	{return Struct(i)->gasPressureDiff;}
-  Float_t 	inputGasTemperature(Int_t i = 0) {return Struct(i)->inputGasTemperature;}
-  Float_t 	outputGasTemperature(Int_t i = 0) {return Struct(i)->outputGasTemperature;}
-  Float_t 	flowRateArgon1(Int_t i = 0) 	{return Struct(i)->flowRateArgon1;}
-  Float_t 	flowRateArgon2(Int_t i = 0) 	{return Struct(i)->flowRateArgon2;}
-  Float_t 	flowRateMethane(Int_t i = 0) 	{return Struct(i)->flowRateMethane;}
-  Float_t 	percentMethaneIn(Int_t i = 0) 	{return Struct(i)->percentMethaneIn;}
-  Float_t 	ppmOxygenIn(Int_t i = 0) 	{return Struct(i)->ppmOxygenIn;}
-  Float_t 	flowRateExhaust(Int_t i = 0) 	{return Struct(i)->flowRateExhaust;}
-  Float_t 	percentMethaneOut(Int_t i = 0) 	{return Struct(i)->percentMethaneOut;}
-  Float_t 	ppmWaterOut(Int_t i = 0) 	{return Struct(i)->ppmWaterOut;}
-  Float_t 	ppmOxygenOut(Int_t i = 0) 	{return Struct(i)->ppmOxygenOut;}
-  Float_t 	flowRateRecirculation(Int_t i = 0) {return Struct(i)->flowRateRecirculation;}
+  float 	barometricPressure(int i = 0) {return Struct(i)->barometricPressure;}
+  float 	inputTPCGasPressure(int i = 0) {return Struct(i)->inputTPCGasPressure;}
+  float 	nitrogenPressure(int i = 0) 	{return Struct(i)->nitrogenPressure;}
+  float 	gasPressureDiff(int i = 0) 	{return Struct(i)->gasPressureDiff;}
+  float 	inputGasTemperature(int i = 0) {return Struct(i)->inputGasTemperature;}
+  float 	outputGasTemperature(int i = 0) {return Struct(i)->outputGasTemperature;}
+  float 	flowRateArgon1(int i = 0) 	{return Struct(i)->flowRateArgon1;}
+  float 	flowRateArgon2(int i = 0) 	{return Struct(i)->flowRateArgon2;}
+  float 	flowRateMethane(int i = 0) 	{return Struct(i)->flowRateMethane;}
+  float 	percentMethaneIn(int i = 0) 	{return Struct(i)->percentMethaneIn;}
+  float 	ppmOxygenIn(int i = 0) 	{return Struct(i)->ppmOxygenIn;}
+  float 	flowRateExhaust(int i = 0) 	{return Struct(i)->flowRateExhaust;}
+  float 	percentMethaneOut(int i = 0) 	{return Struct(i)->percentMethaneOut;}
+  float 	ppmWaterOut(int i = 0) 	{return Struct(i)->ppmWaterOut;}
+  float 	ppmOxygenOut(int i = 0) 	{return Struct(i)->ppmOxygenOut;}
+  float 	flowRateRecirculation(int i = 0) {return Struct(i)->flowRateRecirculation;}
 };
 #endif

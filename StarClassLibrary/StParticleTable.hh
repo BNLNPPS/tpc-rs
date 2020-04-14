@@ -9,7 +9,6 @@
  **************************************************************************/
 #ifndef StParticleTable_hh
 #define StParticleTable_hh
-#include "Rtypes.h"
 
 #include <iostream>
 #include <string>
