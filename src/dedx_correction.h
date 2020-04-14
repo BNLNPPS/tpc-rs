@@ -2,11 +2,9 @@
 #define STAR_StTpcdEdxCorrection
 
 #include "TF1.h"
-#include "StDetectorDbMaker/St_tpcCorrectionC.h"
-#include "StDetectorDbMaker/St_MDFCorrectionC.h"
-#include "StDetectorDbMaker/St_tpcGasC.h"
 
 #include "tpcrs/config_structs.h"
+#include "struct_containers.h"
 
 struct dE_t {
   float dE;

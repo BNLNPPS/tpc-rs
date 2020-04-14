@@ -6,12 +6,13 @@
 
 #include "TF1F.h"
 #include "TH1.h"
+
 #include "tpcrs/digi_data.h"
+#include "tpcrs/structs.h"
 #include "tpc_db.h"
 
 class Altro;
 class StTpcdEdxCorrection;
-class StTpcDigitalSector;
 class HitPoint_t;
 class SignalSum_t;
 

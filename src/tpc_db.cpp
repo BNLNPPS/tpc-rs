@@ -12,9 +12,8 @@
 
 #include "TVector3.h"
 #include "TGeoManager.h"
-#include "StDetectorDbMaker/StTpcSurveyC.h"
-#include "StDetectorDbMaker/St_tpcDriftVelocityC.h"
 #include "TEnv.h"
+
 #include "mag_field.h"
 #include "tpcrs/logger.h"
 #include "tpcrs/enums.h"

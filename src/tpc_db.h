@@ -10,15 +10,10 @@
 #ifndef ClassStTpcDb
 #define ClassStTpcDb
 
-#include "StDetectorDbMaker/St_tpcPadConfigC.h"
-#include "StDetectorDbMaker/St_tpcWirePlanesC.h"
-#include "StDetectorDbMaker/St_tpcDimensionsC.h"
-#include "StDetectorDbMaker/St_tpcElectronicsC.h"
-#include "StDetectorDbMaker/St_tpcGlobalPositionC.h"
-#include "StDetectorDbMaker/St_tpcFieldCageC.h"
-#include "StDetectorDbMaker/St_tpcPadResponseC.h"
-#include "StDetectorDbMaker/St_trgTimeOffsetC.h"
 #include "TGeoMatrix.h"
+
+#include "struct_containers.h"
+
 class StTpcDb;
 // Global pointers:
 R__EXTERN StTpcDb* gStTpcDb;

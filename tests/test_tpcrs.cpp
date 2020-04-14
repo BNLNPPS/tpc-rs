@@ -6,14 +6,13 @@
 #include "Ttypes.h"
 #include "TBenchmark.h"
 
-#include "MagFactor.h"
-
 #include "tests/GeantEvent.h"
 
 #include "mag_field.h"
 #include "tpcrs/configurator.h"
 #include "tpcrs/config_yaml.h"
 #include "tpcrs/digi_data.h"
+#include "tpcrs/structs.h"
 #include "tpcrs.h"
 #include "tpc_db.h"
 

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "yaml-cpp/yaml.h"
+#include "tpcrs/structs.h"
 
 namespace YAML {
 using std::copy;
@@ -18,7 +19,6 @@ using std::string;
 using std::vector;
 }
 
-#include "tpcCalibResolutions.h"
 
 namespace YAML {
 template<>
@@ -47,7 +47,6 @@ struct convert<tpcCalibResolutions_st> {
 };
 }
 
-#include "MDFCorrection.h"
 
 namespace YAML {
 template<>
@@ -100,7 +99,6 @@ struct convert<MDFCorrection_st> {
 };
 }
 
-#include "tpcGlobalPosition.h"
 
 namespace YAML {
 template<>
@@ -152,8 +150,6 @@ struct convert<tpcGlobalPosition_st> {
 }
 
 
-#include "tpcRDOMasks.h"
-
 namespace YAML {
 template<>
 struct convert<tpcRDOMasks_st> {
@@ -179,7 +175,6 @@ struct convert<tpcRDOMasks_st> {
 };
 }
 
-#include "tss_tsspar.h"
 
 namespace YAML {
 template<>
@@ -286,7 +281,6 @@ struct convert<tss_tsspar_st> {
 
 
 
-#include "starMagOnl.h"
 
 namespace YAML {
 template<>
@@ -313,7 +307,6 @@ struct convert<starMagOnl_st> {
 };
 }
 
-#include "tpcOmegaTau.h"
 
 namespace YAML {
 template<>
@@ -340,7 +333,6 @@ struct convert<tpcOmegaTau_st> {
 };
 }
 
-#include "tpcFieldCageShort.h"
 
 namespace YAML {
 template<>
@@ -371,7 +363,6 @@ struct convert<tpcFieldCageShort_st> {
 };
 }
 
-#include "g2t_tpc_hit.h"
 
 namespace YAML {
 template<>
@@ -426,7 +417,6 @@ struct convert<g2t_tpc_hit_st> {
 };
 }
 
-#include "TpcSecRowCor.h"
 
 namespace YAML {
 template<>
@@ -455,7 +445,6 @@ struct convert<TpcSecRowCor_st> {
 };
 }
 
-#include "tpcRDOMap.h"
 
 namespace YAML {
 template<>
@@ -488,7 +477,6 @@ struct convert<tpcRDOMap_st> {
 };
 }
 
-#include "tpcAnodeHVavg.h"
 
 namespace YAML {
 template<>
@@ -521,7 +509,6 @@ struct convert<tpcAnodeHVavg_st> {
 };
 }
 
-#include "tpcFieldCage.h"
 
 namespace YAML {
 template<>
@@ -548,7 +535,6 @@ struct convert<tpcFieldCage_st> {
 };
 }
 
-#include "trigDetSums.h"
 
 namespace YAML {
 template<>
@@ -607,7 +593,6 @@ struct convert<trigDetSums_st> {
 };
 }
 
-#include "tpcRDOT0offset.h"
 
 namespace YAML {
 template<>
@@ -636,7 +621,6 @@ struct convert<tpcRDOT0offset_st> {
 };
 }
 
-#include "tpcPadPlanes.h"
 
 namespace YAML {
 template<>
@@ -727,7 +711,6 @@ struct convert<tpcPadPlanes_st> {
 };
 }
 
-#include "tpcChargeEvent.h"
 
 namespace YAML {
 template<>
@@ -764,7 +747,6 @@ struct convert<tpcChargeEvent_st> {
 };
 }
 
-#include "tpcDriftVelocity.h"
 
 namespace YAML {
 template<>
@@ -793,7 +775,6 @@ struct convert<tpcDriftVelocity_st> {
 };
 }
 
-#include "starClockOnl.h"
 
 namespace YAML {
 template<>
@@ -820,7 +801,6 @@ struct convert<starClockOnl_st> {
 };
 }
 
-#include "tpcWirePlanes.h"
 
 namespace YAML {
 template<>
@@ -893,7 +873,6 @@ struct convert<tpcWirePlanes_st> {
 };
 }
 
-#include "tpcSectorT0offset.h"
 
 namespace YAML {
 template<>
@@ -918,7 +897,6 @@ struct convert<tpcSectorT0offset_st> {
 };
 }
 
-#include "tpcPadResponse.h"
 
 namespace YAML {
 template<>
@@ -977,7 +955,6 @@ struct convert<tpcPadResponse_st> {
 };
 }
 
-#include "tpcHighVoltages.h"
 
 namespace YAML {
 template<>
@@ -1010,7 +987,6 @@ struct convert<tpcHighVoltages_st> {
 };
 }
 
-#include "tpcCorrection.h"
 
 namespace YAML {
 template<>
@@ -1049,7 +1025,6 @@ struct convert<tpcCorrection_st> {
 };
 }
 
-#include "g2t_track.h"
 
 namespace YAML {
 template<>
@@ -1222,7 +1197,6 @@ struct convert<g2t_track_st> {
 };
 }
 
-#include "iTPCSurvey.h"
 
 namespace YAML {
 template<>
@@ -1259,7 +1233,6 @@ struct convert<iTPCSurvey_st> {
 };
 }
 
-#include "TpcEffectivedX.h"
 
 namespace YAML {
 template<>
@@ -1284,7 +1257,6 @@ struct convert<TpcEffectivedX_st> {
 };
 }
 
-#include "tpcSCGL.h"
 
 namespace YAML {
 template<>
@@ -1340,8 +1312,6 @@ struct convert<tpcSCGL_st> {
 }
 
 
-#include "tpcHVPlanes.h"
-
 namespace YAML {
 template<>
 struct convert<tpcHVPlanes_st> {
@@ -1379,7 +1349,6 @@ struct convert<tpcHVPlanes_st> {
 };
 }
 
-#include "tpcPadConfig.h"
 
 namespace YAML {
 template<>
@@ -1404,7 +1373,6 @@ struct convert<tpcPadConfig_st> {
 };
 }
 
-#include "tpcAltroParams.h"
 
 namespace YAML {
 template<>
@@ -1444,8 +1412,6 @@ struct convert<tpcAltroParams_st> {
 }
 
 
-#include "itpcPadGainT0.h"
-
 namespace YAML {
 template<>
 struct convert<itpcPadGainT0_st> {
@@ -1475,7 +1441,6 @@ struct convert<itpcPadGainT0_st> {
 };
 }
 
-#include "tpcGridLeak.h"
 
 namespace YAML {
 template<>
@@ -1514,7 +1479,6 @@ struct convert<tpcGridLeak_st> {
 };
 }
 
-#include "g2t_vertex.h"
 
 namespace YAML {
 template<>
@@ -1578,8 +1542,6 @@ struct convert<g2t_vertex_st> {
 }
 
 
-#include "TpcAvgCurrent.h"
-
 namespace YAML {
 template<>
 struct convert<TpcAvgCurrent_st> {
@@ -1613,7 +1575,6 @@ struct convert<TpcAvgCurrent_st> {
 };
 }
 
-#include "spaceChargeCor.h"
 
 namespace YAML {
 template<>
@@ -1654,7 +1615,6 @@ struct convert<spaceChargeCor_st> {
 };
 }
 
-#include "tpcEffectiveGeom.h"
 
 namespace YAML {
 template<>
@@ -1685,7 +1645,6 @@ struct convert<tpcEffectiveGeom_st> {
 };
 }
 
-#include "TpcResponseSimulator.h"
 
 namespace YAML {
 template<>
@@ -1812,7 +1771,6 @@ struct convert<TpcResponseSimulator_st> {
 };
 }
 
-#include "richvoltages.h"
 
 namespace YAML {
 template<>
@@ -1841,7 +1799,6 @@ struct convert<richvoltages_st> {
 };
 }
 
-#include "tpcElectronics.h"
 
 namespace YAML {
 template<>
@@ -1880,7 +1837,6 @@ struct convert<tpcElectronics_st> {
 };
 }
 
-#include "Survey.h"
 
 namespace YAML {
 template<>
@@ -1943,7 +1899,6 @@ struct convert<Survey_st> {
 };
 }
 
-#include "MagFactor.h"
 
 namespace YAML {
 template<>
@@ -1966,7 +1921,6 @@ struct convert<MagFactor_st> {
 };
 }
 
-#include "TpcAvgPowerSupply.h"
 
 namespace YAML {
 template<>
@@ -2005,7 +1959,6 @@ struct convert<TpcAvgPowerSupply_st> {
 };
 }
 
-#include "tpcAnodeHV.h"
 
 namespace YAML {
 template<>
@@ -2032,7 +1985,6 @@ struct convert<tpcAnodeHV_st> {
 };
 }
 
-#include "tpcPadGainT0.h"
 
 namespace YAML {
 template<>
@@ -2063,7 +2015,6 @@ struct convert<tpcPadGainT0_st> {
 };
 }
 
-#include "asic_thresholds.h"
 
 namespace YAML {
 template<>
@@ -2092,7 +2043,6 @@ struct convert<asic_thresholds_st> {
 };
 }
 
-#include "tpcDimensions.h"
 
 namespace YAML {
 template<>
@@ -2275,7 +2225,6 @@ struct convert<tpcDimensions_st> {
 };
 }
 
-#include "tpcGas.h"
 
 namespace YAML {
 template<>
@@ -2328,7 +2277,6 @@ struct convert<tpcGas_st> {
 };
 }
 
-#include "trgTimeOffset.h"
 
 namespace YAML {
 template<>
@@ -2355,7 +2303,6 @@ struct convert<trgTimeOffset_st> {
 };
 }
 
-#include "tpcPadrowT0.h"
 
 namespace YAML {
 template<>

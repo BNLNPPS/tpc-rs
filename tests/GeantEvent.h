@@ -11,10 +11,8 @@
 
 #include "Rtypes.h"
 
-#include "g2t_tpc_hit.h"
-#include "g2t_track.h"
-#include "g2t_vertex.h"
 #include "tpcrs/digi_data.h"
+#include "tpcrs/structs.h"
 
 #define __MaxNumberOfTimeBins__ 512
 
