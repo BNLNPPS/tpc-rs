@@ -11,16 +11,9 @@
  ***********************************************************************/
 #include "coords/StTpcCoordinateTransform.hh"
 #include <iostream>
-#include "StDetectorDbMaker/St_tpcPadrowT0C.h"
-#include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"
-#include "StDetectorDbMaker/St_tpcRDOT0offsetC.h"
-#include "StDetectorDbMaker/St_tss_tssparC.h"
-#include "StDetectorDbMaker/St_tpcPadGainT0BC.h"
-#include "StDetectorDbMaker/St_tpcPadConfigC.h"
-#include "StDetectorDbMaker/St_tpcPadPlanesC.h"
-#include "StDetectorDbMaker/St_iTPCSurveyC.h"
 #include "particles/StThreeVector.hh"
 #include "tpcrs/logger.h"
+#include "struct_containers.h"
 #include "math_funcs.h"
 
 static Int_t _debug = 0;

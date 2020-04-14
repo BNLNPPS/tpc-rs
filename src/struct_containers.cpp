@@ -4,6 +4,7 @@
 #include "TF2.h"
 #include "TF3.h"
 #include "tpcrs/logger.h"
+#include "struct_containers.h"
 
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT ## _st>::name(# PATH);
@@ -19,26 +20,15 @@ template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT ##
 
 static int _debug = 0;
 //__________________Calibrations/tpc______________________________________________________________
-#include "StDetectorDbMaker/St_tpcGasC.h"
 MakeChairInstance(tpcGas,Calibrations/tpc/tpcGas);
-#include "St_TpcEffectivedXC.h"
 MakeChairInstance(TpcEffectivedX,Calibrations/tpc/TpcEffectivedX);
-#include "StDetectorDbMaker/St_tpcGridLeakC.h"
 MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
-#include "StDetectorDbMaker/St_tpcOmegaTauC.h"
 MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
-#include "StDetectorDbMaker/St_tpcDriftVelocityC.h"
 MakeChairInstance(tpcDriftVelocity,Calibrations/tpc/tpcDriftVelocity);
-#include "St_TpcSecRowBC.h"
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowBC,Calibrations/tpc/TpcSecRowB);
-#include "St_TpcSecRowCC.h"
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowCC,Calibrations/tpc/TpcSecRowC);
-#include "StDetectorDbMaker/St_tpcCorrectionC.h"
-#include "StDetectorDbMaker/St_tpcCalibResolutionsC.h"
 MakeChairInstance(tpcCalibResolutions,Calibrations/tpc/tpcCalibResolutions);
-#include "StDetectorDbMaker/St_tpcChargeEventC.h"
 MakeChairInstance(tpcChargeEvent,Calibrations/tpc/tpcChargeEvent);
-#include "StDetectorDbMaker/St_tpcSCGLC.h"
 MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
 
 
@@ -184,53 +174,29 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
   }
   return Sum;
 }
-#include "St_TpcRowQC.h"
 MakeChairInstance2(tpcCorrection,St_TpcRowQC,Calibrations/tpc/TpcRowQ);
-#include "St_TpcDriftDistOxygenC.h"
 MakeChairInstance2(tpcCorrection,St_TpcDriftDistOxygenC,Calibrations/tpc/TpcDriftDistOxygen);
-#include "St_TpcMultiplicityC.h"
 MakeChairInstance2(tpcCorrection,St_TpcMultiplicityC,Calibrations/tpc/TpcMultiplicity);
-#include "St_TpcZCorrectionBC.h"
 MakeChairInstance2(tpcCorrection,St_TpcZCorrectionBC,Calibrations/tpc/TpcZCorrectionB);
-#include "St_TpcdXCorrectionBC.h"
 MakeChairInstance2(tpcCorrection,St_TpcdXCorrectionBC,Calibrations/tpc/TpcdXCorrectionB);
-#include "St_tpcPressureBC.h"
 MakeChairInstance2(tpcCorrection,St_tpcPressureBC,Calibrations/tpc/tpcPressureB);
-#include "St_TpcEdgeC.h"
 MakeChairInstance2(tpcCorrection,St_TpcEdgeC,Calibrations/tpc/TpcEdge);
-#include "St_TpcAdcCorrectionBC.h"
 MakeChairInstance2(tpcCorrection,St_TpcAdcCorrectionBC,Calibrations/tpc/TpcAdcCorrectionB);
-#include "St_TpcAdcCorrectionMDF.h"
 MakeChairInstance2(MDFCorrection,St_TpcAdcCorrectionMDF,Calibrations/tpc/TpcAdcCorrectionMDF);
-#include "St_tpcMethaneInC.h"
 MakeChairInstance2(tpcCorrection,St_tpcMethaneInC,Calibrations/tpc/tpcMethaneIn);
-#include "St_tpcGasTemperatureC.h"
 MakeChairInstance2(tpcCorrection,St_tpcGasTemperatureC,Calibrations/tpc/tpcGasTemperature);
-#include "St_tpcWaterOutC.h"
 MakeChairInstance2(tpcCorrection,St_tpcWaterOutC,Calibrations/tpc/tpcWaterOut);
-#include "St_tpcTimeDependenceC.h"
 MakeChairInstance2(tpcCorrection,St_tpcTimeDependenceC,Calibrations/tpc/tpcTimeDependence);
-#include "St_TpcdChargeC.h"
 MakeChairInstance2(tpcCorrection,St_TpcdChargeC,Calibrations/tpc/TpcdCharge);
-#include "St_TpcrChargeC.h"
 MakeChairInstance2(tpcCorrection,St_TpcrChargeC,Calibrations/tpc/TpcrCharge);
-#include "St_TpcTanLC.h"
 MakeChairInstance2(tpcCorrection,St_TpcTanLC,Calibrations/tpc/TpcTanL);
-#include "St_TpcCurrentCorrectionC.h"
 MakeChairInstance2(tpcCorrection,St_TpcCurrentCorrectionC,Calibrations/tpc/TpcCurrentCorrectionX);
-#include "St_TpcZDCC.h"
 MakeChairInstance2(tpcCorrection,St_TpcZDCC,Calibrations/tpc/TpcZDC);
-#include "St_TpcSpaceChargeC.h"
 MakeChairInstance2(tpcCorrection,St_TpcSpaceChargeC,Calibrations/tpc/TpcSpaceCharge);
-#include "St_TpcPhiDirectionC.h"
 MakeChairInstance2(tpcCorrection,St_TpcPhiDirectionC,Calibrations/tpc/TpcPhiDirection);
-#include "St_TpcdEdxCorC.h"
 MakeChairInstance2(tpcCorrection,St_TpcdEdxCorC,Calibrations/tpc/TpcdEdxCor);
-#include "St_TpcLengthCorrectionBC.h"
 MakeChairInstance2(tpcCorrection,St_TpcLengthCorrectionBC,Calibrations/tpc/TpcLengthCorrectionB);
-#include "St_TpcLengthCorrectionMDF.h"
 MakeChairInstance2(MDFCorrection,St_TpcLengthCorrectionMDF,Calibrations/tpc/TpcLengthCorrectionMDF);
-#include "St_TpcPadCorrectionMDF.h"
 MakeChairInstance2(MDFCorrection,St_TpcPadCorrectionMDF,Calibrations/tpc/TpcPadCorrectionMDF);
 St_MDFCorrectionC *St_MDFCorrectionC::fgMDFCorrectionC = 0;
 
@@ -371,26 +337,15 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
   }
   return r;
 }
-#include "StDetectorDbMaker/St_tpcEffectiveGeomC.h"
 MakeChairAltInstance(tpcEffectiveGeom,Calibrations/tpc/tpcEffectiveGeom,Calibrations/tpc/tpcEffectiveGeomB,gEnv->GetValue("NewTpcAlignment",0));
-#include "StDetectorDbMaker/St_tpcElectronicsC.h"
 MakeChairAltInstance(tpcElectronics,Calibrations/tpc/tpcElectronics,Calibrations/tpc/tpcElectronicsB,gEnv->GetValue("NewTpcAlignment",0));
-#include "StDetectorDbMaker/St_tpcPadResponseC.h"
 MakeChairInstance(tpcPadResponse,Calibrations/tpc/tpcPadResponse);
-#include "StDetectorDbMaker/St_tpcHighVoltagesC.h"
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
-#include "StDetectorDbMaker/St_tpcPadrowT0C.h"
 MakeChairAltInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0,Calibrations/tpc/tpcPadrowT0B,gEnv->GetValue("NewTpcAlignment",0));
-#include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"
 MakeChairInstance(tpcSectorT0offset,Calibrations/tpc/tpcSectorT0offset);
-#include "StDetectorDbMaker/St_tpcAltroParamsC.h"
 MakeChairInstance(tpcAltroParams,Calibrations/tpc/tpcAltroParams);
-#include "StDetectorDbMaker/St_asic_thresholdsC.h"
 MakeChairInstance(asic_thresholds,Calibrations/tpc/asic_thresholds);
-#include "StDetectorDbMaker/St_tpcAnodeHVC.h"
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
-#include "StDetectorDbMaker/St_tpcPadPlanesC.h"
-#include "StDetectorDbMaker/St_tpcPadConfigC.h"
 unsigned char          St_tpcPadConfigC::iTpc(int sector)                     {unsigned char iTPC = Struct()->itpc[sector-1];  return iTPC;}
 int 	         St_tpcPadConfigC::padRows(int sector) 	          {return St_tpcPadPlanesC::instance()->padRows()               ;}
 int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return St_tpcPadPlanesC::instance()->innerPadRows() 	   ;}
@@ -483,7 +438,6 @@ int            St_tpcPadConfigC::indexForRowPad(int sector, int row, int pad)   
   index+=pad-1;
   return index;
 }
-#include "StDetectorDbMaker/St_TpcAvgPowerSupplyC.h"
 
 
 void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f2) {
@@ -689,7 +643,6 @@ float St_TpcAvgPowerSupplyC::AcChargeL(int sector, int channel) {
   return AcCharge(sector,channel)/Length[channel-1];
 }
 
-#include "StDetectorDbMaker/St_tpcAnodeHVavgC.h"
 MakeChairInstance(tpcAnodeHVavg,Calibrations/tpc/tpcAnodeHVavg);
 
 
@@ -727,10 +680,6 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
-
-#include "StDetectorDbMaker/St_tpcPadGainT0C.h"
-#include "StDetectorDbMaker/St_tpcPadGainT0BC.h"
-#include "StDetectorDbMaker/St_itpcPadGainT0C.h"
 
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0_st>::name("Calibrations/tpc/tpcPadGainT0");
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0_st>::name("Calibrations/tpc/tpcPadGainT0");
@@ -776,11 +725,8 @@ bool    St_tpcPadGainT0BC::livePadrow(int sector, int row) const {
 }
 
 
-#include "StDetectorDbMaker/St_TpcResponseSimulatorC.h"
 MakeChairInstance(TpcResponseSimulator,Calibrations/tpc/TpcResponseSimulator);
-#include "StDetectorDbMaker/St_tpcGainCorrectionC.h"
 MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainCorrection);
-#include "StDetectorDbMaker/St_TpcAvgCurrentC.h"
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 
 
@@ -874,7 +820,6 @@ float St_TpcAvgCurrentC::AcCharge(int sector, int channel) {
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
     Struct()->AcCharge[8*(sector-1)+channel-1] :     0;
 }
-#include "StDetectorDbMaker/St_tpcRDOMapC.h"
 MakeChairInstance(tpcRDOMap,Calibrations/tpc/tpcRDOMap);
 
 
@@ -890,7 +835,6 @@ int St_tpcRDOMapC::rdo(int padrow, int pad) const {
   }
   return rdo;
 }
-#include "StDetectorDbMaker/St_tpcRDOT0offsetC.h"
 MakeChairInstance(tpcRDOT0offset,Calibrations/tpc/tpcRDOT0offset);
 float St_tpcRDOT0offsetC::T0(int sector, int padrow, int pad) const {
   float t0 = 0;
@@ -902,10 +846,8 @@ float St_tpcRDOT0offsetC::T0(int sector, int padrow, int pad) const {
   return t0;
 }
 
-#include "StDetectorDbMaker/St_trigDetSumsC.h"
 MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 //___________________tpc_____________________________________________________________
-#include "StDetectorDbMaker/St_tss_tssparC.h"
 MakeChairInstance(tss_tsspar,tpc/tsspars/tsspar);
 
 
@@ -932,22 +874,16 @@ float St_tss_tssparC::gain(int sector, int row) {
   return gain;
 }
 //__________________Calibrations/rich______________________________________________________________
-#include "StDetectorDbMaker/St_richvoltagesC.h"
 MakeChairInstance(richvoltages,Calibrations/rich/richvoltages);
-#include "StDetectorDbMaker/St_spaceChargeCorC.h"
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
 //_________________RunLog_____________________________________________________________
-#include "St_MagFactorC.h"
 MakeChairInstance(MagFactor,RunLog/MagFactor);
 //_________________RunLog/onl_______________________________________________________________
-#include "StDetectorDbMaker/St_starClockOnlC.h"
 MakeChairInstance(starClockOnl,RunLog/onl/starClockOnl);
 
-#include "StDetectorDbMaker/St_starMagOnlC.h"
 MakeChairInstance(starMagOnl,RunLog/onl/starMagOnl);
 
-#include "StDetectorDbMaker/St_tpcRDOMasksC.h"
 MakeChairInstance(tpcRDOMasks,RunLog/onl/tpcRDOMasks);
 
 
@@ -970,31 +906,21 @@ unsigned int       St_tpcRDOMasksC::getSectorMask(unsigned int sector) {
 }
 
 //___________________Conditions/trg_____________________________________________________________
-#include "StDetectorDbMaker/St_trgTimeOffsetC.h"
 MakeChairAltInstance(trgTimeOffset,Conditions/trg/trgTimeOffset,Conditions/trg/trgTimeOffsetB,gEnv->GetValue("NewTpcAlignment",0));
 //___________________Geometry/tpc_____________________________________________________________
-#include "StDetectorDbMaker/St_tpcDimensionsC.h"
 MakeChairInstance(tpcDimensions,Geometry/tpc/tpcDimensions);
-#include "StDetectorDbMaker/St_tpcWirePlanesC.h"
 MakeChairInstance(tpcWirePlanes,Geometry/tpc/tpcWirePlanes);
-#include "StDetectorDbMaker/St_tpcFieldCageC.h"
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
 MakeChairInstance(tpcPadConfig,Geometry/tpc/tpcPadConfig);
-#include "StDetectorDbMaker/St_tpcGlobalPositionC.h"
 MakeChairInstance(tpcGlobalPosition,Geometry/tpc/tpcGlobalPosition);
-#include "StDetectorDbMaker/St_tpcFieldCageShortC.h"
 MakeChairInstance(tpcFieldCageShort,Geometry/tpc/tpcFieldCageShort);
-#include "StDetectorDbMaker/St_tpcHVPlanesC.h"
 MakeChairInstance(tpcHVPlanes,Geometry/tpc/tpcHVPlanes);
-#include "StDetectorDbMaker/St_SurveyC.h"
-#include "StDetectorDbMaker/StTpcSurveyC.h"
 MakeChairAltInstance2(Survey,StTpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPositionB,gEnv->GetValue("NewTpcAlignment",0));
 MakeChairAltInstance2(Survey,StTpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPositionB,gEnv->GetValue("NewTpcAlignment",0));
 MakeChairAltInstance2(Survey,StTpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPositionB,gEnv->GetValue("NewTpcAlignment",0));
 MakeChairInstance2(Survey,StTpcHalfPosition,Geometry/tpc/TpcHalfPosition);
 MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
-#include "StDetectorDbMaker/St_iTPCSurveyC.h"
 MakeChairInstance(iTPCSurvey,Geometry/tpc/iTPCSurvey);
 
 St_SurveyC::St_SurveyC() : fRotations(0)  { }

@@ -5,9 +5,7 @@ add_executable(test_tpcrs
 
 root_generate_dictionary(
     test_tpcrs_dict
-    include/g2t_tpc_hit.h
-    include/g2t_track.h
-    include/g2t_vertex.h
+    include/tpcrs/structs.h
     tests/GeantEvent.h
     LINKDEF tests/LinkDef.h
     OPTIONS -I${CMAKE_SOURCE_DIR}/include/
