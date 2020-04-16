@@ -245,20 +245,49 @@ def generate_yamlcpp(ast_dict, pre=None):
         if decl.dims:
             from functools import reduce
             size = reduce(lambda x, y: x*y, decl.dims)
-            cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = reinterpret_cast<const std::array<{decl.type}, {size}>&>( st.{decl.name} );"
-            cxx_code_encode += f"\n\tnode[\"{decl.name}\"].SetStyle(YAML::EmitterStyle::Flow);"
-            cxx_code_decode += f"\n\tauto {decl.name} = reinterpret_cast<{decl.type}*>( node[\"{decl.name}\"].as<std::array<{decl.type}, {size}>>().data() );"
-            cxx_code_decode += f"\n\tstd::copy({decl.name}, {decl.name} + {size}, reinterpret_cast<{decl.type}*>(st.{decl.name}));"
+            if decl.type == "unsigned char" and len(decl.dims) == 1:
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = vector<int>(st.{decl.name}, st.{decl.name} + {size});"
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"].SetStyle(YAML::EmitterStyle::Flow);"
+                cxx_code_decode += f"\n\tauto {decl.name} = node[\"{decl.name}\"].as< vector<int> >();"
+                cxx_code_decode += f"\n\tcopy(begin({decl.name}), end({decl.name}), st.{decl.name});"
+            elif decl.type == "char" and len(decl.dims) == 1:
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = string(st.{decl.name});"
+                cxx_code_decode += f"\n\tauto {decl.name} = node[\"{decl.name}\"].as<string>();"
+                cxx_code_decode += f"\n\tcopy(begin({decl.name}), end({decl.name}), st.{decl.name});"
+                cxx_code_decode += f"\n\tst.{decl.name}[{decl.name}.size()] ='\\0';"
+            else:
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = reinterpret_cast<const array<{decl.type}, {size}>&>( st.{decl.name} );"
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"].SetStyle(YAML::EmitterStyle::Flow);"
+                cxx_code_decode += f"\n\tauto {decl.name} = node[\"{decl.name}\"].as<array<{decl.type}, {size}>>();"
+                cxx_code_decode += f"\n\tcopy(begin({decl.name}), end({decl.name}), reinterpret_cast<{decl.type}*>(st.{decl.name}));"
         else:
-            cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = st.{decl.name};"
-            cxx_code_decode += f"\n\tst.{decl.name} = node[\"{decl.name}\"].as<{decl.type}>();"
+            if decl.type == "unsigned char":
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = static_cast<int>(st.{decl.name});"
+                cxx_code_decode += f"\n\tst.{decl.name} = static_cast<{decl.type}>(node[\"{decl.name}\"].as<int>());"
+            else:
+                cxx_code_encode += f"\n\tnode[\"{decl.name}\"] = st.{decl.name};"
+                cxx_code_decode += f"\n\tst.{decl.name} = node[\"{decl.name}\"].as<{decl.type}>();"
 
     struct_name = ast_dict['ext'][0]['type']['name']
     # Pop the last three charasters "_st"
     header_name = struct_name[:-3]
 
-    cxx_code = """
+    cxx_code_common = """
+    #include <algorithm>
+    #include <cstdint>
     #include "yaml-cpp/yaml.h"
+
+    namespace YAML {
+    using std::copy;
+    using std::begin;
+    using std::end;
+    using std::array;
+    using std::string;
+    using std::vector;
+    }
+    """
+
+    cxx_code = """
     #include "%(header_name)s.h"
 
     namespace YAML {
