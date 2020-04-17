@@ -55,21 +55,21 @@ struct convert<MDFCorrection_st> {
   static Node encode(const MDFCorrection_st& st) {
     Node node;
     
-    node["idx"] = st.idx;
-    node["nrows"] = st.nrows;
-    node["PolyType"] = st.PolyType;
-    node["NVariables"] = st.NVariables;
-    node["NCoefficients"] = st.NCoefficients;
-    node["Power"] = reinterpret_cast<const std::array<unsigned char, 100>&>( st.Power );
+    node["idx"] = static_cast<int>(st.idx);
+    node["nrows"] = static_cast<int>(st.nrows);
+    node["PolyType"] = static_cast<int>(st.PolyType);
+    node["NVariables"] = static_cast<int>(st.NVariables);
+    node["NCoefficients"] = static_cast<int>(st.NCoefficients);
+    node["Power"] = vector<int>(st.Power, st.Power + 100);
     node["Power"].SetStyle(YAML::EmitterStyle::Flow);
     node["DMean"] = st.DMean;
-    node["XMin"] = reinterpret_cast<const std::array<double, 2>&>( st.XMin );
+    node["XMin"] = reinterpret_cast<const array<double, 2>&>( st.XMin );
     node["XMin"].SetStyle(YAML::EmitterStyle::Flow);
-    node["XMax"] = reinterpret_cast<const std::array<double, 2>&>( st.XMax );
+    node["XMax"] = reinterpret_cast<const array<double, 2>&>( st.XMax );
     node["XMax"].SetStyle(YAML::EmitterStyle::Flow);
-    node["Coefficients"] = reinterpret_cast<const std::array<double, 50>&>( st.Coefficients );
+    node["Coefficients"] = reinterpret_cast<const array<double, 50>&>( st.Coefficients );
     node["Coefficients"].SetStyle(YAML::EmitterStyle::Flow);
-    node["CoefficientsRMS"] = reinterpret_cast<const std::array<double, 50>&>( st.CoefficientsRMS );
+    node["CoefficientsRMS"] = reinterpret_cast<const array<double, 50>&>( st.CoefficientsRMS );
     node["CoefficientsRMS"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -79,22 +79,22 @@ struct convert<MDFCorrection_st> {
       return false;
     }
     
-    st.idx = node["idx"].as<unsigned char>();
-    st.nrows = node["nrows"].as<unsigned char>();
-    st.PolyType = node["PolyType"].as<unsigned char>();
-    st.NVariables = node["NVariables"].as<unsigned char>();
-    st.NCoefficients = node["NCoefficients"].as<unsigned char>();
-    auto Power = reinterpret_cast<unsigned char*>( node["Power"].as<std::array<unsigned char, 100>>().data() );
-    std::copy(Power, Power + 100, reinterpret_cast<unsigned char*>(st.Power));
+    st.idx = static_cast<unsigned char>(node["idx"].as<int>());
+    st.nrows = static_cast<unsigned char>(node["nrows"].as<int>());
+    st.PolyType = static_cast<unsigned char>(node["PolyType"].as<int>());
+    st.NVariables = static_cast<unsigned char>(node["NVariables"].as<int>());
+    st.NCoefficients = static_cast<unsigned char>(node["NCoefficients"].as<int>());
+    auto Power = node["Power"].as< vector<int> >();
+    copy(begin(Power), end(Power), st.Power);
     st.DMean = node["DMean"].as<double>();
-    auto XMin = reinterpret_cast<double*>( node["XMin"].as<std::array<double, 2>>().data() );
-    std::copy(XMin, XMin + 2, reinterpret_cast<double*>(st.XMin));
-    auto XMax = reinterpret_cast<double*>( node["XMax"].as<std::array<double, 2>>().data() );
-    std::copy(XMax, XMax + 2, reinterpret_cast<double*>(st.XMax));
-    auto Coefficients = reinterpret_cast<double*>( node["Coefficients"].as<std::array<double, 50>>().data() );
-    std::copy(Coefficients, Coefficients + 50, reinterpret_cast<double*>(st.Coefficients));
-    auto CoefficientsRMS = reinterpret_cast<double*>( node["CoefficientsRMS"].as<std::array<double, 50>>().data() );
-    std::copy(CoefficientsRMS, CoefficientsRMS + 50, reinterpret_cast<double*>(st.CoefficientsRMS));
+    auto XMin = node["XMin"].as<array<double, 2>>();
+    copy(begin(XMin), end(XMin), reinterpret_cast<double*>(st.XMin));
+    auto XMax = node["XMax"].as<array<double, 2>>();
+    copy(begin(XMax), end(XMax), reinterpret_cast<double*>(st.XMax));
+    auto Coefficients = node["Coefficients"].as<array<double, 50>>();
+    copy(begin(Coefficients), end(Coefficients), reinterpret_cast<double*>(st.Coefficients));
+    auto CoefficientsRMS = node["CoefficientsRMS"].as<array<double, 50>>();
+    copy(begin(CoefficientsRMS), end(CoefficientsRMS), reinterpret_cast<double*>(st.CoefficientsRMS));
     return true;
   }
 };
@@ -421,10 +421,10 @@ struct convert<g2t_tpc_hit_st> {
     node["volume_id"] = st.volume_id;
     node["de"] = st.de;
     node["ds"] = st.ds;
-    node["p"] = reinterpret_cast<const std::array<float, 3>&>( st.p );
+    node["p"] = reinterpret_cast<const array<float, 3>&>( st.p );
     node["p"].SetStyle(YAML::EmitterStyle::Flow);
     node["tof"] = st.tof;
-    node["x"] = reinterpret_cast<const std::array<float, 3>&>( st.x );
+    node["x"] = reinterpret_cast<const array<float, 3>&>( st.x );
     node["x"].SetStyle(YAML::EmitterStyle::Flow);
     node["lgam"] = st.lgam;
     node["length"] = st.length;
@@ -446,11 +446,11 @@ struct convert<g2t_tpc_hit_st> {
     st.volume_id = node["volume_id"].as<int>();
     st.de = node["de"].as<float>();
     st.ds = node["ds"].as<float>();
-    auto p = reinterpret_cast<float*>( node["p"].as<std::array<float, 3>>().data() );
-    std::copy(p, p + 3, reinterpret_cast<float*>(st.p));
+    auto p = node["p"].as<array<float, 3>>();
+    copy(begin(p), end(p), reinterpret_cast<float*>(st.p));
     st.tof = node["tof"].as<float>();
-    auto x = reinterpret_cast<float*>( node["x"].as<std::array<float, 3>>().data() );
-    std::copy(x, x + 3, reinterpret_cast<float*>(st.x));
+    auto x = node["x"].as<array<float, 3>>();
+    copy(begin(x), end(x), reinterpret_cast<float*>(st.x));
     st.lgam = node["lgam"].as<float>();
     st.length = node["length"].as<float>();
     st.adc = node["adc"].as<float>();
@@ -470,9 +470,9 @@ struct convert<TpcSecRowCor_st> {
   static Node encode(const TpcSecRowCor_st& st) {
     Node node;
     
-    node["GainScale"] = reinterpret_cast<const std::array<float, 100>&>( st.GainScale );
+    node["GainScale"] = reinterpret_cast<const array<float, 100>&>( st.GainScale );
     node["GainScale"].SetStyle(YAML::EmitterStyle::Flow);
-    node["GainRms"] = reinterpret_cast<const std::array<float, 100>&>( st.GainRms );
+    node["GainRms"] = reinterpret_cast<const array<float, 100>&>( st.GainRms );
     node["GainRms"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -482,10 +482,10 @@ struct convert<TpcSecRowCor_st> {
       return false;
     }
     
-    auto GainScale = reinterpret_cast<float*>( node["GainScale"].as<std::array<float, 100>>().data() );
-    std::copy(GainScale, GainScale + 100, reinterpret_cast<float*>(st.GainScale));
-    auto GainRms = reinterpret_cast<float*>( node["GainRms"].as<std::array<float, 100>>().data() );
-    std::copy(GainRms, GainRms + 100, reinterpret_cast<float*>(st.GainRms));
+    auto GainScale = node["GainScale"].as<array<float, 100>>();
+    copy(begin(GainScale), end(GainScale), reinterpret_cast<float*>(st.GainScale));
+    auto GainRms = node["GainRms"].as<array<float, 100>>();
+    copy(begin(GainRms), end(GainRms), reinterpret_cast<float*>(st.GainRms));
     return true;
   }
 };
@@ -501,10 +501,10 @@ struct convert<tpcRDOMap_st> {
     
     node["idx"] = st.idx;
     node["nrows"] = st.nrows;
-    node["row"] = st.row;
-    node["padMin"] = st.padMin;
-    node["padMax"] = st.padMax;
-    node["rdo"] = st.rdo;
+    node["row"] = static_cast<int>(st.row);
+    node["padMin"] = static_cast<int>(st.padMin);
+    node["padMax"] = static_cast<int>(st.padMax);
+    node["rdo"] = static_cast<int>(st.rdo);
     return node;
   };
 
@@ -515,10 +515,10 @@ struct convert<tpcRDOMap_st> {
     
     st.idx = node["idx"].as<int>();
     st.nrows = node["nrows"].as<int>();
-    st.row = node["row"].as<unsigned char>();
-    st.padMin = node["padMin"].as<unsigned char>();
-    st.padMax = node["padMax"].as<unsigned char>();
-    st.rdo = node["rdo"].as<unsigned char>();
+    st.row = static_cast<unsigned char>(node["row"].as<int>());
+    st.padMin = static_cast<unsigned char>(node["padMin"].as<int>());
+    st.padMax = static_cast<unsigned char>(node["padMax"].as<int>());
+    st.rdo = static_cast<unsigned char>(node["rdo"].as<int>());
     return true;
   }
 };
@@ -651,9 +651,9 @@ struct convert<tpcRDOT0offset_st> {
   static Node encode(const tpcRDOT0offset_st& st) {
     Node node;
     
-    node["isShifted"] = reinterpret_cast<const std::array<unsigned char, 24>&>( st.isShifted );
+    node["isShifted"] = vector<int>(st.isShifted, st.isShifted + 24);
     node["isShifted"].SetStyle(YAML::EmitterStyle::Flow);
-    node["t0"] = reinterpret_cast<const std::array<float, 240>&>( st.t0 );
+    node["t0"] = reinterpret_cast<const array<float, 240>&>( st.t0 );
     node["t0"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -663,10 +663,10 @@ struct convert<tpcRDOT0offset_st> {
       return false;
     }
     
-    auto isShifted = reinterpret_cast<unsigned char*>( node["isShifted"].as<std::array<unsigned char, 24>>().data() );
-    std::copy(isShifted, isShifted + 24, reinterpret_cast<unsigned char*>(st.isShifted));
-    auto t0 = reinterpret_cast<float*>( node["t0"].as<std::array<float, 240>>().data() );
-    std::copy(t0, t0 + 240, reinterpret_cast<float*>(st.t0));
+    auto isShifted = node["isShifted"].as< vector<int> >();
+    copy(begin(isShifted), end(isShifted), st.isShifted);
+    auto t0 = node["t0"].as<array<float, 240>>();
+    copy(begin(t0), end(t0), reinterpret_cast<float*>(st.t0));
     return true;
   }
 };
@@ -707,13 +707,13 @@ struct convert<tpcPadPlanes_st> {
     node["outerSectorEdge"] = st.outerSectorEdge;
     node["innerSectorPadPlaneZ"] = st.innerSectorPadPlaneZ;
     node["outerSectorPadPlaneZ"] = st.outerSectorPadPlaneZ;
-    node["innerPadsPerRow"] = reinterpret_cast<const std::array<int, 13>&>( st.innerPadsPerRow );
+    node["innerPadsPerRow"] = reinterpret_cast<const array<int, 13>&>( st.innerPadsPerRow );
     node["innerPadsPerRow"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerPadsPerRow"] = reinterpret_cast<const std::array<int, 32>&>( st.outerPadsPerRow );
+    node["outerPadsPerRow"] = reinterpret_cast<const array<int, 32>&>( st.outerPadsPerRow );
     node["outerPadsPerRow"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerRowRadii"] = reinterpret_cast<const std::array<double, 13>&>( st.innerRowRadii );
+    node["innerRowRadii"] = reinterpret_cast<const array<double, 13>&>( st.innerRowRadii );
     node["innerRowRadii"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerRowRadii"] = reinterpret_cast<const std::array<double, 32>&>( st.outerRowRadii );
+    node["outerRowRadii"] = reinterpret_cast<const array<double, 32>&>( st.outerRowRadii );
     node["outerRowRadii"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -750,14 +750,14 @@ struct convert<tpcPadPlanes_st> {
     st.outerSectorEdge = node["outerSectorEdge"].as<double>();
     st.innerSectorPadPlaneZ = node["innerSectorPadPlaneZ"].as<double>();
     st.outerSectorPadPlaneZ = node["outerSectorPadPlaneZ"].as<double>();
-    auto innerPadsPerRow = reinterpret_cast<int*>( node["innerPadsPerRow"].as<std::array<int, 13>>().data() );
-    std::copy(innerPadsPerRow, innerPadsPerRow + 13, reinterpret_cast<int*>(st.innerPadsPerRow));
-    auto outerPadsPerRow = reinterpret_cast<int*>( node["outerPadsPerRow"].as<std::array<int, 32>>().data() );
-    std::copy(outerPadsPerRow, outerPadsPerRow + 32, reinterpret_cast<int*>(st.outerPadsPerRow));
-    auto innerRowRadii = reinterpret_cast<double*>( node["innerRowRadii"].as<std::array<double, 13>>().data() );
-    std::copy(innerRowRadii, innerRowRadii + 13, reinterpret_cast<double*>(st.innerRowRadii));
-    auto outerRowRadii = reinterpret_cast<double*>( node["outerRowRadii"].as<std::array<double, 32>>().data() );
-    std::copy(outerRowRadii, outerRowRadii + 32, reinterpret_cast<double*>(st.outerRowRadii));
+    auto innerPadsPerRow = node["innerPadsPerRow"].as<array<int, 13>>();
+    copy(begin(innerPadsPerRow), end(innerPadsPerRow), reinterpret_cast<int*>(st.innerPadsPerRow));
+    auto outerPadsPerRow = node["outerPadsPerRow"].as<array<int, 32>>();
+    copy(begin(outerPadsPerRow), end(outerPadsPerRow), reinterpret_cast<int*>(st.outerPadsPerRow));
+    auto innerRowRadii = node["innerRowRadii"].as<array<double, 13>>();
+    copy(begin(innerRowRadii), end(innerRowRadii), reinterpret_cast<double*>(st.innerRowRadii));
+    auto outerRowRadii = node["outerRowRadii"].as<array<double, 32>>();
+    copy(begin(outerRowRadii), end(outerRowRadii), reinterpret_cast<double*>(st.outerRowRadii));
     return true;
   }
 };
@@ -772,11 +772,11 @@ struct convert<tpcChargeEvent_st> {
     Node node;
     
     node["nChargeEvents"] = st.nChargeEvents;
-    node["eventBunchCrossingsLow"] = reinterpret_cast<const std::array<unsigned int, 4096>&>( st.eventBunchCrossingsLow );
+    node["eventBunchCrossingsLow"] = reinterpret_cast<const array<unsigned int, 4096>&>( st.eventBunchCrossingsLow );
     node["eventBunchCrossingsLow"].SetStyle(YAML::EmitterStyle::Flow);
-    node["eventBunchCrossingsHigh"] = reinterpret_cast<const std::array<unsigned int, 4096>&>( st.eventBunchCrossingsHigh );
+    node["eventBunchCrossingsHigh"] = reinterpret_cast<const array<unsigned int, 4096>&>( st.eventBunchCrossingsHigh );
     node["eventBunchCrossingsHigh"].SetStyle(YAML::EmitterStyle::Flow);
-    node["eventCharges"] = reinterpret_cast<const std::array<float, 4096>&>( st.eventCharges );
+    node["eventCharges"] = reinterpret_cast<const array<float, 4096>&>( st.eventCharges );
     node["eventCharges"].SetStyle(YAML::EmitterStyle::Flow);
     node["badBunch"] = st.badBunch;
     return node;
@@ -788,12 +788,12 @@ struct convert<tpcChargeEvent_st> {
     }
     
     st.nChargeEvents = node["nChargeEvents"].as<int>();
-    auto eventBunchCrossingsLow = reinterpret_cast<unsigned int*>( node["eventBunchCrossingsLow"].as<std::array<unsigned int, 4096>>().data() );
-    std::copy(eventBunchCrossingsLow, eventBunchCrossingsLow + 4096, reinterpret_cast<unsigned int*>(st.eventBunchCrossingsLow));
-    auto eventBunchCrossingsHigh = reinterpret_cast<unsigned int*>( node["eventBunchCrossingsHigh"].as<std::array<unsigned int, 4096>>().data() );
-    std::copy(eventBunchCrossingsHigh, eventBunchCrossingsHigh + 4096, reinterpret_cast<unsigned int*>(st.eventBunchCrossingsHigh));
-    auto eventCharges = reinterpret_cast<float*>( node["eventCharges"].as<std::array<float, 4096>>().data() );
-    std::copy(eventCharges, eventCharges + 4096, reinterpret_cast<float*>(st.eventCharges));
+    auto eventBunchCrossingsLow = node["eventBunchCrossingsLow"].as<array<unsigned int, 4096>>();
+    copy(begin(eventBunchCrossingsLow), end(eventBunchCrossingsLow), reinterpret_cast<unsigned int*>(st.eventBunchCrossingsLow));
+    auto eventBunchCrossingsHigh = node["eventBunchCrossingsHigh"].as<array<unsigned int, 4096>>();
+    copy(begin(eventBunchCrossingsHigh), end(eventBunchCrossingsHigh), reinterpret_cast<unsigned int*>(st.eventBunchCrossingsHigh));
+    auto eventCharges = node["eventCharges"].as<array<float, 4096>>();
+    copy(begin(eventCharges), end(eventCharges), reinterpret_cast<float*>(st.eventCharges));
     st.badBunch = node["badBunch"].as<int>();
     return true;
   }
@@ -937,7 +937,7 @@ struct convert<tpcSectorT0offset_st> {
   static Node encode(const tpcSectorT0offset_st& st) {
     Node node;
     
-    node["t0"] = reinterpret_cast<const std::array<float, 48>&>( st.t0 );
+    node["t0"] = reinterpret_cast<const array<float, 48>&>( st.t0 );
     node["t0"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -947,8 +947,8 @@ struct convert<tpcSectorT0offset_st> {
       return false;
     }
     
-    auto t0 = reinterpret_cast<float*>( node["t0"].as<std::array<float, 48>>().data() );
-    std::copy(t0, t0 + 48, reinterpret_cast<float*>(st.t0));
+    auto t0 = node["t0"].as<array<float, 48>>();
+    copy(begin(t0), end(t0), reinterpret_cast<float*>(st.t0));
     return true;
   }
 };
@@ -970,11 +970,11 @@ struct convert<tpcPadResponse_st> {
     node["outerWirePadCoupling"] = st.outerWirePadCoupling;
     node["innerRowNormalization"] = st.innerRowNormalization;
     node["outerRowNormalization"] = st.outerRowNormalization;
-    node["BoundaryOfStepFunctions"] = reinterpret_cast<const std::array<float, 6>&>( st.BoundaryOfStepFunctions );
+    node["BoundaryOfStepFunctions"] = reinterpret_cast<const array<float, 6>&>( st.BoundaryOfStepFunctions );
     node["BoundaryOfStepFunctions"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerChargeFractionConstants"] = reinterpret_cast<const std::array<float, 6>&>( st.innerChargeFractionConstants );
+    node["innerChargeFractionConstants"] = reinterpret_cast<const array<float, 6>&>( st.innerChargeFractionConstants );
     node["innerChargeFractionConstants"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerChargeFractionConstants"] = reinterpret_cast<const std::array<float, 6>&>( st.outerChargeFractionConstants );
+    node["outerChargeFractionConstants"] = reinterpret_cast<const array<float, 6>&>( st.outerChargeFractionConstants );
     node["outerChargeFractionConstants"].SetStyle(YAML::EmitterStyle::Flow);
     node["errorFunctionRange"] = st.errorFunctionRange;
     node["errorFunctionEntry"] = st.errorFunctionEntry;
@@ -997,12 +997,12 @@ struct convert<tpcPadResponse_st> {
     st.outerWirePadCoupling = node["outerWirePadCoupling"].as<float>();
     st.innerRowNormalization = node["innerRowNormalization"].as<float>();
     st.outerRowNormalization = node["outerRowNormalization"].as<float>();
-    auto BoundaryOfStepFunctions = reinterpret_cast<float*>( node["BoundaryOfStepFunctions"].as<std::array<float, 6>>().data() );
-    std::copy(BoundaryOfStepFunctions, BoundaryOfStepFunctions + 6, reinterpret_cast<float*>(st.BoundaryOfStepFunctions));
-    auto innerChargeFractionConstants = reinterpret_cast<float*>( node["innerChargeFractionConstants"].as<std::array<float, 6>>().data() );
-    std::copy(innerChargeFractionConstants, innerChargeFractionConstants + 6, reinterpret_cast<float*>(st.innerChargeFractionConstants));
-    auto outerChargeFractionConstants = reinterpret_cast<float*>( node["outerChargeFractionConstants"].as<std::array<float, 6>>().data() );
-    std::copy(outerChargeFractionConstants, outerChargeFractionConstants + 6, reinterpret_cast<float*>(st.outerChargeFractionConstants));
+    auto BoundaryOfStepFunctions = node["BoundaryOfStepFunctions"].as<array<float, 6>>();
+    copy(begin(BoundaryOfStepFunctions), end(BoundaryOfStepFunctions), reinterpret_cast<float*>(st.BoundaryOfStepFunctions));
+    auto innerChargeFractionConstants = node["innerChargeFractionConstants"].as<array<float, 6>>();
+    copy(begin(innerChargeFractionConstants), end(innerChargeFractionConstants), reinterpret_cast<float*>(st.innerChargeFractionConstants));
+    auto outerChargeFractionConstants = node["outerChargeFractionConstants"].as<array<float, 6>>();
+    copy(begin(outerChargeFractionConstants), end(outerChargeFractionConstants), reinterpret_cast<float*>(st.outerChargeFractionConstants));
     st.errorFunctionRange = node["errorFunctionRange"].as<float>();
     st.errorFunctionEntry = node["errorFunctionEntry"].as<int>();
     st.longitudinalDiffusionConstant = node["longitudinalDiffusionConstant"].as<float>();
@@ -1023,9 +1023,9 @@ struct convert<tpcHighVoltages_st> {
     
     node["cathode"] = st.cathode;
     node["gatedGridRef"] = st.gatedGridRef;
-    node["gridLeakWallTip"] = reinterpret_cast<const std::array<float, 24>&>( st.gridLeakWallTip );
+    node["gridLeakWallTip"] = reinterpret_cast<const array<float, 24>&>( st.gridLeakWallTip );
     node["gridLeakWallTip"].SetStyle(YAML::EmitterStyle::Flow);
-    node["gridLeakWallSide"] = reinterpret_cast<const std::array<float, 24>&>( st.gridLeakWallSide );
+    node["gridLeakWallSide"] = reinterpret_cast<const array<float, 24>&>( st.gridLeakWallSide );
     node["gridLeakWallSide"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1037,10 +1037,10 @@ struct convert<tpcHighVoltages_st> {
     
     st.cathode = node["cathode"].as<float>();
     st.gatedGridRef = node["gatedGridRef"].as<float>();
-    auto gridLeakWallTip = reinterpret_cast<float*>( node["gridLeakWallTip"].as<std::array<float, 24>>().data() );
-    std::copy(gridLeakWallTip, gridLeakWallTip + 24, reinterpret_cast<float*>(st.gridLeakWallTip));
-    auto gridLeakWallSide = reinterpret_cast<float*>( node["gridLeakWallSide"].as<std::array<float, 24>>().data() );
-    std::copy(gridLeakWallSide, gridLeakWallSide + 24, reinterpret_cast<float*>(st.gridLeakWallSide));
+    auto gridLeakWallTip = node["gridLeakWallTip"].as<array<float, 24>>();
+    copy(begin(gridLeakWallTip), end(gridLeakWallTip), reinterpret_cast<float*>(st.gridLeakWallTip));
+    auto gridLeakWallSide = node["gridLeakWallSide"].as<array<float, 24>>();
+    copy(begin(gridLeakWallSide), end(gridLeakWallSide), reinterpret_cast<float*>(st.gridLeakWallSide));
     return true;
   }
 };
@@ -1061,7 +1061,7 @@ struct convert<tpcCorrection_st> {
     node["OffSet"] = st.OffSet;
     node["min"] = st.min;
     node["max"] = st.max;
-    node["a"] = reinterpret_cast<const std::array<double, 10>&>( st.a );
+    node["a"] = reinterpret_cast<const array<double, 10>&>( st.a );
     node["a"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1078,8 +1078,8 @@ struct convert<tpcCorrection_st> {
     st.OffSet = node["OffSet"].as<double>();
     st.min = node["min"].as<double>();
     st.max = node["max"].as<double>();
-    auto a = reinterpret_cast<double*>( node["a"].as<std::array<double, 10>>().data() );
-    std::copy(a, a + 10, reinterpret_cast<double*>(st.a));
+    auto a = node["a"].as<array<double, 10>>();
+    copy(begin(a), end(a), reinterpret_cast<double*>(st.a));
     return true;
   }
 };
@@ -1164,7 +1164,7 @@ struct convert<g2t_track_st> {
     node["charge"] = st.charge;
     node["e"] = st.e;
     node["eta"] = st.eta;
-    node["p"] = reinterpret_cast<const std::array<float, 3>&>( st.p );
+    node["p"] = reinterpret_cast<const array<float, 3>&>( st.p );
     node["p"].SetStyle(YAML::EmitterStyle::Flow);
     node["pt"] = st.pt;
     node["ptot"] = st.ptot;
@@ -1248,8 +1248,8 @@ struct convert<g2t_track_st> {
     st.charge = node["charge"].as<float>();
     st.e = node["e"].as<float>();
     st.eta = node["eta"].as<float>();
-    auto p = reinterpret_cast<float*>( node["p"].as<std::array<float, 3>>().data() );
-    std::copy(p, p + 3, reinterpret_cast<float*>(st.p));
+    auto p = node["p"].as<array<float, 3>>();
+    copy(begin(p), end(p), reinterpret_cast<float*>(st.p));
     st.pt = node["pt"].as<float>();
     st.ptot = node["ptot"].as<float>();
     st.rapidity = node["rapidity"].as<float>();
@@ -1328,17 +1328,17 @@ struct convert<tpcSCGL_st> {
   static Node encode(const tpcSCGL_st& st) {
     Node node;
     
-    node["SC"] = reinterpret_cast<const std::array<float, 8>&>( st.SC );
+    node["SC"] = reinterpret_cast<const array<float, 8>&>( st.SC );
     node["SC"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SCoffset"] = reinterpret_cast<const std::array<float, 8>&>( st.SCoffset );
+    node["SCoffset"] = reinterpret_cast<const array<float, 8>&>( st.SCoffset );
     node["SCoffset"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SCexponent"] = reinterpret_cast<const std::array<float, 8>&>( st.SCexponent );
+    node["SCexponent"] = reinterpret_cast<const array<float, 8>&>( st.SCexponent );
     node["SCexponent"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SCscaler"] = reinterpret_cast<const std::array<float, 8>&>( st.SCscaler );
+    node["SCscaler"] = reinterpret_cast<const array<float, 8>&>( st.SCscaler );
     node["SCscaler"].SetStyle(YAML::EmitterStyle::Flow);
-    node["GL"] = reinterpret_cast<const std::array<float, 24>&>( st.GL );
+    node["GL"] = reinterpret_cast<const array<float, 24>&>( st.GL );
     node["GL"].SetStyle(YAML::EmitterStyle::Flow);
-    node["GLoffset"] = reinterpret_cast<const std::array<float, 24>&>( st.GLoffset );
+    node["GLoffset"] = reinterpret_cast<const array<float, 24>&>( st.GLoffset );
     node["GLoffset"].SetStyle(YAML::EmitterStyle::Flow);
     node["GLradius"] = st.GLradius;
     node["GLwidth"] = st.GLwidth;
@@ -1352,18 +1352,18 @@ struct convert<tpcSCGL_st> {
       return false;
     }
     
-    auto SC = reinterpret_cast<float*>( node["SC"].as<std::array<float, 8>>().data() );
-    std::copy(SC, SC + 8, reinterpret_cast<float*>(st.SC));
-    auto SCoffset = reinterpret_cast<float*>( node["SCoffset"].as<std::array<float, 8>>().data() );
-    std::copy(SCoffset, SCoffset + 8, reinterpret_cast<float*>(st.SCoffset));
-    auto SCexponent = reinterpret_cast<float*>( node["SCexponent"].as<std::array<float, 8>>().data() );
-    std::copy(SCexponent, SCexponent + 8, reinterpret_cast<float*>(st.SCexponent));
-    auto SCscaler = reinterpret_cast<float*>( node["SCscaler"].as<std::array<float, 8>>().data() );
-    std::copy(SCscaler, SCscaler + 8, reinterpret_cast<float*>(st.SCscaler));
-    auto GL = reinterpret_cast<float*>( node["GL"].as<std::array<float, 24>>().data() );
-    std::copy(GL, GL + 24, reinterpret_cast<float*>(st.GL));
-    auto GLoffset = reinterpret_cast<float*>( node["GLoffset"].as<std::array<float, 24>>().data() );
-    std::copy(GLoffset, GLoffset + 24, reinterpret_cast<float*>(st.GLoffset));
+    auto SC = node["SC"].as<array<float, 8>>();
+    copy(begin(SC), end(SC), reinterpret_cast<float*>(st.SC));
+    auto SCoffset = node["SCoffset"].as<array<float, 8>>();
+    copy(begin(SCoffset), end(SCoffset), reinterpret_cast<float*>(st.SCoffset));
+    auto SCexponent = node["SCexponent"].as<array<float, 8>>();
+    copy(begin(SCexponent), end(SCexponent), reinterpret_cast<float*>(st.SCexponent));
+    auto SCscaler = node["SCscaler"].as<array<float, 8>>();
+    copy(begin(SCscaler), end(SCscaler), reinterpret_cast<float*>(st.SCscaler));
+    auto GL = node["GL"].as<array<float, 24>>();
+    copy(begin(GL), end(GL), reinterpret_cast<float*>(st.GL));
+    auto GLoffset = node["GLoffset"].as<array<float, 24>>();
+    copy(begin(GLoffset), end(GLoffset), reinterpret_cast<float*>(st.GLoffset));
     st.GLradius = node["GLradius"].as<float>();
     st.GLwidth = node["GLwidth"].as<float>();
     st.mode = node["mode"].as<int>();
@@ -1479,7 +1479,7 @@ struct convert<tpcPadConfig_st> {
   static Node encode(const tpcPadConfig_st& st) {
     Node node;
     
-    node["itpc"] = reinterpret_cast<const std::array<unsigned char, 24>&>( st.itpc );
+    node["itpc"] = vector<int>(st.itpc, st.itpc + 24);
     node["itpc"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1489,8 +1489,8 @@ struct convert<tpcPadConfig_st> {
       return false;
     }
     
-    auto itpc = reinterpret_cast<unsigned char*>( node["itpc"].as<std::array<unsigned char, 24>>().data() );
-    std::copy(itpc, itpc + 24, reinterpret_cast<unsigned char*>(st.itpc));
+    auto itpc = node["itpc"].as< vector<int> >();
+    copy(begin(itpc), end(itpc), st.itpc);
     return true;
   }
 };
@@ -1543,9 +1543,9 @@ struct convert<tpcPedestal_st> {
   static Node encode(const tpcPedestal_st& st) {
     Node node;
     
-    node["Pedestal"] = reinterpret_cast<const std::array<float, 100>&>( st.Pedestal );
+    node["Pedestal"] = reinterpret_cast<const array<float, 18200>&>( st.Pedestal );
     node["Pedestal"].SetStyle(YAML::EmitterStyle::Flow);
-    node["Rms"] = reinterpret_cast<const std::array<float, 100>&>( st.Rms );
+    node["Rms"] = reinterpret_cast<const array<float, 18200>&>( st.Rms );
     node["Rms"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1555,10 +1555,10 @@ struct convert<tpcPedestal_st> {
       return false;
     }
     
-    auto Pedestal = reinterpret_cast<float*>( node["Pedestal"].as<std::array<float, 100>>().data() );
-    std::copy(Pedestal, Pedestal + 100, reinterpret_cast<float*>(st.Pedestal));
-    auto Rms = reinterpret_cast<float*>( node["Rms"].as<std::array<float, 100>>().data() );
-    std::copy(Rms, Rms + 100, reinterpret_cast<float*>(st.Rms));
+    auto Pedestal = node["Pedestal"].as<array<float, 18200>>();
+    copy(begin(Pedestal), end(Pedestal), reinterpret_cast<float*>(st.Pedestal));
+    auto Rms = node["Rms"].as<array<float, 18200>>();
+    copy(begin(Rms), end(Rms), reinterpret_cast<float*>(st.Rms));
     return true;
   }
 };
@@ -1573,9 +1573,9 @@ struct convert<itpcPadGainT0_st> {
     Node node;
     
     node["run"] = st.run;
-    node["Gain"] = reinterpret_cast<const std::array<float, 24>&>( st.Gain );
+    node["Gain"] = reinterpret_cast<const array<float, 115200>&>( st.Gain );
     node["Gain"].SetStyle(YAML::EmitterStyle::Flow);
-    node["T0"] = reinterpret_cast<const std::array<float, 24>&>( st.T0 );
+    node["T0"] = reinterpret_cast<const array<float, 115200>&>( st.T0 );
     node["T0"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1586,10 +1586,10 @@ struct convert<itpcPadGainT0_st> {
     }
     
     st.run = node["run"].as<int>();
-    auto Gain = reinterpret_cast<float*>( node["Gain"].as<std::array<float, 24>>().data() );
-    std::copy(Gain, Gain + 24, reinterpret_cast<float*>(st.Gain));
-    auto T0 = reinterpret_cast<float*>( node["T0"].as<std::array<float, 24>>().data() );
-    std::copy(T0, T0 + 24, reinterpret_cast<float*>(st.T0));
+    auto Gain = node["Gain"].as<array<float, 115200>>();
+    copy(begin(Gain), end(Gain), reinterpret_cast<float*>(st.Gain));
+    auto T0 = node["T0"].as<array<float, 115200>>();
+    copy(begin(T0), end(T0), reinterpret_cast<float*>(st.T0));
     return true;
   }
 };
@@ -1657,10 +1657,10 @@ struct convert<g2t_vertex_st> {
     node["next_prim_v_p"] = st.next_prim_v_p;
     node["parent_p"] = st.parent_p;
     node["eg_tof"] = st.eg_tof;
-    node["eg_x"] = reinterpret_cast<const std::array<float, 3>&>( st.eg_x );
+    node["eg_x"] = reinterpret_cast<const array<float, 3>&>( st.eg_x );
     node["eg_x"].SetStyle(YAML::EmitterStyle::Flow);
     node["ge_tof"] = st.ge_tof;
-    node["ge_x"] = reinterpret_cast<const std::array<float, 3>&>( st.ge_x );
+    node["ge_x"] = reinterpret_cast<const array<float, 3>&>( st.ge_x );
     node["ge_x"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1687,11 +1687,11 @@ struct convert<g2t_vertex_st> {
     st.next_prim_v_p = node["next_prim_v_p"].as<int>();
     st.parent_p = node["parent_p"].as<int>();
     st.eg_tof = node["eg_tof"].as<float>();
-    auto eg_x = reinterpret_cast<float*>( node["eg_x"].as<std::array<float, 3>>().data() );
-    std::copy(eg_x, eg_x + 3, reinterpret_cast<float*>(st.eg_x));
+    auto eg_x = node["eg_x"].as<array<float, 3>>();
+    copy(begin(eg_x), end(eg_x), reinterpret_cast<float*>(st.eg_x));
     st.ge_tof = node["ge_tof"].as<float>();
-    auto ge_x = reinterpret_cast<float*>( node["ge_x"].as<std::array<float, 3>>().data() );
-    std::copy(ge_x, ge_x + 3, reinterpret_cast<float*>(st.ge_x));
+    auto ge_x = node["ge_x"].as<array<float, 3>>();
+    copy(begin(ge_x), end(ge_x), reinterpret_cast<float*>(st.ge_x));
     return true;
   }
 };
@@ -1757,9 +1757,9 @@ struct convert<TpcAvgCurrent_st> {
     node["run"] = st.run;
     node["start_time"] = st.start_time;
     node["stop_time"] = st.stop_time;
-    node["AvCurrent"] = reinterpret_cast<const std::array<float, 192>&>( st.AvCurrent );
+    node["AvCurrent"] = reinterpret_cast<const array<float, 192>&>( st.AvCurrent );
     node["AvCurrent"].SetStyle(YAML::EmitterStyle::Flow);
-    node["AcCharge"] = reinterpret_cast<const std::array<float, 192>&>( st.AcCharge );
+    node["AcCharge"] = reinterpret_cast<const array<float, 192>&>( st.AcCharge );
     node["AcCharge"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -1772,10 +1772,10 @@ struct convert<TpcAvgCurrent_st> {
     st.run = node["run"].as<int>();
     st.start_time = node["start_time"].as<int>();
     st.stop_time = node["stop_time"].as<int>();
-    auto AvCurrent = reinterpret_cast<float*>( node["AvCurrent"].as<std::array<float, 192>>().data() );
-    std::copy(AvCurrent, AvCurrent + 192, reinterpret_cast<float*>(st.AvCurrent));
-    auto AcCharge = reinterpret_cast<float*>( node["AcCharge"].as<std::array<float, 192>>().data() );
-    std::copy(AcCharge, AcCharge + 192, reinterpret_cast<float*>(st.AcCharge));
+    auto AvCurrent = node["AvCurrent"].as<array<float, 192>>();
+    copy(begin(AvCurrent), end(AvCurrent), reinterpret_cast<float*>(st.AvCurrent));
+    auto AcCharge = node["AcCharge"].as<array<float, 192>>();
+    copy(begin(AcCharge), end(AcCharge), reinterpret_cast<float*>(st.AcCharge));
     return true;
   }
 };
@@ -1892,21 +1892,21 @@ struct convert<TpcResponseSimulator_st> {
     node["NoElPerAdcX"] = st.NoElPerAdcX;
     node["OmegaTauScaleI"] = st.OmegaTauScaleI;
     node["OmegaTauScaleO"] = st.OmegaTauScaleO;
-    node["SecRowCorIW"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowCorIW );
+    node["SecRowCorIW"] = reinterpret_cast<const array<float, 2>&>( st.SecRowCorIW );
     node["SecRowCorIW"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowCorOW"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowCorOW );
+    node["SecRowCorOW"] = reinterpret_cast<const array<float, 2>&>( st.SecRowCorOW );
     node["SecRowCorOW"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowCorIE"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowCorIE );
+    node["SecRowCorIE"] = reinterpret_cast<const array<float, 2>&>( st.SecRowCorIE );
     node["SecRowCorIE"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowCorOE"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowCorOE );
+    node["SecRowCorOE"] = reinterpret_cast<const array<float, 2>&>( st.SecRowCorOE );
     node["SecRowCorOE"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowSigIW"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowSigIW );
+    node["SecRowSigIW"] = reinterpret_cast<const array<float, 2>&>( st.SecRowSigIW );
     node["SecRowSigIW"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowSigOW"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowSigOW );
+    node["SecRowSigOW"] = reinterpret_cast<const array<float, 2>&>( st.SecRowSigOW );
     node["SecRowSigOW"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowSigIE"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowSigIE );
+    node["SecRowSigIE"] = reinterpret_cast<const array<float, 2>&>( st.SecRowSigIE );
     node["SecRowSigIE"].SetStyle(YAML::EmitterStyle::Flow);
-    node["SecRowSigOE"] = reinterpret_cast<const std::array<float, 2>&>( st.SecRowSigOE );
+    node["SecRowSigOE"] = reinterpret_cast<const array<float, 2>&>( st.SecRowSigOE );
     node["SecRowSigOE"].SetStyle(YAML::EmitterStyle::Flow);
     node["PolyaInner"] = st.PolyaInner;
     node["PolyaOuter"] = st.PolyaOuter;
@@ -1953,22 +1953,22 @@ struct convert<TpcResponseSimulator_st> {
     st.NoElPerAdcX = node["NoElPerAdcX"].as<float>();
     st.OmegaTauScaleI = node["OmegaTauScaleI"].as<float>();
     st.OmegaTauScaleO = node["OmegaTauScaleO"].as<float>();
-    auto SecRowCorIW = reinterpret_cast<float*>( node["SecRowCorIW"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowCorIW, SecRowCorIW + 2, reinterpret_cast<float*>(st.SecRowCorIW));
-    auto SecRowCorOW = reinterpret_cast<float*>( node["SecRowCorOW"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowCorOW, SecRowCorOW + 2, reinterpret_cast<float*>(st.SecRowCorOW));
-    auto SecRowCorIE = reinterpret_cast<float*>( node["SecRowCorIE"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowCorIE, SecRowCorIE + 2, reinterpret_cast<float*>(st.SecRowCorIE));
-    auto SecRowCorOE = reinterpret_cast<float*>( node["SecRowCorOE"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowCorOE, SecRowCorOE + 2, reinterpret_cast<float*>(st.SecRowCorOE));
-    auto SecRowSigIW = reinterpret_cast<float*>( node["SecRowSigIW"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowSigIW, SecRowSigIW + 2, reinterpret_cast<float*>(st.SecRowSigIW));
-    auto SecRowSigOW = reinterpret_cast<float*>( node["SecRowSigOW"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowSigOW, SecRowSigOW + 2, reinterpret_cast<float*>(st.SecRowSigOW));
-    auto SecRowSigIE = reinterpret_cast<float*>( node["SecRowSigIE"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowSigIE, SecRowSigIE + 2, reinterpret_cast<float*>(st.SecRowSigIE));
-    auto SecRowSigOE = reinterpret_cast<float*>( node["SecRowSigOE"].as<std::array<float, 2>>().data() );
-    std::copy(SecRowSigOE, SecRowSigOE + 2, reinterpret_cast<float*>(st.SecRowSigOE));
+    auto SecRowCorIW = node["SecRowCorIW"].as<array<float, 2>>();
+    copy(begin(SecRowCorIW), end(SecRowCorIW), reinterpret_cast<float*>(st.SecRowCorIW));
+    auto SecRowCorOW = node["SecRowCorOW"].as<array<float, 2>>();
+    copy(begin(SecRowCorOW), end(SecRowCorOW), reinterpret_cast<float*>(st.SecRowCorOW));
+    auto SecRowCorIE = node["SecRowCorIE"].as<array<float, 2>>();
+    copy(begin(SecRowCorIE), end(SecRowCorIE), reinterpret_cast<float*>(st.SecRowCorIE));
+    auto SecRowCorOE = node["SecRowCorOE"].as<array<float, 2>>();
+    copy(begin(SecRowCorOE), end(SecRowCorOE), reinterpret_cast<float*>(st.SecRowCorOE));
+    auto SecRowSigIW = node["SecRowSigIW"].as<array<float, 2>>();
+    copy(begin(SecRowSigIW), end(SecRowSigIW), reinterpret_cast<float*>(st.SecRowSigIW));
+    auto SecRowSigOW = node["SecRowSigOW"].as<array<float, 2>>();
+    copy(begin(SecRowSigOW), end(SecRowSigOW), reinterpret_cast<float*>(st.SecRowSigOW));
+    auto SecRowSigIE = node["SecRowSigIE"].as<array<float, 2>>();
+    copy(begin(SecRowSigIE), end(SecRowSigIE), reinterpret_cast<float*>(st.SecRowSigIE));
+    auto SecRowSigOE = node["SecRowSigOE"].as<array<float, 2>>();
+    copy(begin(SecRowSigOE), end(SecRowSigOE), reinterpret_cast<float*>(st.SecRowSigOE));
     st.PolyaInner = node["PolyaInner"].as<float>();
     st.PolyaOuter = node["PolyaOuter"].as<float>();
     st.T0offset = node["T0offset"].as<float>();
@@ -2145,11 +2145,11 @@ struct convert<TpcAvgPowerSupply_st> {
     node["run"] = st.run;
     node["start_time"] = st.start_time;
     node["stop_time"] = st.stop_time;
-    node["Current"] = reinterpret_cast<const std::array<float, 192>&>( st.Current );
+    node["Current"] = reinterpret_cast<const array<float, 192>&>( st.Current );
     node["Current"].SetStyle(YAML::EmitterStyle::Flow);
-    node["Charge"] = reinterpret_cast<const std::array<float, 192>&>( st.Charge );
+    node["Charge"] = reinterpret_cast<const array<float, 192>&>( st.Charge );
     node["Charge"].SetStyle(YAML::EmitterStyle::Flow);
-    node["Voltage"] = reinterpret_cast<const std::array<float, 192>&>( st.Voltage );
+    node["Voltage"] = reinterpret_cast<const array<float, 192>&>( st.Voltage );
     node["Voltage"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -2162,12 +2162,12 @@ struct convert<TpcAvgPowerSupply_st> {
     st.run = node["run"].as<int>();
     st.start_time = node["start_time"].as<int>();
     st.stop_time = node["stop_time"].as<int>();
-    auto Current = reinterpret_cast<float*>( node["Current"].as<std::array<float, 192>>().data() );
-    std::copy(Current, Current + 192, reinterpret_cast<float*>(st.Current));
-    auto Charge = reinterpret_cast<float*>( node["Charge"].as<std::array<float, 192>>().data() );
-    std::copy(Charge, Charge + 192, reinterpret_cast<float*>(st.Charge));
-    auto Voltage = reinterpret_cast<float*>( node["Voltage"].as<std::array<float, 192>>().data() );
-    std::copy(Voltage, Voltage + 192, reinterpret_cast<float*>(st.Voltage));
+    auto Current = node["Current"].as<array<float, 192>>();
+    copy(begin(Current), end(Current), reinterpret_cast<float*>(st.Current));
+    auto Charge = node["Charge"].as<array<float, 192>>();
+    copy(begin(Charge), end(Charge), reinterpret_cast<float*>(st.Charge));
+    auto Voltage = node["Voltage"].as<array<float, 192>>();
+    copy(begin(Voltage), end(Voltage), reinterpret_cast<float*>(st.Voltage));
     return true;
   }
 };
@@ -2209,9 +2209,9 @@ struct convert<tpcPadGainT0_st> {
     Node node;
     
     node["run"] = st.run;
-    node["Gain"] = reinterpret_cast<const std::array<float, 196560>&>( st.Gain );
+    node["Gain"] = reinterpret_cast<const array<float, 196560>&>( st.Gain );
     node["Gain"].SetStyle(YAML::EmitterStyle::Flow);
-    node["T0"] = reinterpret_cast<const std::array<float, 196560>&>( st.T0 );
+    node["T0"] = reinterpret_cast<const array<float, 196560>&>( st.T0 );
     node["T0"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -2222,10 +2222,10 @@ struct convert<tpcPadGainT0_st> {
     }
     
     st.run = node["run"].as<int>();
-    auto Gain = reinterpret_cast<float*>( node["Gain"].as<std::array<float, 196560>>().data() );
-    std::copy(Gain, Gain + 196560, reinterpret_cast<float*>(st.Gain));
-    auto T0 = reinterpret_cast<float*>( node["T0"].as<std::array<float, 196560>>().data() );
-    std::copy(T0, T0 + 196560, reinterpret_cast<float*>(st.T0));
+    auto Gain = node["Gain"].as<array<float, 196560>>();
+    copy(begin(Gain), end(Gain), reinterpret_cast<float*>(st.Gain));
+    auto T0 = node["T0"].as<array<float, 196560>>();
+    copy(begin(T0), end(T0), reinterpret_cast<float*>(st.T0));
     return true;
   }
 };
@@ -2308,17 +2308,17 @@ struct convert<tpcDimensions_st> {
     node["innerMVCHei"] = st.innerMVCHei;
     node["innerAirGaps"] = st.innerAirGaps;
     node["innerExtraAl"] = st.innerExtraAl;
-    node["innerZGaps"] = reinterpret_cast<const std::array<double, 5>&>( st.innerZGaps );
+    node["innerZGaps"] = reinterpret_cast<const array<double, 5>&>( st.innerZGaps );
     node["innerZGaps"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerZGapsSize"] = reinterpret_cast<const std::array<double, 5>&>( st.innerZGapsSize );
+    node["innerZGapsSize"] = reinterpret_cast<const array<double, 5>&>( st.innerZGapsSize );
     node["innerZGapsSize"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerXExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.innerXExtraAl );
+    node["innerXExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.innerXExtraAl );
     node["innerXExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerZExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.innerZExtraAl );
+    node["innerZExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.innerZExtraAl );
     node["innerZExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerDXExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.innerDXExtraAl );
+    node["innerDXExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.innerDXExtraAl );
     node["innerDXExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerDZExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.innerDZExtraAl );
+    node["innerDZExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.innerDZExtraAl );
     node["innerDZExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
     node["outerGapWidI"] = st.outerGapWidI;
     node["outerGapWidO"] = st.outerGapWidO;
@@ -2337,17 +2337,17 @@ struct convert<tpcDimensions_st> {
     node["outerMVCHei"] = st.outerMVCHei;
     node["outerAirGaps"] = st.outerAirGaps;
     node["outerExtraAl"] = st.outerExtraAl;
-    node["outerZGaps"] = reinterpret_cast<const std::array<double, 8>&>( st.outerZGaps );
+    node["outerZGaps"] = reinterpret_cast<const array<double, 8>&>( st.outerZGaps );
     node["outerZGaps"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerZGapsSize"] = reinterpret_cast<const std::array<double, 8>&>( st.outerZGapsSize );
+    node["outerZGapsSize"] = reinterpret_cast<const array<double, 8>&>( st.outerZGapsSize );
     node["outerZGapsSize"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerXExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.outerXExtraAl );
+    node["outerXExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.outerXExtraAl );
     node["outerXExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerZExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.outerZExtraAl );
+    node["outerZExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.outerZExtraAl );
     node["outerZExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerDXExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.outerDXExtraAl );
+    node["outerDXExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.outerDXExtraAl );
     node["outerDXExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerDZExtraAl"] = reinterpret_cast<const std::array<double, 5>&>( st.outerDZExtraAl );
+    node["outerDZExtraAl"] = reinterpret_cast<const array<double, 5>&>( st.outerDZExtraAl );
     node["outerDZExtraAl"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -2397,18 +2397,18 @@ struct convert<tpcDimensions_st> {
     st.innerMVCHei = node["innerMVCHei"].as<double>();
     st.innerAirGaps = node["innerAirGaps"].as<int>();
     st.innerExtraAl = node["innerExtraAl"].as<int>();
-    auto innerZGaps = reinterpret_cast<double*>( node["innerZGaps"].as<std::array<double, 5>>().data() );
-    std::copy(innerZGaps, innerZGaps + 5, reinterpret_cast<double*>(st.innerZGaps));
-    auto innerZGapsSize = reinterpret_cast<double*>( node["innerZGapsSize"].as<std::array<double, 5>>().data() );
-    std::copy(innerZGapsSize, innerZGapsSize + 5, reinterpret_cast<double*>(st.innerZGapsSize));
-    auto innerXExtraAl = reinterpret_cast<double*>( node["innerXExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(innerXExtraAl, innerXExtraAl + 5, reinterpret_cast<double*>(st.innerXExtraAl));
-    auto innerZExtraAl = reinterpret_cast<double*>( node["innerZExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(innerZExtraAl, innerZExtraAl + 5, reinterpret_cast<double*>(st.innerZExtraAl));
-    auto innerDXExtraAl = reinterpret_cast<double*>( node["innerDXExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(innerDXExtraAl, innerDXExtraAl + 5, reinterpret_cast<double*>(st.innerDXExtraAl));
-    auto innerDZExtraAl = reinterpret_cast<double*>( node["innerDZExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(innerDZExtraAl, innerDZExtraAl + 5, reinterpret_cast<double*>(st.innerDZExtraAl));
+    auto innerZGaps = node["innerZGaps"].as<array<double, 5>>();
+    copy(begin(innerZGaps), end(innerZGaps), reinterpret_cast<double*>(st.innerZGaps));
+    auto innerZGapsSize = node["innerZGapsSize"].as<array<double, 5>>();
+    copy(begin(innerZGapsSize), end(innerZGapsSize), reinterpret_cast<double*>(st.innerZGapsSize));
+    auto innerXExtraAl = node["innerXExtraAl"].as<array<double, 5>>();
+    copy(begin(innerXExtraAl), end(innerXExtraAl), reinterpret_cast<double*>(st.innerXExtraAl));
+    auto innerZExtraAl = node["innerZExtraAl"].as<array<double, 5>>();
+    copy(begin(innerZExtraAl), end(innerZExtraAl), reinterpret_cast<double*>(st.innerZExtraAl));
+    auto innerDXExtraAl = node["innerDXExtraAl"].as<array<double, 5>>();
+    copy(begin(innerDXExtraAl), end(innerDXExtraAl), reinterpret_cast<double*>(st.innerDXExtraAl));
+    auto innerDZExtraAl = node["innerDZExtraAl"].as<array<double, 5>>();
+    copy(begin(innerDZExtraAl), end(innerDZExtraAl), reinterpret_cast<double*>(st.innerDZExtraAl));
     st.outerGapWidI = node["outerGapWidI"].as<double>();
     st.outerGapWidO = node["outerGapWidO"].as<double>();
     st.outerGapHeit = node["outerGapHeit"].as<double>();
@@ -2426,18 +2426,18 @@ struct convert<tpcDimensions_st> {
     st.outerMVCHei = node["outerMVCHei"].as<double>();
     st.outerAirGaps = node["outerAirGaps"].as<int>();
     st.outerExtraAl = node["outerExtraAl"].as<int>();
-    auto outerZGaps = reinterpret_cast<double*>( node["outerZGaps"].as<std::array<double, 8>>().data() );
-    std::copy(outerZGaps, outerZGaps + 8, reinterpret_cast<double*>(st.outerZGaps));
-    auto outerZGapsSize = reinterpret_cast<double*>( node["outerZGapsSize"].as<std::array<double, 8>>().data() );
-    std::copy(outerZGapsSize, outerZGapsSize + 8, reinterpret_cast<double*>(st.outerZGapsSize));
-    auto outerXExtraAl = reinterpret_cast<double*>( node["outerXExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(outerXExtraAl, outerXExtraAl + 5, reinterpret_cast<double*>(st.outerXExtraAl));
-    auto outerZExtraAl = reinterpret_cast<double*>( node["outerZExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(outerZExtraAl, outerZExtraAl + 5, reinterpret_cast<double*>(st.outerZExtraAl));
-    auto outerDXExtraAl = reinterpret_cast<double*>( node["outerDXExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(outerDXExtraAl, outerDXExtraAl + 5, reinterpret_cast<double*>(st.outerDXExtraAl));
-    auto outerDZExtraAl = reinterpret_cast<double*>( node["outerDZExtraAl"].as<std::array<double, 5>>().data() );
-    std::copy(outerDZExtraAl, outerDZExtraAl + 5, reinterpret_cast<double*>(st.outerDZExtraAl));
+    auto outerZGaps = node["outerZGaps"].as<array<double, 8>>();
+    copy(begin(outerZGaps), end(outerZGaps), reinterpret_cast<double*>(st.outerZGaps));
+    auto outerZGapsSize = node["outerZGapsSize"].as<array<double, 8>>();
+    copy(begin(outerZGapsSize), end(outerZGapsSize), reinterpret_cast<double*>(st.outerZGapsSize));
+    auto outerXExtraAl = node["outerXExtraAl"].as<array<double, 5>>();
+    copy(begin(outerXExtraAl), end(outerXExtraAl), reinterpret_cast<double*>(st.outerXExtraAl));
+    auto outerZExtraAl = node["outerZExtraAl"].as<array<double, 5>>();
+    copy(begin(outerZExtraAl), end(outerZExtraAl), reinterpret_cast<double*>(st.outerZExtraAl));
+    auto outerDXExtraAl = node["outerDXExtraAl"].as<array<double, 5>>();
+    copy(begin(outerDXExtraAl), end(outerDXExtraAl), reinterpret_cast<double*>(st.outerDXExtraAl));
+    auto outerDZExtraAl = node["outerDZExtraAl"].as<array<double, 5>>();
+    copy(begin(outerDZExtraAl), end(outerDZExtraAl), reinterpret_cast<double*>(st.outerDZExtraAl));
     return true;
   }
 };
@@ -2531,7 +2531,7 @@ struct convert<tpcPadrowT0_st> {
   static Node encode(const tpcPadrowT0_st& st) {
     Node node;
     
-    node["T0"] = reinterpret_cast<const std::array<float, 100>&>( st.T0 );
+    node["T0"] = reinterpret_cast<const array<float, 100>&>( st.T0 );
     node["T0"].SetStyle(YAML::EmitterStyle::Flow);
     return node;
   };
@@ -2541,8 +2541,8 @@ struct convert<tpcPadrowT0_st> {
       return false;
     }
     
-    auto T0 = reinterpret_cast<float*>( node["T0"].as<std::array<float, 100>>().data() );
-    std::copy(T0, T0 + 100, reinterpret_cast<float*>(st.T0));
+    auto T0 = node["T0"].as<array<float, 100>>();
+    copy(begin(T0), end(T0), reinterpret_cast<float*>(st.T0));
     return true;
   }
 };
