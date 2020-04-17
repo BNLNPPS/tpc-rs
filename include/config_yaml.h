@@ -12,8 +12,7 @@ struct convert<tpcCalibResolutions_st> {
     
     node["SpaceCharge"] = st.SpaceCharge;
     node["GridLeak"] = st.GridLeak;
-    node["comment"] = reinterpret_cast<const std::array<char, 255>&>( st.comment );
-    node["comment"].SetStyle(YAML::EmitterStyle::Flow);
+    node["comment"] = string(st.comment);
     return node;
   };
 
@@ -24,8 +23,9 @@ struct convert<tpcCalibResolutions_st> {
     
     st.SpaceCharge = node["SpaceCharge"].as<float>();
     st.GridLeak = node["GridLeak"].as<float>();
-    auto comment = reinterpret_cast<char*>( node["comment"].as<std::array<char, 255>>().data() );
-    std::copy(comment, comment + 255, reinterpret_cast<char*>(st.comment));
+    auto comment = node["comment"].as<string>();
+    copy(begin(comment), end(comment), st.comment);
+    st.comment[comment.size()] ='\0';
     return true;
   }
 };
@@ -212,8 +212,7 @@ struct convert<tss_tsspar_st> {
   static Node encode(const tss_tsspar_st& st) {
     Node node;
     
-    node["fileout"] = reinterpret_cast<const std::array<char, 80>&>( st.fileout );
-    node["fileout"].SetStyle(YAML::EmitterStyle::Flow);
+    node["fileout"] = string(st.fileout);
     node["dynam"] = st.dynam;
     node["format"] = st.format;
     node["max_itime"] = st.max_itime;
@@ -262,8 +261,9 @@ struct convert<tss_tsspar_st> {
       return false;
     }
     
-    auto fileout = reinterpret_cast<char*>( node["fileout"].as<std::array<char, 80>>().data() );
-    std::copy(fileout, fileout + 80, reinterpret_cast<char*>(st.fileout));
+    auto fileout = node["fileout"].as<string>();
+    copy(begin(fileout), end(fileout), st.fileout);
+    st.fileout[fileout.size()] ='\0';
     st.dynam = node["dynam"].as<int>();
     st.format = node["format"].as<int>();
     st.max_itime = node["max_itime"].as<int>();
@@ -1282,8 +1282,7 @@ struct convert<iTPCSurvey_st> {
     node["dy"] = st.dy;
     node["ScaleX"] = st.ScaleX;
     node["ScaleY"] = st.ScaleY;
-    node["comment"] = reinterpret_cast<const std::array<char, 32>&>( st.comment );
-    node["comment"].SetStyle(YAML::EmitterStyle::Flow);
+    node["comment"] = string(st.comment);
     return node;
   };
 
@@ -1298,8 +1297,9 @@ struct convert<iTPCSurvey_st> {
     st.dy = node["dy"].as<float>();
     st.ScaleX = node["ScaleX"].as<float>();
     st.ScaleY = node["ScaleY"].as<float>();
-    auto comment = reinterpret_cast<char*>( node["comment"].as<std::array<char, 32>>().data() );
-    std::copy(comment, comment + 32, reinterpret_cast<char*>(st.comment));
+    auto comment = node["comment"].as<string>();
+    copy(begin(comment), end(comment), st.comment);
+    st.comment[comment.size()] ='\0';
     return true;
   }
 };
@@ -1355,8 +1355,7 @@ struct convert<tpcSCGL_st> {
     node["GLradius"] = st.GLradius;
     node["GLwidth"] = st.GLwidth;
     node["mode"] = st.mode;
-    node["comment"] = reinterpret_cast<const std::array<char, 256>&>( st.comment );
-    node["comment"].SetStyle(YAML::EmitterStyle::Flow);
+    node["comment"] = string(st.comment);
     return node;
   };
 
@@ -1380,8 +1379,9 @@ struct convert<tpcSCGL_st> {
     st.GLradius = node["GLradius"].as<float>();
     st.GLwidth = node["GLwidth"].as<float>();
     st.mode = node["mode"].as<int>();
-    auto comment = reinterpret_cast<char*>( node["comment"].as<std::array<char, 256>>().data() );
-    std::copy(comment, comment + 256, reinterpret_cast<char*>(st.comment));
+    auto comment = node["comment"].as<string>();
+    copy(begin(comment), end(comment), st.comment);
+    st.comment[comment.size()] ='\0';
     return true;
   }
 };
@@ -1398,15 +1398,13 @@ struct convert<beamInfo_st> {
     
     node["runNumber"] = st.runNumber;
     node["entryTag"] = st.entryTag;
-    node["blueSpecies"] = reinterpret_cast<const std::array<char, 32>&>( st.blueSpecies );
-    node["blueSpecies"].SetStyle(YAML::EmitterStyle::Flow);
+    node["blueSpecies"] = string(st.blueSpecies);
     node["blueMassNumber"] = st.blueMassNumber;
     node["blueEnergy"] = st.blueEnergy;
     node["blueIntensity"] = st.blueIntensity;
     node["blueLifeTime"] = st.blueLifeTime;
     node["blueBunchIntensity"] = st.blueBunchIntensity;
-    node["yellowSpecies"] = reinterpret_cast<const std::array<char, 32>&>( st.yellowSpecies );
-    node["yellowSpecies"].SetStyle(YAML::EmitterStyle::Flow);
+    node["yellowSpecies"] = string(st.yellowSpecies);
     node["yellowMassNumber"] = st.yellowMassNumber;
     node["yellowEnergy"] = st.yellowEnergy;
     node["yellowIntensity"] = st.yellowIntensity;
@@ -1424,15 +1422,17 @@ struct convert<beamInfo_st> {
     
     st.runNumber = node["runNumber"].as<unsigned int>();
     st.entryTag = node["entryTag"].as<int>();
-    auto blueSpecies = reinterpret_cast<char*>( node["blueSpecies"].as<std::array<char, 32>>().data() );
-    std::copy(blueSpecies, blueSpecies + 32, reinterpret_cast<char*>(st.blueSpecies));
+    auto blueSpecies = node["blueSpecies"].as<string>();
+    copy(begin(blueSpecies), end(blueSpecies), st.blueSpecies);
+    st.blueSpecies[blueSpecies.size()] ='\0';
     st.blueMassNumber = node["blueMassNumber"].as<unsigned int>();
     st.blueEnergy = node["blueEnergy"].as<float>();
     st.blueIntensity = node["blueIntensity"].as<float>();
     st.blueLifeTime = node["blueLifeTime"].as<float>();
     st.blueBunchIntensity = node["blueBunchIntensity"].as<float>();
-    auto yellowSpecies = reinterpret_cast<char*>( node["yellowSpecies"].as<std::array<char, 32>>().data() );
-    std::copy(yellowSpecies, yellowSpecies + 32, reinterpret_cast<char*>(st.yellowSpecies));
+    auto yellowSpecies = node["yellowSpecies"].as<string>();
+    copy(begin(yellowSpecies), end(yellowSpecies), st.yellowSpecies);
+    st.yellowSpecies[yellowSpecies.size()] ='\0';
     st.yellowMassNumber = node["yellowMassNumber"].as<unsigned int>();
     st.yellowEnergy = node["yellowEnergy"].as<float>();
     st.yellowIntensity = node["yellowIntensity"].as<float>();
@@ -1662,8 +1662,7 @@ struct convert<g2t_vertex_st> {
   static Node encode(const g2t_vertex_st& st) {
     Node node;
     
-    node["ge_volume"] = reinterpret_cast<const std::array<char, 4>&>( st.ge_volume );
-    node["ge_volume"].SetStyle(YAML::EmitterStyle::Flow);
+    node["ge_volume"] = string(st.ge_volume);
     node["daughter_p"] = st.daughter_p;
     node["eg_label"] = st.eg_label;
     node["eg_proc"] = st.eg_proc;
@@ -1691,8 +1690,9 @@ struct convert<g2t_vertex_st> {
       return false;
     }
     
-    auto ge_volume = reinterpret_cast<char*>( node["ge_volume"].as<std::array<char, 4>>().data() );
-    std::copy(ge_volume, ge_volume + 4, reinterpret_cast<char*>(st.ge_volume));
+    auto ge_volume = node["ge_volume"].as<string>();
+    copy(begin(ge_volume), end(ge_volume), st.ge_volume);
+    st.ge_volume[ge_volume.size()] ='\0';
     st.daughter_p = node["daughter_p"].as<int>();
     st.eg_label = node["eg_label"].as<int>();
     st.eg_proc = node["eg_proc"].as<int>();
@@ -2103,8 +2103,7 @@ struct convert<Survey_st> {
     node["sigmaTrX"] = st.sigmaTrX;
     node["sigmaTrY"] = st.sigmaTrY;
     node["sigmaTrZ"] = st.sigmaTrZ;
-    node["comment"] = reinterpret_cast<const std::array<char, 32>&>( st.comment );
-    node["comment"].SetStyle(YAML::EmitterStyle::Flow);
+    node["comment"] = string(st.comment);
     return node;
   };
 
@@ -2132,8 +2131,9 @@ struct convert<Survey_st> {
     st.sigmaTrX = node["sigmaTrX"].as<double>();
     st.sigmaTrY = node["sigmaTrY"].as<double>();
     st.sigmaTrZ = node["sigmaTrZ"].as<double>();
-    auto comment = reinterpret_cast<char*>( node["comment"].as<std::array<char, 32>>().data() );
-    std::copy(comment, comment + 32, reinterpret_cast<char*>(st.comment));
+    auto comment = node["comment"].as<string>();
+    copy(begin(comment), end(comment), st.comment);
+    st.comment[comment.size()] ='\0';
     return true;
   }
 };
