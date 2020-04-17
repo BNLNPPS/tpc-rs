@@ -1,7 +1,23 @@
 #ifndef tpcrs_config_yaml_h
 #define tpcrs_config_yaml_h
 
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include "yaml-cpp/yaml.h"
+
+namespace YAML {
+using std::copy;
+using std::begin;
+using std::end;
+using std::array;
+using std::string;
+using std::vector;
+}
+
 #include "tpcCalibResolutions.h"
 
 namespace YAML {
@@ -31,7 +47,6 @@ struct convert<tpcCalibResolutions_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "MDFCorrection.h"
 
 namespace YAML {
@@ -85,7 +100,6 @@ struct convert<MDFCorrection_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcGlobalPosition.h"
 
 namespace YAML {
@@ -137,7 +151,6 @@ struct convert<tpcGlobalPosition_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcSectorPosition.h"
 
 namespace YAML {
@@ -175,7 +188,6 @@ struct convert<tpcSectorPosition_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcRDOMasks.h"
 
 namespace YAML {
@@ -203,7 +215,6 @@ struct convert<tpcRDOMasks_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tss_tsspar.h"
 
 namespace YAML {
@@ -311,7 +322,6 @@ struct convert<tss_tsspar_st> {
 
 
 
-#include "yaml-cpp/yaml.h"
 #include "starMagOnl.h"
 
 namespace YAML {
@@ -339,7 +349,6 @@ struct convert<starMagOnl_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcOmegaTau.h"
 
 namespace YAML {
@@ -367,7 +376,6 @@ struct convert<tpcOmegaTau_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcFieldCageShort.h"
 
 namespace YAML {
@@ -399,7 +407,6 @@ struct convert<tpcFieldCageShort_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "g2t_tpc_hit.h"
 
 namespace YAML {
@@ -455,7 +462,6 @@ struct convert<g2t_tpc_hit_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "TpcSecRowCor.h"
 
 namespace YAML {
@@ -485,7 +491,6 @@ struct convert<TpcSecRowCor_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcRDOMap.h"
 
 namespace YAML {
@@ -519,7 +524,6 @@ struct convert<tpcRDOMap_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcAnodeHVavg.h"
 
 namespace YAML {
@@ -553,7 +557,6 @@ struct convert<tpcAnodeHVavg_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcFieldCage.h"
 
 namespace YAML {
@@ -581,7 +584,6 @@ struct convert<tpcFieldCage_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "trigDetSums.h"
 
 namespace YAML {
@@ -641,7 +643,6 @@ struct convert<trigDetSums_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcRDOT0offset.h"
 
 namespace YAML {
@@ -671,7 +672,6 @@ struct convert<tpcRDOT0offset_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcPadPlanes.h"
 
 namespace YAML {
@@ -763,7 +763,6 @@ struct convert<tpcPadPlanes_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcChargeEvent.h"
 
 namespace YAML {
@@ -801,7 +800,6 @@ struct convert<tpcChargeEvent_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcDriftVelocity.h"
 
 namespace YAML {
@@ -831,7 +829,6 @@ struct convert<tpcDriftVelocity_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "starClockOnl.h"
 
 namespace YAML {
@@ -859,7 +856,6 @@ struct convert<starClockOnl_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcWirePlanes.h"
 
 namespace YAML {
@@ -933,7 +929,6 @@ struct convert<tpcWirePlanes_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcSectorT0offset.h"
 
 namespace YAML {
@@ -959,7 +954,6 @@ struct convert<tpcSectorT0offset_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcPadResponse.h"
 
 namespace YAML {
@@ -1019,7 +1013,6 @@ struct convert<tpcPadResponse_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcHighVoltages.h"
 
 namespace YAML {
@@ -1053,7 +1046,6 @@ struct convert<tpcHighVoltages_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcCorrection.h"
 
 namespace YAML {
@@ -1093,7 +1085,6 @@ struct convert<tpcCorrection_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "g2t_track.h"
 
 namespace YAML {
@@ -1267,7 +1258,6 @@ struct convert<g2t_track_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "iTPCSurvey.h"
 
 namespace YAML {
@@ -1305,7 +1295,6 @@ struct convert<iTPCSurvey_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "TpcEffectivedX.h"
 
 namespace YAML {
@@ -1331,7 +1320,6 @@ struct convert<TpcEffectivedX_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcSCGL.h"
 
 namespace YAML {
@@ -1387,7 +1375,6 @@ struct convert<tpcSCGL_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "beamInfo.h"
 
 namespace YAML {
@@ -1445,7 +1432,6 @@ struct convert<beamInfo_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcHVPlanes.h"
 
 namespace YAML {
@@ -1485,7 +1471,6 @@ struct convert<tpcHVPlanes_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcPadConfig.h"
 
 namespace YAML {
@@ -1511,7 +1496,6 @@ struct convert<tpcPadConfig_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcAltroParams.h"
 
 namespace YAML {
@@ -1551,7 +1535,6 @@ struct convert<tpcAltroParams_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcPedestal.h"
 
 namespace YAML {
@@ -1581,7 +1564,6 @@ struct convert<tpcPedestal_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "itpcPadGainT0.h"
 
 namespace YAML {
@@ -1613,7 +1595,6 @@ struct convert<itpcPadGainT0_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcGridLeak.h"
 
 namespace YAML {
@@ -1653,7 +1634,6 @@ struct convert<tpcGridLeak_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "g2t_vertex.h"
 
 namespace YAML {
@@ -1717,7 +1697,6 @@ struct convert<g2t_vertex_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcSlowControlSim.h"
 
 namespace YAML {
@@ -1767,7 +1746,6 @@ struct convert<tpcSlowControlSim_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "TpcAvgCurrent.h"
 
 namespace YAML {
@@ -1803,7 +1781,6 @@ struct convert<TpcAvgCurrent_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "spaceChargeCor.h"
 
 namespace YAML {
@@ -1845,7 +1822,6 @@ struct convert<spaceChargeCor_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcEffectiveGeom.h"
 
 namespace YAML {
@@ -1877,7 +1853,6 @@ struct convert<tpcEffectiveGeom_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "TpcResponseSimulator.h"
 
 namespace YAML {
@@ -2005,7 +1980,6 @@ struct convert<TpcResponseSimulator_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "richvoltages.h"
 
 namespace YAML {
@@ -2035,7 +2009,6 @@ struct convert<richvoltages_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcElectronics.h"
 
 namespace YAML {
@@ -2075,7 +2048,6 @@ struct convert<tpcElectronics_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "Survey.h"
 
 namespace YAML {
@@ -2139,7 +2111,6 @@ struct convert<Survey_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "MagFactor.h"
 
 namespace YAML {
@@ -2163,9 +2134,6 @@ struct convert<MagFactor_st> {
 };
 }
 
-
-
-#include "yaml-cpp/yaml.h"
 #include "TpcAvgPowerSupply.h"
 
 namespace YAML {
@@ -2205,7 +2173,6 @@ struct convert<TpcAvgPowerSupply_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcAnodeHV.h"
 
 namespace YAML {
@@ -2233,7 +2200,6 @@ struct convert<tpcAnodeHV_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcPadGainT0.h"
 
 namespace YAML {
@@ -2265,7 +2231,6 @@ struct convert<tpcPadGainT0_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "asic_thresholds.h"
 
 namespace YAML {
@@ -2295,7 +2260,6 @@ struct convert<asic_thresholds_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcDimensions.h"
 
 namespace YAML {
@@ -2479,7 +2443,6 @@ struct convert<tpcDimensions_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcGas.h"
 
 namespace YAML {
@@ -2533,7 +2496,6 @@ struct convert<tpcGas_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "trgTimeOffset.h"
 
 namespace YAML {
@@ -2561,7 +2523,6 @@ struct convert<trgTimeOffset_st> {
 };
 }
 
-#include "yaml-cpp/yaml.h"
 #include "tpcPadrowT0.h"
 
 namespace YAML {
