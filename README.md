@@ -24,5 +24,5 @@ performance of the library. A reference file is provided with a pre-generated
 input and the corresponding output from the main `tpc-rs` conversion routine.
 
     cd tpc-rs/build
-    python ../utils/gdrive.py 1Y2qPEN-sypcbWdrzFe4K7gGNCay5jpB8 | tar -xz
+    python ../utils/gdrive.py 1XESdyqg6kXhu5gPrgS3drq3UIBu0f1l5 | tar -xz
     ../tests/run_tests.sh

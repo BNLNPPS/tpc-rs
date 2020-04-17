@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
 
 # Select names from the currently available tests
-TESTS="
+TESTS_SHORT="
+starY11_pp500
+starY14_He3Au200
+starY14_AuAu200b
+starY10_AuAu11
 starY16_dAu200
+starY12_pp500
+starY14_AuAu200a
 starY15_pp200a
 starY15_pp200b
-starY14_AuAu200a
-starY14_AuAu200b
-starY14_He3Au200
-starY12_pp500
-starY11_pp500"
-#starY12_CuAu200
-#starY10_AuAu62"
+"
+TESTS_ALL="
+starY12_UU200
+starY10_AuAu62
+starY12_CuAu200
+$TESTS_SHORT
+"
+TESTS=$TESTS_SHORT
 
 # Specific command line arguments for the tests
 #
@@ -26,9 +33,11 @@ ARGS_starY14_AuAu200a="1       "
 ARGS_starY14_AuAu200b="2 0.0001"
 ARGS_starY14_He3Au200="1       "
 ARGS_starY12_CuAu200=" 1       "
+ARGS_starY12_UU200="   1       "
 ARGS_starY12_pp500="   1       "
 ARGS_starY11_pp500="   3 0.0001"
 ARGS_starY10_AuAu62="  1 0.0001"
+ARGS_starY10_AuAu11="  1 0.0001"
 
 EXIT_CODE=0
 
