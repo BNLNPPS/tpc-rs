@@ -10,7 +10,6 @@
 #ifndef ClassStTpcDb
 #define ClassStTpcDb
 
-class StMagUtilities;
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcWirePlanesC.h"
 #include "StDetectorDbMaker/St_tpcDimensionsC.h"
@@ -55,7 +54,6 @@ class StTpcDb
                                kTotalTpcSectorRotaions = 14
                               };
  private:
-  StMagUtilities*       mExB;           //!
   TGeoTranslation*      mSwap[2];       //!
   TGeoHMatrix*          mFlip;          //!
   TGeoHMatrix*          mTpc2GlobMatrix;//!
