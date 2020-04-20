@@ -18,7 +18,6 @@
 #include "StDetectorDbMaker/StTpcSurveyC.h"
 #include "StDetectorDbMaker/St_tpcDriftVelocityC.h"
 #include "StarMagField/StarMagField.h"
-#include "StDbUtilities/StMagUtilities.h"
 #include "TEnv.h"
 #include "tpcrs/logger.h"
 #include "tpcrs/enums.h"
@@ -69,7 +68,6 @@ StTpcDb::~StTpcDb()
   SafeDelete(mHalf[1]);
   SafeDelete(mSwap[0]);
   SafeDelete(mSwap[1]);
-  SafeDelete(mExB);
   SafeDelete(mTpc2GlobMatrix);
   SafeDelete(mFlip);
   gStTpcDb = 0;
