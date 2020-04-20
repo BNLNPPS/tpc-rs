@@ -66,6 +66,11 @@ do
     declare PID_$pid=$test_id
     echo "$pid: $test_id"
     sleep 1
+
+    # Do not start new process if max # of procs are running
+    while [[ $(IFS=' '; set -f; set -- $pids; echo $#) -ge 4 ]] ; do
+        sleep 1
+    done
 done
 
 wait
