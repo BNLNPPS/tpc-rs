@@ -4,7 +4,7 @@
 #include "tpcrs/config_structs.h"
 #include <cmath>
 #include "trigDetSums.h"
-#include "StDetectorDbMaker/StDetectorDbClock.h"
+#include "StDetectorDbMaker/St_starClockOnlC.h"
 #include "StDetectorDbMaker/St_richvoltagesC.h"
 struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums_st>
 {
@@ -58,7 +58,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   {
     // 111 is a guess using the maximum seen filled bunches in RHIC so far
     // (not always the case, but we don't have access to this number)
-    double Nbc = StDetectorDbClock::instance()->CurrentFrequency() * ((double) n_bunches) / 120.;
+    double Nbc = St_starClockOnlC::instance()->CurrentFrequency() * ((double) n_bunches) / 120.;
     return -Nbc * std::log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
   }
  private:

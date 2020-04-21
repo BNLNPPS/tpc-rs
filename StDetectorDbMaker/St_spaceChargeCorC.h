@@ -3,7 +3,7 @@
 
 #include "tpcrs/config_structs.h"
 #include "spaceChargeCor.h"
-#include "StDetectorDbMaker/StDetectorDbMagnet.h"
+#include "StDetectorDbMaker/St_starMagOnlC.h"
 
 struct St_spaceChargeCorC : tpcrs::IConfigStruct {
   virtual spaceChargeCor_st* Struct(int i = 0) const = 0;
@@ -26,9 +26,9 @@ struct St_spaceChargeCorC : tpcrs::IConfigStruct {
     else if(scaleFactor < 1.25)	                  value = fullFieldA(i);
     return value;
   }
-  double getSpaceChargeCorrection(){return  getSpaceChargeCorrection(StDetectorDbMagnet::instance()->getScaleFactor());}
+  double getSpaceChargeCorrection(){return  getSpaceChargeCorrection(St_starMagOnlC::instance()->getScaleFactor());}
   double getSpaceChargeCoulombs(double scaleFactor);
-  double getSpaceChargeCoulombs(){return getSpaceChargeCoulombs(StDetectorDbMagnet::instance()->getScaleFactor());}
+  double getSpaceChargeCoulombs(){return getSpaceChargeCoulombs(St_starMagOnlC::instance()->getScaleFactor());}
   double getSpaceChargeSatRate(int i = 0) {return satRate(i);}
   float  getSpaceChargeFactor(int i = 0)  {return factor(i);}
   float  getSpaceChargeDetector(int i = 0){return detector(i);}

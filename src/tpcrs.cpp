@@ -19,7 +19,6 @@
 #include "particles/StThreeVector.hh"
 #include "particles/StPhysicalHelix.hh"
 // ROOT
-#include "TTableSorter.h"
 #include "TRandom.h"
 #include "TFile.h"
 #include "TBenchmark.h"
@@ -35,7 +34,7 @@
 #include "StDetectorDbMaker/St_tpcPadGainT0BC.h"
 #include "StDetectorDbMaker/St_TpcResponseSimulatorC.h"
 #include "StDetectorDbMaker/St_tpcAnodeHVavgC.h"
-#include "StDetectorDbMaker/StDetectorDbTpcRDOMasks.h"
+#include "StDetectorDbMaker/St_tpcRDOMasksC.h"
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcGainCorrectionC.h"
 #include "StDetectorDbMaker/St_TpcAvgCurrentC.h"
@@ -61,6 +60,12 @@ struct HitPoint_t {
   StTpcLocalSectorCoordinate coorLS;
   StTpcLocalSectorDirection dirLS, BLS;
   StTpcPadCoordinate Pad;
+};
+
+struct SignalSum_t {
+  float      Sum;
+  short      Adc;
+  short  TrackId;
 };
 
 #define __STOPPED_ELECTRONS__
@@ -90,7 +95,6 @@ static const double zmax = -zmin;
 static TProfile2D* hist[5][3] = {0};
 static const int nChecks = 21;
 static TH1*  checkList[2][21] = {0};
-static TString TpcMedium("TPCE_SENSITIVE_GAS");
 
 
 StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
@@ -589,9 +593,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-  static int max_sectors = 24;
-  // constants
-  static int iBreak = 0;
 #ifdef __DEBUG__
   if (Debug() % 10) {
     gBenchmark->Reset();
@@ -605,15 +606,12 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   // TODO: Confirm proper handling of empty input containers
   int no_tpc_hits = g2t_tpc_hit.size();
 
-  int NoTpcTracks = g2t_track.size();
-
-  std::vector<int> mNoTpcHitsAll(NoTpcTracks + 1);
-  std::vector<int> mNoTpcHitsReal(NoTpcTracks + 1);
+  std::vector<int> mNoTpcHitsAll(g2t_track.size() + 1);
+  std::vector<int> mNoTpcHitsReal(g2t_track.size() + 1);
 
   g2t_track_st* geantTrack = &g2t_track.front();
 
   const g2t_vertex_st* geantVertex = &g2t_vertex.front();
-  int NV = g2t_vertex.size();
 
   g2t_tpc_hit_st* tpc_hit_begin = const_cast<g2t_tpc_hit_st*>(&g2t_tpc_hit.front());
   g2t_tpc_hit_st* tpc_hit = tpc_hit_begin;
@@ -672,7 +670,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
       if (geantTrack) {
         id3        = geantTrack[Id - 1].start_vertex_p;
-        assert(id3 > 0 && id3 <= NV);
+        assert(id3 > 0 && id3 <= g2t_vertex.size());
         ipart      = geantTrack[Id - 1].ge_pid;
         charge     = (int) geantTrack[Id - 1].charge;
         StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
@@ -823,11 +821,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         // dE/dx correction
         double dEdxCor = dEdxCorrection(TrackSegmentHits[iSegHits]);
-#ifdef __DEBUG__
-        if (std::isnan(dEdxCor)) {
-          iBreak++;
-        }
-#endif
         if (dEdxCor <= 0.) continue;
 
         if (ClusterProfile) {
@@ -887,7 +880,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) ioH += 2;
 
-        TotalSignal  = 0;
+        double TotalSignal  = 0;
         double lgam = tpc_hitC->lgam;
 
         if (ClusterProfile) {
@@ -990,7 +983,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
 #ifdef __DEBUG__
           if (NP <= 0.0) {
-            iBreak++; continue;
+            continue;
           }
 #endif
         }
@@ -1190,7 +1183,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             double yRmax = transform.yFromRow(sector, rowMax) + St_tpcPadConfigC::instance()->PadLengthAtRow(sector, rowMax) / 2;
 
             if (yRmin > yLmax || yRmax < yLmin) {
-              iBreak++; continue;
+              continue;
             }
 
             GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, *mShaperResponses[io][sector - 1]);
@@ -1286,7 +1279,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
     // Reset no. Tpc hits in g2t_track
     geantTrack = &g2t_track.front();
 
-    for (int i = 0; i < NoTpcTracks; i++, geantTrack++) {
+    for (int i = 0; i < g2t_track.size(); i++, geantTrack++) {
       int Id = geantTrack->id;
       geantTrack->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
     }
@@ -1420,7 +1413,6 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 
 void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
 {
-  static int iBreak = 0;
   static int AdcCut = 500;
 
   SignalSum_t* SignalSum = GetSignalSum(sector);
@@ -1538,11 +1530,6 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
           }
           else {IDTs[i] = 0;}
         }
-#ifdef __DEBUG__
-        if (ADCsum > AdcCut) {
-          iBreak++;
-        }
-#endif
       }
       else {
         if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) NoTB = AsicThresholds(ADCs);
@@ -1782,14 +1769,8 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(double w)
 }
 
 
-bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geantVertex, HitPoint_t &TrackSegmentHits)
+void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geantVertex, HitPoint_t &TrackSegmentHits)
 {
-  static int iBreak = 0;
-
-  if (! tpc_hitC) {
-    iBreak++;
-  }
-
   if (tpc_hitC->de > 0) {
     mNSplittedHits = 0;
   }
@@ -1803,19 +1784,19 @@ bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   TrackSegmentHits.xyzG =
     StGlobalCoordinate(tpc_hitC->x[0], tpc_hitC->x[1], tpc_hitC->x[2]);  PrPP(Make, TrackSegmentHits.xyzG);
   coorG = TrackSegmentHits.xyzG;
-  static StTpcLocalCoordinate  coorLT;  // before do distortions
-  static StTpcLocalDirection  dirLT, BLT;
-  // calculate row
+  static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
   static StTpcCoordinateTransform transform(gStTpcDb);
+  // GlobalCoord -> LocalSectorCoord
   transform(coorG, coorS, sector, 0); PrPP(Make, coorS);
   int row = coorS.fromRow();
   transform(coorG, coorLT, sector, row); PrPP(Make, coorLT);
-  int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
+
   TrackSegmentHits.TrackId  = tpc_hitC->track_p;
   TrackSegmentHits.tpc_hitC = tpc_hitC;
 
   if (ClusterProfile) {
+    int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) ? 0 : 1);
     checkList[io][0]->Fill(TrackSegmentHits.tpc_hitC->x[2], std::abs(TrackSegmentHits.tpc_hitC->de));
     checkList[io][1]->Fill(TrackSegmentHits.tpc_hitC->x[2],           TrackSegmentHits.tpc_hitC->ds );
   }
@@ -1833,8 +1814,9 @@ bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
-  StGlobalDirection    dirG(pxyzG.unit());                                    PrPP(Make, dirG);
-  StGlobalDirection    BG(BFieldG[0], BFieldG[1], BFieldG[2]);                PrPP(Make, BG);
+  StGlobalDirection     dirG(pxyzG.unit());                                   PrPP(Make, dirG);
+  StGlobalDirection     BG(BFieldG[0], BFieldG[1], BFieldG[2]);               PrPP(Make, BG);
+  static StTpcLocalDirection  dirLT, BLT;
   transform( dirG,  dirLT, sector, row);                                      PrPP(Make, dirLT);
   transform(   BG,    BLT, sector, row);                                      PrPP(Make, BLT);
 
@@ -1865,11 +1847,8 @@ bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   }
 
   TrackSegmentHits.coorLS.position().setZ(driftLength); PrPP(Make, TrackSegmentHits.coorLS);
-  // useT0, don't useTau
   transform(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, TrackSegmentHits.Pad);
-
-  return true;
 }
 
 
@@ -1880,7 +1859,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
   for (int row = rowMin; row <= rowMax; row++) {
     if (St_tpcPadConfigC::instance()->numberOfRows(sector) == 45) { // ! iTpx
-      if ( ! StDetectorDbTpcRDOMasks::instance()->isRowOn(sector, row)) continue;
+      if ( ! St_tpcRDOMasksC::instance()->isRowOn(sector, row)) continue;
 
       if ( ! St_tpcAnodeHVavgC::instance()->livePadrow(sector, row))  continue;
     }
@@ -1976,13 +1955,6 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
         if (signal < minSignal)  continue;
 
-#ifdef __DEBUG__
-        static int iBreak = 0;
-
-        if (std::isnan(signal) || std::isnan(SignalSum[index].Sum)) {
-          iBreak++;
-        }
-#endif
         TotalSignalInCluster += signal;
         SignalSum[index].Sum += signal;
 

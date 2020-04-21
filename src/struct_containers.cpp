@@ -1,7 +1,8 @@
 #include <cassert>
 #include "TEnv.h"
 #include "TF1.h"
-#include "TString.h"
+#include "TF2.h"
+#include "TF3.h"
 #include "tpcrs/logger.h"
 
 #define MakeChairInstance(STRUCT,PATH) \
