@@ -492,36 +492,6 @@ void StMagUtilities::GetOmegaTau ()
   mCorrectionsMode = fOmegaTau->distortionCorrectionsMode(); // default is 0 (important for old calibs)
 }
 
-/// Space Charge Correction Mode
-/*!
-     The spacecharge correction is performed using one of a variety
-     of modes.  See the UndoSpaceChargeDistortion*() functions for
-     more information on the different shapes used to correct the
-     distortion.  Additionally, the magnitude of the correction may
-     be set either manually, or from the database.  This routine
-     provides a method to determine which mode is in use at any
-     given time.  Return values are as follows:
-
-      0 : no correction
-     10 : uniform, from DB
-     11 : uniform, manually set
-     20 : R2, from DB
-     21 : R2, manually set
-*/
-int StMagUtilities::GetSpaceChargeMode()
-{
-  if (mDistortionMode & kSpaceCharge) {
-    if (fSpaceCharge) return 10;
-    else return 11;
-  }
-
-  if (mDistortionMode & kSpaceChargeR2) {
-    if (fSpaceChargeR2) return 20;
-    else return 21;
-  }
-
-  return 0;
-}
 
 void StMagUtilities::GetGridLeak ( int mode )
 {
@@ -2422,6 +2392,22 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
 /// Space Charge entry function
 /*!
     Call the appropriate Space Charge function based on distortion mode
+
+     Space Charge Correction Mode
+
+     The spacecharge correction is performed using one of a variety
+     of modes.  See the UndoSpaceChargeDistortion*() functions for
+     more information on the different shapes used to correct the
+     distortion.  Additionally, the magnitude of the correction may
+     be set either manually, or from the database.  This routine
+     provides a method to determine which mode is in use at any
+     given time. Possible values are as follows:
+
+      0 : no correction
+     10 : uniform, from DB
+     11 : uniform, manually set
+     20 : R2, from DB
+     21 : R2, manually set
 */
 void StMagUtilities::UndoSpaceChargeDistortion( const float x[], float Xprime[], int Sector )
 {

@@ -1331,20 +1331,6 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
 }
 
 
-double StTpcRSMaker::ShaperFunc(double* x, double* par)
-{
-  double tau = par[0];
-  double width = par[1];
-  double p = par[2];
-  double t = x[0] * width / tau;
-  double Delta = width / tau;
-  double t1 = t - Delta / 2.;
-  double t2 = t1 + Delta;
-  double val = tpcrs::Gamma(p, t2) - tpcrs::Gamma(p, t1);
-  return val;
-}
-
-
 double StTpcRSMaker::PadResponseFunc(double* x, double* par)
 {
   double CrossTalk = 0;
@@ -1668,32 +1654,6 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   }
 
   return r;
-}
-
-
-int StTpcRSMaker::SearchT(const void* elem1, const void** elem2)
-{
-  g2t_tpc_hit_st* value1 = (g2t_tpc_hit_st*) elem1;
-  g2t_tpc_hit_st* value2 = (g2t_tpc_hit_st*) *elem2;
-
-  // sectors
-  if ((value1->volume_id % 100000) / 100 != (value2->volume_id % 100000) / 100)
-    return (value1->volume_id % 100000) / 100 - (value2->volume_id % 100000) / 100;
-
-  // track id
-  if (value1->track_p != value2->track_p)
-    return value1->track_p - value2->track_p;
-
-  // pad rows
-  //  if (value1->volume_id%100 != value2->volume_id%100) return value1->volume_id%100 - value2->volume_id%100;
-  // track length
-  return (int) 100 * (value1->length - value2->length);
-}
-
-
-int StTpcRSMaker::CompareT(const void** elem1, const void** elem2)
-{
-  return SearchT(*elem1, elem2);
 }
 
 
