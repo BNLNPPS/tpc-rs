@@ -627,7 +627,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
     }
   }
 
-  mNSplittedHits = 0;
   // sort
   // initialize original index locations
   int n_hits = g2t_tpc_hit.size();
@@ -1769,13 +1768,6 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(double w)
 
 void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geant_vertex, HitPoint_t &TrackSegmentHits)
 {
-  if (tpc_hitC->de > 0) {
-    mNSplittedHits = 0;
-  }
-  else if (! mNSplittedHits) {
-    mNSplittedHits++;
-  }
-
   int volId = tpc_hitC->volume_id % 10000;
   int sector = volId / 100;
   static StGlobalCoordinate coorG;    // ideal
