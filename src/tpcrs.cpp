@@ -98,20 +98,19 @@ static TH1*  checkList[2][21] = {0};
 
 
 StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
-  mLaserScale(1),
-  minSignal(1e-4),
-  ElectronRange(0.0055), // Electron Range(.055mm)
-  ElectronRangeEnergy(3000), // eV
-  ElectronRangePower(1.78), // sigma =  ElectronRange*(eEnery/ElectronRangeEnergy)**ElectronRangePower
-  max_sectors(24),
-  max_pads(182),
+  options_(0),
+  min_signal_(1e-4),
+  electron_range_(0.0055), // Electron Range(.055mm)
+  electron_range_energy_(3000), // eV
+  electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
+  max_sectors_(24),
+  max_pads_(182),
   mCutEle(eCutOff)
 {
-  m_Mode = 0;
-  //  SETBIT(m_Mode,kHEED);
-  SETBIT(m_Mode, kBICHSEL); // Default is Bichsel
-  SETBIT(m_Mode, kdEdxCorr);
-  SETBIT(m_Mode, kDistortion);
+  //  SETBIT(options_,kHEED);
+  SETBIT(options_, kBICHSEL); // Default is Bichsel
+  SETBIT(options_, kdEdxCorr);
+  SETBIT(options_, kDistortion);
   InitRun(0);
 }
 
@@ -125,7 +124,7 @@ StTpcRSMaker::~StTpcRSMaker()
   delete mdNdEL10;
 
   for (int io = 0; io < 2; io++) {// Inner/Outer
-    for (int sec = 0; sec < max_sectors; sec++) {
+    for (int sec = 0; sec < max_sectors_; sec++) {
       if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
 
       delete mChargeFraction[io][sec];
@@ -145,7 +144,7 @@ void StTpcRSMaker::InitRun(int runnumber)
     return;
   }
 
-  if (TESTBIT(m_Mode, kBICHSEL)) {
+  if (TESTBIT(options_, kBICHSEL)) {
     LOG_INFO << "StTpcRSMaker:: use H.Bichsel model for dE/dx simulation\n";
 
     TFile inner(tpcrs::Configurator::Locate("dNdE_Bichsel.root").c_str());
@@ -156,7 +155,7 @@ void StTpcRSMaker::InitRun(int runnumber)
     mdNdx = (TH1D*) outer.Get("dNdx"); assert(mdNdx);
     mdNdx->SetDirectory(0);
   }
-  else if (TESTBIT(m_Mode, kHEED)) {
+  else if (TESTBIT(options_, kHEED)) {
     LOG_INFO << "StTpcRSMaker:: use Heed model for dE/dx simulation\n";
 
     TFile inner(tpcrs::Configurator::Locate("dNdx_Heed.root").c_str());
@@ -170,7 +169,7 @@ void StTpcRSMaker::InitRun(int runnumber)
   else {LOG_INFO << "StTpcRSMaker:: use GEANT321 model for dE/dx simulation\n";}
 
   // Distortions
-  if (TESTBIT(m_Mode, kdEdxCorr)) {
+  if (TESTBIT(options_, kdEdxCorr)) {
     LOG_INFO << "StTpcRSMaker:: use Tpc dE/dx correction from calibaration\n";
     int Mask = -1; // 22 bits
     CLRBIT(Mask, StTpcdEdxCorrection::kAdcCorrection);
@@ -181,7 +180,7 @@ void StTpcRSMaker::InitRun(int runnumber)
     m_TpcdEdxCorrection = new StTpcdEdxCorrection(Mask, Debug());
   }
 
-  if (TESTBIT(m_Mode, kDistortion)) {
+  if (TESTBIT(options_, kDistortion)) {
     LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
   }
 
@@ -327,7 +326,7 @@ void StTpcRSMaker::InitRun(int runnumber)
       fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
     }
 
-    for (int sector = 1; sector <= max_sectors; sector++) {
+    for (int sector = 1; sector <= max_sectors_; sector++) {
       //                             w       h         s      a       l   i
       //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
       //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
@@ -467,10 +466,10 @@ void StTpcRSMaker::InitRun(int runnumber)
   }
 
   hist[4][0] = new TProfile2D("dEdxCorSecRow", "dEdx correction versus sector and row",
-                              max_sectors, 0.5, max_sectors + 0.5,
+                              max_sectors_, 0.5, max_sectors_ + 0.5,
                               St_tpcPadConfigC::instance()->numberOfRows(20), 0.5, St_tpcPadConfigC::instance()->numberOfRows(20) + 0.5, "");
   hist[4][1] = new TProfile2D("GainSecRow", "Overall gain versus sector and row",
-                              max_sectors, 0.5, max_sectors + 0.5,
+                              max_sectors_, 0.5, max_sectors_ + 0.5,
                               St_tpcPadConfigC::instance()->numberOfRows(20), 0.5, St_tpcPadConfigC::instance()->numberOfRows(20) + 0.5, "");
   const Name_t Checks[21] = {
     {"dEGeant", "dE in Geant"}, // 0
@@ -604,14 +603,13 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-  int no_tpc_hits = g2t_tpc_hit.size();
 
   std::vector<int> mNoTpcHitsAll(g2t_track.size() + 1);
   std::vector<int> mNoTpcHitsReal(g2t_track.size() + 1);
 
-  g2t_track_st* geantTrack = &g2t_track.front();
+  g2t_track_st* geant_track = &g2t_track.front();
 
-  const g2t_vertex_st* geantVertex = &g2t_vertex.front();
+  const g2t_vertex_st* geant_vertex = &g2t_vertex.front();
 
   g2t_tpc_hit_st* tpc_hit_begin = const_cast<g2t_tpc_hit_st*>(&g2t_tpc_hit.front());
   g2t_tpc_hit_st* tpc_hit = tpc_hit_begin;
@@ -632,19 +630,20 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   mNSplittedHits = 0;
   // sort
   // initialize original index locations
-  std::vector<size_t> sorted_index(no_tpc_hits);
+  int n_hits = g2t_tpc_hit.size();
+  std::vector<size_t> sorted_index(n_hits);
   std::iota(sorted_index.begin(), sorted_index.end(), 0);
   std::stable_sort(sorted_index.begin(), sorted_index.end(), [&g2t_tpc_hit](size_t i1, size_t i2) {return g2t_tpc_hit[i1] < g2t_tpc_hit[i2];}); 
 
   int sortedIndex = 0;
 
-  for (int sector = 1; sector <= max_sectors; sector++) {
+  for (int sector = 1; sector <= max_sectors_; sector++) {
     int nHitsInTheSector = 0;
     free(m_SignalSum); m_SignalSum = 0;
     ResetSignalSum(sector);
 
     // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
-    for (; sortedIndex < no_tpc_hits; sortedIndex++) {
+    for (; sortedIndex < n_hits; sortedIndex++) {
       int indx = sorted_index[sortedIndex];
 
       if (indx < 0) break;
@@ -664,15 +663,15 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
       if (tpc_hit->volume_id <= 0 || tpc_hit->volume_id > 1000000) continue;
 
-      int Id  = tpc_hit->track_p;
+      int parent_track_idx  = tpc_hit->track_p;
       int id3 = 0, ipart = 8, charge = 1;
       double mass = 0;
 
-      if (geantTrack) {
-        id3        = geantTrack[Id - 1].start_vertex_p;
+      if (geant_track) {
+        id3        = geant_track[parent_track_idx - 1].start_vertex_p;
         assert(id3 > 0 && id3 <= g2t_vertex.size());
-        ipart      = geantTrack[Id - 1].ge_pid;
-        charge     = (int) geantTrack[Id - 1].charge;
+        ipart      = geant_track[parent_track_idx - 1].ge_pid;
+        charge     = (int) geant_track[parent_track_idx - 1].charge;
         StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
 
         if (particle) {
@@ -707,21 +706,21 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       int nSegHits = 0;
       int sIndex = sortedIndex;
 
-      if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tno_tpc_hits = " << no_tpc_hits << '\n';
+      if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tn_hits = " << n_hits << '\n';
 
-      int ID = 0;
+      parent_track_idx = 0;
       int TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
 
-      for (nSegHits = 0, sIndex = sortedIndex; sIndex < no_tpc_hits && nSegHits < NoMaxTrackSegmentHits; sIndex++)
+      for (nSegHits = 0, sIndex = sortedIndex; sIndex < n_hits && nSegHits < NoMaxTrackSegmentHits; sIndex++)
       {
         indx = sorted_index[sIndex];
         g2t_tpc_hit_st* tpc_hitC = tpc_hit_begin + indx;
 
         if ((tpc_hitC->volume_id % 10000) / 100 != sector) break;
 
-        if (ID > 0 && ID != tpc_hitC->track_p) break;
+        if (parent_track_idx > 0 && parent_track_idx != tpc_hitC->track_p) break;
 
-        ID = tpc_hitC->track_p;
+        parent_track_idx = tpc_hitC->track_p;
 
         if (nSegHits == 1) { // No Loopers !
           if (TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 <= tpc_hitC->volume_id % 100) {
@@ -751,9 +750,9 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         // Account hits which can be splitted
         if (tpc_hitC->volume_id < 10000) mNoTpcHitsReal[tpc_hitC->track_p - 1]++;
 
-        TrackSegment2Propagate(tpc_hitC, &geantVertex[id3 - 1], TrackSegmentHits[nSegHits]);
+        TrackSegment2Propagate(tpc_hitC, &geant_vertex[id3 - 1], TrackSegmentHits[nSegHits]);
 
-        if (TrackSegmentHits[nSegHits].Pad.timeBucket() < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket() > max_timebins) continue;
+        if (TrackSegmentHits[nSegHits].Pad.timeBucket() < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket() > max_timebins_) continue;
 
         nSegHits++;
       }
@@ -834,7 +833,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           dEdxCor *= mGG->Eval(TrackSegmentHits[iSegHits].Pad.timeBucket());
         }
 
-        if (dEdxCor < minSignal) continue;
+        if (dEdxCor < min_signal_) continue;
 
         // Initialize propagation
         float BField[3] = {(float ) TrackSegmentHits[iSegHits].BLS.position().x(),
@@ -880,7 +879,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) ioH += 2;
 
-        double TotalSignal  = 0;
+        double total_signal_  = 0;
         double lgam = tpc_hitC->lgam;
 
         if (ClusterProfile) {
@@ -902,7 +901,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           // special case stopped electrons
           if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
             int Id         = tpc_hitC->track_p;
-            int ipart      = geantTrack[Id - 1].ge_pid;
+            int ipart      = geant_track[Id - 1].ge_pid;
 
             if (ipart == 3) {
               eKin = -tpc_hitC->de;
@@ -1029,7 +1028,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             else { // charge == 0 geantino
               // for Laserino assume dE/dx = 25 keV/cm;
               dE = 10; // eV
-              dS = dE * eV / (std::abs(mLaserScale * tpc_hitC->de / tpc_hitC->ds));
+              dS = dE * eV / (std::abs(tpc_hitC->de / tpc_hitC->ds));
             }
           }
 
@@ -1060,7 +1059,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #endif
           double xRange = 0;
 
-          if (dE > ElectronRangeEnergy) xRange = ElectronRange * std::pow((dE + dEr) / ElectronRangeEnergy, ElectronRangePower);
+          if (dE > electron_range_energy_) xRange = electron_range_ * std::pow((dE + dEr) / electron_range_energy_, electron_range_power_);
 
           int Nt = 0; // HeedCsize(dE, dEr,rs);
           float dET = dE + dEr;
@@ -1094,7 +1093,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           double rY = std::sin(phiXY);
           double sigmaT = SigmaT;
           double sigmaL = SigmaL;
-          TotalSignalInCluster = 0;
+          total_signal_in_cluster_ = 0;
           int WireIndex = 0;
 
           for (int ie = 0; ie < Nt; ie++) {
@@ -1190,13 +1189,12 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           }  // electrons in Cluster
 
           if (ClusterProfile) {
-            if (TotalSignalInCluster > 0 && checkList[io][19]) {
-              checkList[io][19]->Fill(WireIndex, std::log(TotalSignalInCluster));
-
+            if (total_signal_in_cluster_ > 0 && checkList[io][19]) {
+              checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster_));
             }
           }
 
-          TotalSignal += TotalSignalInCluster;
+          total_signal_ += total_signal_in_cluster_;
         }
         while (true);   // Clusters
 
@@ -1205,24 +1203,24 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #ifdef __DEBUG__
           if (Debug() > 12) {
             LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
-                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t TotalSignal " << TotalSignal << '\n';
+                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t total_signal_ " << total_signal_ << '\n';
           }
 #endif
           tpc_hitC->de = dESum * eV;
           tpc_hitC->ds = dSSum;
-          //	  tpc_hitC->adc = TotalSignal;
+          //	  tpc_hitC->adc = total_signal_;
           tpc_hitC->np = nP;
 
           if (ClusterProfile) {
-            if (TotalSignal > 0) {
+            if (total_signal_ > 0) {
               if (hist[ioH][0]) {
                 for (int p = 0; p < kPadMax; p++)
-                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position().z(), padsdE[p] / TotalSignal);
+                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position().z(), padsdE[p] / total_signal_);
               }
 
               if (hist[ioH][1]) {
                 for (int t = 0; t < kTimeBacketMax; t++)
-                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position().z(), tbksdE[t] / TotalSignal);
+                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position().z(), tbksdE[t] / total_signal_);
               }
             }
 
@@ -1277,11 +1275,11 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   }
 
     // Reset no. Tpc hits in g2t_track
-    geantTrack = &g2t_track.front();
+    geant_track = &g2t_track.front();
 
-    for (int i = 0; i < g2t_track.size(); i++, geantTrack++) {
-      int Id = geantTrack->id;
-      geantTrack->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
+    for (int i = 0; i < g2t_track.size(); i++, geant_track++) {
+      int Id = geant_track->id;
+      geant_track->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
     }
 }
 
@@ -1369,17 +1367,17 @@ double StTpcRSMaker::Gatti(double* x, double* par)
 
 void  StTpcRSMaker::Print(Option_t* /* option */) const
 {
-  PrPP(Print, max_sectors);
+  PrPP(Print, max_sectors_);
   PrPP(Print, St_tpcPadConfigC::instance()->numberOfRows(1));
   PrPP(Print, St_tpcPadConfigC::instance()->numberOfRows(20));
   PrPP(Print, St_tpcPadConfigC::instance()->numberOfInnerRows(20));
-  PrPP(Print, max_pads);
+  PrPP(Print, max_pads_);
   PrPP(Print, St_TpcResponseSimulatorC::instance()->W());// = 26.2);//*eV
   PrPP(Print, St_TpcResponseSimulatorC::instance()->Cluster());
   PrPP(Print, St_TpcResponseSimulatorC::instance()->longitudinalDiffusion());
   PrPP(Print, St_TpcResponseSimulatorC::instance()->transverseDiffusion());
   //  PrPP(Print, Gain);
-  PrPP(Print, max_timebins);
+  PrPP(Print, max_timebins_);
   PrPP(Print, numberOfInnerSectorAnodeWires);
   PrPP(Print, firstInnerSectorAnodeWire);
   PrPP(Print, lastInnerSectorAnodeWire);
@@ -1442,15 +1440,15 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
       if (gain <= 0.0) continue;
 
       ped    = St_TpcResponseSimulatorC::instance()->AveragePedestal();
-      static  short ADCs[max_timebins];
-      static  short IDTs[max_timebins];
+      static  short ADCs[max_timebins_];
+      static  short IDTs[max_timebins_];
       memset(ADCs, 0, sizeof(ADCs));
       memset(IDTs, 0, sizeof(IDTs));
       int NoTB = 0;
-      index = max_timebins * ((row - 1) * max_pads + pad - 1);
+      index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
 
-      for (bin = 0; bin < max_timebins; bin++, index++) {
-        //	int index= max_timebins*((row-1)*max_pads+pad-1)+bin;
+      for (bin = 0; bin < max_timebins_; bin++, index++) {
+        //	int index= max_timebins_*((row-1)*max_pads_+pad-1)+bin;
         // Digits : gain + ped
         //  GG TF1F *ff = new TF1F("ff","TMath::Sqrt(4.76658e+01*TMath::Exp(-2.87987e-01*(x-1.46222e+01)))",21,56)
         double pRMS = pedRMS;
@@ -1484,7 +1482,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
       if (! NoTB) continue;
 
       if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0 && ! mAltro) {
-        mAltro = new Altro(max_timebins, ADCs);
+        mAltro = new Altro(max_timebins_, ADCs);
 
         if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) { // Tonko 06/25/08
           //      ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
@@ -1513,7 +1511,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
         NoTB = 0;
         int ADCsum = 0;
 
-        for (int i = 0; i < max_timebins; i++) {
+        for (int i = 0; i < max_timebins_; i++) {
           if (ADCs[i] && ! mAltro->ADCkeep[i]) {ADCs[i] = 0;}
 
           if (ADCs[i]) {
@@ -1536,7 +1534,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
       }
 
       if (NoTB > 0) {
-        digi_data.Add(sector, row, pad, ADCs, IDTs, max_timebins);
+        digi_data.Add(sector, row, pad, ADCs, IDTs, max_timebins_);
       }
     } // pads
 
@@ -1556,7 +1554,7 @@ int StTpcRSMaker::AsicThresholds(short* ADCs)
   int nSeqHi = 0;
   int noTbleft = 0;
 
-  for (unsigned int tb = 0; tb < max_timebins; tb++) {
+  for (unsigned int tb = 0; tb < max_timebins_; tb++) {
     if (ADCs[tb] <= St_asic_thresholdsC::instance()->thresh_lo()) {
       if (! t1) ADCs[tb] = 0;
       else {
@@ -1731,7 +1729,7 @@ double StTpcRSMaker::shapeEI3_I(double* x, double* par)   //Integral of shape ov
 SignalSum_t*  StTpcRSMaker::GetSignalSum(int sector)
 {
   if (! m_SignalSum)
-    m_SignalSum = (SignalSum_t*) malloc(St_tpcPadConfigC::instance()->numberOfRows(sector) * max_pads * max_timebins * sizeof(SignalSum_t));
+    m_SignalSum = (SignalSum_t*) malloc(St_tpcPadConfigC::instance()->numberOfRows(sector) * max_pads_ * max_timebins_ * sizeof(SignalSum_t));
 
   return m_SignalSum;
 }
@@ -1740,7 +1738,7 @@ SignalSum_t*  StTpcRSMaker::GetSignalSum(int sector)
 SignalSum_t*  StTpcRSMaker::ResetSignalSum(int sector)
 {
   GetSignalSum(sector);
-  memset (m_SignalSum, 0, St_tpcPadConfigC::instance()->numberOfRows(sector)*max_pads * max_timebins * sizeof(SignalSum_t));
+  memset (m_SignalSum, 0, St_tpcPadConfigC::instance()->numberOfRows(sector)*max_pads_ * max_timebins_ * sizeof(SignalSum_t));
   return m_SignalSum;
 }
 
@@ -1769,7 +1767,7 @@ TF1* StTpcRSMaker::StTpcRSMaker::fEc(double w)
 }
 
 
-void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geantVertex, HitPoint_t &TrackSegmentHits)
+void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geant_vertex, HitPoint_t &TrackSegmentHits)
 {
   if (tpc_hitC->de > 0) {
     mNSplittedHits = 0;
@@ -1821,7 +1819,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   transform(   BG,    BLT, sector, row);                                      PrPP(Make, BLT);
 
   // Distortions
-  if (TESTBIT(m_Mode, kDistortion) && StMagUtilities::Instance()) {
+  if (TESTBIT(options_, kDistortion) && StMagUtilities::Instance()) {
     float pos[3] = {(float ) coorLT.position().x(), (float ) coorLT.position().y(), (float ) coorLT.position().z()};
     float posMoved[3];
     StMagUtilities::Instance()->DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
@@ -1835,8 +1833,8 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   transform( dirLT, TrackSegmentHits.dirLS);  PrPP(Make, TrackSegmentHits.dirLS);
   transform(   BLT, TrackSegmentHits.BLS);    PrPP(Make, TrackSegmentHits.BLS);
 
-  double tof = geantVertex->ge_tof;
-  //	if (! TESTBIT(m_Mode, kNoToflight))
+  double tof = geant_vertex->ge_tof;
+  //	if (! TESTBIT(options_, kNoToflight))
   tof += tpc_hitC->tof;
   double driftLength = TrackSegmentHits.coorLS.position().z() + tof * gStTpcDb->DriftVelocity(sector); // ,row);
 
@@ -1871,7 +1869,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
     float bin = Pad.timeBucket();//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 
-    if (binT < 0 || binT >= max_timebins) continue;
+    if (binT < 0 || binT >= max_timebins_) continue;
 
     double dT = bin -  binT + St_TpcResponseSimulatorC::instance()->T0offset();
     dT += (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ?
@@ -1887,7 +1885,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       checkList[io][10]->Fill(TrackSegmentHits.xyzG.position().z(), localYDirectionCoupling);
     }
 
-    if (localYDirectionCoupling < minSignal) continue;
+    if (localYDirectionCoupling < min_signal_) continue;
 
     float padX = Pad.pad();
     int CentralPad = tpcrs::irint(padX);
@@ -1912,8 +1910,8 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       double gain = QAv * mGainLocal;
       double dt = dT;
 
-      //		if (St_tpcPadConfigC::instance()->numberOfRows(sector) ==45 && ! TESTBIT(m_Mode, kGAINOAtALL)) {
-      if (! TESTBIT(m_Mode, kGAINOAtALL)) {
+      //		if (St_tpcPadConfigC::instance()->numberOfRows(sector) ==45 && ! TESTBIT(options_, kGAINOAtALL)) {
+      if (! TESTBIT(options_, kGAINOAtALL)) {
         gain   *= St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
 
         if (gain <= 0.0) continue;
@@ -1929,7 +1927,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       //		double localXDirectionCoupling = localXDirectionCouplings[pad-padMin];
       double localXDirectionCoupling = gain * XDirectionCouplings[pad - padMin];
 
-      if (localXDirectionCoupling < minSignal) continue;
+      if (localXDirectionCoupling < min_signal_) continue;
 
       if (ClusterProfile) {
         checkList[io][13]->Fill(TrackSegmentHits.xyzG.position().z(), localXDirectionCoupling);
@@ -1941,11 +1939,11 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
         checkList[io][14]->Fill(TrackSegmentHits.xyzG.position().z(), XYcoupling);
       }
 
-      if (XYcoupling < minSignal)  continue;
+      if (XYcoupling < min_signal_)  continue;
 
       int bin_low  = std::max(0, binT + tpcrs::irint(dt + shaper.GetXmin() - 0.5));
-      int bin_high = std::min(max_timebins - 1, binT + tpcrs::irint(dt + shaper.GetXmax() + 0.5));
-      int index = max_timebins * ((row - 1) * max_pads + pad - 1) + bin_low;
+      int bin_high = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper.GetXmax() + 0.5));
+      int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1) + bin_low;
       int Ntbks = std::min(bin_high - bin_low + 1, static_cast<int>(kTimeBacketMax));
       double tt = -dt + (bin_low - binT);
       shaper.GetSaveL(Ntbks, tt, TimeCouplings);
@@ -1953,9 +1951,9 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       for (int itbin = bin_low; itbin <= bin_high; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - bin_low];
 
-        if (signal < minSignal)  continue;
+        if (signal < min_signal_)  continue;
 
-        TotalSignalInCluster += signal;
+        total_signal_in_cluster_ += signal;
         SignalSum[index].Sum += signal;
 
         if (ClusterProfile) {

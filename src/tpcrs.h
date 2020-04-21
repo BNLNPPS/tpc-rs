@@ -64,7 +64,7 @@ class StTpcRSMaker
 
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
-  int    m_Mode;
+  int    options_;
   SignalSum_t*     m_SignalSum;       //!
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
@@ -97,19 +97,18 @@ class StTpcRSMaker
   double QAv;                       //!
   int pad0;                         //!
   int tbk0;                         //!
-  double TotalSignalInCluster;      //!
+  double total_signal_in_cluster_;      //!
   double padsdE[kPadMax];           //!
   double tbksdE[kTimeBacketMax];    //!
   double rowsdEH[kRowMax];          //!
   double rowsdE[kRowMax];           //!
-  const double mLaserScale;         //!
-  const double minSignal;           //!
-  const double ElectronRange;       //!
-  const double ElectronRangeEnergy; //!
-  const double ElectronRangePower;  //!
-  const int max_sectors;            //!
-  const int max_pads;               //!
-  static const int max_timebins = 512;
+  const double min_signal_;           //!
+  const double electron_range_;       //!
+  const double electron_range_energy_; //!
+  const double electron_range_power_;  //!
+  const int max_sectors_;            //!
+  const int max_pads_;               //!
+  static const int max_timebins_ = 512;
   double   mCutEle;                 //! cut for delta electrons
 };
 #endif
