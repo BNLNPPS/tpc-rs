@@ -19,7 +19,6 @@
 #include "tpcrs/enums.h"
 #include "tpc_db.h"
 
-StTpcDb* gStTpcDb = 0;
 bool StTpcDb::mOldScheme = true;
 
 
@@ -27,7 +26,6 @@ bool StTpcDb::mOldScheme = true;
 
 StTpcDb::StTpcDb()
 {
-  assert(gStTpcDb == 0);
   mTpc2GlobMatrix = new TGeoHMatrix("Default Tpc2Glob");
 
   for (int i = 1; i <= 24; i++) {
@@ -48,7 +46,6 @@ StTpcDb::StTpcDb()
   mSwap[1] = new TGeoTranslation("Signed Drift distance to z for West", 0, 0,  mzGG);
   mHalf[0] = new TGeoHMatrix("Default for east part of TPC");
   mHalf[1] = new TGeoHMatrix("Default for west part of TPC");
-  gStTpcDb = this;
 }
 
 
@@ -67,7 +64,6 @@ StTpcDb::~StTpcDb()
   SafeDelete(mSwap[1]);
   SafeDelete(mTpc2GlobMatrix);
   SafeDelete(mFlip);
-  gStTpcDb = 0;
 }
 
 float StTpcDb::DriftVelocity(int sector)

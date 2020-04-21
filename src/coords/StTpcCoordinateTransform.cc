@@ -52,7 +52,7 @@ void StTpcCoordinateTransform::operator()(const StTpcLocalSectorCoordinate &a, S
   if (! useT0 && useTau) // for cluster
     t0offset -= 3.0 * St_tss_tssparC::instance()->tau();   // correct for convolution lagtime
 
-  Double_t t0zoffset = t0offset * StTpcDb::instance()->DriftVelocity(sector) * 1e-6;
+  Double_t t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(sector) * 1e-6;
   Double_t tb = tBFromZ(a.position().z() + zoffset - t0zoffset, sector, row, probablePad);
   b = StTpcPadCoordinate(sector, row, probablePad, tb);
 }
@@ -70,7 +70,7 @@ void StTpcCoordinateTransform::operator()(const StTpcPadCoordinate &a,  StTpcLoc
   if (! useT0 && useTau) // for cluster
     t0offset -= 3.0 * St_tss_tssparC::instance()->tau();   // correct for convolution lagtime
 
-  Double_t t0zoffset = t0offset * StTpcDb::instance()->DriftVelocity(a.sector()) * 1e-6;
+  Double_t t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(a.sector()) * 1e-6;
   //t0 offset -- DH  27-Mar-00
   Double_t z = zFromTB(a.timeBucket(), a.sector(), a.row(), a.pad()) - zoffset + t0zoffset;
   tmp.setZ(z);
@@ -167,8 +167,8 @@ Double_t StTpcCoordinateTransform::zFromTB(Double_t tb, Int_t sector, Int_t row,
 {
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
 
-  Double_t trigT0 = StTpcDb::instance()->triggerTimeOffset() * 1e6;       // units are s
-  Double_t elecT0 = StTpcDb::instance()->Electronics()->tZero();          // units are us
+  Double_t trigT0 = St_trgTimeOffsetC::instance()->triggerTimeOffset() * 1e6;       // units are s
+  Double_t elecT0 = St_tpcElectronicsC::instance()->tZero();          // units are us
   Double_t sectT0 = St_tpcPadrowT0C::instance()->T0(sector, row); // units are us
   Double_t t0 = trigT0 + elecT0 + sectT0;
   Int_t l = sector;
@@ -182,7 +182,7 @@ Double_t StTpcCoordinateTransform::zFromTB(Double_t tb, Int_t sector, Int_t row,
   }
 
   Double_t time = t0 + tbx * mTimeBinWidth;
-  Double_t z = StTpcDb::instance()->DriftVelocity(sector) * 1e-6 * time;
+  Double_t z = StTpcDb::instance().DriftVelocity(sector) * 1e-6 * time;
   return z;
 }
 
@@ -191,11 +191,11 @@ Double_t StTpcCoordinateTransform::tBFromZ(Double_t z, Int_t sector, Int_t row, 
 {
   if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
 
-  Double_t trigT0 = StTpcDb::instance()->triggerTimeOffset() * 1e6;       // units are s
-  Double_t elecT0 = StTpcDb::instance()->Electronics()->tZero();          // units are us
+  Double_t trigT0 = St_trgTimeOffsetC::instance()->triggerTimeOffset() * 1e6;       // units are s
+  Double_t elecT0 = St_tpcElectronicsC::instance()->tZero();          // units are us
   Double_t sectT0 = St_tpcPadrowT0C::instance()->T0(sector, row); // units are us
   Double_t t0 = trigT0 + elecT0 + sectT0;
-  Double_t time = z / (StTpcDb::instance()->DriftVelocity(sector) * 1e-6);
+  Double_t time = z / (StTpcDb::instance().DriftVelocity(sector) * 1e-6);
   Int_t l = sector;
 
   if ( St_tpcPadConfigC::instance()->IsRowInner(sector, row)) l += 24;
@@ -281,8 +281,8 @@ void  StTpcCoordinateTransform::operator()(const        StTpcLocalSectorCoordina
 
   if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row    = rowFromLocal(a);
 
-  StTpcDb::instance()->Pad2Tpc(a.sector(), row).LocalToMasterVect(a.position().xyz(), xGG.xyz());
-  const Double_t* trans = StTpcDb::instance()->Pad2Tpc(sector, row).GetTranslation(); // 4
+  StTpcDb::instance().Pad2Tpc(a.sector(), row).LocalToMasterVect(a.position().xyz(), xGG.xyz());
+  const Double_t* trans = StTpcDb::instance().Pad2Tpc(sector, row).GetTranslation(); // 4
   TGeoTranslation GG2TPC(trans[0], trans[1], trans[2]);
   GG2TPC.LocalToMaster(xGG.xyz(), b.position().xyz());
   b.setSector(a.sector()); b.setRow(row);
@@ -296,13 +296,13 @@ void  StTpcCoordinateTransform::operator()(const              StTpcLocalCoordina
 
   if ( ! (row >= 1 && row <= St_tpcPadConfigC::instance()->numberOfRows(sector))) {
     StThreeVector<double> xyzS;
-    StTpcDb::instance()->SupS2Tpc(sector).MasterToLocalVect(a.position().xyz(), xyzS.xyz());
+    StTpcDb::instance().SupS2Tpc(sector).MasterToLocalVect(a.position().xyz(), xyzS.xyz());
     row = rowFromLocalY(xyzS[0], sector);
   }
 
-  const Double_t* trans = StTpcDb::instance()->Pad2Tpc(a.sector(), row).GetTranslation(); // 4
+  const Double_t* trans = StTpcDb::instance().Pad2Tpc(a.sector(), row).GetTranslation(); // 4
   TGeoTranslation GG2TPC(trans[0], trans[1], trans[2]);
   StThreeVector<double> xGG;
   GG2TPC.MasterToLocal(a.position().xyz(), xGG.xyz());
-  StTpcDb::instance()->Pad2Tpc(a.sector(), row).MasterToLocalVect(xGG.xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(row);
+  StTpcDb::instance().Pad2Tpc(a.sector(), row).MasterToLocalVect(xGG.xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(row);
 }

@@ -18,8 +18,6 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :
   m_Mask(option), m_tpcGas(0),
   m_Debug(debug)
 {
-  assert(gStTpcDb);
-
   if (!m_Mask) m_Mask = -1;
 
   static const char* FXTtables[] = {"TpcdXCorrectionB",
