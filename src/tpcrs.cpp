@@ -277,20 +277,33 @@ void StTpcRSMaker::InitRun(int runnumber)
 
     mPolya[io] = new TF1F(io == 0 ? "PolyaInner;x = G/G_0;signal" : "PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3);
     mPolya[io]->SetParameters(gamma, 0., 1. / gamma);
-    double params3[7] = {t0IO[io],
-                           St_TpcResponseSimulatorC::instance()->tauF(),
-                           St_TpcResponseSimulatorC::instance()->tauP(),
-                           St_TpcResponseSimulatorC::instance()->tauIntegration(),
-                           TimeBinWidth,     0, (double ) io
-                          };
-    double params0[5] = {t0IO[io], St_TpcResponseSimulatorC::instance()->tauX()[io], TimeBinWidth,     0, (double ) io};
+
+    FuncParams_t params3{
+      {"t0",    t0IO[io]},
+      {"tauF",  St_TpcResponseSimulatorC::instance()->tauF()},
+      {"tauP",  St_TpcResponseSimulatorC::instance()->tauP()},
+      {"tauI",  St_TpcResponseSimulatorC::instance()->tauIntegration()},
+      {"width", TimeBinWidth},
+      {"tauC",  0},
+      {"io",    io}
+    };
+
+    FuncParams_t params0{
+      {"t0",    t0IO[io]},
+      {"tauI",  St_TpcResponseSimulatorC::instance()->tauX()[io]},
+      {"width", TimeBinWidth},
+      {"tauC",  0},
+      {"io",    io}
+    };
 
     if (! fgTimeShape3[io]) {// old electronics, intergation + shaper alltogether
       fgTimeShape3[io] = new TF1F(Form("TimeShape3%s", Names[io]),
                                   shapeEI3, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 7);
-      fgTimeShape3[io]->SetParNames("t0", "tauF", "tauP", "tauI", "width", "tauC", "io");
-      fgTimeShape3[io]->SetParameters(params3);
-      params3[5] = fgTimeShape3[io]->Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
+      for (int i = 0; i != params3.size(); ++i) {
+        fgTimeShape3[io]->SetParName(i, params3[i].first.c_str());
+        fgTimeShape3[io]->SetParameter(i, params3[i].second);
+      }
+      params3[5].second = fgTimeShape3[io]->Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
       fgTimeShape3[io]->SetTitle(fgTimeShape3[io]->GetName());
       fgTimeShape3[io]->GetXaxis()->SetTitle("time (secs)");
       fgTimeShape3[io]->GetYaxis()->SetTitle("signal");
@@ -299,10 +312,12 @@ void StTpcRSMaker::InitRun(int runnumber)
     if (! fgTimeShape0[io]) {// new electronics only integration
       fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]),
                                   shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 5);
-      fgTimeShape0[io]->SetParNames("t0", "tauI", "width", "tauC", "io");
-      params0[3] = St_TpcResponseSimulatorC::instance()->tauC()[io];
-      fgTimeShape0[io]->SetParameters(params0);
-      params0[3] = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
+      params0[3].second = St_TpcResponseSimulatorC::instance()->tauC()[io];
+      for (int i = 0; i != params0.size(); ++i) {
+        fgTimeShape0[io]->SetParName(i, params0[i].first.c_str());
+        fgTimeShape0[io]->SetParameter(i, params0[i].second);
+      }
+      params0[3].second = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
       fgTimeShape0[io]->SetTitle(fgTimeShape0[io]->GetName());
       fgTimeShape0[io]->GetXaxis()->SetTitle("time (secs)");
       fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
@@ -393,67 +408,9 @@ void StTpcRSMaker::InitRun(int runnumber)
       // Trs uses x**1.5/exp(x)
       // tss used x**0.5/exp(1.5*x)
       if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) { // old TPC
-        // check if the function has been created
-        for (int sec = 1; sec < sector; sec++) {
-          if (St_tpcAltroParamsC::instance()->N(sec - 1) < 0 && mShaperResponses[io][sec - 1]) {
-            mShaperResponses[io][sector - 1] = mShaperResponses[io][sec - 1];
-            break;
-          }
-        }
-
-        if (! mShaperResponses[io][sector - 1]) {
-          mShaperResponses[io][sector - 1] = new TF1F(Form("ShaperFunc_%s_S%02i", Names[io], sector),
-              StTpcRSMaker::shapeEI3_I, timeBinMin, timeBinMax, 7);
-          mShaperResponses[io][sector - 1]->SetParameters(params3);
-          mShaperResponses[io][sector - 1]->SetParNames("t0", "tauF", "tauP", "tauI", "width", "norm", "io");
-          mShaperResponses[io][sector - 1]->SetTitle(mShaperResponses[io][sector - 1]->GetName());
-          mShaperResponses[io][sector - 1]->GetXaxis()->SetTitle("time (buckets)");
-          mShaperResponses[io][sector - 1]->GetYaxis()->SetTitle("signal");
-          // Cut tails
-          double t = timeBinMax;
-          double ymax = mShaperResponses[io][sector - 1]->Eval(0.5);
-
-          for (; t > 5; t -= 1) {
-            double r = mShaperResponses[io][sector - 1]->Eval(t) / ymax;
-
-            if (r > 1e-2) break;
-          }
-
-          mShaperResponses[io][sector - 1]->SetRange(timeBinMin, t);
-          mShaperResponses[io][sector - 1]->Save(timeBinMin, t, 0, 0, 0, 0);
-        }
-
-        continue;
-      }
-
-      //Altro
-      for (int sec = 1; sec < sector; sec++) {
-        if (St_tpcAltroParamsC::instance()->N(sec - 1) >= 0 && mShaperResponses[io][sec - 1] ) {
-          mShaperResponses[io][sector - 1] = mShaperResponses[io][sec - 1];
-          break;
-        }
-      }
-
-      if (! mShaperResponses[io][sector - 1]) {
-        mShaperResponses[io][sector - 1] = new TF1F(Form("ShaperFunc_%s_S%02i", Names[io], sector),
-            StTpcRSMaker::shapeEI_I, timeBinMin, timeBinMax, 5);
-        mShaperResponses[io][sector - 1]->SetParameters(params0);
-        mShaperResponses[io][sector - 1]->SetParNames("t0", "tauI", "width", "norm", "io");
-        mShaperResponses[io][sector - 1]->SetTitle(mShaperResponses[io][sector - 1]->GetName());
-        mShaperResponses[io][sector - 1]->GetXaxis()->SetTitle("time (buckets)");
-        mShaperResponses[io][sector - 1]->GetYaxis()->SetTitle("signal");
-        // Cut tails
-        double t = timeBinMax;
-        double ymax = mShaperResponses[io][sector - 1]->Eval(0.5);
-
-        for (; t > 5; t -= 1) {
-          double r = mShaperResponses[io][sector - 1]->Eval(t) / ymax;
-
-          if (r > 1e-2) break;
-        }
-
-        mShaperResponses[io][sector - 1]->SetRange(timeBinMin, t);
-        mShaperResponses[io][sector - 1]->Save(timeBinMin, t, 0, 0, 0, 0);
+        InitShaperFuncs(io, sector, mShaperResponses, StTpcRSMaker::shapeEI3_I, params3, timeBinMin, timeBinMax);
+      } else {//Altro
+        InitShaperFuncs(io, sector, mShaperResponses, StTpcRSMaker::shapeEI_I,  params0, timeBinMin, timeBinMax);
       }
     }
   }
@@ -577,6 +534,34 @@ void StTpcRSMaker::InitRun(int runnumber)
 
   delete [] pbins;
   delete [] pbinsL;
+}
+
+
+void StTpcRSMaker::InitShaperFuncs(int io, int sector, TF1F* funcs[2][24],
+  double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax)
+{
+  const char io_id[2] = {'I', 'O'};
+  funcs[io][sector - 1] = new TF1F(Form("ShaperFunc_%c_S%02i", io_id[io], sector), shape, timeBinMin, timeBinMax, params.size());
+  funcs[io][sector - 1]->SetTitle(funcs[io][sector - 1]->GetName());
+  funcs[io][sector - 1]->GetXaxis()->SetTitle("time (buckets)");
+  funcs[io][sector - 1]->GetYaxis()->SetTitle("signal");
+
+  for (int i = 0; i != params.size(); ++i) {
+    funcs[io][sector - 1]->SetParName(i, params[i].first.c_str());
+    funcs[io][sector - 1]->SetParameter(i, params[i].second);
+  }
+
+  // Cut tails
+  double t = timeBinMax;
+  double ymax = funcs[io][sector - 1]->Eval(0.5);
+
+  for (; t > 5; t -= 1) {
+    double r = funcs[io][sector - 1]->Eval(t) / ymax;
+    if (r > 1e-2) break;
+  }
+
+  funcs[io][sector - 1]->SetRange(timeBinMin, t);
+  funcs[io][sector - 1]->Save(timeBinMin, t, 0, 0, 0, 0);
 }
 
 
