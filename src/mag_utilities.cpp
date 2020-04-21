@@ -105,7 +105,6 @@ To do:  <br>
 #include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
-#include "TH2.h"
 #include "TRandom.h"
 #include "StDetectorDbMaker/St_tpcHVPlanesC.h"
 #include "StDetectorDbMaker/St_tpcAnodeHVavgC.h"

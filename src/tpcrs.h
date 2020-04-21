@@ -13,19 +13,7 @@ class Altro;
 class StTpcdEdxCorrection;
 class StTpcDigitalSector;
 class HitPoint_t;
-class g2t_tpc_hit_st;
-class g2t_vertex_st;
-class StTpcCoordinateTransform;
-
-class St_g2t_tpc_hit;
-class St_g2t_track;
-class St_g2t_vertex;
-
-struct SignalSum_t {
-  float      Sum;
-  short      Adc;
-  short  TrackId;
-};
+class SignalSum_t;
 
 class StTpcRSMaker
 {
@@ -64,7 +52,7 @@ class StTpcRSMaker
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
-  bool TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
+  void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
   void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
 
@@ -107,7 +95,6 @@ class StTpcRSMaker
   double xOnWire, yOnWire, zOnWire; //!
   double mGainLocal;                //!
   double QAv;                       //!
-  double TotalSignal;               //!
   int pad0;                         //!
   int tbk0;                         //!
   double TotalSignalInCluster;      //!
@@ -115,7 +102,7 @@ class StTpcRSMaker
   double tbksdE[kTimeBacketMax];    //!
   double rowsdEH[kRowMax];          //!
   double rowsdE[kRowMax];           //!
-  double             mLaserScale;   //!
+  const double mLaserScale;         //!
   const double minSignal;           //!
   const double ElectronRange;       //!
   const double ElectronRangeEnergy; //!

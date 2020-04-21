@@ -1,7 +1,6 @@
 #ifndef STAR_StTpcdEdxCorrection
 #define STAR_StTpcdEdxCorrection
 
-#include "TObject.h"
 #include "TF1.h"
 #include "StDetectorDbMaker/St_tpcCorrectionC.h"
 #include "StDetectorDbMaker/St_MDFCorrectionC.h"
@@ -30,7 +29,7 @@ struct dEdxCorrection_t {
 
 
 class dEdxY2_t;
-class StTpcdEdxCorrection : public TObject
+class StTpcdEdxCorrection
 {
  public:
   enum ESector : int {kTpcOuter = 0, kTpcInner = 1, kiTpc = 2};
