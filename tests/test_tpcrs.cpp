@@ -38,8 +38,8 @@ int main(int argc, char **argv)
 
   MagFactor_st mf = tpcrs::Configurator::YAML("RunLog/MagFactor").as<MagFactor_st>();
   StarMagField starMagField(StarMagField::kMapped, mf.ScaleFactor);
-  StTpcDb::instance()->SetDriftVelocity();
-  StTpcDb::instance()->SetTpcRotations();
+  StTpcDb::instance().SetDriftVelocity();
+  StTpcDb::instance().SetTpcRotations();
 
   StTpcRSMaker tpcrs(eCutOff);
 

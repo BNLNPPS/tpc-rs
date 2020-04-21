@@ -249,10 +249,10 @@ void StMagUtilities::GetMagFactor ()
 }
 void StMagUtilities::GetTPCParams ()
 {
-  St_tpcWirePlanesC*    wires = StTpcDb::instance()->WirePlaneGeometry();
+  St_tpcWirePlanesC*    wires = StTpcDb::instance().WirePlaneGeometry();
   St_tpcPadConfigC*      pads = St_tpcPadConfigC::instance();
-  St_tpcFieldCageC*     cages = StTpcDb::instance()->FieldCage();
-  St_tpcDimensionsC*     dims = StTpcDb::instance()->Dimensions();
+  St_tpcFieldCageC*     cages = StTpcDb::instance().FieldCage();
+  St_tpcDimensionsC*     dims = StTpcDb::instance().Dimensions();
 
   if (! StTpcDb::IsOldScheme()) { // new schema
     XTWIST = 0;
@@ -262,7 +262,7 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = kDisableTwistClock;
   }
   else {   // old schema
-    St_tpcGlobalPositionC* glob = StTpcDb::instance()->GlobalPosition();
+    St_tpcGlobalPositionC* glob = StTpcDb::instance().GlobalPosition();
     XTWIST         =   1e3 * glob->TpcEFieldRotationY() ;
     YTWIST         =  -1e3 * glob->TpcEFieldRotationX() ;
     EASTCLOCKERROR =   1e3 * cages->EastClockError();
@@ -270,7 +270,7 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = 0;
   }
 
-  StarDriftV     =  1e-6 * StTpcDb::instance()->DriftVelocity() ;
+  StarDriftV     =  1e-6 * StTpcDb::instance().DriftVelocity() ;
   TPC_Z0         =  dims->gatingGridZ() ;
   IFCShift       =  cages->InnerFieldCageShift();
 
@@ -582,7 +582,6 @@ void StMagUtilities::CommonStart ( int mode )
 {
   LOG_INFO << "StMagUtilities::CommonSta  Magnetic Field scale factor is " << gFactor << '\n' ;
 
-  if ( StTpcDb::instance() == 0 ) {
     LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
     LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
     LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
@@ -624,8 +623,6 @@ void StMagUtilities::CommonStart ( int mode )
     mCorrectionsMode = 0;
 
     LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using hard-wired TPC parameters. \n" ;
-  }
-  else  LOG_INFO << "StMagUtilities::CommonSta  Using TPC parameters from DataBase. \n" ;
 
   if ( fTpcVolts == 0 ) {
     CathodeV    = -27950.0 ;      // Cathode Voltage (volts)
@@ -5841,7 +5838,6 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
         double secSecPhi = 1.0 / cosSecPhi;
         double iOffsetFirst, iOffsetLast, oOffsetFirst, oOffsetLast;
 
-        if (StTpcDb::instance()) {
           double local[3] = {0, 0, 0};
           static StTpcCoordinateTransform tran;
           static StTpcLocalCoordinate locP;
@@ -5874,18 +5870,6 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
           tran(lSec, locP);
           oOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
-        }
-        else {
-
-          // toy models (not reading from DB)
-          // this model is 1 (0.5) mm at OUTERGGFirst of Sec 12 (24)
-          iOffsetFirst = 0;
-          iOffsetLast = 0;
-          oOffsetFirst = (Seclist[k] == 12 || Seclist[k] == 24 ?
-                          0.1 * StarMagE * (1.5 - Seclist[k] / 24.) : 0);
-          oOffsetLast = 0;
-
-        }
 
 
 
@@ -5997,13 +5981,13 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
     // mag. field in Tpc local coordinate system
     double Tpc[3] =  {xTpc[0], xTpc[1], xTpc[2]};
     double coorG[3];
-    StTpcDb::instance()->Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
+    StTpcDb::instance().Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
     float xyzG[3] = {(float) coorG[0], (float) coorG[1], (float) coorG[2]};
     float BG[3];
     StarMagField::Instance()->BField( xyzG, BG) ;
     double    BGD[3] = {BG[0], BG[1], BG[2]};
     double    BTpcL[3];
-    StTpcDb::instance()->Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
+    StTpcDb::instance().Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
     BTpc[0] = BTpcL[0];
     BTpc[1] = BTpcL[1];
     BTpc[2] = BTpcL[2];

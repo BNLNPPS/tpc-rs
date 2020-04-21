@@ -48,22 +48,22 @@ class StTpcCoordinateTransform
   // Tpc Local Sector <--> TPC Local
   void  operator()(const        StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b           );
   //   { Double_t xyzS[3] = {a.position().x(), a.position().y(), 0.};
-  //     StTpcDb::instance()->Pad2Tpc(a.sector(),a.row()).LocalToMaster(xyzS,b.position().xyz());
+  //     StTpcDb::instance().Pad2Tpc(a.sector(),a.row()).LocalToMaster(xyzS,b.position().xyz());
   //     b.position().setZ(b.position().z() + a.position().z());
   //     b.setSector(a.sector()); b.setRow(a.row());}
   void  operator()(const        StTpcLocalSectorDirection  &a, StTpcLocalDirection               &b)
-  {StTpcDb::instance()->Pad2Tpc(a.sector(), a.row()).LocalToMasterVect(a.position().xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());}
+  {StTpcDb::instance().Pad2Tpc(a.sector(), a.row()).LocalToMasterVect(a.position().xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());}
   void  operator()(const        StTpcLocalSectorCoordinate &a, StGlobalCoordinate &b)
   { StTpcLocalCoordinate c;    this->operator()(a, c);    this->operator()(c, b);  }
   void  operator()(const  StTpcLocalSectorDirection &a, StGlobalDirection &b)
-  {StTpcDb::instance()->Pad2Glob(a.sector(), a.row()).LocalToMasterVect(a.position().xyz(), b.position().xyz());}
+  {StTpcDb::instance().Pad2Glob(a.sector(), a.row()).LocalToMasterVect(a.position().xyz(), b.position().xyz());}
   void  operator()(const              StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b     );
   //   { Double_t xyzS[3] = {a.position().x(), a.position().y(), 0.};
-  //     StTpcDb::instance()->Pad2Tpc(a.sector(),a.row()).MasterToLocal(xyzS,b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());
+  //     StTpcDb::instance().Pad2Tpc(a.sector(),a.row()).MasterToLocal(xyzS,b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());
   //     b.position().setZ(b.position().z() + a.position().z());
   //   }
   void  operator()(const               StTpcLocalDirection &a, StTpcLocalSectorDirection &b      )
-  {StTpcDb::instance()->Pad2Tpc(a.sector(), a.row()).MasterToLocalVect(a.position().xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());}
+  {StTpcDb::instance().Pad2Tpc(a.sector(), a.row()).MasterToLocalVect(a.position().xyz(), b.position().xyz()); b.setSector(a.sector()); b.setRow(a.row());}
   void  operator()(const               StGlobalCoordinate &a, StTpcLocalSectorCoordinate &b, Int_t sector, Int_t row)
   {
     StTpcLocalCoordinate c;
@@ -71,16 +71,16 @@ class StTpcCoordinateTransform
     this->operator()(c, b);
   }
   void  operator()(const  StGlobalDirection &a, StTpcLocalSectorDirection &b, Int_t sector, Int_t row)
-  {StTpcDb::instance()->Pad2Glob(sector, row).MasterToLocalVect(a.position().xyz(), b.position().xyz()); b.setSector(sector); b.setRow(row);}
+  {StTpcDb::instance().Pad2Glob(sector, row).MasterToLocalVect(a.position().xyz(), b.position().xyz()); b.setSector(sector); b.setRow(row);}
   // Internal TpcCoordinate <-->  Global Coordinate
   void  operator()(const StTpcLocalCoordinate &a, StGlobalCoordinate &b)
-  {StTpcDb::instance()->Tpc2GlobalMatrix().LocalToMaster(a.position().xyz(), b.position().xyz());}
+  {StTpcDb::instance().Tpc2GlobalMatrix().LocalToMaster(a.position().xyz(), b.position().xyz());}
   void  operator()(const StGlobalCoordinate &a, StTpcLocalCoordinate &b, Int_t sector, Int_t row)
-  {StTpcDb::instance()->Tpc2GlobalMatrix().MasterToLocal(a.position().xyz(), b.position().xyz()); b.setSector(sector); b.setRow(row);}
+  {StTpcDb::instance().Tpc2GlobalMatrix().MasterToLocal(a.position().xyz(), b.position().xyz()); b.setSector(sector); b.setRow(row);}
   void  operator()(const StTpcLocalDirection &a, StGlobalDirection &b)
-  {StTpcDb::instance()->Tpc2GlobalMatrix().LocalToMasterVect(a.position().xyz(), b.position().xyz());}
+  {StTpcDb::instance().Tpc2GlobalMatrix().LocalToMasterVect(a.position().xyz(), b.position().xyz());}
   void  operator()(const StGlobalDirection &a, StTpcLocalDirection &b, Int_t sector, Int_t row)
-  {StTpcDb::instance()->Tpc2GlobalMatrix().MasterToLocalVect(a.position().xyz(), b.position().xyz()); b.setSector(sector); b.setRow(row);}
+  {StTpcDb::instance().Tpc2GlobalMatrix().MasterToLocalVect(a.position().xyz(), b.position().xyz()); b.setSector(sector); b.setRow(row);}
   //      Raw Data          <-->  Global Coordinate
   void  operator()(const StTpcPadCoordinate &a, StGlobalCoordinate &b, Bool_t useT0 = kFALSE, Bool_t useTau = kTRUE)
   {StTpcLocalCoordinate c; this->operator()(a, c, useT0, useTau); this->operator()(c, b);}

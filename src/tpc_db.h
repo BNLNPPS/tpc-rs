@@ -14,13 +14,13 @@
 
 #include "struct_containers.h"
 
-class StTpcDb;
-// Global pointers:
-R__EXTERN StTpcDb* gStTpcDb;
 class StTpcDb
 {
  public:
-  static StTpcDb* instance() {if (! gStTpcDb) new StTpcDb(); return gStTpcDb;}
+  static StTpcDb& instance() {
+    static StTpcDb instance;
+    return instance;
+  }
   // Glob     = Global coordinate
   // Tpc      = Tpc    -"-                survey
   // Half     = Tpc Half west / east -"-  survey
