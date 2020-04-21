@@ -1,6 +1,9 @@
 #ifndef STAR_ST_TRS_MAKER_HH
 #define STAR_ST_TRS_MAKER_HH
 
+#include <vector>
+#include <utility>
+
 #include "TF1F.h"
 #include "TH1.h"
 #include "tpcrs/digi_data.h"
@@ -64,6 +67,13 @@ class StTpcRSMaker
   bool TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
   void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
+
+  using FuncParams_t = std::vector< std::pair<std::string, double> >;
+
+  /// Initializes the mShaperResponses array with shape functions
+  void InitShaperFuncs(int io, int sector, TF1F* func[2][24],
+    double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);
+
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
   int    m_Mode;
