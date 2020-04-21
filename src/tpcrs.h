@@ -91,7 +91,6 @@ class StTpcRSMaker
   double outerSectorAnodeVoltage[24];//!
   double    mLocalYDirectionCoupling[2][24][7]; //!
   double   msMin, msMax;            //!
-  int      mNSplittedHits;          //!
   double xOnWire, yOnWire, zOnWire; //!
   double mGainLocal;                //!
   double QAv;                       //!
