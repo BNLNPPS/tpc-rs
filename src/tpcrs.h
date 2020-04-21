@@ -43,15 +43,10 @@ class StTpcRSMaker
                   std::vector<g2t_track_st>& g2t_track,
             const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
   int         Debug() const {return 1;}
-  TF1F* GetPolya(int io = 0)       {return (TF1F*) mPolya[io];}
-  TF1F* GetTimeShape0(int io = 0)  {return fgTimeShape0[io];}
-  TF1F* GetTimeShape3(int io = 0)  {return fgTimeShape3[io];}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
   void DigitizeSector(int sector, tpcrs::DigiData& digi_data);
   static int    AsicThresholds(short* ADCs);
-  static int    SearchT(const void* elem1, const void** elem2);
-  static int    CompareT(const void** elem1, const void** elem2);
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI_I(double* x, double* par = 0);
   static double shapeEI3(double* x, double* par = 0);
@@ -63,7 +58,6 @@ class StTpcRSMaker
   static double Ec(double* x, double* p); // minimal energy to create an ion pair
   static TF1* fEc(double w = 26.2);           // HEED function to generate Ec
  private:
-  static double ShaperFunc(double* x, double* p);
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);

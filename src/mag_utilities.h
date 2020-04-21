@@ -219,8 +219,6 @@ class StMagUtilities
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
   void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
 
-  bool    UsingDistortion( const DistortSelect distortion ) { return ((mDistortionMode & distortion) ? true : false); }
-
   void    DoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
   void    UndoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
   void    UndoBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
@@ -296,7 +294,6 @@ class StMagUtilities
       double ErrorRPhi[128],
       float &pSpace ) ;
 
-  int    GetSpaceChargeMode();
   void     ManualSpaceChargeR2(double SpcChg, float EWRatio = 1.0 )
   {
     SpaceChargeR2 = SpcChg ; fSpaceChargeR2 = 0 ;
