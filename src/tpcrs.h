@@ -62,7 +62,7 @@ class StTpcRSMaker
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
   bool TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
-  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX);
+  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
@@ -72,7 +72,6 @@ class StTpcRSMaker
   TH1D*    mdNdxL10;                  //!
   TH1D*    mdNdEL10;                  //!
   TF1F*  mShaperResponses[2][24];     //!
-  TF1F*  mShaperResponse;             //!
   TF1F*  mChargeFraction[2][24];      //!
   TF1F*  mPadResponseFunction[2][24]; //!
   TF1F*  mPolya[2];                   //!

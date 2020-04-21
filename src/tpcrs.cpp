@@ -821,7 +821,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         // Generate signal
         double Gain = St_tss_tssparC::instance()->gain(sector, row);
-        mShaperResponse = mShaperResponses[io][sector - 1];
 
         if (ClusterProfile) {
           checkList[io][2]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Gain);
@@ -1209,7 +1208,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               iBreak++; continue;
             }
 
-            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX);
+            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, *mShaperResponses[io][sector - 1]);
           }  // electrons in Cluster
 
           if (ClusterProfile) {
@@ -1889,7 +1888,7 @@ bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 }
 
 
-void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX)
+void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper)
 {
   static StTpcCoordinateTransform transform(gStTpcDb);
   SignalSum_t* SignalSum = GetSignalSum(sector);
@@ -1980,12 +1979,12 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
       if (XYcoupling < minSignal)  continue;
 
-      int bin_low  = std::max(0, binT + tpcrs::irint(dt + mShaperResponse->GetXmin() - 0.5));
-      int bin_high = std::min(max_timebins - 1, binT + tpcrs::irint(dt + mShaperResponse->GetXmax() + 0.5));
+      int bin_low  = std::max(0, binT + tpcrs::irint(dt + shaper.GetXmin() - 0.5));
+      int bin_high = std::min(max_timebins - 1, binT + tpcrs::irint(dt + shaper.GetXmax() + 0.5));
       int index = max_timebins * ((row - 1) * max_pads + pad - 1) + bin_low;
       int Ntbks = std::min(bin_high - bin_low + 1, static_cast<int>(kTimeBacketMax));
       double tt = -dt + (bin_low - binT);
-      mShaperResponse->GetSaveL(Ntbks, tt, TimeCouplings);
+      shaper.GetSaveL(Ntbks, tt, TimeCouplings);
 
       for (int itbin = bin_low; itbin <= bin_high; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - bin_low];
