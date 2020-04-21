@@ -199,7 +199,7 @@ void    StMagUtilities::SetUnDoDistortionT(TFile* f)
 
 
 /// StMagUtilities constructor using the DataBase
-StMagUtilities::StMagUtilities (StTpcDb* /* dbin */, int mode )
+StMagUtilities::StMagUtilities (int mode )
 {
   if (fgInstance) {
     LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";

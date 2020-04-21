@@ -62,7 +62,6 @@ enum   EBMapSizes {
 // StMagUtilities.  So, this can be summarized by saying:
 // Bit counting starts at 0 for the chain option flag (...,3,2,1,0)
 
-class StTpcDb ;
 class TDataSet ;
 class St_tpcHVPlanesC;
 class St_tpcCalibResolutionsC;
@@ -213,7 +212,7 @@ class StMagUtilities
   static   TNtuple* fgUnDoDistortion;
  public:
 
-  StMagUtilities ( StTpcDb* dbin = 0, int mode = 0 ) ;
+  StMagUtilities (int mode = 0 ) ;
   StMagUtilities ( const StarMagField::EBField map, const float factor, int mode );
   virtual ~StMagUtilities () {fgInstance = 0;}
   static StMagUtilities* Instance();
