@@ -219,7 +219,6 @@ StMagUtilities::StMagUtilities (StTpcDb* /* dbin */, int mode )
   GetGridLeak( mode )   ;    // Get the parameters that describe the gating grid leaks
   GetAbortGapCharge()   ;    // Get the parameters that describe the Abort Gap charge events
   CommonStart( mode )   ;    // Read the Magnetic and Electric Field Data Files, set constants
-  UseManualSCForPredict(false) ; // Initialize use of Predict() functions;
 }
 
 
@@ -237,13 +236,10 @@ StMagUtilities::StMagUtilities ( const StarMagField::EBField map, const float fa
   fTpcVolts      =  0   ;        // Do not get TpcVoltages out of the DB   - use defaults in CommonStart
   fOmegaTau      =  0   ;        // Do not get OmegaTau out of the DB      - use defaults in CommonStart
   fAbortGapCharge =  0   ;       // Do not get AbortGap out of the DB      - use defaults in CommonStart
-  ManualSpaceCharge(0)  ;        // Do not get SpaceCharge out of the DB   - use defaults inserted here.
   ManualSpaceChargeR2(0, 1) ;    // Do not get SpaceChargeR2 out of the DB - use defaults inserted here, SpcChg and EWRatio
-  ManualShortedRing(0, 0, 0, 0, 0) ; // No shorted rings
   fGridLeak      =  0   ;        // Do not get Grid Leak data from the DB  - use defaults in CommonStart
   fHVPlanes      =  0   ;        // Do not get GGVoltErr data from the DB  - use defaults in CommonStart
   CommonStart( mode )   ;        // Read the Magnetic and Electric Field Data Files, set constants
-  UseManualSCForPredict(false) ; // Initialize use of Predict() functions;
 }
 
 
@@ -486,31 +482,6 @@ bool StMagUtilities::UpdateShortedRing ()
   return update;
 }
 
-/// Manually setup a shorted ring in the TPC
-/*! Insert one shorted ring of your choice
-    Side(E=0/W=1)  Cage(IFC=0/OFC=1)  Ring(# from CM)  MissingResistance(MOhm)  ExtraResistance(MOhm)
-    For addtional information, see the comments associated with UndoShortedRing().
- */
-void StMagUtilities::ManualShortedRing ( int EastWest, int InnerOuter,
-    float RingNumber, float MissingRValue, float ExtraRValue )
-{
-  // Insert one shorted ring of your choice.  Manually testing more than one shorted ring requires editing the code (below).
-  ShortTableRows       =  1             ;              // Number of rows in the shorted ring table
-  Side[0]              =  EastWest      ;              // Side of the TPC (E=0/W=1)
-  Cage[0]              =  InnerOuter    ;              // Field Cage (IFC=0/OFC=1 )
-  Ring[0]              =  RingNumber    ;              // Ring Number (# from CM)
-  MissingResistance[0] =  MissingRValue ;              // Missing Resistance due to short (MOhm)
-  Resistor[0]          =  ExtraRValue   ;              // Extra Resistance added as compensation for the short (MOhm)
-
-  if ( ( Side[0] + Cage[0] + Ring[0] + TMath::Abs(MissingResistance[0]) + TMath::Abs(Resistor[0]) ) == 0.0 ) ShortTableRows = 0 ;
-
-  // JT Test of shorted ring repair ... uncomment and expand this section if you need to test more than one shorted ring
-  // ShortTableRows = 1 ;
-  // Ring[0] = 182.5 ; Ring[1] = 0.0 ; Ring[2] = 0.0 ;
-  // MissingResistance[0] = 2.0 ; MissingResistance[1] = 0.0 ; MissingResistance[2] = 0.0 ;
-  // Resistor[0] = 0.0 ;  Resistor[1] = 0.0 ; Resistor[2] = 0.0 ;
-  // End JT Test
-}
 
 void StMagUtilities::GetOmegaTau ()
 {
@@ -576,28 +547,6 @@ void StMagUtilities::GetGridLeak ( int mode )
                  mRandom->Gaus(1, fCalibResolutions->GridLeak()) : 1.0);
 }
 
-void StMagUtilities::ManualGridLeakStrength (double inner, double middle, double outer)
-{
-  InnerGridLeakStrength  =  inner  ;  // Relative strength of the Inner grid leak
-  MiddlGridLeakStrength  =  middle ;  // Relative strength of the Middle grid leak
-  OuterGridLeakStrength  =  outer  ;  // Relative strength of the Outer grid leak
-  // InnerGridLeakStrength  =  1.0   ;  // JT test (Note that GainRatio is taken into account, below.)
-  // OuterGridLeakStrength  =  1.0   ;  // JT test (keep these the same unless you really know what you are doing.)
-}
-
-void StMagUtilities::ManualGridLeakRadius (double inner, double middle, double outer)
-{
-  InnerGridLeakRadius    =  inner  ;  // Location (in local Y coordinates) of the Inner grid leak
-  MiddlGridLeakRadius    =  middle ;  // Location (in local Y coordinates) of the Middle grid leak
-  OuterGridLeakRadius    =  outer  ;  // Location (in local Y coordinates) of the Outer grid leak
-}
-
-void StMagUtilities::ManualGridLeakWidth (double inner, double middle, double outer)
-{
-  InnerGridLeakWidth     =  inner  ;  // Half-width of the Inner grid leak.
-  MiddlGridLeakWidth     =  middle ;  // Half-width of the Middle grid leak.  Must oversized for numerical reasons.
-  OuterGridLeakWidth     =  outer  ;  // Half-width of the Outer grid leak.
-}
 
 void StMagUtilities::GetHVPlanes ()
 {
@@ -609,11 +558,6 @@ void StMagUtilities::GetHVPlanes ()
   deltaVGGWest = (- HVplanes -> GGW_shift_z * StarMagE) + deltaVGGCathode;
 }
 
-void StMagUtilities::ManualGGVoltError (double east, double west)
-{
-  deltaVGGEast = east;
-  deltaVGGWest = west;
-}
 
 void StMagUtilities::GetAbortGapCharge()
 {
@@ -752,20 +696,6 @@ void StMagUtilities::CommonStart ( int mode )
   if (fSpaceChargeR2) LOG_INFO << "StMagUtilities::CommonSta  Using SpaceChargeR2 values from the DB.\n" ;
   else                LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceChargeR2 settings. \n" ;
 
-  if ( fGridLeak == 0 ) {
-    ManualGridLeakStrength(0.0, 15.0, 0.0);
-    ManualGridLeakRadius(53.0, GAPRADIUS, 195.0);
-    ManualGridLeakWidth(0.0, 3.0, 0.0);
-    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected GridLeak parameters. \n" ;
-  }
-  else  LOG_INFO << "StMagUtilities::CommonSta  Using GridLeak parameters from the DB."   << '\n' ;
-
-  if ( fHVPlanes == 0 ) {
-    ManualGGVoltError(0.0, 0.0);
-    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected HV planes parameters. \n" ;
-  }
-  else  LOG_INFO << "StMagUtilities::CommonSta  Using HV planes parameters from the DB."   << '\n' ;
-
   if ( fAbortGapCharge == 0 ) {
     IonDriftVel = 181.67; // http://nuclear.ucdavis.edu/~bkimelman/protected/TPC_Meeting_Apr_10.pdf
     LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using default Ion Drift Velocity. \n" ;
@@ -848,7 +778,7 @@ void StMagUtilities::CommonStart ( int mode )
 
   float  B[3], X[3] = { 0, 0, 0 } ;
   float  OmegaTau ;                       // For an electron, OmegaTau carries the sign opposite of B
-  BField(X, B) ;                            // Work in kGauss, cm and assume Bz dominates
+  StarMagField::Instance()->BField(X, B) ;                            // Work in kGauss, cm and assume Bz dominates
 
   // Theoretically, OmegaTau is defined as shown in the next line.
   // OmegaTau   =  -10. * B[2] * StarDriftV / StarMagE ;  // cm/microsec, Volts/cm
@@ -1330,9 +1260,9 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
     }
   }
 
-  Search( EMap_nPhi, ePhiList, phi, klow ) ;
-  Search( EMap_nR,   eRList,   r,   ilow ) ;
-  Search( EMap_nZ,   eZList,   z,   jlow ) ;
+  StarMagField::Instance()->Search( EMap_nPhi, ePhiList, phi, klow ) ;
+  StarMagField::Instance()->Search( EMap_nR,   eRList,   r,   ilow ) ;
+  StarMagField::Instance()->Search( EMap_nZ,   eZList,   z,   jlow ) ;
 
   if ( klow < 0 ) klow = 0 ;
 
@@ -1348,22 +1278,22 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
 
   for ( k = klow ; k < klow + ORDER + 1 ; k++ ) {
     for ( i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-      save_x[i - ilow]  = Interpolate( &eZList[jlow], &dx3D[k][i][jlow], ORDER, z ) ;
-      save_y[i - ilow]  = Interpolate( &eZList[jlow], &dy3D[k][i][jlow], ORDER, z ) ;
+      save_x[i - ilow]  = StarMagField::Instance()->Interpolate( &eZList[jlow], &dx3D[k][i][jlow], ORDER, z ) ;
+      save_y[i - ilow]  = StarMagField::Instance()->Interpolate( &eZList[jlow], &dy3D[k][i][jlow], ORDER, z ) ;
     }
 
-    saved_x[k - klow]  = Interpolate( &eRList[ilow], save_x, ORDER, r )   ;
-    saved_y[k - klow]  = Interpolate( &eRList[ilow], save_y, ORDER, r )   ;
+    saved_x[k - klow]  = StarMagField::Instance()->Interpolate( &eRList[ilow], save_x, ORDER, r )   ;
+    saved_y[k - klow]  = StarMagField::Instance()->Interpolate( &eRList[ilow], save_y, ORDER, r )   ;
   }
 
   if (usingCartesian) {
-    Xprime[0] = Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) + x[0] ;
-    Xprime[1] = Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) + x[1];
+    Xprime[0] = StarMagField::Instance()->Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) + x[0] ;
+    Xprime[1] = StarMagField::Instance()->Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) + x[1];
   }
   else {
     Polar2Cart(x[0], x[1], xx);
-    xx[0] += Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) ;
-    xx[1] += Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) ;
+    xx[0] += StarMagField::Instance()->Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) ;
+    xx[1] += StarMagField::Instance()->Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) ;
     Cart2Polar(xx, Xprime[0], Xprime[1]);
   }
 
@@ -1419,8 +1349,8 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
     }
   }
 
-  Search( EMap_nR, eRList, r, ilow ) ;
-  Search( EMap_nZ, eZList, z, jlow ) ;
+  StarMagField::Instance()->Search( EMap_nR, eRList, r, ilow ) ;
+  StarMagField::Instance()->Search( EMap_nZ, eZList, z, jlow ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -1431,12 +1361,12 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
   if ( jlow + ORDER  >=  EMap_nZ - 1 ) jlow =  EMap_nZ - 1 - ORDER ;
 
   for ( i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    save_dR[i - ilow]    = Interpolate( &eZList[jlow], &dR[i][jlow], ORDER, z )   ;
-    save_dRPhi[i - ilow] = Interpolate( &eZList[jlow], &dRPhi[i][jlow], ORDER, z )   ;
+    save_dR[i - ilow]    = StarMagField::Instance()->Interpolate( &eZList[jlow], &dR[i][jlow], ORDER, z )   ;
+    save_dRPhi[i - ilow] = StarMagField::Instance()->Interpolate( &eZList[jlow], &dRPhi[i][jlow], ORDER, z )   ;
   }
 
-  saved_dR    = Interpolate( &eRList[ilow], save_dR,    ORDER, r )   ;
-  saved_dRPhi = Interpolate( &eRList[ilow], save_dRPhi, ORDER, r )   ;
+  saved_dR    = StarMagField::Instance()->Interpolate( &eRList[ilow], save_dR,    ORDER, r )   ;
+  saved_dRPhi = StarMagField::Instance()->Interpolate( &eRList[ilow], save_dRPhi, ORDER, r )   ;
 
 
   if ( r > 0.0 ) {
@@ -1582,8 +1512,8 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
   Zdrift =  TPC_Z0 - TMath::Abs(z) ;
 
-  Search ( NZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
-  Search ( NYARRAY, YArray, y, jlow ) ;
+  StarMagField::Instance()->Search ( NZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
+  StarMagField::Instance()->Search ( NYARRAY, YArray, y, jlow ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -1594,10 +1524,10 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   if ( jlow + ORDER  >=    NYARRAY - 1 ) jlow =   NYARRAY - 1 - ORDER ;
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    save_sum[i - ilow]   = Interpolate( &YArray[jlow], &SumArray[i][jlow], ORDER, y )   ;
+    save_sum[i - ilow]   = StarMagField::Instance()->Interpolate( &YArray[jlow], &SumArray[i][jlow], ORDER, y )   ;
   }
 
-  sum  = Interpolate( &ZDriftArray[ilow], save_sum, ORDER, Zdrift )   ;
+  sum  = StarMagField::Instance()->Interpolate( &ZDriftArray[ilow], save_sum, ORDER, Zdrift )   ;
 
   if ( r > 0.0 ) {
     phi =  phi - ( Const_1 * (-1 * sum) * TMath::Cos(phi0 - phi) + Const_0 * sum * TMath::Sin(phi0 - phi) ) / r ;
@@ -1771,8 +1701,8 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
   z = LimitZ( Sector, x )                 ;             // Protect against discontinuity at CM
   Zdrift =  TPC_Z0 - TMath::Abs(z)        ;
 
-  Search ( nZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
-  Search ( nYARRAY, YArray, y, jlow )            ;
+  StarMagField::Instance()->Search ( nZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
+  StarMagField::Instance()->Search ( nYARRAY, YArray, y, jlow )            ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -1784,10 +1714,10 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
 
   for ( int MapID = 0 ; MapID < nMAPS ; MapID++ ) {
     for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-      save_sum[MapID][i - ilow]  = Interpolate( &YArray[jlow], &SumArray[MapID][i][jlow], ORDER, y ) ;
+      save_sum[MapID][i - ilow]  = StarMagField::Instance()->Interpolate( &YArray[jlow], &SumArray[MapID][i][jlow], ORDER, y ) ;
     }
 
-    MapSum[MapID]  = Interpolate( &ZDriftArray[ilow], save_sum[MapID], ORDER, Zdrift ) ;
+    MapSum[MapID]  = StarMagField::Instance()->Interpolate( &ZDriftArray[ilow], save_sum[MapID], ORDER, Zdrift ) ;
   }
 
   if ( Inner_GLW_Voltage[Sector - 1] >= 100.0 ) totalSum = MapSum[0] ;
@@ -2704,8 +2634,8 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
       for ( int j = 0 ; j < EMap_nR ; ++j ) {
         // Linear interpolation
         r = eRList[j] ;
-        Search( ROWS,   Rlist, r, ilow ) ;  // Note switch - R in rows and Z in columns
-        Search( COLUMNS, Zedlist, z, jlow ) ;
+        StarMagField::Instance()->Search( ROWS,   Rlist, r, ilow ) ;  // Note switch - R in rows and Z in columns
+        StarMagField::Instance()->Search( COLUMNS, Zedlist, z, jlow ) ;
 
         if ( ilow < 0 ) ilow = 0 ;  // artifact of Root's binsearch, returns -1 if out of range
 
@@ -2887,8 +2817,8 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
         for ( int j = 0 ; j < EMap_nR ; ++j ) {
           // Linear interpolation
           r = eRList[j] ;
-          Search( ROWS,    Rlist, r, ilow ) ;
-          Search( COLUMNS, Zedlist, z, jlow ) ;
+          StarMagField::Instance()->Search( ROWS,    Rlist, r, ilow ) ;
+          StarMagField::Instance()->Search( COLUMNS, Zedlist, z, jlow ) ;
 
           if ( ilow < 0 ) ilow = 0 ;
 
@@ -3294,8 +3224,8 @@ float StMagUtilities::Interpolate2DTable( const int ORDER, const float x, const 
   static  int jlow = 0, klow = 0 ;
   float save_Array[ORDER + 1]  ;
 
-  Search( nx,  XV,  x,   jlow  ) ;
-  Search( ny,  YV,  y,   klow  ) ;
+  StarMagField::Instance()->Search( nx,  XV,  x,   jlow  ) ;
+  StarMagField::Instance()->Search( ny,  YV,  y,   klow  ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3307,10 +3237,10 @@ float StMagUtilities::Interpolate2DTable( const int ORDER, const float x, const 
 
   for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
     float* ajkl = &((TMatrix &)Array)(j, klow);
-    save_Array[j - jlow]  = Interpolate( &YV[klow], ajkl, ORDER, y )   ;
+    save_Array[j - jlow]  = StarMagField::Instance()->Interpolate( &YV[klow], ajkl, ORDER, y )   ;
   }
 
-  return ( Interpolate( &XV[jlow], save_Array, ORDER, x ) )   ;
+  return ( StarMagField::Instance()->Interpolate( &XV[jlow], save_Array, ORDER, x ) )   ;
 
 }
 
@@ -3322,8 +3252,8 @@ void StMagUtilities::Interpolate2DEdistortion( const int ORDER, const float r, c
   static  int jlow = 0, klow = 0 ;
   float save_Er[ORDER + 1] ;
 
-  Search( EMap_nZ,   eZList,  z,   jlow   ) ;
-  Search( EMap_nR,   eRList,  r,   klow   ) ;
+  StarMagField::Instance()->Search( EMap_nZ,   eZList,  z,   jlow   ) ;
+  StarMagField::Instance()->Search( EMap_nR,   eRList,  r,   klow   ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3334,10 +3264,10 @@ void StMagUtilities::Interpolate2DEdistortion( const int ORDER, const float r, c
   if ( klow + ORDER  >=    EMap_nR - 1 ) klow =   EMap_nR - 1 - ORDER ;
 
   for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-    save_Er[j - jlow]     = Interpolate( &eRList[klow], &Er[j][klow], ORDER, r )   ;
+    save_Er[j - jlow]     = StarMagField::Instance()->Interpolate( &eRList[klow], &Er[j][klow], ORDER, r )   ;
   }
 
-  Er_value = Interpolate( &eZList[jlow], save_Er, ORDER, z )   ;
+  Er_value = StarMagField::Instance()->Interpolate( &eZList[jlow], save_Er, ORDER, z )   ;
 
 }
 
@@ -3351,9 +3281,9 @@ void StMagUtilities::Interpolate3DEdistortion( const int ORDER, const float r, c
   float save_Er[ORDER + 1],   saved_Er[ORDER + 1] ;
   float save_Ephi[ORDER + 1], saved_Ephi[ORDER + 1] ;
 
-  Search( EMap_nZ,   eZList,   z,   ilow   ) ;
-  Search( EMap_nPhi, ePhiList, phi, jlow   ) ;
-  Search( EMap_nR,   eRList,   r,   klow   ) ;
+  StarMagField::Instance()->Search( EMap_nZ,   eZList,   z,   ilow   ) ;
+  StarMagField::Instance()->Search( EMap_nPhi, ePhiList, phi, jlow   ) ;
+  StarMagField::Instance()->Search( EMap_nR,   eRList,   r,   klow   ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3369,16 +3299,16 @@ void StMagUtilities::Interpolate3DEdistortion( const int ORDER, const float r, c
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
     for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-      save_Er[j - jlow]     = Interpolate( &eRList[klow], &Er[i][j][klow], ORDER, r )   ;
-      save_Ephi[j - jlow]   = Interpolate( &eRList[klow], &Ephi[i][j][klow], ORDER, r )   ;
+      save_Er[j - jlow]     = StarMagField::Instance()->Interpolate( &eRList[klow], &Er[i][j][klow], ORDER, r )   ;
+      save_Ephi[j - jlow]   = StarMagField::Instance()->Interpolate( &eRList[klow], &Ephi[i][j][klow], ORDER, r )   ;
     }
 
-    saved_Er[i - ilow]     = Interpolate( &ePhiList[jlow], save_Er, ORDER, phi )   ;
-    saved_Ephi[i - ilow]   = Interpolate( &ePhiList[jlow], save_Ephi, ORDER, phi )   ;
+    saved_Er[i - ilow]     = StarMagField::Instance()->Interpolate( &ePhiList[jlow], save_Er, ORDER, phi )   ;
+    saved_Ephi[i - ilow]   = StarMagField::Instance()->Interpolate( &ePhiList[jlow], save_Ephi, ORDER, phi )   ;
   }
 
-  Er_value     = Interpolate( &eZList[ilow], saved_Er, ORDER, z )    ;
-  Ephi_value   = Interpolate( &eZList[ilow], saved_Ephi, ORDER, z )  ;
+  Er_value     = StarMagField::Instance()->Interpolate( &eZList[ilow], saved_Er, ORDER, z )    ;
+  Ephi_value   = StarMagField::Instance()->Interpolate( &eZList[ilow], saved_Ephi, ORDER, z )  ;
 
 }
 
@@ -3393,9 +3323,9 @@ float StMagUtilities::Interpolate3DTable ( const int ORDER, const float x,    co
   static  int ilow = 0, jlow = 0, klow = 0 ;
   float save_Array[ORDER + 1],  saved_Array[ORDER + 1] ;
 
-  Search( nx, XV, x, ilow   ) ;
-  Search( ny, YV, y, jlow   ) ;
-  Search( nz, ZV, z, klow   ) ;
+  StarMagField::Instance()->Search( nx, XV, x, ilow   ) ;
+  StarMagField::Instance()->Search( ny, YV, y, jlow   ) ;
+  StarMagField::Instance()->Search( nz, ZV, z, klow   ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3413,13 +3343,13 @@ float StMagUtilities::Interpolate3DTable ( const int ORDER, const float x,    co
     TMatrix &Table = *ArrayofArrays[k] ;
 
     for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-      save_Array[i - ilow] = Interpolate( &YV[jlow], &Table(i, jlow), ORDER, y )   ;
+      save_Array[i - ilow] = StarMagField::Instance()->Interpolate( &YV[jlow], &Table(i, jlow), ORDER, y )   ;
     }
 
-    saved_Array[k - klow] = Interpolate( &XV[ilow], save_Array, ORDER, x )   ;
+    saved_Array[k - klow] = StarMagField::Instance()->Interpolate( &XV[ilow], save_Array, ORDER, x )   ;
   }
 
-  return ( Interpolate( &ZV[klow], saved_Array, ORDER, z ) )   ;
+  return ( StarMagField::Instance()->Interpolate( &ZV[klow], saved_Array, ORDER, z ) )   ;
 
 }
 
@@ -4500,7 +4430,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   St_spaceChargeCorC* tempfSpaceChargeR2 = fSpaceChargeR2 ;
   double tempSpaceChargeR2 = SpaceChargeR2 ;
 
-  if (!useManualSCForPredict) ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
+  ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
 
   // but keep EWRatio that was previously defined
   float x[3] = { 0, 0, 0 } ;
@@ -4725,7 +4655,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   St_spaceChargeCorC* tempfSpaceChargeR2 = fSpaceChargeR2 ;
   double tempSpaceChargeR2 = SpaceChargeR2 ;
 
-  if (!useManualSCForPredict) ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
+  ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
 
   // but keep EWRatio that was previously defined
   if (DoOnce) {
@@ -4985,7 +4915,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
   St_spaceChargeCorC* tempfSpaceChargeR2 = fSpaceChargeR2 ;
   double tempSpaceChargeR2 = SpaceChargeR2 ;
 
-  if (!useManualSCForPredict) ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
+  ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
 
   // but keep EWRatio that was previously defined
   if (DoOnce) UndoDistortion(0, 0, 0); // make sure everything is initialized for mDistortionMode
@@ -6088,7 +6018,7 @@ int StMagUtilities::IterationFailCount()
 void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
   if (StTpcDb::IsOldScheme()) {
-    BField( xTpc, BTpc) ;
+    StarMagField::Instance()->BField( xTpc, BTpc) ;
   }
   else {
     // mag. field in Tpc local coordinate system
@@ -6097,7 +6027,7 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
     StTpcDb::instance()->Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
     float xyzG[3] = {(float) coorG[0], (float) coorG[1], (float) coorG[2]};
     float BG[3];
-    BField( xyzG, BG) ;
+    StarMagField::Instance()->BField( xyzG, BG) ;
     double    BGD[3] = {BG[0], BG[1], BG[2]};
     double    BTpcL[3];
     StTpcDb::instance()->Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
@@ -6111,7 +6041,7 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 void StMagUtilities::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
   if (StTpcDb::IsOldScheme()) {
-    B3DField( xTpc, BTpc) ;
+    StarMagField::Instance()->B3DField( xTpc, BTpc) ;
   }
   else {
     BFieldTpc(xTpc, BTpc, Sector);

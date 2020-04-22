@@ -78,31 +78,10 @@ class StarMagField
   }
   static StarMagField* Instance();
 
-  static void setConstBz( bool state ) { mConstBz = state; }
-
   virtual void    BField   ( const float x[], float B[] ) ;
   virtual void    BField   ( const double x[], double B[] ) ;
-  virtual void    Field    ( const float x[], float B[] ) {BField(x, B);}
-  virtual void    Field    ( const double x[], double B[] ) {BField(x, B);}
-  virtual void    BrBzField( const float r, const float z, float &Br_value, float &Bz_value ) ;
   virtual void    B3DField ( const float x[], float B[] ) ;
-  virtual void    B3DField ( const double x[], double B[] ) ;
-  virtual void    BrBz3DField ( const float r, const float z, const float phi,
-                                float &Br_value, float &Bz_value, float &Bphi_value ) ;
-  virtual void    SetFactor (float factor = 1);
-  virtual void    SetRescale(float factor = 1);
-  virtual void    SetBDipole(float m = -42.67);
-  virtual void    SetRmaxDip(float m =   15.3);
-  virtual void    SetZminDip(float m =  980.0);
-  virtual void    SetZmaxDip(float m = 1350.0);
-  virtual void    SetLock();
-  virtual EBField GetMap()     {return fMap;}
   virtual float GetFactor()  {return fFactor;}
-  virtual float GetRescale() {return fRescale;}
-  virtual bool  IsLocked()   {return fLock;}
-  virtual void    Print(Option_t* opt = "") const;
-  void  SetStarMagFieldRotation(TGeoRotation &rot);
-  void  SetStarMagFieldRotation(double* rot);
   const TGeoRotation &StarMagFieldRotation() {return * &fStarMagFieldRotation;}
 };
 
