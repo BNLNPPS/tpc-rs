@@ -400,7 +400,7 @@ void StarMagField::BField( const float x[], float B[] )
   B[0] = B[1] = B[2] = 0;
   z  = x[2] ;
   r  = std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
-  phi = atan2( x[1], x[0] ) ;
+  phi = std::atan2( x[1], x[0] ) ;
 
   if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
 
@@ -504,7 +504,7 @@ void StarMagField::B3DField( const float x[], float B[] )
   r  = sqrt( x[0] * x[0] + x[1] * x[1] ) ;
 
   if ( r != 0.0 ) {
-    phi = TMath::ATan2( x[1], x[0] ) ;
+    phi = std::atan2( x[1], x[0] ) ;
 
     if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
 
