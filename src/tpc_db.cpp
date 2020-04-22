@@ -117,7 +117,7 @@ void StTpcDb::SetTpcRotations()
    */
   //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
   assert(St_tpcDimensionsC::instance()->numberOfSectors() == 24);
-  float gFactor = StarMagField::Instance()->GetFactor();
+  float gFactor = St_MagFactorC::instance()->ScaleFactor();
   double phi, theta, psi;
   int iphi;
   TGeoRotation* rotm = 0;

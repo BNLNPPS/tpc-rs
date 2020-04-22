@@ -361,6 +361,8 @@ StarMagField::StarMagField ( EBField map, float factor,
     if (fLock) printf("StarMagField is locked, no modification from DB will be accepted\n");
   }
 
+  fFactor = St_MagFactorC::instance()->ScaleFactor();
+
   ReadField() ;                       // Read the Magnetic
   fStarMagFieldRotation = TGeoRotation("StarMagFieldRotation");
 }
