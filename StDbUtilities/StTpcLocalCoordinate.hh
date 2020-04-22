@@ -15,7 +15,7 @@ class StTpcLocalCoordinate : public StTpcCoordinate
   StTpcLocalCoordinate(const StThreeVector<double> &xyz);
   StTpcLocalCoordinate(const StThreeVector<double> &xyz, int sector, int row) :
     StTpcCoordinate(xyz, sector, row) {}
-  virtual ~StTpcLocalCoordinate() {}
+  ~StTpcLocalCoordinate() {}
 };
 std::ostream &operator<<(std::ostream &, const StTpcLocalCoordinate &);
 #endif

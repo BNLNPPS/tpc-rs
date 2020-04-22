@@ -12,7 +12,7 @@ class StGlobalDirection : public StGlobalCoordinate
     StGlobalCoordinate(x, y, z) {}
   StGlobalDirection(const StThreeVector<double> &xyz) : StGlobalCoordinate(xyz) {}
   StGlobalDirection(const StThreeVector<float> &xyz) :  StGlobalCoordinate(xyz) {}
-  virtual ~StGlobalDirection() {};
+  ~StGlobalDirection() {};
 };
 // Non-Member
 std::ostream &operator<<(std::ostream &, const StGlobalDirection &);

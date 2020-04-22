@@ -89,42 +89,42 @@ class StMagUtilities
   St_tpcCalibResolutionsC*   fCalibResolutions ;
   St_tpcChargeEventC*        fAbortGapCharge;
 
-  virtual void    GetDistoSmearing ( int mode) ;
-  virtual void    GetMagFactor ()     ;
-  virtual void    GetTPCParams ()     ;
-  virtual void    GetTPCVoltages ( int mode ) ;
-  virtual void    GetSpaceCharge ()   ;
-  virtual void    GetSpaceChargeR2 () ;
-  virtual void    GetShortedRing ()   ;
-  virtual void    GetOmegaTau ()      ;
-  virtual void    GetGridLeak ( int mode ) ;
-  virtual void    GetHVPlanes()       ;
-  virtual void    GetE()              ;
-  virtual void    GetAbortGapCharge() ;
+  void    GetDistoSmearing ( int mode) ;
+  void    GetMagFactor ()     ;
+  void    GetTPCParams ()     ;
+  void    GetTPCVoltages ( int mode ) ;
+  void    GetSpaceCharge ()   ;
+  void    GetSpaceChargeR2 () ;
+  void    GetShortedRing ()   ;
+  void    GetOmegaTau ()      ;
+  void    GetGridLeak ( int mode ) ;
+  void    GetHVPlanes()       ;
+  void    GetE()              ;
+  void    GetAbortGapCharge() ;
 
-  virtual void    CommonStart ( int mode ) ;
-  virtual int   IsPowerOfTwo (int i) ;
-  virtual void    SectorNumber ( int &Sector, const float x[] ) ;
-  virtual void    SectorNumber ( int &Sector, float phi, const float z ) ;
-  virtual void    GetGLWallData( const int select, float DataInTheGap[] ) ;
-  virtual int   SectorSide   ( int &Sector, const float x[] ) ;  // -1 for east, +1 for west
-  virtual int   SectorSide   ( int &Sector, const float z   ) ;
-  virtual float LimitZ (int &Sector, const float x[] ) ;
-  virtual float Interpolate2DTable  ( const int ORDER, const float x, const float y, const int nx, const int ny,
+  void    CommonStart ( int mode ) ;
+  int   IsPowerOfTwo (int i) ;
+  void    SectorNumber ( int &Sector, const float x[] ) ;
+  void    SectorNumber ( int &Sector, float phi, const float z ) ;
+  void    GetGLWallData( const int select, float DataInTheGap[] ) ;
+  int   SectorSide   ( int &Sector, const float x[] ) ;  // -1 for east, +1 for west
+  int   SectorSide   ( int &Sector, const float z   ) ;
+  float LimitZ (int &Sector, const float x[] ) ;
+  float Interpolate2DTable  ( const int ORDER, const float x, const float y, const int nx, const int ny,
                                         const float XV[], const float YV[], const TMatrix &Array ) ;
-  virtual float Interpolate3DTable ( const int ORDER, const float x,    const float y,    const float z,
+  float Interpolate3DTable ( const int ORDER, const float x,    const float y,    const float z,
                                        const int  nx,    const int  ny,    const int  nz,
                                        const float XV[], const float YV[], const float ZV[],
                                        TMatrix** ArrayofArrays ) ;
-  virtual void    Interpolate2DEdistortion ( const int ORDER, const float r, const float z,
+  void    Interpolate2DEdistortion ( const int ORDER, const float r, const float z,
       const float Er[EMap_nZ][EMap_nR], float &Er_value ) ;
-  virtual void    Interpolate3DEdistortion ( const int ORDER, const float r, const float phi, const float z,
+  void    Interpolate3DEdistortion ( const int ORDER, const float r, const float phi, const float z,
       const float Er[EMap_nZ][EMap_nPhi][EMap_nR], const float Ephi[EMap_nZ][EMap_nPhi][EMap_nR],
       float &Er_value, float &Ephi_value ) ;
-  virtual void    PoissonRelaxation  ( TMatrix &ArrayV, TMatrix &Charge, TMatrix &EroverEz,
+  void    PoissonRelaxation  ( TMatrix &ArrayV, TMatrix &Charge, TMatrix &EroverEz,
                                        const int ITERATIONS ) ;
 
-  virtual void    Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** ArrayofCharge, TMatrix** ArrayofEroverEz,
+  void    Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** ArrayofCharge, TMatrix** ArrayofEroverEz,
                                        TMatrix** ArrayofEPhioverEz,
                                        const int PHISLICES, const float DeltaPhi,
                                        const int ITERATIONS, const int SYMMETRY) ;
@@ -214,47 +214,47 @@ class StMagUtilities
 
   StMagUtilities (int mode = 0 ) ;
   StMagUtilities ( const StarMagField::EBField map, const float factor, int mode );
-  virtual ~StMagUtilities () {fgInstance = 0;}
+  ~StMagUtilities () {fgInstance = 0;}
   static StMagUtilities* Instance();
 
-  virtual void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
-  virtual void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
+  void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
+  void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
 
-  virtual bool    UsingDistortion( const DistortSelect distortion ) { return ((mDistortionMode & distortion) ? true : false); }
+  bool    UsingDistortion( const DistortSelect distortion ) { return ((mDistortionMode & distortion) ? true : false); }
 
-  virtual void    DoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    Undo2DBDistortion ( const float x[], float Xprime[], int Sector = -1 ); // {UndoBDistortion(x,Xprime,Sector);}
-  virtual void    FastUndoBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    FastUndo2DBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoPad13Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoPad40Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoTwistDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoClockDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoMembraneDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoEndcapDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoSpaceChargeDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoSpaceChargeR0Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoSpaceChargeR2Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    Undo2DGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    Undo3DGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoFullGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoIFCShiftDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoShortedRingDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoGGVoltErrorDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoSectorAlignDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
-  virtual void    UndoAbortGapDistortion ( const float x[], float Xprime[], int Sector = -1, float TimeSinceDeposition = -1.0 ) ;
+  void    DoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    Undo2DBDistortion ( const float x[], float Xprime[], int Sector = -1 ); // {UndoBDistortion(x,Xprime,Sector);}
+  void    FastUndoBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    FastUndo2DBDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoPad13Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoPad40Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoTwistDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoClockDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoMembraneDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoEndcapDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoSpaceChargeDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoSpaceChargeR0Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoSpaceChargeR2Distortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    Undo2DGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    Undo3DGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoFullGridLeakDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoIFCShiftDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoShortedRingDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoGGVoltErrorDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoSectorAlignDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
+  void    UndoAbortGapDistortion ( const float x[], float Xprime[], int Sector = -1, float TimeSinceDeposition = -1.0 ) ;
 
-  virtual void    FixSpaceChargeDistortion ( const int Charge, const float x[3], const float p[3],
+  void    FixSpaceChargeDistortion ( const int Charge, const float x[3], const float p[3],
       const Prime PrimaryOrGlobal,
       float x_new[3], float p_new[3],
       const unsigned int RowMask1 = 0xFFFFFF00,
       const unsigned int RowMask2 = 0x1FFFFF,
       const float VertexError = 0.0200 ) ;
 
-  virtual void    ApplySpaceChargeDistortion ( const double sc, const int Charge,
+  void    ApplySpaceChargeDistortion ( const double sc, const int Charge,
       const float x[3], const float p[3],
       const Prime PrimaryOrGlobal, int &new_Charge,
       float x_new[3], float p_new[3],
@@ -262,7 +262,7 @@ class StMagUtilities
       const unsigned int RowMask2 = 0x1FFFFF,
       const float VertexError = 0.0200 ) ;
 
-  virtual int   PredictSpaceChargeDistortion ( int   sec,
+  int   PredictSpaceChargeDistortion ( int   sec,
       int   Charge,
       float Pt,
       float VertexZ,
@@ -272,7 +272,7 @@ class StMagUtilities
       const unsigned int RowMask2,
       float &pSpace ) ;
 
-  virtual int   PredictSpaceChargeDistortion ( int   sec,
+  int   PredictSpaceChargeDistortion ( int   sec,
       int   Charge,
       float Pt,
       float VertexZ,
@@ -285,7 +285,7 @@ class StMagUtilities
       float RowMaskErrorRPhi[64],
       float &pSpace ) ;
 
-  virtual int   PredictSpaceChargeDistortion ( int   NHits,
+  int   PredictSpaceChargeDistortion ( int   NHits,
       int   Charge,
       float Pt,
       float VertexZ,
@@ -297,38 +297,38 @@ class StMagUtilities
       double ErrorRPhi[128],
       float &pSpace ) ;
 
-  virtual int    GetSpaceChargeMode();
-  virtual void     ManualSpaceChargeR2(double SpcChg, float EWRatio = 1.0 )
+  int    GetSpaceChargeMode();
+  void     ManualSpaceChargeR2(double SpcChg, float EWRatio = 1.0 )
   {
     SpaceChargeR2 = SpcChg ; fSpaceChargeR2 = 0 ;
     SpaceChargeEWRatio = EWRatio ;
   }
-  virtual void     AutoSpaceCharge()   {GetSpaceCharge()  ; } // use DB
-  virtual void     AutoSpaceChargeR2() {GetSpaceChargeR2(); } // use DB
-  virtual double CurrentSpaceCharge()   {return SpaceCharge  ;}
-  virtual double CurrentSpaceChargeR2() {return SpaceChargeR2;}
-  virtual float  CurrentSpaceChargeEWRatio() { return SpaceChargeEWRatio ; }
-  virtual bool   UpdateTPCHighVoltages();
-  virtual bool   UpdateShortedRing();
-  virtual void     UseIterativeUndoDistortion(bool flag = true) { iterateDistortion = flag; }
-  virtual int    IterationFailCount(); // must be called once before first actual use
+  void     AutoSpaceCharge()   {GetSpaceCharge()  ; } // use DB
+  void     AutoSpaceChargeR2() {GetSpaceChargeR2(); } // use DB
+  double CurrentSpaceCharge()   {return SpaceCharge  ;}
+  double CurrentSpaceChargeR2() {return SpaceChargeR2;}
+  float  CurrentSpaceChargeEWRatio() { return SpaceChargeEWRatio ; }
+  bool   UpdateTPCHighVoltages();
+  bool   UpdateShortedRing();
+  void     UseIterativeUndoDistortion(bool flag = true) { iterateDistortion = flag; }
+  int    IterationFailCount(); // must be called once before first actual use
   float  GetConst_0() { return Const_0; }
   float  GetConst_1() { return Const_1; }
   float  GetConst_2() { return Const_2; }
   static  void    SetDoDistortionT  (TFile* f = 0);
   static  void    SetUnDoDistortionT(TFile* f = 0);
 
-  virtual void     Cart2Polar(const float* x, float &r, float &phi)
+  void     Cart2Polar(const float* x, float &r, float &phi)
   {
     r      =  TMath::Sqrt( x[0] * x[0] + x[1] * x[1] ) ;
     phi    =  TMath::ATan2(x[1], x[0]) ;
   }
-  virtual void     Cart2Polar(const float* x, double &r, double &phi)
+  void     Cart2Polar(const float* x, double &r, double &phi)
   {
     r      =  TMath::Sqrt( x[0] * x[0] + x[1] * x[1] ) ;
     phi    =  TMath::ATan2(x[1], x[0]) ;
   }
-  virtual void     Polar2Cart(const double r, const double phi, float* Xprime)
+  void     Polar2Cart(const double r, const double phi, float* Xprime)
   {
     Xprime[0] = r * TMath::Cos(phi) ;
     Xprime[1] = r * TMath::Sin(phi) ;

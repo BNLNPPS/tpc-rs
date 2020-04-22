@@ -17,20 +17,20 @@ class StTpcCoordinate
     mPosition(x, y, z), mFromSector(sect), mFromRow(row) {}
   StTpcCoordinate(const StThreeVector<double> &position, const Int_t sect, Int_t row) :
     mPosition(position), mFromSector(sect), mFromRow(row)  {}
-  virtual ~StTpcCoordinate() {}
+  ~StTpcCoordinate() {}
   Int_t operator==(const StTpcCoordinate &p) const {return p.mPosition == mPosition;}
   Int_t operator!=(const StTpcCoordinate &p) const {return !(*this == p);}
 
   // access functions provided by StThreeVector
-  virtual const StThreeVector<double> &position()  const { return mPosition; }
+  const StThreeVector<double> &position()  const { return mPosition; }
   Int_t  fromSector()                        const { return mFromSector; }
   Int_t  fromRow()                           const { return mFromRow; }
   Int_t  sector()                            const { return mFromSector; }
   Int_t  row()                               const { return mFromRow; }
   StThreeVector<double> &position()                { return mPosition; }
-  virtual void  setPosition(StThreeVector<double> &position) { mPosition = position; }
-  virtual void  setSector(Int_t sector)            { mFromSector = sector; }
-  virtual void  setRow(Int_t row)                  { mFromRow   = row; }
+  void  setPosition(StThreeVector<double> &position) { mPosition = position; }
+  void  setSector(Int_t sector)            { mFromSector = sector; }
+  void  setRow(Int_t row)                  { mFromRow   = row; }
  protected:
   StThreeVector<double> mPosition;
   Int_t                 mFromSector;
