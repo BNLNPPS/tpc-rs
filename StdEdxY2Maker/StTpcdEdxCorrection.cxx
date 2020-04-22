@@ -280,12 +280,12 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
   double slope = 0;
   int nrows = 0;
   double VarXs[kTpcLast] = {-999.};
-  VarXs[kTpcZDC]               = (CdEdx.Zdc > 0) ? TMath::Log10(CdEdx.Zdc) : 0;
+  VarXs[kTpcZDC]               = (CdEdx.Zdc > 0) ? std::log10(CdEdx.Zdc) : 0;
   VarXs[kTpcCurrentCorrection] = CdEdx.Crow;
   VarXs[kTpcrCharge]           = CdEdx.rCharge;
   VarXs[kTpcRowQ]              = CdEdx.Qcm;
   VarXs[kTpcPadTBins]          = CdEdx.Npads * CdEdx.Ntbins;
-  VarXs[ktpcPressure]          = TMath::Log(gas->barometricPressure);
+  VarXs[ktpcPressure]          = std::log(gas->barometricPressure);
   VarXs[kDrift]                = ZdriftDistanceO2;      // Blair correction
   VarXs[kMultiplicity]         = CdEdx.QRatio;
   VarXs[kzCorrection]          = ZdriftDistance;
@@ -357,7 +357,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
       if (ADC <= 0) return 3; //HACK to avoid FPE (VP)
 
-      double xx[2] = {TMath::Log(ADC), (double)(CdEdx.npads + CdEdx.ntmbks)};
+      double xx[2] = {std::log(ADC), (double)(CdEdx.npads + CdEdx.ntmbks)};
       l = kTpcOutIn;
       int nrows = ((St_TpcAdcCorrectionMDF*) m_Corrections[k].Chair)->nrows();
 
@@ -412,7 +412,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
       iCut = 1; // Always cut
     }
     else if (k == kdXCorrection) {
-      xL2 = TMath::Log2(dx);
+      xL2 = std::log2(dx);
       dXCorr = ((St_tpcCorrectionC*)m_Corrections[k].Chair)->CalcCorrection(l, xL2);
 
       if (std::abs(dXCorr) > 10) return 3;
@@ -479,7 +479,7 @@ ENDL:
     CdEdx.C[k].dE = dE;
     CdEdx.C[k].dx = dx;
     CdEdx.C[k].dEdx    = CdEdx.C[k].dE / CdEdx.C[k].dx;
-    CdEdx.C[k].dEdxL   = TMath::Log(CdEdx.C[k].dEdx);
+    CdEdx.C[k].dEdxL   = std::log(CdEdx.C[k].dEdx);
   }
 
   CdEdx.F = CdEdx.C[kTpcLast];

@@ -548,11 +548,11 @@ void StTpcRSMaker::InitRun(int runnumber)
   const int Npbins  = 151;
   const int NpbinsL =  10;
   const double Xmax = 1e5;
-  double    dX = TMath::Log(Xmax / 10) / (Npbins - NpbinsL);
+  double    dX = std::log(Xmax / 10) / (Npbins - NpbinsL);
   double* pbins = new double[Npbins];
   double* pbinsL =  new double[Npbins];
   pbins[0] = 0.5;
-  pbinsL[0] = TMath::Log(pbins[0]);
+  pbinsL[0] = std::log(pbins[0]);
 
   for (int bin = 1; bin < Npbins; bin++) {
     if (bin <= NpbinsL) {
@@ -570,7 +570,7 @@ void StTpcRSMaker::InitRun(int runnumber)
       pbins[bin] = pbins[bin - 1] + dbin;
     }
 
-    pbinsL[bin] = TMath::Log(pbins[bin]);
+    pbinsL[bin] = std::log(pbins[bin]);
   }
 
   for (int io = 0; io < 2; io++) {
@@ -1038,7 +1038,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         do {// Clusters
           float dS = 0;
           float dE = 0;
-          static double cLog10 = TMath::Log(10.);
+          static double cLog10 = std::log(10.);
 
           if (eKin >= 0.0) {
             if (eKin == 0.0) break;
@@ -1054,7 +1054,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           }
           else {
             if (charge) {
-              dS = - TMath::Log(gRandom->Rndm()) / NP;
+              dS = - std::log(gRandom->Rndm()) / NP;
 
               if (mdNdEL10) dE = TMath::Exp(cLog10 * mdNdEL10->GetRandom());
               else          dE = St_TpcResponseSimulatorC::instance()->W() *
@@ -1225,7 +1225,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
           if (ClusterProfile) {
             if (TotalSignalInCluster > 0 && checkList[io][19]) {
-              checkList[io][19]->Fill(WireIndex, TMath::Log(TotalSignalInCluster));
+              checkList[io][19]->Fill(WireIndex, std::log(TotalSignalInCluster));
 
             }
           }
@@ -1265,7 +1265,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             checkList[io][18]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), nTotal);
 
             if (nP > 0 && nTotal > 0)
-              checkList[io][20]->Fill(TMath::Log(nP), TMath::Log(nTotal) - TMath::Log(nP));
+              checkList[io][20]->Fill(std::log(nP), std::log(nTotal) - std::log(nP));
           }
         }
 
@@ -1326,7 +1326,7 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
   double dNdx = 0;
 
   if      (mdNdx   ) dNdx = mdNdx->Interpolate(betaGamma);
-  else if (mdNdxL10) dNdx = mdNdxL10->Interpolate(TMath::Log10(betaGamma));
+  else if (mdNdxL10) dNdx = mdNdxL10->Interpolate(std::log10(betaGamma));
 
   double Q_eff = std::abs(charge % 100);
 
@@ -1651,7 +1651,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   // E.Mathieson (3.2b), V.Chernyatin said that it should be used this (Weber ) approximation 07/09/08
   double rc = s / (2 * pi) * TMath::Exp(pi * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
   //  double rc = 4*h/pi; LOG_INFO << "rc = " << rc << " cm\n";   // E.Mathieson (4.3), no valid for our case
-  double C  = 1. / (2 * TMath::Log(rc / ra)); LOG_INFO << "C = " << C << '\n';
+  double C  = 1. / (2 * std::log(rc / ra)); LOG_INFO << "C = " << C << '\n';
   double E  = 2 * pi * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
   // Gain variation: M = M0*(1 - k*cos(2*alpha))
   double k = 2 * B / 3.*std::pow((pi / E0 / s), 2) * std::pow(C * Va, 3); LOG_INFO << "k = " << k << '\n';
@@ -1664,7 +1664,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double rp = TMath::Sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << '\n';
   // qc = rp*ra*sin(alpha)/(2*h) + C/2*log(1 + t/t0) = A*sin(alpha) + B
   double Aconstant = rp * ra / (2 * h);        LOG_INFO << "Aconstant = " << Aconstant << '\n';
-  double Bconstant = C / 2 * TMath::Log(1 + t / t0); LOG_INFO << "Bconstant = " << Bconstant << '\n';
+  double Bconstant = C / 2 * std::log(1 + t / t0); LOG_INFO << "Bconstant = " << Bconstant << '\n';
   double Gains[2];
 
   for (int i = 0; i < 2; i++) {
@@ -1676,7 +1676,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double r = 0;
 
   for (int i = 0; i < 2; i++) {
-    r = TMath::Log(Gains[i] / GainsAv); LOG_INFO << "Relative gain " << r << " at alpha = " << alpha[i] << '\n';
+    r = std::log(Gains[i] / GainsAv); LOG_INFO << "Relative gain " << r << " at alpha = " << alpha[i] << '\n';
   }
 
   return r;
@@ -1712,7 +1712,7 @@ int StTpcRSMaker::CompareT(const void** elem1, const void** elem2)
 double StTpcRSMaker::fei(double t, double t0, double T)
 {
   static const double xmaxt = 708.39641853226408;
-  static const double xmaxD  = xmaxt - TMath::Log(xmaxt);
+  static const double xmaxD  = xmaxt - std::log(xmaxt);
   double t01 = xmaxD, t11 = xmaxD;
 
   if (T > 0) {t11 = (t + t0) / T;}

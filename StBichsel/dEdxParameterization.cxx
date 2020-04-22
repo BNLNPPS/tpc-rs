@@ -77,12 +77,12 @@ dEdxParameterization::dEdxParameterization(const char* Tag, int keep3D,
   //  if (! keep3D) SafeDelete(fPhi);
   // set normalization factor to 2.3976 keV/cm at beta*gamma = 4;
   static const double dEdxMIP = 2.39761562607903311; // [keV/cm]
-  static const double MIPBetaGamma10 = TMath::Log10(4.);
-  //  fMostProbableZShift = TMath::Log(dEdxMIP) - Interpolation(fP,MIPBetaGamma10,1,0);
-  //  fAverageZShift      = TMath::Log(dEdxMIP) - Interpolation(fA,MIPBetaGamma10,1,0);
+  static const double MIPBetaGamma10 = std::log10(4.);
+  //  fMostProbableZShift = std::log(dEdxMIP) - Interpolation(fP,MIPBetaGamma10,1,0);
+  //  fAverageZShift      = std::log(dEdxMIP) - Interpolation(fA,MIPBetaGamma10,1,0);
   fI70Shift           *= dEdxMIP / GetI70(MIPBetaGamma10, 1);
   fI60Shift           *= dEdxMIP / GetI60(MIPBetaGamma10, 1);
-  fMostProbableZShift  = TMath::Log(fI70Shift);
+  fMostProbableZShift  = std::log(fI70Shift);
   fAverageZShift       = fMostProbableZShift;
   const char* Names[KPidParticles + 1] = {"e", "proton", "kaon", "pi", "mu", "deuteron", "triton", "He3", "alpha", "all"};
 
