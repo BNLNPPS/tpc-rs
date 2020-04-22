@@ -343,21 +343,6 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
 };
 
 
-void StarMagField::SetStarMagFieldRotation(TGeoRotation &rot)
-{
-  fStarMagFieldRotation = rot;
-  fStarMagFieldRotation.SetName("StarMagFieldRotation");
-  fStarMagFieldRotation.Print();
-}
-
-
-void StarMagField::SetStarMagFieldRotation(double* r)
-{
-  TGeoRotation rot;
-  rot.SetMatrix(r);
-  SetStarMagFieldRotation(rot);
-}
-
 bool StarMagField::mConstBz = false;
 
 
@@ -545,50 +530,6 @@ void StarMagField::B3DField( const float x[], float B[] )
   return ;
 
 }
-void StarMagField::B3DField( const double x[], double B[] )
-{
-  float xx[3] = {(float) x[0], (float) x[1], (float) x[2]};
-  float bb[3];
-  B3DField(xx, bb);
-  B[0] = bb[0]; B[1] = bb[1]; B[2] = bb[2];
-}
-
-/// B field in Radial coordinates - 2D field (ie Phi symmetric)
-
-void StarMagField::BrBzField( const float r, const float z, float &Br_value, float &Bz_value )
-
-{
-
-
-  Br_value =  Bz_value = 0;
-
-  if (r > 0) Interpolate2DBfield( r, z, Br_value, Bz_value ) ;
-
-  return;
-
-}
-
-
-// /// B field in Radial coordinates - 3D field
-
-void StarMagField::BrBz3DField( const float r, const float z, const float phi,
-                                float &Br_value, float &Bz_value, float &Bphi_value )
-
-{
-
-  Bphi_value = 0;
-  Br_value =  Bz_value = 0;
-
-  if (r > 0)  {
-    Interpolate3DBfield( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
-  }
-
-  return;
-
-}
-
-
-
 
 
 /// Read the electric and magnetic field maps stored on disk
@@ -1092,43 +1033,3 @@ void StarMagField::Search( int N, const float Xarray[], float x, int &low )
   if ( x == Xarray[0]   ) low = 0 ;
 
 }
-
-
-#define PPLOCK(A) \
-  void StarMagField::Set ## A (float m) {				\
-    if (!fLock) f ## A  = m;					\
-    else printf("StarMagField::Set"#A"() "#A" is locked at %f; Set to %f is ignored\n", f ## A ,m); \
-  }
-PPLOCK(Factor)
-PPLOCK(Rescale)
-PPLOCK(BDipole)
-PPLOCK(RmaxDip)
-PPLOCK(ZminDip)
-PPLOCK(ZmaxDip)
-#undef PPLOCK
-
-
-void StarMagField::SetLock ()
-{
-  if (! fLock) {
-    fLock = true;
-    printf("StarMagField::SetLock lock StarMagField parameters\n");
-    Print();
-  }
-}
-
-
-#define PrintPar(A) printf("StarMagField:: "#A"\t%f\n",f ## A)
-void StarMagField::Print (Option_t*) const
-{
-  if (fLock) printf("StarMagField parameters are locked\n");
-
-  printf("StarMagField:: Map\t%i\n", fMap  );
-  PrintPar(Factor );
-  PrintPar(Rescale);
-  PrintPar(BDipole);
-  PrintPar(RmaxDip);
-  PrintPar(ZminDip);
-  PrintPar(ZmaxDip);
-}
-#undef PrintPar

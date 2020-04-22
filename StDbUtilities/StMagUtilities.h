@@ -104,8 +104,6 @@ class StMagUtilities
   virtual void    GetAbortGapCharge() ;
 
   virtual void    CommonStart ( int mode ) ;
-  virtual void    Search ( const int N, const float Xarray[], const float x, int &low )
-  {StarMagField::Instance()->Search(N, Xarray, x, low);}
   virtual int   IsPowerOfTwo (int i) ;
   virtual void    SectorNumber ( int &Sector, const float x[] ) ;
   virtual void    SectorNumber ( int &Sector, float phi, const float z ) ;
@@ -113,21 +111,12 @@ class StMagUtilities
   virtual int   SectorSide   ( int &Sector, const float x[] ) ;  // -1 for east, +1 for west
   virtual int   SectorSide   ( int &Sector, const float z   ) ;
   virtual float LimitZ (int &Sector, const float x[] ) ;
-  virtual float Interpolate ( const float Xarray[], const float Yarray[],
-                                const int ORDER, const float x )
-  {return StarMagField::Instance()->Interpolate(Xarray, Yarray, ORDER, x);}
   virtual float Interpolate2DTable  ( const int ORDER, const float x, const float y, const int nx, const int ny,
                                         const float XV[], const float YV[], const TMatrix &Array ) ;
   virtual float Interpolate3DTable ( const int ORDER, const float x,    const float y,    const float z,
                                        const int  nx,    const int  ny,    const int  nz,
                                        const float XV[], const float YV[], const float ZV[],
                                        TMatrix** ArrayofArrays ) ;
-  virtual void    Interpolate2DBfield ( const float r, const float z,
-                                        float &Br_value, float &Bz_value )
-  {StarMagField::Instance()->Interpolate2DBfield ( r, z, Br_value, Bz_value );}
-  virtual void    Interpolate3DBfield ( const float r, const float z, const float phi,
-                                        float &Br_value, float &Bz_value, float &Bphi_value )
-  {StarMagField::Instance()->Interpolate3DBfield ( r, z, phi, Br_value, Bz_value, Bphi_value );}
   virtual void    Interpolate2DEdistortion ( const int ORDER, const float r, const float z,
       const float Er[EMap_nZ][EMap_nR], float &Er_value ) ;
   virtual void    Interpolate3DEdistortion ( const int ORDER, const float r, const float phi, const float z,
@@ -197,7 +186,6 @@ class StMagUtilities
   float  Resistor[10]               ; // Amount of compensating resistance added for this short
   float  deltaVGGEast               ; // Voltage error on the East Gated Grid
   float  deltaVGGWest               ; // Voltage error on the West Gated Grid
-  bool   useManualSCForPredict      ; // Flag on using fixed SC value or manually set one for Predict()
   bool   iterateDistortion          ; // Flag on whether to iterate in determining distortions
   int    iterationFailCounter       ; // Count of number of iteration fails
   bool   doingDistortion            ; // Flag on whether doing or undoing distortions
@@ -230,17 +218,8 @@ class StMagUtilities
   virtual ~StMagUtilities () {fgInstance = 0;}
   static StMagUtilities* Instance();
 
-  virtual void    BField ( const float x[], float B[] )
-  {StarMagField::Instance()->BField(x, B);}
-  virtual void    BrBzField( const float r, const float z, float &Br_value, float &Bz_value )
-  {StarMagField::Instance()->BrBzField(r, z, Br_value, Bz_value );}
-  virtual void    B3DField ( const float x[], float B[] )
-  {StarMagField::Instance()->B3DField(x, B);}
   virtual void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
   virtual void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
-  virtual void    BrBz3DField ( const float r, const float z, const float phi,
-                                float &Br_value, float &Bz_value, float &Bphi_value )
-  {StarMagField::Instance()->BrBz3DField(r, z, phi, Br_value, Bz_value, Bphi_value);}
 
   virtual bool    UsingDistortion( const DistortSelect distortion ) { return ((mDistortionMode & distortion) ? true : false); }
 
@@ -319,19 +298,12 @@ class StMagUtilities
       double ErrorRPhi[128],
       float &pSpace ) ;
 
-  virtual void     ManualShortedRing ( int EastWest, int InnerOuter,
-                                       float RingNumber, float MissingRValue, float ExtraRValue) ;
-
   virtual int    GetSpaceChargeMode();
-  virtual void     ManualSpaceCharge(double SpcChg)   { SpaceCharge   = SpcChg ; fSpaceCharge   = 0 ; }
   virtual void     ManualSpaceChargeR2(double SpcChg, float EWRatio = 1.0 )
   {
     SpaceChargeR2 = SpcChg ; fSpaceChargeR2 = 0 ;
     SpaceChargeEWRatio = EWRatio ;
   }
-  virtual void     ManualGridLeakStrength(double inner, double middle, double outer);
-  virtual void     ManualGridLeakRadius  (double inner, double middle, double outer);
-  virtual void     ManualGridLeakWidth   (double inner, double middle, double outer);
   virtual void     AutoSpaceCharge()   {GetSpaceCharge()  ; } // use DB
   virtual void     AutoSpaceChargeR2() {GetSpaceChargeR2(); } // use DB
   virtual double CurrentSpaceCharge()   {return SpaceCharge  ;}
@@ -339,8 +311,6 @@ class StMagUtilities
   virtual float  CurrentSpaceChargeEWRatio() { return SpaceChargeEWRatio ; }
   virtual bool   UpdateTPCHighVoltages();
   virtual bool   UpdateShortedRing();
-  virtual void     UseManualSCForPredict(bool flag = true) { useManualSCForPredict = flag; }
-  virtual void     ManualGGVoltError(double east, double west);
   virtual void     UseIterativeUndoDistortion(bool flag = true) { iterateDistortion = flag; }
   virtual int    IterationFailCount(); // must be called once before first actual use
   float  GetConst_0() { return Const_0; }
