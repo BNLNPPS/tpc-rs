@@ -2482,7 +2482,7 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
 
         for ( int n = 1 ; n < Nterms ; ++n ) {
           double k  = n * TMath::Pi() / TPC_Z0 ;  // Integrated Charge Density
-          double zterm = TMath::Power(-1, (n + 1)) * ( 1.0 - TMath::Cos( k * ( TPC_Z0 - z ) ) ) ;
+          double zterm = std::pow(-1, (n + 1)) * ( 1.0 - TMath::Cos( k * ( TPC_Z0 - z ) ) ) ;
           //double k  = (2*n-1) * TMath::Pi() / TPC_Z0 ;  // Uniform Charge Density
           //double zterm = 1.0 + TMath::Cos( k *  z ) ;   // Uniform Charge Density
           double Cn = -4.0 / ( k * k * k * TPC_Z0 * StarMagE ) ;
@@ -2618,7 +2618,7 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
         // Next few lines are for a 1/R**N distribution where N may be any real number but not equal to 2.0
         // float N = 1.65 ;  // 1.65 is a fit to real charge distribution by GVB on 11/4/2004
         // Charge(i,j) = zterm * (2-N) /
-        //            ( ( TMath::Power(OFCRadius,2-N) - TMath::Power(IFCRadius,2-N) ) * TMath::Power(Radius,N) ) ;
+        //            ( ( std::pow(OFCRadius,2-N) - std::pow(IFCRadius,2-N) ) * std::pow(Radius,N) ) ;
       } // All cases normalized to have same total charge as the Uniform Charge case == 1.0 * Volume of West End of TPC
     }
 
@@ -5456,9 +5456,9 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
     int   N = (int)(phi / PiOver12)  ;
     phi_prime = phi - N * PiOver12 ;
 
-    if ( TMath::Power(-1, N) < 0 ) phi_prime = PiOver12 - phi_prime ; // Note that
+    if ( std::pow(-1, N) < 0 ) phi_prime = PiOver12 - phi_prime ; // Note that
 
-    if ( TMath::Power(-1, N) < 0 ) FLIP = -1 ;    // Note change of sign.  Assume reflection symmetry!!
+    if ( std::pow(-1, N) < 0 ) FLIP = -1 ;    // Note change of sign.  Assume reflection symmetry!!
   }
 
   r_eff   = r ;                                     // Do not allow calculation to go too near the gap

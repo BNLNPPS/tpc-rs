@@ -921,7 +921,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           checkList[io][5]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), lgam);
         }
 
-        double gamma = TMath::Power(10., lgam) + 1;
+        double gamma = std::pow(10., lgam) + 1;
         double betaGamma = TMath::Sqrt(gamma * gamma - 1.);
         StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
         double bg = 0;
@@ -1094,7 +1094,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #endif
           double xRange = 0;
 
-          if (dE > ElectronRangeEnergy) xRange = ElectronRange * TMath::Power((dE + dEr) / ElectronRangeEnergy, ElectronRangePower);
+          if (dE > ElectronRangeEnergy) xRange = ElectronRange * std::pow((dE + dEr) / ElectronRangeEnergy, ElectronRangePower);
 
           int Nt = 0; // HeedCsize(dE, dEr,rs);
           float dET = dE + dEr;
@@ -1333,7 +1333,7 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
   if (Q_eff > 1)   {
     // Effective charge from GEANT ghion.F
     double w1 = 1.034 - 0.1777 * TMath::Exp(-0.08114 * Q_eff);
-    double w2 = beta * TMath::Power(Q_eff, -2. / 3.);
+    double w2 = beta * std::pow(Q_eff, -2. / 3.);
     double w3 = 121.4139 * w2 + 0.0378 * TMath::Sin(190.7165 * w2);
     Q_eff      *= 1. - w1 * TMath::Exp(-w3);
   }
@@ -1654,7 +1654,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double C  = 1. / (2 * TMath::Log(rc / ra)); LOG_INFO << "C = " << C << '\n';
   double E  = 2 * pi * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
   // Gain variation: M = M0*(1 - k*cos(2*alpha))
-  double k = 2 * B / 3.*TMath::Power((pi / E0 / s), 2) * TMath::Power(C * Va, 3); LOG_INFO << "k = " << k << '\n';
+  double k = 2 * B / 3.*std::pow((pi / E0 / s), 2) * std::pow(C * Va, 3); LOG_INFO << "k = " << k << '\n';
   // Induced charge variation
   t0 = ra * ra / (4 * mu * C * Va);
   LOG_INFO << "t0 = " << 1e9 * t0 << " ns\n";                                   // E.Mathieson (2.10)
@@ -1838,7 +1838,7 @@ double StTpcRSMaker::Ec(double* x, double* p)
 
   if (x[0] < p[0]) return 1;
 
-  return TMath::Power(p[0] / x[0], 4);
+  return std::pow(p[0] / x[0], 4);
 }
 
 
