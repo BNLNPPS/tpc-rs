@@ -85,7 +85,6 @@ class StarMagField
   void    BField   ( const float x[], float B[] ) ;
   void    BField   ( const double x[], double B[] ) ;
   void    B3DField ( const float x[], float B[] ) ;
-  float GetFactor()  {return fFactor;}
   const TGeoRotation &StarMagFieldRotation() {return * &fStarMagFieldRotation;}
 };
 
