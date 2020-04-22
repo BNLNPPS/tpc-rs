@@ -12,7 +12,7 @@ class StTpcPadCoordinate
 {
  public:
   StTpcPadCoordinate(const Int_t sector = 0, const Int_t row = 0, const Float_t pad = 0, const Float_t tb = 0) : mSector(sector), mRow(row), mPad(pad), mTimeBucket(tb) {/**/}
-  virtual ~StTpcPadCoordinate() {/**/}
+  ~StTpcPadCoordinate() {/**/}
   Int_t operator==(const StTpcPadCoordinate &p) const {return (p.mSector == mSector && p.mRow == mRow && p.mPad == mPad && p.mTimeBucket == mTimeBucket);}
   Int_t operator!=(const StTpcPadCoordinate &p) const {return !(*this == p);};
   // access functions

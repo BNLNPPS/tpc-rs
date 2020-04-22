@@ -20,13 +20,13 @@ class StGlobalCoordinate
   StGlobalCoordinate(const StThreeVector<double> &x) : mPosition(x) {}
   StGlobalCoordinate(const StThreeVector<float> &x) : mPosition(x.x(), x.y(), x.z()) {}
 
-  virtual ~StGlobalCoordinate() {}
+  ~StGlobalCoordinate() {}
   int operator==(const StGlobalCoordinate &p) const {return p.mPosition == mPosition;}
   int operator!=(const StGlobalCoordinate &p) const {return !(*this == p);}
   // access functions provided by StThreeVector
-  virtual const StThreeVector<double> &position() const {return * &mPosition;}
-  virtual       StThreeVector<double> &position()       {return * &mPosition;}
-  virtual void setPosition(const StThreeVector<double> &val) {mPosition = val; }
+  const StThreeVector<double> &position() const {return * &mPosition;}
+        StThreeVector<double> &position()       {return * &mPosition;}
+  void setPosition(const StThreeVector<double> &val) {mPosition = val; }
 
  protected:
   StThreeVector<double> mPosition;

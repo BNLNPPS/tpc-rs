@@ -37,8 +37,8 @@ class StTpcRSMaker
              };
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
-  virtual              ~StTpcRSMaker();
-  virtual void InitRun(int runnumber = 0);
+  ~StTpcRSMaker();
+  void InitRun(int runnumber = 0);
   void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                   std::vector<g2t_track_st>& g2t_track,
             const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
@@ -48,7 +48,7 @@ class StTpcRSMaker
   TF1F* GetTimeShape0(int io = 0)  {return fgTimeShape0[io];}
   TF1F* GetTimeShape3(int io = 0)  {return fgTimeShape3[io];}
   double GetNoPrimaryClusters(double betaGamma, int charge);
-  virtual void Print(Option_t* option = "") const;
+  void Print(Option_t* option = "") const;
   void DigitizeSector(int sector, tpcrs::DigiData& digi_data);
   static int    AsicThresholds(short* ADCs);
   static int    SearchT(const void* elem1, const void** elem2);
