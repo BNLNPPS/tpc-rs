@@ -1087,11 +1087,11 @@ void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
     (r02(i) - r20(i))/(2*sinDelta2), // a13-a31
     (r10(i) - r01(i))/(2*sinDelta2)  // a21-a12
   };
-  double u = TMath::ATan2(c[0],c[1]);
-  double v = TMath::ATan(c[2]*TMath::Tan(Delta/2));
+  double u = std::atan2(c[0],c[1]);
+  double v = std::atan(c[2]*std::tan(Delta/2));
   phi = (v - u)/2 - TMath::Pi()/2;
   psi = (v + u)/2 - TMath::Pi()/2;
-  the = 2*TMath::ATan2(c[0]*TMath::Sin(v),c[2]*TMath::Sin(u));
+  the = 2*std::atan2(c[0]*TMath::Sin(v),c[2]*TMath::Sin(u));
   double raddeg = 180./TMath::Pi();
   phi   *= raddeg;
   the   *= raddeg;

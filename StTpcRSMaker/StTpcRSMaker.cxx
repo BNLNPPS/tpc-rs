@@ -1401,16 +1401,16 @@ double StTpcRSMaker::Gatti(double* x, double* par)
   double K3  = par[3];
   double lambda = y / h;
   double K2 = TMath::PiOver2() * (1. - 0.5 * TMath::Sqrt(K3));
-  //  double K1 = K2*TMath::Sqrt(K3)/(2*TMath::ATan(TMath::Sqrt(K3)));
+  //  double K1 = K2*TMath::Sqrt(K3)/(2*std::atan(TMath::Sqrt(K3)));
   double sqK3 = TMath::Sqrt(K3);
-  double ATsqK3 = 0.5 / TMath::ATan(sqK3);
+  double ATsqK3 = 0.5 / std::atan(sqK3);
   double Y1 = lambda - w / h / 2;
   double Y2 = Y1 + w / h;
   double X1 = K2 * Y1;
   double X2 = K2 * Y2;
-  double Z1 = sqK3 * TMath::TanH(X1);
-  double Z2 = sqK3 * TMath::TanH(X2);
-  double val = ATsqK3 * (TMath::ATan(Z2) - TMath::ATan(Z1));
+  double Z1 = sqK3 * std::tanh(X1);
+  double Z2 = sqK3 * std::tanh(X2);
+  double val = ATsqK3 * (std::atan(Z2) - std::atan(Z1));
   return val;
 }
 
@@ -2122,8 +2122,8 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
     double pitch = (CdEdx.row <= St_tpcPadConfigC::instance()->numberOfInnerRows(CdEdx.sector)) ?
                      St_tpcPadConfigC::instance()->innerSectorPadPitch(CdEdx.sector) :
                      St_tpcPadConfigC::instance()->outerSectorPadPitch(CdEdx.sector);
-    double PhiMax = TMath::ATan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
-    CdEdx.PhiR   = TMath::ATan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
+    double PhiMax = std::atan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
+    CdEdx.PhiR   = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
     CdEdx.xyzD[0] = TrackSegmentHits.dirLS.position().x();
     CdEdx.xyzD[1] = TrackSegmentHits.dirLS.position().y();
     CdEdx.xyzD[2] = TrackSegmentHits.dirLS.position().z();

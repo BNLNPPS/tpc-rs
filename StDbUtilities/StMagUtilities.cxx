@@ -2252,7 +2252,7 @@ void StMagUtilities::UndoMembraneDistortion( const float x[], float Xprime[], in
   double r, phi, z ;
 
   r      =  TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) ;
-  phi    =  TMath::ATan2(x[1],x[0]) ;
+  phi    =  std::atan2(x[1],x[0]) ;
   if ( phi < 0 ) phi += 2*TMath::Pi() ;             // Table uses phi from 0 to 2*Pi
   z      =  x[2] ;
 
@@ -2297,7 +2297,7 @@ void StMagUtilities::UndoEndcapDistortion( const float x[], float Xprime[], int 
   double r, phi, z ;
 
   r      =  TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) ;
-  phi    =  TMath::ATan2(x[1],x[0]) ;
+  phi    =  std::atan2(x[1],x[0]) ;
   if ( phi < 0 ) phi += 2*TMath::Pi() ;             // Table uses phi from 0 to 2*Pi
   z      =  x[2] ;
 
@@ -4032,7 +4032,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     if ( X2 * p[0] +  Y2 * p[1]  <  X1 * p[0] + Y1 * p[1] ) Direction = -1.0 ; // Test which of two directions the particle goes on the circle
   }
 
-  theta0    = TMath::ATan2( (x[1] - Y0), (x[0] - X0) ) ; // Assume that x[3] is the vertex if its a primary track
+  theta0    = std::atan2( (x[1] - Y0), (x[0] - X0) ) ; // Assume that x[3] is the vertex if its a primary track
   Xprime[0] = theta0 ;
   Yprime[0] = 0.0 ;
   eX[0] = 0.5 / R0 ;
@@ -4056,7 +4056,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     if (Y0 == 0.0) Ytrack[index]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[index] * Xtrack[index] ) ) ;
     else           Ytrack[index]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[index] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
-    DeltaTheta  =  TMath::ATan2(x[1] - Y0, x[0] - X0) - TMath::ATan2(Ytrack[index] - Y0, Xtrack[index] - X0) ;
+    DeltaTheta  =  std::atan2(x[1] - Y0, x[0] - X0) - std::atan2(Ytrack[index] - Y0, Xtrack[index] - X0) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4068,7 +4068,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     xx[0] = Xtrack[index] - (xxprime[0] - xx[0]) ; xx[1] = Ytrack[index] - (xxprime[1] - xx[1]) ; xx[2] = Ztrack[index] - (xxprime[2] - xx[2]) ;
     UndoSpaceChargeR2Distortion(xx, xxprime) ;
     Xtrack1[index] = xxprime[0] ; Ytrack1[index] = xxprime[1] ; Ztrack1[index] = xxprime[2] ;
-    theta = TMath::ATan2( (Ytrack[index] - Y0), (Xtrack[index] - X0) ) ; // Note (theta-theta0) must stay in range -pi,pi
+    theta = std::atan2( (Ytrack[index] - Y0), (Xtrack[index] - X0) ) ; // Note (theta-theta0) must stay in range -pi,pi
 
     while ( (theta - theta0) <  -1 * TMath::Pi() )   theta = theta + 2 * TMath::Pi() ;
 
@@ -4125,7 +4125,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   int count = 0 ;  p_new[2] = 0.0 ;
 
   for ( int i = 0 ; i < index + 1 ; i++ ) {
-    DeltaTheta  =  (TMath::ATan2(Ytrack1[i] - Y0_new, Xtrack1[i] - X0_new) - TMath::ATan2(x_new[1] - Y0_new, x_new[0] - X0_new)) ;
+    DeltaTheta  =  (std::atan2(Ytrack1[i] - Y0_new, Xtrack1[i] - X0_new) - std::atan2(x_new[1] - Y0_new, x_new[0] - X0_new)) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4247,7 +4247,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
     if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
     else           Ytrack[i]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[i] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
-    DeltaTheta  =  TMath::ATan2(x[1] - Y0, x[0] - X0) - TMath::ATan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
+    DeltaTheta  =  std::atan2(x[1] - Y0, x[0] - X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4346,7 +4346,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   int icount = 0 ;  p_new[2] = 0.0 ;
 
   for ( int i = 0 ; i < Index + 1 ; i++ ) {
-    DeltaTheta  = (TMath::ATan2(Yprime[i] - Y0_new, Xprime[i] - X0_new) - TMath::ATan2(x_new[1] - Y0_new, x_new[0] - X0_new)) ;
+    DeltaTheta  = (std::atan2(Yprime[i] - Y0_new, Xprime[i] - X0_new) - std::atan2(x_new[1] - Y0_new, x_new[0] - X0_new)) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4360,7 +4360,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   p_new[2]  *= Pt_new / ( -1 * ChargeB * R0_new * icount ) ;
 
   // Check if the charge of the track changed due to the distortions
-  float change = std::abs( TMath::ATan2(Y0, X0) - TMath::ATan2(Y0_new, X0_new) ) ;
+  float change = std::abs( std::atan2(Y0, X0) - std::atan2(Y0_new, X0_new) ) ;
 
   if ( change > 0.9 * TMath::Pi() && change < 1.1 * TMath::Pi() ) new_Charge = -1 * Charge ;
   else  new_Charge = Charge ;
@@ -4459,7 +4459,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
     else           Ytrack[i]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[i] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
-    DeltaTheta  =  TMath::ATan2(-1 * Y0, -1 * X0) - TMath::ATan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
+    DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4721,7 +4721,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     if ( R[i] < IFCRadius || R[i] > OFCRadius ) { // Check if point is outside the TPC
       Ytrack[i] = -1 * ChargeB * ( R[i] * R[i] / (2 * R0) ) ;
       Xtrack[i] = TMath::Sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
-      DeltaTheta  =  TMath::ATan2(-1 * Y0, -1 * X0) - TMath::ATan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
+      DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
       while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4735,7 +4735,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     // Handle non-circular padrows
     Xtrack[i] = R[i] ;
     Ytrack[i] = ChargeB * TMath::Sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
-    HitLocalPhi = TMath::ATan2(Ytrack[i], Xtrack[i]);
+    HitLocalPhi = std::atan2(Ytrack[i], Xtrack[i]);
 
     while (std::abs(HitLocalPhi) > PiOver12) {
       // Jump local coordinates to neighboring sector
@@ -4749,10 +4749,10 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
       Y0Prime = sinPhiPrime * X0 + cosPhiPrime * Y0;
 
       Ytrack[i] = ChargeB * TMath::Sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
-      HitLocalPhi = TMath::ATan2(Ytrack[i], Xtrack[i]);
+      HitLocalPhi = std::atan2(Ytrack[i], Xtrack[i]);
     }
 
-    DeltaTheta  =  TMath::ATan2(-1 * Y0Prime, -1 * X0Prime) - TMath::ATan2(Ytrack[i] - Y0Prime, Xtrack[i] - X0Prime) ;
+    DeltaTheta  =  std::atan2(-1 * Y0Prime, -1 * X0Prime) - std::atan2(Ytrack[i] - Y0Prime, Xtrack[i] - X0Prime) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4766,7 +4766,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     xx[2] = Ztrack[i];
 
     if (mDistortionMode & (kGridLeak | k3DGridLeak | kFullGridLeak)) {
-      HitPhi = TMath::ATan2(xx[1], xx[0]) ;
+      HitPhi = std::atan2(xx[1], xx[0]) ;
 
       while ( HitPhi < 0 ) HitPhi += TMath::TwoPi() ;
 
@@ -4939,7 +4939,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
 
     Ytrack[i] = -1 * ChargeB * ( R[i] * R[i] / (2 * R0) ) ;
     Xtrack[i] = TMath::Sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
-    DeltaTheta  =  TMath::ATan2(-1 * Y0, -1 * X0) - TMath::ATan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
+    DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
 
@@ -4964,7 +4964,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
     xx[1] = sinPhi * Xtrack[i] + cosPhi * Ytrack[i];
     xx[2] = Ztrack[i];
 
-    HitPhi = TMath::ATan2(xx[1], xx[0]) ;
+    HitPhi = std::atan2(xx[1], xx[0]) ;
 
     while ( HitPhi < 0 ) HitPhi += TMath::TwoPi() ;
 
@@ -5085,7 +5085,7 @@ void StMagUtilities::SectorNumber( int &Sector, const float x[] )
 {
   if ( Sector > 0 ) return              ;  // Already valid
 
-  float phi = (usingCartesian ? TMath::ATan2(x[1], x[0]) : x[1]) ;
+  float phi = (usingCartesian ? std::atan2(x[1], x[0]) : x[1]) ;
   SectorNumber( Sector, phi, x[2] )     ;
 }
 void StMagUtilities::SectorNumber( int &Sector, float phi, const float z )
@@ -5863,7 +5863,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
         ArrayV.Zero();  // Fill Vmatrix with Boundary Conditions
         Charge.Zero();
 
-        double tanSecPhi = TMath::Tan(SecPhis[k]);
+        double tanSecPhi = std::tan(SecPhis[k]);
         double cosSecPhi = TMath::Cos(SecPhis[k]);
         double secSecPhi = 1.0 / cosSecPhi;
         double iOffsetFirst, iOffsetLast, oOffsetFirst, oOffsetLast;
