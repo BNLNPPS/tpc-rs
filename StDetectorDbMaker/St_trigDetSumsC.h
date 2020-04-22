@@ -60,7 +60,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
     // 111 is a guess using the maximum seen filled bunches in RHIC so far
     // (not always the case, but we don't have access to this number)
     double Nbc = StDetectorDbClock::instance()->CurrentFrequency() * ((double) n_bunches) / 120.;
-    return -Nbc * TMath::Log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
+    return -Nbc * std::log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
   }
  private:
   double	fMargin;
