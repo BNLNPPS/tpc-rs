@@ -42,20 +42,14 @@ To do:  <br>
 #include <string>
 #include <cassert>
 #include <cmath>
-#include "mag_field.h"
-
-StarMagField* StarMagField::fgInstance = 0;
-
-
 
 #include "TFile.h"
 #include "TError.h"
 #include "TEnv.h"
 
 #include "tpcrs/configurator.h"
+#include "mag_field.h"
 #include "struct_containers.h"
-
-StarMagField* StarMagField::Instance() {return fgInstance;}
 
 
 struct BFLD_t {
@@ -360,13 +354,6 @@ StarMagField::StarMagField ( EBField map, float factor,
   fZminDip(ZminDip), fZmaxDip(ZmaxDip),
   fLock(lock)
 {
-  if (fgInstance) {
-    printf("Cannot initialise twice StarMagField class\n");
-    assert(0);
-  }
-
-  fgInstance = this;
-
   if (fMap == kUndefined) {
     printf("StarMagField is instantiated with predefined factor %f and map %i\n", fFactor, fMap);
   }

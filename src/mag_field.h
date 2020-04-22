@@ -29,7 +29,6 @@ class StarMagField
  private:
 
   void    ReadField ( ) ;
-  static StarMagField* fgInstance;
   TGeoRotation fStarMagFieldRotation;
   TH2F* fBzdZCorrection; // correction due to endcap calomiter
   TH2F* fBrdZCorrection; // correction due to endcap calomiter
@@ -64,7 +63,7 @@ class StarMagField
   float  Br3DSteel[nPhiSteel][nZSteel][nRSteel], Bphi3DSteel[nPhiSteel][nZSteel][nRSteel] ;
   //end added by Lijuan
 
- public:
+ private:
 
   StarMagField ( EBField map     = kMapped, float Factor  =      1,
                  bool  Lock    =  false, float Rescale =      1,
@@ -72,11 +71,16 @@ class StarMagField
                  float Zmindip =   980.0, float Zmaxdip = 1350.0) ;
   ~StarMagField ()
   {
-    fgInstance = 0;
     SafeDelete(fBzdZCorrection);
     SafeDelete(fBrdZCorrection);
   }
-  static StarMagField* Instance();
+ public:
+
+  static StarMagField& Instance()
+  {
+    static StarMagField instance;
+    return instance;
+  }
 
   void    BField   ( const float x[], float B[] ) ;
   void    BField   ( const double x[], double B[] ) ;

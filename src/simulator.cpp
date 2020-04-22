@@ -196,7 +196,7 @@ void StTpcRSMaker::InitRun(int runnumber)
   anodeWireRadius                = St_tpcWirePlanesC::instance()->anodeWireRadius();
   float BFieldG[3];
   float xyz[3] = {0, 0, 0};
-  StarMagField::Instance()->BField(xyz, BFieldG);
+  StarMagField::Instance().BField(xyz, BFieldG);
   // Shapers
   double timeBinMin = -0.5;
   double timeBinMax = 44.5;
@@ -1755,7 +1755,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
-  StarMagField::Instance()->BField(tpc_hitC->x, BFieldG);
+  StarMagField::Instance().BField(tpc_hitC->x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
