@@ -851,7 +851,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         // dE/dx correction
         double dEdxCor = dEdxCorrection(TrackSegmentHits[iSegHits]);
 #ifdef __DEBUG__
-        if (TMath::IsNaN(dEdxCor)) {
+        if (std::isnan(dEdxCor)) {
           iBreak++;
         }
 #endif
@@ -2047,7 +2047,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 #ifdef __DEBUG__
         static int iBreak = 0;
 
-        if (TMath::IsNaN(signal) || TMath::IsNaN(SignalSum[index].Sum)) {
+        if (std::isnan(signal) || std::isnan(SignalSum[index].Sum)) {
           iBreak++;
         }
 #endif
@@ -2073,7 +2073,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
         }
 
 #ifdef __DEBUG__
-        if (Debug() > 13 && (SignalSum[index].Sum > 0 || ! TMath::Finite(SignalSum[index].Sum)) ) {
+        if (Debug() > 13 && (SignalSum[index].Sum > 0 || ! std::isfinite(SignalSum[index].Sum)) ) {
           LOG_INFO << "simu row = " << TrackSegmentHits.tpc_hitC->volume_id % 100 << "\tR/P/T/I = " << row << " /\t" << pad << " /\t" << itbin << " /\t" << index
                    << "\tSum/Adc/TrackId = " << SignalSum[index].Sum << " /\t"
                    << SignalSum[index].Adc << " /\t" << SignalSum[index].TrackId
@@ -2081,7 +2081,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
                    << "\trow Min/Max = " << rowMin << "/" << rowMax
                    << '\n';
 
-          if (! TMath::Finite(SignalSum[index].Sum)) {
+          if (! std::isfinite(SignalSum[index].Sum)) {
             LOG_INFO << "Not Finite\n";
           }
         }
