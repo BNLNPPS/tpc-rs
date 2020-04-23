@@ -148,10 +148,10 @@ static const size_t threeFloats = 3 * sizeof(float);
 // The GL_rho functions convert the total charge to a charge density
 const float GL_charge_y_lo[4] {52.04, 121.80 - 0.85, 121.80, 191.49} ;
 const float GL_charge_y_hi[4] {52.85, 121.80, 121.80 + 0.99, 192.53} ;
-float GL_q_inner_of_innerSec(float voltage = 1100.0) { return -42.15 + TMath::Exp(0.005345 * voltage); }
-float GL_q_outer_of_innerSec(float voltage = 1100.0) { return -21.76 + TMath::Exp(0.005123 * voltage); }
-float GL_q_inner_of_outerSec(float voltage = 1390.0) { return -16.68 + TMath::Exp(0.004731 * voltage); }
-float GL_q_outer_of_outerSec(float voltage = 1390.0) { return -23.38 + TMath::Exp(0.004751 * voltage); }
+float GL_q_inner_of_innerSec(float voltage = 1100.0) { return -42.15 + std::exp(0.005345 * voltage); }
+float GL_q_outer_of_innerSec(float voltage = 1100.0) { return -21.76 + std::exp(0.005123 * voltage); }
+float GL_q_inner_of_outerSec(float voltage = 1390.0) { return -16.68 + std::exp(0.004731 * voltage); }
+float GL_q_outer_of_outerSec(float voltage = 1390.0) { return -23.38 + std::exp(0.004751 * voltage); }
 float GL_rho_inner_of_innerSec(float voltage = 1100.0)
 { return GL_q_inner_of_innerSec(voltage) / (GL_charge_y_hi[0] - GL_charge_y_lo[0]) ; }
 float GL_rho_outer_of_innerSec(float voltage = 1100.0)
@@ -1492,7 +1492,7 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
         y = YArray[j] ;
 
         for ( int k = 1 ; k < TERMS ; k++ ) {
-          sum += ( C[k] / StarMagE ) * ( 1. - TMath::Exp(-1 * k * PI * Zdrift / BOX) )
+          sum += ( C[k] / StarMagE ) * ( 1. - std::exp(-1 * k * PI * Zdrift / BOX) )
                  * TMath::Sin(k * PI * (y - GAPRADIUS) / BOX) ;
         }
 
@@ -1676,7 +1676,7 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
           if ( y <= GAPRADIUS - BOX / 2 || y >= GAPRADIUS + BOX / 2 ) continue ;
 
           for ( int n = 1 ; n <= nTERMS ; n++ ) {
-            sum += ( Bn[n] / StarMagE ) * ( 1. - TMath::Exp((-1 * n * PI * z) / BOX) ) * TMath::Cos((n * PI * (y - GAPRADIUS + BOX / 2)) / BOX) ;
+            sum += ( Bn[n] / StarMagE ) * ( 1. - std::exp((-1 * n * PI * z) / BOX) ) * TMath::Cos((n * PI * (y - GAPRADIUS + BOX / 2)) / BOX) ;
           }
 
           SumArray[MapID][i][j] = sum ;
