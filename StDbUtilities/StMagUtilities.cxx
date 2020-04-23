@@ -2380,7 +2380,7 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += Cn * zterm * qwe ;
 
-          if ( n > 10 && fabs(IntegralOverZ) * 1.e-10 > fabs(qwe) ) break;
+          if ( n > 10 && std::abs(IntegralOverZ) * 1.e-10 > std::abs(qwe) ) break;
         }
 
         if  ( eZList[i] < 0 )  IntegralOverZ = -1 * IntegralOverZ ;  // Force AntiSymmetry of solutions in Z
@@ -2499,7 +2499,7 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += Cn * zterm * qwe ;
 
-          if ( n > 10 && fabs(IntegralOverZ) * 1.e-10 > fabs(qwe) ) break;
+          if ( n > 10 && std::abs(IntegralOverZ) * 1.e-10 > std::abs(qwe) ) break;
         }
 
         spaceEr[i][j] = IntegralOverZ ;
@@ -3070,7 +3070,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += zterm * qwe ;
 
-          if ( n > 10 && fabs(IntegralOverZ) * 1.e-10 > fabs(qwe) ) break; // Assume series converges, break if small terms
+          if ( n > 10 && std::abs(IntegralOverZ) * 1.e-10 > std::abs(qwe) ) break; // Assume series converges, break if small terms
         }
 
         shortEr[i][j] = IntegralOverZ ;
@@ -3179,7 +3179,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += zterm * qwe ;
 
-          if ( n > 10 && fabs(IntegralOverZ) * 1.e-10 > fabs(qwe) ) break; // Assume series converges, break if small terms
+          if ( n > 10 && std::abs(IntegralOverZ) * 1.e-10 > std::abs(qwe) ) break; // Assume series converges, break if small terms
         }
 
         GGVoltErrorEr[i][j] = IntegralOverZ ;

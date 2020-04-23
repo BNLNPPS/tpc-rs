@@ -448,7 +448,7 @@ StThreeVector<T>::bad(double world) const
   for (int i = 0; i < 3; i++) {
     if (!::finite((&mX1)[i])      ) return 10 + i;
 
-    if ( ::fabs  ((&mX1)[i]) > world) return 20 + i;
+    if ( std::abs  ((&mX1)[i]) > world) return 20 + i;
   }
 
   return 0;

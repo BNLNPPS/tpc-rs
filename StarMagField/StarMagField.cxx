@@ -416,11 +416,11 @@ void StarMagField::BField( const float x[], float B[] )
 
 
 
-  float za = fabs(z);
+  float za = std::abs(z);
 
   if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {//     beam Dipole
     B[1] = TMath::Sign(fBDipole, z);
-    B[2] = fabs(B[1] / 1000.);
+    B[2] = std::abs(B[1] / 1000.);
     return;
   }
 
@@ -566,7 +566,7 @@ void StarMagField::ReadField( )
   }
 
   if ( fMap == kMapped ) {                  	// Mapped field values
-    if ( fabs(fFactor) > 0.8 ) {    		// Scale from full field data
+    if ( std::abs(fFactor) > 0.8 ) {    		// Scale from full field data
       if ( fFactor > 0 ) {
         filename   = "bfield_full_positive_2D.dat" ;
         filename3D = "bfield_full_positive_3D.dat" ;
@@ -783,7 +783,7 @@ void StarMagField::Interpolate2ExtDBfield( const float r, const float z, float &
     first = false;
   }
 
-  float za = fabs(z);
+  float za = std::abs(z);
 
   if (za > BFLD.zz2 || r > BFLD.rrm) return;
 
