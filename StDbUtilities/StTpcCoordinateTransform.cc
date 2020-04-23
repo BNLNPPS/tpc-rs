@@ -22,6 +22,7 @@
 #include "TMath.h"
 #include "StarClassLibrary/StThreeVector.hh"
 #include "tpcrs/logger.h"
+#include "tpcrs/math.h"
 
 static Int_t _debug = 0;
 
@@ -53,7 +54,7 @@ void StTpcCoordinateTransform::operator()(const StTpcLocalSectorCoordinate &a, S
 
   Double_t probablePad = padFromLocal(a);
   Double_t                  zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  Double_t t0offset = (useT0 && sector >= 1 && sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(sector, row, TMath::Nint (probablePad)) : 0;
+  Double_t t0offset = (useT0 && sector >= 1 && sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(sector, row, tpcrs::irint (probablePad)) : 0;
   t0offset *= mTimeBinWidth;
 
   if (! useT0 && useTau) // for cluster
@@ -71,7 +72,7 @@ void StTpcCoordinateTransform::operator()(const StTpcPadCoordinate &a,  StTpcLoc
   StThreeVector<double>  tmp = xyFromRow(a);
   Int_t sector = a.sector();
   Double_t                zoffset =  (a.row() > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  Double_t t0offset = useT0 ? St_tpcPadGainT0BC::instance()->T0(a.sector(), a.row(), TMath::Nint(a.pad())) : 0;
+  Double_t t0offset = useT0 ? St_tpcPadGainT0BC::instance()->T0(a.sector(), a.row(), tpcrs::irint(a.pad())) : 0;
   t0offset *= mTimeBinWidth;
 
   if (! useT0 && useTau) // for cluster

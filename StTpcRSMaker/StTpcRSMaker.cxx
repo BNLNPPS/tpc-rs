@@ -50,6 +50,7 @@
 
 #include "tpcrs/configurator.h"
 #include "tpcrs/logger.h"
+#include "tpcrs/math.h"
 
 struct HitPoint_t {
   int indx;
@@ -562,7 +563,7 @@ void StTpcRSMaker::InitRun(int runnumber)
     }
     else {
       int nM = 0.5 * (pbins[NpbinsL - 2] + pbins[NpbinsL - 1]) * TMath::Exp(dX * (bin - NpbinsL));
-      double dbin = TMath::Nint(nM - pbins[bin - 1]);
+      double dbin = tpcrs::irint(nM - pbins[bin - 1]);
 
       if (dbin < 1.0) dbin = 1.0;
 
@@ -972,8 +973,8 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket();
         tpc_hitC->pad = padH;
         tpc_hitC->timebucket = tbkH;
-        pad0 = TMath::Nint(padH + xmin[0]);
-        tbk0 = TMath::Nint(tbkH + xmin[1]);
+        pad0 = tpcrs::irint(padH + xmin[0]);
+        tbk0 = tpcrs::irint(tbkH + xmin[1]);
         double OmegaTau = St_TpcResponseSimulatorC::instance()->OmegaTau() *
                             TrackSegmentHits[iSegHits].BLS.position().z() / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
         double NP = TMath::Abs(tpc_hitC->de) / (St_TpcResponseSimulatorC::instance()->W() * eV *
@@ -1161,7 +1162,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
             // Transport to wire
             if (y <= lastInnerSectorAnodeWire) {
-              WireIndex = TMath::Nint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
+              WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
 #ifndef __NO_1STROWCORRECTION__
               if (St_tpcPadConfigC::instance()->iTPC(sector)) {// two first and two last wires are removed, and 3rd wire is fat wiere
                 if (WireIndex <= 3 || WireIndex >= numberOfInnerSectorAnodeWires - 3) continue;
@@ -1175,7 +1176,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
             }
             else {   // the first and last wires are fat ones
-              WireIndex = TMath::Nint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
+              WireIndex = tpcrs::irint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
 
               if (WireIndex <= 1 || WireIndex >= numberOfOuterSectorAnodeWires) continue;
 
@@ -1957,7 +1958,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
     static StTpcPadCoordinate Pad;
     transform(xyzW, Pad, false, false); // don't use T0, don't use Tau
     float bin = Pad.timeBucket();//L  - 1; // K
-    int binT = TMath::Nint(bin); //L bin;//K TMath::Nint(bin);// J bin; // I TMath::Nint(bin);
+    int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 
     if (binT < 0 || binT >= max_timebins) continue;
 
@@ -1978,7 +1979,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
     if (localYDirectionCoupling < minSignal) continue;
 
     float padX = Pad.pad();
-    int CentralPad = TMath::Nint(padX);
+    int CentralPad = tpcrs::irint(padX);
 
     if (CentralPad < 1) continue;
 
@@ -1986,7 +1987,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
     if (CentralPad > PadsAtRow) continue;
 
-    int DeltaPad = TMath::Nint(mPadResponseFunction[io][sector - 1]->GetXmax()) + 1;
+    int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1]->GetXmax()) + 1;
     int padMin = TMath::Max(CentralPad - DeltaPad, 1);
     int padMax = TMath::Min(CentralPad + DeltaPad, PadsAtRow);
     int Npads = TMath::Min(padMax - padMin + 1, kPadMax);
@@ -2031,8 +2032,8 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
       if (XYcoupling < minSignal)  continue;
 
-      int bin_low  = TMath::Max(0, binT + TMath::Nint(dt + mShaperResponse->GetXmin() - 0.5));
-      int bin_high = TMath::Min(max_timebins - 1, binT + TMath::Nint(dt + mShaperResponse->GetXmax() + 0.5));
+      int bin_low  = TMath::Max(0, binT + tpcrs::irint(dt + mShaperResponse->GetXmin() - 0.5));
+      int bin_high = TMath::Min(max_timebins - 1, binT + tpcrs::irint(dt + mShaperResponse->GetXmax() + 0.5));
       int index = max_timebins * ((row - 1) * max_pads + pad - 1) + bin_low;
       int Ntbks = TMath::Min(bin_high - bin_low + 1, kTimeBacketMax);
       double tt = -dt + (bin_low - binT);
@@ -2106,7 +2107,7 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
     CdEdx.QSumA = 0;
     CdEdx.sector = TrackSegmentHits.Pad.sector();
     CdEdx.row    = TrackSegmentHits.Pad.row();
-    CdEdx.pad    = TMath::Nint(TrackSegmentHits.Pad.pad());
+    CdEdx.pad    = tpcrs::irint(TrackSegmentHits.Pad.pad());
     CdEdx.edge   = CdEdx.pad;
 
     if (CdEdx.edge > 0.5 * St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
