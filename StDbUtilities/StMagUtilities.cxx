@@ -4009,17 +4009,17 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   double Xprime[ROWS + 1], Yprime[ROWS + 1], eX[ROWS + 1], eY[ROWS + 1] ; // Extra index is to accomodate the vertex in the fit for primaries
 
   BFieldTpc(x, B) ;
-  ChargeB  = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
+  ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   Pt = TMath::Sqrt( p[0] * p[0] + p[1] * p[1] ) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = x[0] + ChargeB * p[1] * R0 / Pt ;
   Y0 = x[1] - ChargeB * p[0] * R0 / Pt ;
-  Rotation = TMath::Sign( (double)1.0, (x[0] - X0) * p[1] - (x[1] - Y0) * p[0] ) ;
+  Rotation = std::copysign( (double)1.0, (x[0] - X0) * p[1] - (x[1] - Y0) * p[0] ) ;
 
   memcpy(R, TPCROWR[sec - 1], ROWS * sizeof(double));
   // Not correct because TPC rows aren't circles ... but we dont' care
 
-  if (Y0 == 0.0)  Direction = TMath::Sign((float)1.0, p[1]) ;
+  if (Y0 == 0.0)  Direction = std::copysign((float)1.0, p[1]) ;
   else {
     Direction = 1.0 ;
     R2 = TestRadius * TestRadius ;
@@ -4210,7 +4210,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   ManualSpaceChargeR2(sc, SpaceChargeEWRatio); // Set a custom value of the spacecharge parameter but keep previous E/W ratio
 
   BFieldTpc(x, B) ;
-  ChargeB  = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
+  ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   Pt = TMath::Sqrt( p[0] * p[0] + p[1] * p[1] ) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = x[0] + ChargeB * p[1] * R0 / Pt ;
@@ -4220,7 +4220,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   // Not correct because TPC rows aren't circles ... but we dont' care
 
   // Test which of the two directions the particle goes on the circle
-  if (std::abs(Y0) < 0.001 )  Direction = TMath::Sign( (float)1.0, p[1] ) ;
+  if (std::abs(Y0) < 0.001 )  Direction = std::copysign( (float)1.0, p[1] ) ;
   else {
     Direction = 1.0 ;
     R2 = R[RefIndex] * R[RefIndex] ;
@@ -4435,7 +4435,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   // but keep EWRatio that was previously defined
   float x[3] = { 0, 0, 0 } ;
   BFieldTpc(x, B) ;
-  ChargeB  = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
+  ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.707107 * R0  ;   // Assume a test particle that shoots out at 45 degrees
   Y0 = ChargeB * -0.707107 * R0  ;
@@ -4672,7 +4672,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
 
   float x[3] = { 0, 0, 0 } ;  // Get the B field at the vertex
   BFieldTpc(x, B) ;
-  ChargeB = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
+  ChargeB = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.0 * R0  ;   // Assume a test particle that shoots out at 0 degrees
   Y0 = ChargeB * -1.0 * R0  ;
@@ -4739,7 +4739,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
 
     while (std::abs(HitLocalPhi) > PiOver12) {
       // Jump local coordinates to neighboring sector
-      PhiPrime -= TMath::Sign(PiOver6, HitLocalPhi);
+      PhiPrime -= std::copysign(PiOver6, HitLocalPhi);
       cosPhiPrime = std::cos(PhiPrime);
       sinPhiPrime = std::sin(PhiPrime);
       cosPhiMPrime = cosPhi * cosPhiPrime + sinPhi * sinPhiPrime; // cos(Phi - PhiPrime)
@@ -4925,7 +4925,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
 
   memset(xx, 0, 3 * sizeof(float)); // Get the B field at the vertex
   BFieldTpc(xx, B) ;
-  ChargeB = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
+  ChargeB = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.0 * R0  ;   // Assume a test particle that shoots out at 0 degrees
   Y0 = ChargeB * -1.0 * R0  ;

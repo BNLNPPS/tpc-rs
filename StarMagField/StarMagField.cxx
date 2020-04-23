@@ -419,7 +419,7 @@ void StarMagField::BField( const float x[], float B[] )
   float za = std::abs(z);
 
   if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {//     beam Dipole
-    B[1] = TMath::Sign(fBDipole, z);
+    B[1] = std::copysign(fBDipole, z);
     B[2] = std::abs(B[1] / 1000.);
     return;
   }
@@ -475,7 +475,7 @@ void StarMagField::BField( const float x[], float B[] )
     float wr = (r  - Radius[nR - 1]) / (BFLD.rmaxx - Radius[nR - 1]);
     float w  = std::min(TMath::Max(zero, TMath::Max(wz, wr)), one);
     float rm = std::min(r, Radius[nR - 1]);
-    float zm = TMath::Sign(std::min(za, ZList[nZ - 1]), z);
+    float zm = std::copysign(std::min(za, ZList[nZ - 1]), z);
     float BrI, BzI;
     Interpolate2DBfield( rm, zm, BrI, BzI ) ;
     Br_value = (1 - w) * BrI + w * Br_value;

@@ -78,7 +78,7 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
       break;
     case 4:
       if (std::abs(x) >= 1) X = 0;
-      else                    X = TMath::Sign(std::log(1. - std::abs(x)),x);
+      else                    X = std::copysign(std::log(1. - std::abs(x)),x);
       break;
     case 5:
       if (x < 1e-7) X = -16.118;
