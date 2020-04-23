@@ -1739,7 +1739,7 @@ double StTpcRSMaker::shapeEI(double* x, double* par)  // does not work. It is ne
   double T2 = par[3]; // tau_C
 
   if (std::abs((T1 - T2) / (T1 + T2)) < 1e-7) {
-    return TMath::Max(0., (t + t0) / T1 * fei(t, t0, T1) + std::exp(-t / T1) - 1);
+    return std::max(0., (t + t0) / T1 * fei(t, t0, T1) + std::exp(-t / T1) - 1);
   }
 
   if (T2 <= 0) return fei(t, t0, T1);
@@ -1988,7 +1988,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
     if (CentralPad > PadsAtRow) continue;
 
     int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1]->GetXmax()) + 1;
-    int padMin = TMath::Max(CentralPad - DeltaPad, 1);
+    int padMin = std::max(CentralPad - DeltaPad, 1);
     int padMax = std::min(CentralPad + DeltaPad, PadsAtRow);
     int Npads = std::min(padMax - padMin + 1, static_cast<int>(kPadMax));
     double xPadMin = padMin - padX;
@@ -2032,7 +2032,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
       if (XYcoupling < minSignal)  continue;
 
-      int bin_low  = TMath::Max(0, binT + tpcrs::irint(dt + mShaperResponse->GetXmin() - 0.5));
+      int bin_low  = std::max(0, binT + tpcrs::irint(dt + mShaperResponse->GetXmin() - 0.5));
       int bin_high = std::min(max_timebins - 1, binT + tpcrs::irint(dt + mShaperResponse->GetXmax() + 0.5));
       int index = max_timebins * ((row - 1) * max_pads + pad - 1) + bin_low;
       int Ntbks = std::min(bin_high - bin_low + 1, static_cast<int>(kTimeBacketMax));

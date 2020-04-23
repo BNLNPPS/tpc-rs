@@ -3414,7 +3414,7 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
 
   int i_one = (ROWS - 1) / 4 ;
   int j_one = (COLUMNS - 1) / 4 ;
-  int loops = 1 + (int) ( 0.5 + std::log2( (double) TMath::Max(i_one, j_one) ) ) ; // Solve for N in 2**N and add one
+  int loops = 1 + (int) ( 0.5 + std::log2( (double) std::max(i_one, j_one) ) ) ; // Solve for N in 2**N and add one
 
   float coef1[ROWS], coef2[ROWS];
   memset(coef1, 0, ROWS * sizeof(float));
@@ -3654,7 +3654,7 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
   int loops, m_plus, m_minus ;
   int i_one = (ROWS - 1) / 4 ;
   int j_one = (COLUMNS - 1) / 4 ;
-  loops = TMath::Max(i_one, j_one) ;      // Calculate the number of loops for the binary expansion
+  loops = std::max(i_one, j_one) ;      // Calculate the number of loops for the binary expansion
   loops = 1 + (int) ( 0.5 + std::log2((double)loops) ) ;  // Solve for N in 2**N
 
   TMatrix* ArrayofSumCharge[1000] ;    // Create temporary arrays to store low resolution charge arrays
