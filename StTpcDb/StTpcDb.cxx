@@ -9,7 +9,6 @@
  **************************************************************************/
 
 #include "TDatime.h"
-#include "TMath.h"
 #include "TString.h"
 
 #include "StTpcDb/StTpcDb.h"

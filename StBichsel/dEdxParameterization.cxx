@@ -4,7 +4,6 @@
 #include "TDirectory.h"
 #include "TF1.h"
 #include "TError.h"
-#include "TMath.h"
 
 #define  PrP(A)  LOG_INFO << "\t" << (#A) << " = \t" << ( A )
 

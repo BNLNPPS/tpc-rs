@@ -24,6 +24,7 @@
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
+#include "TMath.h"
 #include "StTpcRSMaker/tcl.h"
 #include "Math/SpecFuncMathMore.h"
 
