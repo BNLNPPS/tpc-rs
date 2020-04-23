@@ -6,7 +6,6 @@
 #include "trigDetSums.h"
 #include "StDetectorDbMaker/StDetectorDbClock.h"
 #include "StDetectorDbMaker/St_richvoltagesC.h"
-#include "TMath.h"
 struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums_st>
 {
   unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}

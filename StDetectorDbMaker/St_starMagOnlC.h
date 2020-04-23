@@ -2,7 +2,6 @@
 #define St_starMagOnlC_h
 
 #include "tpcrs/config_structs.h"
-#include "TMath.h"
 #include "starMagOnl.h"
 
 enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,

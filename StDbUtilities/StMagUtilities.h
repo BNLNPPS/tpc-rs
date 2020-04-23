@@ -14,7 +14,6 @@
 #include "StarMagField/StarMagField.h"
 class TFile;
 class TNtuple;
-#include "TMath.h"
 
 enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
 enum   Prime    { IsPrimary = 0, IsGlobal = 1 } ;

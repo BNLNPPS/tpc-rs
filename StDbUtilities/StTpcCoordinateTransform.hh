@@ -13,7 +13,6 @@
 #define ST_COORDINATE_TRANSFORM_HH
 
 #include <stdlib.h>
-#include "TMath.h"
 // SCL
 #include "StarClassLibrary/SystemOfUnits.h"
 #include "StarClassLibrary/StThreeVector.hh"

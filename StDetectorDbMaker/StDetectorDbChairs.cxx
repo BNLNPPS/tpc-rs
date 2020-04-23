@@ -1,11 +1,8 @@
 #include <cassert>
 #include "TEnv.h"
 #include "TF1.h"
-#include "TMath.h"
 #include "TString.h"
 #include "tpcrs/logger.h"
-
-using namespace ROOT::Math;
 
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT ## _st>::name(# PATH);
