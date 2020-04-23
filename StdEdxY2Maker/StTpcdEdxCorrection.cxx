@@ -220,7 +220,7 @@ StTpcdEdxCorrection::~StTpcdEdxCorrection()
 
 int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 {
-  //  static const double Degree2Rad = TMath::Pi()/180.;
+  //  static const double Degree2Rad = M_PI/180.;
   mdEdx = &CdEdx;
 
   if (CdEdx.F.dE <= 0.) CdEdx.F.dE = 1;

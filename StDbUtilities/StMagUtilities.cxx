@@ -129,8 +129,8 @@ To do:  <br>
 
 static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
 StMagUtilities* StMagUtilities::fgInstance = 0 ;
-static const float  PiOver12 = TMath::Pi() / 12. ; // Commonly used constant
-static const float  PiOver6 = TMath::Pi() / 6. ; // Commonly used constant
+static const float  PiOver12 = M_PI / 12. ; // Commonly used constant
+static const float  PiOver6 = M_PI / 6. ; // Commonly used constant
 TNtuple* StMagUtilities::fgDoDistortion = 0;
 TNtuple* StMagUtilities::fgUnDoDistortion = 0;
 static const size_t threeFloats = 3 * sizeof(float);
@@ -1238,7 +1238,7 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   float z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
 
@@ -1329,7 +1329,7 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   float z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
 
@@ -1373,7 +1373,7 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
     r   =  saved_dR ;  // Note that we calculate these quantities as if on the X axis, so phi == 0 while calculating.
     phi =  phi + saved_dRPhi / r ;
 
-    if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
+    if ( phi < 0 ) phi += 2 * M_PI ;           // Table uses phi from 0 to 2*Pi
   }
 
   if (usingCartesian) Polar2Cart(r, phi, Xprime);
@@ -1445,7 +1445,7 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   const int   TERMS    =  400         ;         // Number of terms in the sum
   const float SCALE    =  0.192       ;         // Set the scale for the correction
   const float BOX      =  200.0 - GAPRADIUS ;   // Size of the box in which to work
-  const float PI       =  TMath::Pi() ;
+  const float PI       =  M_PI ;
 
   // Note custom grids in R and Z
   // PadRow13 corrections highly focussed near pad row 13 with weak Z dependence.  Radial points on YARRAY
@@ -1601,7 +1601,7 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
   const int   nYARRAY        =     61              ;   // Dimension of the vector that contains YArray
   const int   ORDER          =      2              ;   // ORDER = 1 linear, ORDER = 2 quadratic interpolation (Leave at 2 for legacy reasons)
   const float BOX = (COLUMNS - 1) / (GPPMM * 10.0)       ; // Width of the relaxation grid (in mm) that created DataInTheGap
-  const float PI             =  TMath::Pi()        ;
+  const float PI             =  M_PI        ;
 
   // Note custom grids in R and Z to ensure that pads in both the old and new TPC achieve accurate results.
   // PadRow40 (PadRow13) corrections are strongly focussed near pad row 40 (13) with only a weak Z dependence.
@@ -2253,7 +2253,7 @@ void StMagUtilities::UndoMembraneDistortion( const float x[], float Xprime[], in
 
   r      =  std::sqrt( x[0]*x[0] + x[1]*x[1] ) ;
   phi    =  std::atan2(x[1],x[0]) ;
-  if ( phi < 0 ) phi += 2*TMath::Pi() ;             // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2*M_PI ;             // Table uses phi from 0 to 2*Pi
   z      =  x[2] ;
 
   if ( z > 0 && z <  0.2 ) z =  0.2 ;               // Protect against discontinuity at CM
@@ -2298,7 +2298,7 @@ void StMagUtilities::UndoEndcapDistortion( const float x[], float Xprime[], int 
 
   r      =  std::sqrt( x[0]*x[0] + x[1]*x[1] ) ;
   phi    =  std::atan2(x[1],x[0]) ;
-  if ( phi < 0 ) phi += 2*TMath::Pi() ;             // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2*M_PI ;             // Table uses phi from 0 to 2*Pi
   z      =  x[2] ;
 
   if ( z > 0 && z <  0.2 ) z =  0.2 ;               // Protect against discontinuity at CM
@@ -2366,7 +2366,7 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
         double IntegralOverZ = 0.0 ;
 
         for ( int n = 1 ; n < Nterms ; ++n ) {
-          double k  = (2 * n - 1) * TMath::Pi() / TPC_Z0 ;
+          double k  = (2 * n - 1) * M_PI / TPC_Z0 ;
           double Cn = -4.0 * IFCShift / ( k * TPC_Z0 ) ;
           double Numerator =
             TMath::BesselK0( k * OFCRadius ) * TMath::BesselI1( k * r ) +
@@ -2393,7 +2393,7 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -2481,9 +2481,9 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
         double IntegralOverZ = 0.0 ;
 
         for ( int n = 1 ; n < Nterms ; ++n ) {
-          double k  = n * TMath::Pi() / TPC_Z0 ;  // Integrated Charge Density
+          double k  = n * M_PI / TPC_Z0 ;  // Integrated Charge Density
           double zterm = std::pow(-1, (n + 1)) * ( 1.0 - std::cos( k * ( TPC_Z0 - z ) ) ) ;
-          //double k  = (2*n-1) * TMath::Pi() / TPC_Z0 ;  // Uniform Charge Density
+          //double k  = (2*n-1) * M_PI / TPC_Z0 ;  // Uniform Charge Density
           //double zterm = 1.0 + std::cos( k *  z ) ;   // Uniform Charge Density
           double Cn = -4.0 / ( k * k * k * TPC_Z0 * StarMagE ) ;
           double Numerator =
@@ -2510,7 +2510,7 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -2656,7 +2656,7 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -2841,7 +2841,7 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;      // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;      // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                   // Protect against discontinuity at CM
 
@@ -3012,7 +3012,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
         double IntegralOverZ = 0.0 ;
 
         for ( int n = 1 ; n < Nterms ; ++n ) {
-          double k    =  n * TMath::Pi() / TPC_Z0 ;
+          double k    =  n * M_PI / TPC_Z0 ;
           double Ein  =  0 ;                    // Error potential on the IFC
           double Eout =  0 ;                    // Error potential on the OFC
           double sum  =  0 ;                    // Working variable
@@ -3090,7 +3090,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -3161,7 +3161,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
         for ( int n = 1 ; n < Nterms ; ++n ) {
           if ( z == 0 ) continue ;
 
-          double k    =  n * TMath::Pi() / TPC_Z0 ;
+          double k    =  n * M_PI / TPC_Z0 ;
           double Ein  =  -2.0 * (z < 0 ? deltaVGGEast : deltaVGGWest) * deltaGGeffectiveness /
                            (k * (CathodeV - GGideal));  // Error potential on the IFC
           double Eout =  Ein ;                // Error potential on the OFC
@@ -3193,7 +3193,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -3472,8 +3472,8 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
 
     for ( int k = 1 ; k <= ITERATIONS; k++ ) {               // Solve Poisson's Equation
 
-      //float OverRelax   = 1.0 + std::sqrt( std::cos( (k*TMath::PiOver2())/ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
-      float OverRelaxM1 = std::sqrt( std::cos( (k * TMath::PiOver2()) / ITERATIONS ) ) ;
+      //float OverRelax   = 1.0 + std::sqrt( std::cos( (k*M_PI_2)/ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
+      float OverRelaxM1 = std::sqrt( std::cos( (k * M_PI_2) / ITERATIONS ) ) ;
       float OverRelaxtempFourth = (1.0 + OverRelaxM1) * tempFourth ;
 
       for ( int i = i_one ; i < ROWS - 1 ; i += i_one ) {
@@ -3666,7 +3666,7 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
   float OverRelaxers[ITERATIONS] ;
 
   for ( int k = 1 ; k <= ITERATIONS; k++ ) {
-    OverRelaxers[k - 1] = 1.0 + std::sqrt( std::cos( (k * TMath::PiOver2()) / ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
+    OverRelaxers[k - 1] = 1.0 + std::sqrt( std::cos( (k * M_PI_2) / ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
   }
 
   float coef1[ROWS], coef2[ROWS], coef3[ROWS], coef4[ROWS], OverRelaxcoef4[ROWS];
@@ -4058,9 +4058,9 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
 
     DeltaTheta  =  std::atan2(x[1] - Y0, x[0] - X0) - std::atan2(Ytrack[index] - Y0, Xtrack[index] - X0) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     Ztrack[index]  =   x[2] - Rotation * DeltaTheta * R0 * p[2] / Pt ;
     xx[0] = Xtrack[index] ; xx[1] = Ytrack[index] ; xx[2] = Ztrack[index] ;
@@ -4070,9 +4070,9 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     Xtrack1[index] = xxprime[0] ; Ytrack1[index] = xxprime[1] ; Ztrack1[index] = xxprime[2] ;
     theta = std::atan2( (Ytrack[index] - Y0), (Xtrack[index] - X0) ) ; // Note (theta-theta0) must stay in range -pi,pi
 
-    while ( (theta - theta0) <  -1 * TMath::Pi() )   theta = theta + 2 * TMath::Pi() ;
+    while ( (theta - theta0) <  -1 * M_PI )   theta = theta + 2 * M_PI ;
 
-    while ( (theta - theta0) >=    TMath::Pi() )   theta = theta - 2 * TMath::Pi() ;
+    while ( (theta - theta0) >=    M_PI )   theta = theta - 2 * M_PI ;
 
     dX[index] = Xtrack1[index] - Xtrack[index] ;
     dY[index] = Ytrack1[index] - Ytrack[index] ;
@@ -4127,9 +4127,9 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   for ( int i = 0 ; i < index + 1 ; i++ ) {
     DeltaTheta  =  (std::atan2(Ytrack1[i] - Y0_new, Xtrack1[i] - X0_new) - std::atan2(x_new[1] - Y0_new, x_new[0] - X0_new)) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     if ( DeltaTheta != 0 )  {  p_new[2] += (Ztrack1[i] - x_new[2]) / DeltaTheta ;   count += 1 ;  }
   }
@@ -4249,9 +4249,9 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
 
     DeltaTheta  =  std::atan2(x[1] - Y0, x[0] - X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     Ztrack[i]  =   x[2] + ChargeB * DeltaTheta * R0 * p[2] / Pt ;
     xx[0] = Xtrack[i] ; xx[1] = Ytrack[i] ; xx[2] = Ztrack[i] ;
@@ -4348,9 +4348,9 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   for ( int i = 0 ; i < Index + 1 ; i++ ) {
     DeltaTheta  = (std::atan2(Yprime[i] - Y0_new, Xprime[i] - X0_new) - std::atan2(x_new[1] - Y0_new, x_new[0] - X0_new)) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     if ( DeltaTheta != 0 )  {  p_new[2] += (Zprime[i] - x_new[2]) / DeltaTheta ;   icount += 1 ;  }
   }
@@ -4362,7 +4362,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   // Check if the charge of the track changed due to the distortions
   float change = std::abs( std::atan2(Y0, X0) - std::atan2(Y0_new, X0_new) ) ;
 
-  if ( change > 0.9 * TMath::Pi() && change < 1.1 * TMath::Pi() ) new_Charge = -1 * Charge ;
+  if ( change > 0.9 * M_PI && change < 1.1 * M_PI ) new_Charge = -1 * Charge ;
   else  new_Charge = Charge ;
 
   // Restore settings for spacechargeR2
@@ -4461,9 +4461,9 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
 
     DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     Ztrack[i]  =   VertexZ + DeltaTheta * Z_coef ;
     xx[0] = Xtrack[i] ; xx[1] = Ytrack[i] ; xx[2] = Ztrack[i] ;
@@ -4723,9 +4723,9 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
       Xtrack[i] = std::sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
       DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
-      while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+      while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-      while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+      while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
       Ztrack[i]  =   VertexZ + DeltaTheta * Z_coef;
       continue ;   // Do nothing if point is outside the TPC
@@ -4754,9 +4754,9 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
 
     DeltaTheta  =  std::atan2(-1 * Y0Prime, -1 * X0Prime) - std::atan2(Ytrack[i] - Y0Prime, Xtrack[i] - X0Prime) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     Ztrack[i]  =   VertexZ + DeltaTheta * Z_coef;
 
@@ -4768,9 +4768,9 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     if (mDistortionMode & (kGridLeak | k3DGridLeak | kFullGridLeak)) {
       HitPhi = std::atan2(xx[1], xx[0]) ;
 
-      while ( HitPhi < 0 ) HitPhi += TMath::TwoPi() ;
+      while ( HitPhi < 0 ) HitPhi += 2 * M_PI ;
 
-      while ( HitPhi >= TMath::TwoPi() ) HitPhi -= TMath::TwoPi() ;
+      while ( HitPhi >= 2 * M_PI ) HitPhi -= 2 * M_PI ;
 
       HitSector = 0;
       SectorNumber ( HitSector, HitPhi, xx[2] );
@@ -4941,9 +4941,9 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
     Xtrack[i] = std::sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
     DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
-    while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
+    while ( DeltaTheta < -1 * M_PI ) DeltaTheta += 2 * M_PI ;
 
-    while ( DeltaTheta >=   TMath::Pi() ) DeltaTheta -= TMath::TwoPi() ;
+    while ( DeltaTheta >=   M_PI ) DeltaTheta -= 2 * M_PI ;
 
     Ztrack[i]  =   VertexZ + DeltaTheta * Z_coef;
 
@@ -4966,9 +4966,9 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
 
     HitPhi = std::atan2(xx[1], xx[0]) ;
 
-    while ( HitPhi < 0 ) HitPhi += TMath::TwoPi() ;
+    while ( HitPhi < 0 ) HitPhi += 2 * M_PI ;
 
-    while ( HitPhi >= TMath::TwoPi() ) HitPhi -= TMath::TwoPi() ;
+    while ( HitPhi >= 2 * M_PI ) HitPhi -= 2 * M_PI ;
 
     HitSector = 0;
     SectorNumber ( HitSector, HitPhi, xx[2] );
@@ -5092,7 +5092,7 @@ void StMagUtilities::SectorNumber( int &Sector, float phi, const float z )
 {
   if ( Sector > 0 ) return              ;  // Already valid
 
-  if ( phi < 0 ) phi += TMath::TwoPi()  ;  // Use range from 0-360
+  if ( phi < 0 ) phi += 2 * M_PI  ;  // Use range from 0-360
 
   Sector = ( ( 30 - (int)(phi / PiOver12) ) % 24 ) / 2 ;
 
@@ -5247,7 +5247,7 @@ void StMagUtilities::Undo2DGridLeakDistortion( const float x[], float Xprime[], 
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;             // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;             // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                          // Protect against discontinuity at CM
 
@@ -5298,7 +5298,7 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
   const int   ROWS        =  513  ;  // ( 2**n + 1 )  eg. 65, 129, 257, 513, 1025   (513 or above for a natural width gap)
   const int   COLUMNS     =  129  ;  // ( 2**m + 1 )  eg. 65, 129, 257, 513
   const int   PHISLICES   =    8  ;  // Note interaction with "GRIDSIZEPHI" and "SYMMETRY"
-  const float GRIDSIZEPHI =  (2 - SYMMETRY) * TMath::Pi() / (12.0 * (PHISLICES - 1)) ;
+  const float GRIDSIZEPHI =  (2 - SYMMETRY) * M_PI / (12.0 * (PHISLICES - 1)) ;
   const float GRIDSIZER   =  (OFCRadius - IFCRadius) / (ROWS - 1) ;
   const float GRIDSIZEZ   =  TPC_Z0 / (COLUMNS - 1) ;
 
@@ -5445,7 +5445,7 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -5516,7 +5516,7 @@ void StMagUtilities::UndoFullGridLeakDistortion( const float x[], float Xprime[]
   const int   PHISLICES   =  180  ;  // ( 12*(2*n + 1) )  eg. 60, 84, 108 ; Note interaction with "GRIDSIZEPHI"
   //                   avoids phi at sector boundaries
   const int   PHISLICES1  =  PHISLICES + 1   ; // ( 24*n )  eg. 24, 72, 144 ;
-  const float GRIDSIZEPHI =  TMath::TwoPi() / PHISLICES ;
+  const float GRIDSIZEPHI =  2 * M_PI / PHISLICES ;
   const float GRIDSIZER   =  (OFCRadius - IFCRadius) / (ROWS - 1) ;
   const float GRIDSIZEZ   =  TPC_Z0 / (COLUMNS - 1) ;
 
@@ -5702,7 +5702,7 @@ void StMagUtilities::UndoFullGridLeakDistortion( const float x[], float Xprime[]
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
@@ -5774,7 +5774,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
   const int   PHISLICES   =  180  ;  // ( 12*(2*n + 1) )  eg. 60, 84, 108 ; Note interaction with "GRIDSIZEPHI"
   //                   avoids phi at sector boundaries
   const int   PHISLICES1  =  PHISLICES + 1   ; // ( 24*n )  eg. 24, 72, 144 ;
-  const float GRIDSIZEPHI =  TMath::TwoPi() / PHISLICES ;
+  const float GRIDSIZEPHI =  2 * M_PI / PHISLICES ;
   const float GRIDSIZER   =  (OFCRadius - IFCRadius) / (ROWS - 1) ;
   const float GRIDSIZEZ   =  TPC_Z0 / (COLUMNS - 1) ;
 
@@ -5978,7 +5978,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }
 
-  if ( phi < 0 ) phi += TMath::TwoPi() ;            // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;            // Table uses phi from 0 to 2*Pi
 
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
 
