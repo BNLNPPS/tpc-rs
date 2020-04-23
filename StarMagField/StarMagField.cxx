@@ -473,7 +473,7 @@ void StarMagField::BField( const float x[], float B[] )
     static const float one = 1;
     float wz = (za - ZList[nZ - 1] ) / (BFLD.zmaxx - ZList[nZ - 1]);
     float wr = (r  - Radius[nR - 1]) / (BFLD.rmaxx - Radius[nR - 1]);
-    float w  = std::min(TMath::Max(zero, TMath::Max(wz, wr)), one);
+    float w  = std::min(std::max(zero, std::max(wz, wr)), one);
     float rm = std::min(r, Radius[nR - 1]);
     float zm = std::copysign(std::min(za, ZList[nZ - 1]), z);
     float BrI, BzI;
