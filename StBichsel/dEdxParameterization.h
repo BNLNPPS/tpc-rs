@@ -58,69 +58,69 @@ class dEdxParameterization
   double    I70Correction(double log10bg);
   double    GetMostProbableZ(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fMostProbableZShift + fP->Interpolate(log10bg, log2dx);
   }
   double    GetAverageZ(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fAverageZShift + MostProbableZCorrection(log10bg) + fA->Interpolate(log10bg, log2dx);
   }
   double    GetRmsZ(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fRms->Interpolate(log10bg, log2dx);
   }
   double    GetI70(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fI70Shift * fI70->Interpolate(log10bg, log2dx);
   }
   double    GetI60(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fI60Shift * fI60->Interpolate(log10bg, log2dx);
   }
   double    GetMostProbabledEdx(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fD->Interpolate(log10bg, log2dx);
   }
   double    GetdEdxWidth(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return fW->Interpolate(log10bg, log2dx);
   }
   double    GetMostProbableZM(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return MostProbableZCorrection(log10bg) + GetMostProbableZ(log10bg, log2dx);
   }
   double    GetAverageZM(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return MostProbableZCorrection(log10bg) + GetAverageZ(log10bg, log2dx);
   }
   double    GetI70M(double log10bg, double log2dx)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
     return I70Correction(log10bg) * GetI70(log10bg, log2dx);
   }
   double    GetProbability(double log10bg, double log2dx, double z)
   {
-    log10bg = TMath::Max(fbgL10min, TMath::Min(fbgL10max, log10bg));
-    log2dx  = TMath::Max(fdxL2min, TMath::Min(fdxL2max, log2dx));
-    z       = TMath::Max(fzmin, TMath::Min(fzmax, z));
+    log10bg = TMath::Max(fbgL10min, std::min(fbgL10max, log10bg));
+    log2dx  = TMath::Max(fdxL2min, std::min(fdxL2max, log2dx));
+    z       = TMath::Max(fzmin, std::min(fzmax, z));
     return fPhi->Interpolate(log10bg, log2dx, z);
   }
   void        Print();

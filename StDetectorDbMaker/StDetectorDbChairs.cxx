@@ -67,10 +67,10 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
     case 12:// ADC correction offset + poly for log(ADC) and TanL
       X = TMath::Log(x);      break;
     case 1: // Tchebyshev [-1,1]
-      if (cor->min < cor->max)   X = -1 + 2*TMath::Max(0.,TMath::Min(1.,(X - cor->min)/( cor->max - cor->min)));
+      if (cor->min < cor->max)   X = -1 + 2*TMath::Max(0.,std::min(1.,(X - cor->min)/( cor->max - cor->min)));
       break;
     case 2: // Shifted TChebyshev [0,1]
-      if (cor->min < cor->max)   X = TMath::Max(0.,TMath::Min(1.,(X - cor->min)/( cor->max - cor->min)));
+      if (cor->min < cor->max)   X = TMath::Max(0.,std::min(1.,(X - cor->min)/( cor->max - cor->min)));
       break;
     case 3:
       if (TMath::Abs(x) >= 1) X = 0;
@@ -310,7 +310,7 @@ double St_MDFCorrectionC::Eval(int k, double *x) const {
   }
   double xx[3];
   for (int v = 0; v < NVariables(k); v++) {
-    xx[v] = TMath::Max(XMin(k)[v], TMath::Min(XMin(k)[v]+0.999*(XMax(k)[v]-XMin(k)[v]), x[v]));
+    xx[v] = TMath::Max(XMin(k)[v], std::min(XMin(k)[v]+0.999*(XMax(k)[v]-XMin(k)[v]), x[v]));
   }
   double returnValue = fFunc[k]->GetSave(xx);
   return returnValue;

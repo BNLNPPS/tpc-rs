@@ -1989,8 +1989,8 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
     int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1]->GetXmax()) + 1;
     int padMin = TMath::Max(CentralPad - DeltaPad, 1);
-    int padMax = TMath::Min(CentralPad + DeltaPad, PadsAtRow);
-    int Npads = TMath::Min(padMax - padMin + 1, kPadMax);
+    int padMax = std::min(CentralPad + DeltaPad, PadsAtRow);
+    int Npads = std::min(padMax - padMin + 1, kPadMax);
     double xPadMin = padMin - padX;
     static double XDirectionCouplings[kPadMax];
     static double TimeCouplings[kTimeBacketMax];
@@ -2033,9 +2033,9 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       if (XYcoupling < minSignal)  continue;
 
       int bin_low  = TMath::Max(0, binT + tpcrs::irint(dt + mShaperResponse->GetXmin() - 0.5));
-      int bin_high = TMath::Min(max_timebins - 1, binT + tpcrs::irint(dt + mShaperResponse->GetXmax() + 0.5));
+      int bin_high = std::min(max_timebins - 1, binT + tpcrs::irint(dt + mShaperResponse->GetXmax() + 0.5));
       int index = max_timebins * ((row - 1) * max_pads + pad - 1) + bin_low;
-      int Ntbks = TMath::Min(bin_high - bin_low + 1, kTimeBacketMax);
+      int Ntbks = std::min(bin_high - bin_low + 1, kTimeBacketMax);
       double tt = -dt + (bin_low - binT);
       mShaperResponse->GetSaveL(Ntbks, tt, TimeCouplings);
 
