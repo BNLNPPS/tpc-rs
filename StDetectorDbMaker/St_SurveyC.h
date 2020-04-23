@@ -19,7 +19,7 @@ struct St_SurveyC : tpcrs::IConfigStruct {
       rot.SetRotation(Rotation(i));
       rot.SetTranslation(Translation(i));
       Normalize(rot);
-      assert(TMath::Abs(rot.Determinant())-1 < 1.e-3);
+      assert(std::abs(rot.Determinant())-1 < 1.e-3);
     }
   }
 
