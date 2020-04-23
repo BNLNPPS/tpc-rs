@@ -982,7 +982,7 @@ float StarMagField::Interpolate( const float Xarray[], const float Yarray[],
 void StarMagField::Search( int N, const float Xarray[], float x, int &low )
 
 {
-  assert(! TMath::IsNaN(x));
+  assert(! std::isnan(x));
   long middle, high ;
   int  ascend = 0, increment = 1 ;
 
