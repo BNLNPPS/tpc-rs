@@ -30,7 +30,7 @@ StPhysicalHelix::StPhysicalHelix(const StThreeVector<double> &p,
 
   {
     using namespace units;
-    setCurvature(fabs((c_light * nanosecond / meter * q * B / tesla) /
+    setCurvature(std::abs((c_light * nanosecond / meter * q * B / tesla) /
                       (abs(p) / GeV * mCosDipAngle) / meter));
   }
 }
@@ -47,7 +47,7 @@ StThreeVector<double> StPhysicalHelix::momentum(double B) const
   else {
     {
       using namespace units;
-      double pt = GeV * fabs(c_light* nanosecond / meter* B / tesla) / (fabs(mCurvature) * meter);
+      double pt = GeV * std::abs(c_light* nanosecond / meter* B / tesla) / (std::abs(mCurvature) * meter);
 
       return (StThreeVector<double>(pt * cos(mPhase + mH* M_PI / 2), // pos part pos field
                                     pt * sin(mPhase + mH* M_PI / 2),

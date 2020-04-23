@@ -62,7 +62,7 @@ void StHelix::setCurvature(double val)
   else
     mCurvature = val;
 
-  if (fabs(mCurvature) <= std::numeric_limits<double>::epsilon())
+  if (std::abs(mCurvature) <= std::numeric_limits<double>::epsilon())
     mSingularity = true;			// straight line
   else
     mSingularity = false;            	// curved
@@ -74,7 +74,7 @@ void StHelix::setPhase(double val)
   mCosPhase    = cos(mPhase);
   mSinPhase    = sin(mPhase);
 
-  if (fabs(mPhase) > M_PI)
+  if (std::abs(mPhase) > M_PI)
     mPhase = atan2(mSinPhase, mCosPhase);  // force range [-pi,pi]
 }
 
@@ -211,7 +211,7 @@ double StHelix::pathLength(const StThreeVector<double> &p, bool scanPeriods) con
                t7 * t7 * mCosDipAngle * mCosDipAngle +
                t19 * t12 * t34 + t41);
 
-        if (fabs(sOld - s) < MaxPrecisionNeeded) break;
+        if (std::abs(sOld - s) < MaxPrecisionNeeded) break;
 
         sOld = s;
       }
@@ -226,7 +226,7 @@ double StHelix::period() const
   if (mSingularity)
     return std::numeric_limits<double>::max();
   else
-    return fabs(2 * M_PI / (mH * mCurvature * mCosDipAngle));
+    return std::abs(2 * M_PI / (mH * mCurvature * mCosDipAngle));
 }
 
 std::pair<double, double> StHelix::pathLength(double r) const
@@ -296,13 +296,13 @@ std::pair<double, double> StHelix::pathLength(double r) const
     double p = period();
 
     if (! std::isnan(value.first)) {
-      if (fabs(value.first - p) < fabs(value.first)) value.first = value.first - p;
-      else if (fabs(value.first + p) < fabs(value.first)) value.first = value.first + p;
+      if (std::abs(value.first - p) < std::abs(value.first)) value.first = value.first - p;
+      else if (std::abs(value.first + p) < std::abs(value.first)) value.first = value.first + p;
     }
 
     if (! std::isnan(value.second)) {
-      if (fabs(value.second - p) < fabs(value.second)) value.second = value.second - p;
-      else if (fabs(value.second + p) < fabs(value.second)) value.second = value.second + p;
+      if (std::abs(value.second - p) < std::abs(value.second)) value.second = value.second - p;
+      else if (std::abs(value.second + p) < std::abs(value.second)) value.second = value.second + p;
     }
   }
 
@@ -363,7 +363,7 @@ double StHelix::pathLength(const StThreeVector<double> &r,
     double shift;
     //		(cos(angMax)-1)/angMax = 0.1
     const double angMax = 0.21;
-    double deltas = fabs(angMax / (mCurvature * mCosDipAngle));
+    double deltas = std::abs(angMax / (mCurvature * mCosDipAngle));
     //              dampingFactor = exp(-0.5);
     //	double dampingFactor = 0.60653;
     int i;
@@ -380,7 +380,7 @@ double StHelix::pathLength(const StThreeVector<double> &r,
            n.y() * cosa * t +
            u;
 
-      if ( fabs(fp)*deltas <= fabs(f) ) { //too big step
+      if ( std::abs(fp)*deltas <= std::abs(f) ) { //too big step
         int sgn = 1;
 
         if (fp < 0.) sgn = -sgn;
@@ -398,7 +398,7 @@ double StHelix::pathLength(const StThreeVector<double> &r,
       s -= shift;
       shiftOld = shift;
 
-      if (fabs(sOld - s) < MaxPrecisionNeeded) break;
+      if (std::abs(sOld - s) < MaxPrecisionNeeded) break;
 
       sOld = s;
     }
@@ -454,7 +454,7 @@ StHelix::pathLengths(const StHelix &h, double minStepSize, double minRange) cons
     double s;
     double x, y;
 
-    if (fabs(cosAlpha) < 1) {           // two solutions
+    if (std::abs(cosAlpha) < 1) {           // two solutions
       double sinAlpha = sin(acos(cosAlpha));
       x = xcenter() + r1 * (cosAlpha * dx - sinAlpha * dy) / dd;
       y = ycenter() + r1 * (sinAlpha * dx + cosAlpha * dy) / dd;
