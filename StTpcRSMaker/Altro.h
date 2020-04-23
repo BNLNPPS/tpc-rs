@@ -15,7 +15,6 @@ g++ -c -o Altro.o Altro.C
 g++  Altro.o -o Altromain.app Altromain.C
 g++ -o Altromain.app Altro.C Altromain.C
 */
-using namespace std;
 
 class Altro
 {
