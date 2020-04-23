@@ -19,7 +19,6 @@
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
-#include "TMath.h"
 #include "StarClassLibrary/StThreeVector.hh"
 #include "tpcrs/logger.h"
 #include "tpcrs/math.h"
@@ -246,10 +245,10 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
     }
   }
 
-  Long64_t row = TMath::BinarySearch(Nrows + 1, Radii, y) + 1;
+  double* r_ptr = std::lower_bound(Radii, Radii + Nrows + 1, y);
+  int row = (r_ptr != Radii + Nrows + 1) && (*r_ptr == y) ? r_ptr - Radii + 1: r_ptr - Radii;
 
   if (row <= 0) row = 1;
-
   if (row > Nrows) row = Nrows;
 
   return row;
@@ -268,7 +267,8 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
 
   if (y > Radii[Nrows - 1]) return Nrows;
 
-  Long64_t row = TMath::BinarySearch(Nrows, Radii, y);
+  double* r_ptr = std::lower_bound(Radii, Radii + Nrows, y);
+  int row = (r_ptr != Radii + Nrows) && (*r_ptr == y) ? r_ptr - Radii : r_ptr - Radii - 1;
 
   if (row < Nrows - 1) {
     if (std::abs(Radii[row] - y) > std::abs(Radii[row + 1] - y)) row++;
