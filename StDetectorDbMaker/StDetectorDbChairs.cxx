@@ -59,7 +59,7 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
   static double T0, T1, T2;
   // parameterization variable
   double X = x;
-  if (cor->npar  < 0) X = TMath::Exp(x);
+  if (cor->npar  < 0) X = std::exp(x);
   else {
     switch  (cor->type) {
     case 10:// ADC correction offset + poly for ADC
@@ -126,16 +126,16 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
     Sum = cor->a[N-1];
     for (int n = N-2; n>=0; n--) Sum = X*Sum + cor->a[n];
     Sum += std::log(1. + cor->OffSet/x);
-    Sum  = TMath::Exp(Sum);
+    Sum  = std::exp(Sum);
     Sum *= x;
     break;
   case 11: // ADC correction offset + poly for log(ADC) and |Z|
-    Sum = cor->a[1] + z*cor->a[2] + z*X*cor->a[3] + TMath::Exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
-    Sum *= TMath::Exp(-cor->a[0]);
+    Sum = cor->a[1] + z*cor->a[2] + z*X*cor->a[3] + std::exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
+    Sum *= std::exp(-cor->a[0]);
     break;
   case 12: // ADC correction offset + poly for log(ADC) and TanL
-    Sum = cor->a[1] + z*cor->a[2] + z*z*cor->a[3] + TMath::Exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
-    Sum *= TMath::Exp(-cor->a[0]);
+    Sum = cor->a[1] + z*cor->a[2] + z*z*cor->a[3] + std::exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
+    Sum *= std::exp(-cor->a[0]);
     break;
   case 1000:
   case 1100:
@@ -648,7 +648,7 @@ float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = std::log((1.0-f2)*TMath::Exp(B*v1) + f2*TMath::Exp(B*v2)) / B;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
 MakeChairInstance(TpcAvgPowerSupply,Calibrations/tpc/TpcAvgPowerSupply);
@@ -669,7 +669,7 @@ float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = std::log((1.0-f2)*TMath::Exp(B*v1) + f2*TMath::Exp(B*v2)) / B;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
 
@@ -726,7 +726,7 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = std::log((1.0-f2)*TMath::Exp(B*v1) + f2*TMath::Exp(B*v2)) / B;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
 
@@ -928,9 +928,9 @@ float St_tss_tssparC::gain(int sector, int row) {
     if (v < gC->min(l) || v > gC->max(l)) return gain;
     if (gC->min(l) < -450) {
       // if range was expanded below 150 V then use only the linear approximation
-      gain  = TMath::Exp(gC->CalcCorrection(l,v, 0., 2));
+      gain  = std::exp(gC->CalcCorrection(l,v, 0., 2));
     } else {
-      gain  = TMath::Exp(gC->CalcCorrection(l,v));
+      gain  = std::exp(gC->CalcCorrection(l,v));
     }
   }
   return gain;

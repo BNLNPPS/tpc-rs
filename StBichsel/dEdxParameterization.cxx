@@ -138,13 +138,13 @@ void dEdxParameterization::Print()
 double dEdxParameterization::MostProbableZCorrection(double log10bg)
 {
   static const double pars[2] = {-3.68846e-03, 4.72944e+00}; // FitHzAllHist012P05id  FitH + Prof 050905
-  return pars[0] * TMath::Exp(-pars[1] * log10bg);
+  return pars[0] * std::exp(-pars[1] * log10bg);
 }
 
 double dEdxParameterization::I70Correction(double log10bg)
 {
   static const double pars[2] = {-1.65714e-02, 3.27271e+00}; //  FitH70AllHist012P05id FitH + Prof 050905
-  return TMath::Exp(pars[0] * TMath::Exp(-pars[1] * log10bg));
+  return std::exp(pars[0] * std::exp(-pars[1] * log10bg));
 }
 
 
