@@ -922,7 +922,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         }
 
         double gamma = std::pow(10., lgam) + 1;
-        double betaGamma = TMath::Sqrt(gamma * gamma - 1.);
+        double betaGamma = std::sqrt(gamma * gamma - 1.);
         StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
         double bg = 0;
         static const double m_e = .51099907e-3;
@@ -941,7 +941,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             if (ipart == 3) {
               eKin = -tpc_hitC->de;
               gamma = eKin / m_e + 1;
-              bg = TMath::Sqrt(gamma * gamma - 1.);
+              bg = std::sqrt(gamma * gamma - 1.);
             }
           }
         }
@@ -955,7 +955,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         if (bg > betaGamma) betaGamma = bg;
 
         double bg2 = betaGamma * betaGamma;
-        gamma = TMath::Sqrt(bg2 + 1.);
+        gamma = std::sqrt(bg2 + 1.);
         double Tmax;
 
         if (mass < 2 * m_e) {
@@ -986,12 +986,12 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position().z());
         double D = 1. + OmegaTau * OmegaTau;
-        double SigmaT = St_TpcResponseSimulatorC::instance()->transverseDiffusion() *  TMath::Sqrt(   driftLength / D);
+        double SigmaT = St_TpcResponseSimulatorC::instance()->transverseDiffusion() *  std::sqrt(   driftLength / D);
 
-        //	double SigmaL = St_TpcResponseSimulatorC::instance()->longitudinalDiffusion()*TMath::Sqrt(2*driftLength  );
-        if (sigmaJitterX > 0) {SigmaT = TMath::Sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);}
+        //	double SigmaL = St_TpcResponseSimulatorC::instance()->longitudinalDiffusion()*std::sqrt(2*driftLength  );
+        if (sigmaJitterX > 0) {SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);}
 
-        double SigmaL = St_TpcResponseSimulatorC::instance()->longitudinalDiffusion() * TMath::Sqrt(   driftLength  );
+        double SigmaL = St_TpcResponseSimulatorC::instance()->longitudinalDiffusion() * std::sqrt(   driftLength  );
         double NoElPerAdc = St_TpcResponseSimulatorC::instance()->NoElPerAdc();
 
         if (NoElPerAdc <= 0) {
@@ -1044,7 +1044,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             if (eKin == 0.0) break;
 
             gamma = eKin / m_e + 1;
-            bg = TMath::Sqrt(gamma * gamma - 1.);
+            bg = std::sqrt(gamma * gamma - 1.);
             Tmax = 0.5 * m_e * (gamma - 1);
 
             if (Tmax <= St_TpcResponseSimulatorC::instance()->W() / 2 * eV) break;
@@ -1322,7 +1322,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
 double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
 {
-  double beta = betaGamma / TMath::Sqrt(1.0 + betaGamma * betaGamma);
+  double beta = betaGamma / std::sqrt(1.0 + betaGamma * betaGamma);
   double dNdx = 0;
 
   if      (mdNdx   ) dNdx = mdNdx->Interpolate(betaGamma);
@@ -1400,9 +1400,9 @@ double StTpcRSMaker::Gatti(double* x, double* par)
   double h = par[1]; // h = Anode-Cathode gap
   double K3  = par[3];
   double lambda = y / h;
-  double K2 = TMath::PiOver2() * (1. - 0.5 * TMath::Sqrt(K3));
-  //  double K1 = K2*TMath::Sqrt(K3)/(2*std::atan(TMath::Sqrt(K3)));
-  double sqK3 = TMath::Sqrt(K3);
+  double K2 = TMath::PiOver2() * (1. - 0.5 * std::sqrt(K3));
+  //  double K1 = K2*std::sqrt(K3)/(2*std::atan(std::sqrt(K3)));
+  double sqK3 = std::sqrt(K3);
   double ATsqK3 = 0.5 / std::atan(sqK3);
   double Y1 = lambda - w / h / 2;
   double Y2 = Y1 + w / h;
@@ -1661,7 +1661,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double Tav = t0 * h / s / (2 * pi * C);  LOG_INFO << "Tav = " << 1e9 * Tav << " ns\n";
   //  double t = 5*55e-9;             LOG_INFO << "t = " << 1e9*t << " ns\n";
   double t = 180e-9;             LOG_INFO << "t = " << 1e9 * t << " ns\n";
-  double rp = TMath::Sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << '\n';
+  double rp = std::sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << '\n';
   // qc = rp*ra*sin(alpha)/(2*h) + C/2*log(1 + t/t0) = A*sin(alpha) + B
   double Aconstant = rp * ra / (2 * h);        LOG_INFO << "Aconstant = " << Aconstant << '\n';
   double Bconstant = C / 2 * std::log(1 + t / t0); LOG_INFO << "Bconstant = " << Bconstant << '\n';
@@ -1672,7 +1672,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
     LOG_INFO << "Gain = " << Gains[i] << " at alpha = " << alpha[i] << " degree\n";
   }
 
-  double GainsAv = TMath::Sqrt(Gains[0] * Gains[1]);
+  double GainsAv = std::sqrt(Gains[0] * Gains[1]);
   double r = 0;
 
   for (int i = 0; i < 2; i++) {
@@ -1785,7 +1785,7 @@ double StTpcRSMaker::shapeEI3(double* x, double* par)  // does not work. It is n
 
 double StTpcRSMaker::shapeEI_I(double* x, double* par)   //Integral of shape over time bin
 {
-  static double sqrt2 = TMath::Sqrt(2.);
+  static double sqrt2 = std::sqrt(2.);
   double TimeBinWidth = par[2];
   double norm = par[3];
   double t1 = TimeBinWidth * (x[0] - 0.5);
@@ -1798,7 +1798,7 @@ double StTpcRSMaker::shapeEI_I(double* x, double* par)   //Integral of shape ove
 
 double StTpcRSMaker::shapeEI3_I(double* x, double* par)   //Integral of shape over time bin
 {
-  static double sqrt2 = TMath::Sqrt(2.);
+  static double sqrt2 = std::sqrt(2.);
   double TimeBinWidth = par[4];
   double norm = par[5];
   double t1 = TimeBinWidth * (x[0] - 0.5);

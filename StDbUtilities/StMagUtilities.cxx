@@ -2251,7 +2251,7 @@ void StMagUtilities::UndoMembraneDistortion( const float x[], float Xprime[], in
   /*
   double r, phi, z ;
 
-  r      =  TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) ;
+  r      =  std::sqrt( x[0]*x[0] + x[1]*x[1] ) ;
   phi    =  std::atan2(x[1],x[0]) ;
   if ( phi < 0 ) phi += 2*TMath::Pi() ;             // Table uses phi from 0 to 2*Pi
   z      =  x[2] ;
@@ -2296,7 +2296,7 @@ void StMagUtilities::UndoEndcapDistortion( const float x[], float Xprime[], int 
   /*
   double r, phi, z ;
 
-  r      =  TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) ;
+  r      =  std::sqrt( x[0]*x[0] + x[1]*x[1] ) ;
   phi    =  std::atan2(x[1],x[0]) ;
   if ( phi < 0 ) phi += 2*TMath::Pi() ;             // Table uses phi from 0 to 2*Pi
   z      =  x[2] ;
@@ -3472,8 +3472,8 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
 
     for ( int k = 1 ; k <= ITERATIONS; k++ ) {               // Solve Poisson's Equation
 
-      //float OverRelax   = 1.0 + TMath::Sqrt( std::cos( (k*TMath::PiOver2())/ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
-      float OverRelaxM1 = TMath::Sqrt( std::cos( (k * TMath::PiOver2()) / ITERATIONS ) ) ;
+      //float OverRelax   = 1.0 + std::sqrt( std::cos( (k*TMath::PiOver2())/ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
+      float OverRelaxM1 = std::sqrt( std::cos( (k * TMath::PiOver2()) / ITERATIONS ) ) ;
       float OverRelaxtempFourth = (1.0 + OverRelaxM1) * tempFourth ;
 
       for ( int i = i_one ; i < ROWS - 1 ; i += i_one ) {
@@ -3666,7 +3666,7 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
   float OverRelaxers[ITERATIONS] ;
 
   for ( int k = 1 ; k <= ITERATIONS; k++ ) {
-    OverRelaxers[k - 1] = 1.0 + TMath::Sqrt( std::cos( (k * TMath::PiOver2()) / ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
+    OverRelaxers[k - 1] = 1.0 + std::sqrt( std::cos( (k * TMath::PiOver2()) / ITERATIONS ) ) ; // Over-relaxation index, >= 1 but < 2
   }
 
   float coef1[ROWS], coef2[ROWS], coef3[ROWS], coef4[ROWS], OverRelaxcoef4[ROWS];
@@ -4010,7 +4010,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
 
   BFieldTpc(x, B) ;
   ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
-  Pt = TMath::Sqrt( p[0] * p[0] + p[1] * p[1] ) ;
+  Pt = std::sqrt( p[0] * p[0] + p[1] * p[1] ) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = x[0] + ChargeB * p[1] * R0 / Pt ;
   Y0 = x[1] - ChargeB * p[0] * R0 / Pt ;
@@ -4024,9 +4024,9 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     Direction = 1.0 ;
     R2 = TestRadius * TestRadius ;
     C0 = ( R2 - R0 * R0 + X0 * X0 + Y0 * Y0 ) ;                          // Intermediate constant
-    double X1 = 0.5 * ( C0 * X0 - TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
+    double X1 = 0.5 * ( C0 * X0 - std::sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
     double Y1 = ( R2 - R0 * R0 - 2 * X0 * X1 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
-    double X2 = 0.5 * ( C0 * X0 + TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
+    double X2 = 0.5 * ( C0 * X0 + std::sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
     double Y2 = ( R2 - R0 * R0 - 2 * X0 * X2 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     if ( X2 * p[0] +  Y2 * p[1]  <  X1 * p[0] + Y1 * p[1] ) Direction = -1.0 ; // Test which of two directions the particle goes on the circle
@@ -4050,10 +4050,10 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     C0 = ( R[i] * R[i] - R0 * R0 + X0 * X0 + Y0 * Y0 ) ; // Intermediate constant
 
     if (Y0 == 0.0) Xtrack[index]  =  0.5 * C0 / X0 ;
-    else           Xtrack[index]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) )
+    else           Xtrack[index]  =  0.5 * ( C0 * X0 + Direction * std::sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) )
                                        / (X0 * X0 + Y0 * Y0) ;
 
-    if (Y0 == 0.0) Ytrack[index]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[index] * Xtrack[index] ) ) ;
+    if (Y0 == 0.0) Ytrack[index]  =  Direction * std::sqrt( std::abs( R[i] * R[i] - Xtrack[index] * Xtrack[index] ) ) ;
     else           Ytrack[index]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[index] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     DeltaTheta  =  std::atan2(x[1] - Y0, x[0] - X0) - std::atan2(Ytrack[index] - Y0, Xtrack[index] - X0) ;
@@ -4114,7 +4114,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   double R0_new  =  R0 + FIT.GetParameter( 0 ) ;
   double Pt_new  =  std::abs( R0_new * 0.299792 * B[2] / 1000. ) ;     // P in GeV, R in cm, B in kGauss
 
-  if ( TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) <= IFCRadius )
+  if ( std::sqrt( x[0]*x[0] + x[1]*x[1] ) <= IFCRadius )
   {  x_new[0] = x[0] ;  x_new[1] = x[1] ;  x_new[2] = x[2] ; }
   else {
     UndoSpaceChargeR0Distortion(x, xxprime) ;
@@ -4211,7 +4211,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
 
   BFieldTpc(x, B) ;
   ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
-  Pt = TMath::Sqrt( p[0] * p[0] + p[1] * p[1] ) ;
+  Pt = std::sqrt( p[0] * p[0] + p[1] * p[1] ) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = x[0] + ChargeB * p[1] * R0 / Pt ;
   Y0 = x[1] - ChargeB * p[0] * R0 / Pt ;
@@ -4225,10 +4225,10 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
     Direction = 1.0 ;
     R2 = R[RefIndex] * R[RefIndex] ;
     C0 = ( R2 - R0 * R0 + X0 * X0 + Y0 * Y0 ) ;                          // Intermediate constant
-    double X1 = 0.5 * ( C0 * X0 - TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
+    double X1 = 0.5 * ( C0 * X0 - std::sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
                   / (X0 * X0 + Y0 * Y0) ;
     double Y1 = ( R2 - R0 * R0 - 2 * X0 * X1 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
-    double X2 = 0.5 * ( C0 * X0 + TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
+    double X2 = 0.5 * ( C0 * X0 + std::sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
                   / (X0 * X0 + Y0 * Y0) ;
     double Y2 = ( R2 - R0 * R0 - 2 * X0 * X2 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
@@ -4241,10 +4241,10 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
     C0 = ( R[i] * R[i] - R0 * R0 + X0 * X0 + Y0 * Y0 ) ; // Intermediate constant
 
     if ( std::abs(Y0) < 0.001 ) Xtrack[i]  =  0.5 * C0 / X0 ;     // Create circular tracks and record hits on pad rows
-    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 -
+    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * std::sqrt( std::abs( C0 * C0 * X0 * X0 -
                                            (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) ) / (X0 * X0 + Y0 * Y0) ;
 
-    if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
+    if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * std::sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
     else           Ytrack[i]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[i] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     DeltaTheta  =  std::atan2(x[1] - Y0, x[0] - X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
@@ -4330,14 +4330,14 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
 
   double X0_new  =  Xreference - ( fit->GetParameter(1) / ( 2.0 * fit->GetParameter(0) ) )  ;
   double Y0_new  =  Yreference + ( 1.0 / ( 2.0 * fit->GetParameter(0) ) ) ;
-  double R0_new  =  TMath::Sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
+  double R0_new  =  std::sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
   double Pt_new  =  std::abs ( R0_new * 0.299792 * B[2] / 1000. ) ;
-  //double DCA_new =  TMath::Sqrt( X0_new*X0_new + Y0_new*Y0_new ) - R0_new ;  // Negative means (0,0) is inside the circle
+  //double DCA_new =  std::sqrt( X0_new*X0_new + Y0_new*Y0_new ) - R0_new ;  // Negative means (0,0) is inside the circle
 
   //LOG_INFO << "DCA (from inside) = " << DCA_new << '\n' ; // JT test
 
   // P in GeV, R in cm, B in kGauss
-  if ( TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) <= IFCRadius )
+  if ( std::sqrt( x[0]*x[0] + x[1]*x[1] ) <= IFCRadius )
   {  x_new[0] = x[0] ;  x_new[1] = x[1] ;  x_new[2] = x[2] ; }
   else {
     UndoSpaceChargeR2Distortion(x, x_new) ;
@@ -4453,10 +4453,10 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     C0 = ( R[i] * R[i] - R0 * R0 + X0 * X0 + Y0 * Y0 ) ; // Intermediate constant
 
     if ( std::abs(Y0) < 0.001 ) Xtrack[i]  =  0.5 * C0 / X0 ;     // Create circular tracks and record hits on pad rows
-    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 -
+    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * std::sqrt( std::abs( C0 * C0 * X0 * X0 -
                                            (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) ) / (X0 * X0 + Y0 * Y0) ;
 
-    if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
+    if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * std::sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
     else           Ytrack[i]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[i] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
@@ -4553,8 +4553,8 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
 
   double X0_new  =  Xreference - ( fit->GetParameter(1) / ( 2.0 * fit->GetParameter(0) ) )  ;
   double Y0_new  =  Yreference + ( 1.0 / ( 2.0 * fit->GetParameter(0) ) ) ;
-  double R0_new  =  TMath::Sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
-  double DCA_new =  TMath::Sqrt( X0_new * X0_new + Y0_new * Y0_new ) - R0_new ; // Negative means (0,0) is inside the circle
+  double R0_new  =  std::sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
+  double DCA_new =  std::sqrt( X0_new * X0_new + Y0_new * Y0_new ) - R0_new ; // Negative means (0,0) is inside the circle
 
   pSpace  =  (DCA * ChargeB) * SpaceChargeR2 / DCA_new ;    // Work with Physical-Signed DCA from Chain or MuDST
 
@@ -4720,7 +4720,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
 
     if ( R[i] < IFCRadius || R[i] > OFCRadius ) { // Check if point is outside the TPC
       Ytrack[i] = -1 * ChargeB * ( R[i] * R[i] / (2 * R0) ) ;
-      Xtrack[i] = TMath::Sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
+      Xtrack[i] = std::sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
       DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
       while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;
@@ -4734,7 +4734,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     // Throw track at 0 + PhiPrime
     // Handle non-circular padrows
     Xtrack[i] = R[i] ;
-    Ytrack[i] = ChargeB * TMath::Sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
+    Ytrack[i] = ChargeB * std::sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
     HitLocalPhi = std::atan2(Ytrack[i], Xtrack[i]);
 
     while (std::abs(HitLocalPhi) > PiOver12) {
@@ -4748,7 +4748,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
       X0Prime = cosPhiPrime * X0 - sinPhiPrime * Y0; // Rotate helix center by PhiPrime
       Y0Prime = sinPhiPrime * X0 + cosPhiPrime * Y0;
 
-      Ytrack[i] = ChargeB * TMath::Sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
+      Ytrack[i] = ChargeB * std::sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
       HitLocalPhi = std::atan2(Ytrack[i], Xtrack[i]);
     }
 
@@ -4938,7 +4938,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
   for ( int i = 0 ; i < NHits ; i++ ) {
 
     Ytrack[i] = -1 * ChargeB * ( R[i] * R[i] / (2 * R0) ) ;
-    Xtrack[i] = TMath::Sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
+    Xtrack[i] = std::sqrt( R[i] * R[i] - Ytrack[i] * Ytrack[i] ) ;
     DeltaTheta  =  std::atan2(-1 * Y0, -1 * X0) - std::atan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
 
     while ( DeltaTheta < -1 * TMath::Pi() ) DeltaTheta += TMath::TwoPi() ;

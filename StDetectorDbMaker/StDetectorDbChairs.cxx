@@ -338,7 +338,7 @@ double St_MDFCorrectionC::EvalError(int k, double *x) const {
     // Add this term to the final result
     returnValue += term*term;
   }
-  returnValue = TMath::Sqrt(returnValue);
+  returnValue = std::sqrt(returnValue);
   return returnValue;
 }
 

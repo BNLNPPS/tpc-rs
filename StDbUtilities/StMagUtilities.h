@@ -320,12 +320,12 @@ class StMagUtilities
 
   void     Cart2Polar(const float* x, float &r, float &phi)
   {
-    r      =  TMath::Sqrt( x[0] * x[0] + x[1] * x[1] ) ;
+    r      =  std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
     phi    =  std::atan2(x[1], x[0]) ;
   }
   void     Cart2Polar(const float* x, double &r, double &phi)
   {
-    r      =  TMath::Sqrt( x[0] * x[0] + x[1] * x[1] ) ;
+    r      =  std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
     phi    =  std::atan2(x[1], x[0]) ;
   }
   void     Polar2Cart(const double r, const double phi, float* Xprime)
