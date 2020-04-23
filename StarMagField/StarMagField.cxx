@@ -716,9 +716,9 @@ void StarMagField::ReadField( )
                    &R3DSteel[k], &Z3DSteel[j], &Phi3DSteel[i], &Bx3DSteel[i][j][k], &Bz3DSteel[i][j][k], &By3DSteel[i][j][k] ) ;
 
           //added by Lijuan
-          Br3DSteel[i][j][k] = cos(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + sin(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
+          Br3DSteel[i][j][k] = std::cos(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + std::sin(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
 
-          Bphi3DSteel[i][j][k] = 0 - sin(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + cos(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
+          Bphi3DSteel[i][j][k] = 0 - std::sin(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + std::cos(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
         }
       }
     }

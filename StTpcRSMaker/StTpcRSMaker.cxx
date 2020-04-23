@@ -1124,8 +1124,8 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
           StThreeVector<double> xyzC = track.at(newPosition);
           double phiXY = 2 * TMath::Pi() * gRandom->Rndm();
-          double rX = TMath::Cos(phiXY);
-          double rY = TMath::Sin(phiXY);
+          double rX = std::cos(phiXY);
+          double rY = std::sin(phiXY);
           double sigmaT = SigmaT;
           double sigmaL = SigmaL;
           TotalSignalInCluster = 0;
@@ -1334,7 +1334,7 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
     // Effective charge from GEANT ghion.F
     double w1 = 1.034 - 0.1777 * TMath::Exp(-0.08114 * Q_eff);
     double w2 = beta * std::pow(Q_eff, -2. / 3.);
-    double w3 = 121.4139 * w2 + 0.0378 * TMath::Sin(190.7165 * w2);
+    double w3 = 121.4139 * w2 + 0.0378 * std::sin(190.7165 * w2);
     Q_eff      *= 1. - w1 * TMath::Exp(-w3);
   }
 
@@ -1668,7 +1668,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double Gains[2];
 
   for (int i = 0; i < 2; i++) {
-    Gains[i] = Aconstant * TMath::Sin(pi / 180 * alpha[i]) + Bconstant;
+    Gains[i] = Aconstant * std::sin(pi / 180 * alpha[i]) + Bconstant;
     LOG_INFO << "Gain = " << Gains[i] << " at alpha = " << alpha[i] << " degree\n";
   }
 

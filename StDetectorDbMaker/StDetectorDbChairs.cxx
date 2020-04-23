@@ -1078,9 +1078,9 @@ const TGeoHMatrix &St_SurveyC::GetMatrixR(int i) {
 void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
   phi = the = psi = 0;  // Korn 14.10-5
   double cosDelta = (r00(i) + r11(i) + r22(i) - 1)/2; // (Tr(R) - 1)/2
-  double Delta = TMath::ACos(cosDelta);
+  double Delta = std::acos(cosDelta);
   if (Delta < 0) Delta += 2*TMath::Pi();
-  double sinDelta2 = TMath::Sin(Delta/2);
+  double sinDelta2 = std::sin(Delta/2);
   if (std::abs(sinDelta2) < 1.e-7) return;
   double c[3] = {
     (r21(i) - r12(i))/(2*sinDelta2), // a32-a23
@@ -1091,7 +1091,7 @@ void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
   double v = std::atan(c[2]*std::tan(Delta/2));
   phi = (v - u)/2 - TMath::Pi()/2;
   psi = (v + u)/2 - TMath::Pi()/2;
-  the = 2*std::atan2(c[0]*TMath::Sin(v),c[2]*TMath::Sin(u));
+  the = 2*std::atan2(c[0]*std::sin(v),c[2]*std::sin(u));
   double raddeg = 180./TMath::Pi();
   phi   *= raddeg;
   the   *= raddeg;

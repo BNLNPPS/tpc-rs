@@ -330,8 +330,8 @@ class StMagUtilities
   }
   void     Polar2Cart(const double r, const double phi, float* Xprime)
   {
-    Xprime[0] = r * TMath::Cos(phi) ;
-    Xprime[1] = r * TMath::Sin(phi) ;
+    Xprime[0] = r * std::cos(phi) ;
+    Xprime[1] = r * std::sin(phi) ;
   }
 
 
