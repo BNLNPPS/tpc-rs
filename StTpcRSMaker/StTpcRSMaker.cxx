@@ -249,7 +249,7 @@ void StTpcRSMaker::InitRun(int runnumber)
 
     for (int io = 0; io < 2; io++) {// In/Out
       if (io == 0) {
-        if (sector > 1 && TMath::Abs(innerSectorAnodeVoltage[sector - 1] - innerSectorAnodeVoltage[sector - 2]) < 1) {
+        if (sector > 1 && std::abs(innerSectorAnodeVoltage[sector - 1] - innerSectorAnodeVoltage[sector - 2]) < 1) {
           InnerAlphaVariation[sector - 1] = InnerAlphaVariation[sector - 2];
         }
         else {
@@ -261,7 +261,7 @@ void StTpcRSMaker::InitRun(int runnumber)
         }
       }
       else {
-        if (sector > 1 && TMath::Abs(outerSectorAnodeVoltage[sector - 1] - outerSectorAnodeVoltage[sector - 2]) < 1) {
+        if (sector > 1 && std::abs(outerSectorAnodeVoltage[sector - 1] - outerSectorAnodeVoltage[sector - 2]) < 1) {
           OuterAlphaVariation[sector - 1] = OuterAlphaVariation[sector - 2];
         }
         else {
@@ -889,7 +889,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #ifdef __DEBUG__
         if (Debug() > 11) PrPP(Make, track);
 #endif
-        double dStep =  TMath::Abs(tpc_hitC->ds);
+        double dStep =  std::abs(tpc_hitC->ds);
         double s_low   = -dStep / 2;
         double s_upper = s_low + dStep;
         double newPosition = s_low;
@@ -977,14 +977,14 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         tbk0 = tpcrs::irint(tbkH + xmin[1]);
         double OmegaTau = St_TpcResponseSimulatorC::instance()->OmegaTau() *
                             TrackSegmentHits[iSegHits].BLS.position().z() / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
-        double NP = TMath::Abs(tpc_hitC->de) / (St_TpcResponseSimulatorC::instance()->W() * eV *
+        double NP = std::abs(tpc_hitC->de) / (St_TpcResponseSimulatorC::instance()->W() * eV *
                       St_TpcResponseSimulatorC::instance()->Cluster()); // from GEANT
 
         if (ClusterProfile) {
           checkList[io][6]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), NP);
         }
 
-        double driftLength = TMath::Abs(TrackSegmentHits[iSegHits].coorLS.position().z());
+        double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position().z());
         double D = 1. + OmegaTau * OmegaTau;
         double SigmaT = St_TpcResponseSimulatorC::instance()->transverseDiffusion() *  TMath::Sqrt(   driftLength / D);
 
@@ -1063,7 +1063,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             else { // charge == 0 geantino
               // for Laserino assume dE/dx = 25 keV/cm;
               dE = 10; // eV
-              dS = dE * eV / (TMath::Abs(mLaserScale * tpc_hitC->de / tpc_hitC->ds));
+              dS = dE * eV / (std::abs(mLaserScale * tpc_hitC->de / tpc_hitC->ds));
             }
           }
 
@@ -1188,10 +1188,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             xOnWire = xyzE.position().x();
             zOnWire = xyzE.position().z();
             // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
-            int iGridWire = (int ) TMath::Abs(10.*distanceToWire);
+            int iGridWire = (int ) std::abs(10.*distanceToWire);
             double dist2Grid = TMath::Sign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
             // Ground plane (1 mm spacing) focusing effect
-            int iGroundWire = (int ) TMath::Abs(10.*dist2Grid);
+            int iGroundWire = (int ) std::abs(10.*dist2Grid);
             double distFocused = TMath::Sign(0.05 + 0.1 * iGroundWire, dist2Grid);
             // OmegaTau near wires taken from comparison with data
             double tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleO();
@@ -1199,7 +1199,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             if (y < firstOuterSectorAnodeWire) tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleI();
 
             xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
-            zOnWire += TMath::Abs(distFocused);
+            zOnWire += std::abs(distFocused);
 
             if (! iGroundWire ) QAv *= TMath::Exp( alphaVariation);
             else                QAv *= TMath::Exp(-alphaVariation);
@@ -1328,7 +1328,7 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
   if      (mdNdx   ) dNdx = mdNdx->Interpolate(betaGamma);
   else if (mdNdxL10) dNdx = mdNdxL10->Interpolate(TMath::Log10(betaGamma));
 
-  double Q_eff = TMath::Abs(charge % 100);
+  double Q_eff = std::abs(charge % 100);
 
   if (Q_eff > 1)   {
     // Effective charge from GEANT ghion.F
@@ -1738,7 +1738,7 @@ double StTpcRSMaker::shapeEI(double* x, double* par)  // does not work. It is ne
   double T1 = par[1]; // tau_I
   double T2 = par[3]; // tau_C
 
-  if (TMath::Abs((T1 - T2) / (T1 + T2)) < 1e-7) {
+  if (std::abs((T1 - T2) / (T1 + T2)) < 1e-7) {
     return TMath::Max(0., (t + t0) / T1 * fei(t, t0, T1) + TMath::Exp(-t / T1) - 1);
   }
 
@@ -1884,7 +1884,7 @@ bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   TrackSegmentHits.tpc_hitC = tpc_hitC;
 
   if (ClusterProfile) {
-    checkList[io][0]->Fill(TrackSegmentHits.tpc_hitC->x[2], TMath::Abs(TrackSegmentHits.tpc_hitC->de));
+    checkList[io][0]->Fill(TrackSegmentHits.tpc_hitC->x[2], std::abs(TrackSegmentHits.tpc_hitC->de));
     checkList[io][1]->Fill(TrackSegmentHits.tpc_hitC->x[2],           TrackSegmentHits.tpc_hitC->ds );
   }
 
@@ -1929,7 +1929,7 @@ bool StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -gStTpcDb->WirePlaneGeometry()->outerSectorAnodeWirePadPlaneSeparation()) ||
         (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -gStTpcDb->WirePlaneGeometry()->innerSectorAnodeWirePadPlaneSeparation()))
-      driftLength = TMath::Abs(driftLength);
+      driftLength = std::abs(driftLength);
   }
 
   TrackSegmentHits.coorLS.position().setZ(driftLength); PrPP(Make, TrackSegmentHits.coorLS);
@@ -2098,7 +2098,7 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
 
   if (m_TpcdEdxCorrection) {
     //    dEdxCor = -1;
-    double dStep =  TMath::Abs(TrackSegmentHits.tpc_hitC->ds);
+    double dStep =  std::abs(TrackSegmentHits.tpc_hitC->ds);
     dEdxY2_t CdEdx;
     memset (&CdEdx, 0, sizeof(dEdxY2_t));
     CdEdx.DeltaZ = 5.2;

@@ -53,7 +53,7 @@ double St_tpcCorrectionC::CalcCorrection(int i, double x, double z, int NparMax)
 double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, int NparMax) {
   double Sum = 0;
   if (! cor) return Sum;
-  int N = TMath::Abs(cor->npar)%100;
+  int N = std::abs(cor->npar)%100;
   if (N == 0) return Sum;
   if (NparMax > 0) N = NparMax;
   static double T0, T1, T2;
@@ -73,12 +73,12 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
       if (cor->min < cor->max)   X = TMath::Max(0.,std::min(1.,(X - cor->min)/( cor->max - cor->min)));
       break;
     case 3:
-      if (TMath::Abs(x) >= 1) X = 0;
-      else                    X = TMath::Log(1. - TMath::Abs(x));
+      if (std::abs(x) >= 1) X = 0;
+      else                    X = TMath::Log(1. - std::abs(x));
       break;
     case 4:
-      if (TMath::Abs(x) >= 1) X = 0;
-      else                    X = TMath::Sign(TMath::Log(1. - TMath::Abs(x)),x);
+      if (std::abs(x) >= 1) X = 0;
+      else                    X = TMath::Sign(TMath::Log(1. - std::abs(x)),x);
       break;
     case 5:
       if (x < 1e-7) X = -16.118;
@@ -643,8 +643,8 @@ float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
   float v1=voltage(e1-1);
   if (f2 < 0.1) return v1;
   float v2=voltage(e2-1);
-  if (TMath::Abs(v2 - v1) > 40) return -99;
-  if (TMath::Abs(v2 - v1) <  1) return v1;
+  if (std::abs(v2 - v1) > 40) return -99;
+  if (std::abs(v2 - v1) <  1) return v1;
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
@@ -1021,10 +1021,10 @@ double St_SurveyC::IsOrtogonal(const double *r) {
   for (int i=0; i<2; i++) {
     for (int j=i+1; j<3; j++) {
       // check columns
-      cij = TMath::Abs(r[i]*r[j]+r[i+3]*r[j+3]+r[i+6]*r[j+6]);
+      cij = std::abs(r[i]*r[j]+r[i+3]*r[j+3]+r[i+6]*r[j+6]);
       if (cij>1E-4) cmax = cij;
       // check rows
-      cij = TMath::Abs(r[3*i]*r[3*j]+r[3*i+1]*r[3*j+1]+r[3*i+2]*r[3*j+2]);
+      cij = std::abs(r[3*i]*r[3*j]+r[3*i+1]*r[3*j+1]+r[3*i+2]*r[3*j+2]);
       if (cij>cmax) cmax = cij;
     }
   }
@@ -1045,7 +1045,7 @@ void St_SurveyC::Normalize(TGeoHMatrix &R) {
 
 const TGeoHMatrix &St_SurveyC::GetMatrix(int i) {
   assert(fRotations || fRotations[i]);
-  assert(TMath::Abs(fRotations[i]->Determinant())-1 < 1.e-3);
+  assert(std::abs(fRotations[i]->Determinant())-1 < 1.e-3);
   return *fRotations[i];
 }
 
@@ -1081,7 +1081,7 @@ void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
   double Delta = TMath::ACos(cosDelta);
   if (Delta < 0) Delta += 2*TMath::Pi();
   double sinDelta2 = TMath::Sin(Delta/2);
-  if (TMath::Abs(sinDelta2) < 1.e-7) return;
+  if (std::abs(sinDelta2) < 1.e-7) return;
   double c[3] = {
     (r21(i) - r12(i))/(2*sinDelta2), // a32-a23
     (r02(i) - r20(i))/(2*sinDelta2), // a13-a31

@@ -153,10 +153,10 @@ void StTpcdEdxCorrection::ReSetCorrections()
       for (int i = 0; i < N; i++, cor++) {
         if (cor->nrows == 0 && cor->idx == 0) continue;
 
-        if (TMath::Abs(cor->npar) > 0       ||
-            TMath::Abs(cor->OffSet) > 1.e-7 ||
-            TMath::Abs(cor->min)    > 1.e-7 ||
-            TMath::Abs(cor->max)    > 1.e-7) {
+        if (std::abs(cor->npar) > 0       ||
+            std::abs(cor->OffSet) > 1.e-7 ||
+            std::abs(cor->min)    > 1.e-7 ||
+            std::abs(cor->max)    > 1.e-7) {
           npar++;
           nrows++;
         }
@@ -298,7 +298,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
   if (VarXs[kEdge] >  1) VarXs[kEdge] =  1;
 
-  VarXs[kPhiDirection]         = (TMath::Abs(CdEdx.xyzD[0]) > 1.e-7) ? TMath::Abs(CdEdx.xyzD[1] / CdEdx.xyzD[0]) : 999.;
+  VarXs[kPhiDirection]         = (std::abs(CdEdx.xyzD[0]) > 1.e-7) ? std::abs(CdEdx.xyzD[1] / CdEdx.xyzD[0]) : 999.;
   VarXs[kTanL]                 = CdEdx.TanL;
   VarXs[ktpcTime]              = CdEdx.tpcTime;
   VarXs[kAdcCorrection] = VarXs[kAdcCorrectionMDF] = adcCF;
@@ -394,7 +394,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
       if (corl->type == 12)
         dE = Adc2GeVReal * ((St_tpcCorrectionC*)m_Corrections[k].Chair)->CalcCorrection(l, ADC, VarXs[kTanL]);
       else
-        dE = Adc2GeVReal * ((St_tpcCorrectionC*)m_Corrections[k].Chair)->CalcCorrection(l, ADC, TMath::Abs(CdEdx.zG));
+        dE = Adc2GeVReal * ((St_tpcCorrectionC*)m_Corrections[k].Chair)->CalcCorrection(l, ADC, std::abs(CdEdx.zG));
 
       if (dE <= 0) return 3;
 
@@ -415,7 +415,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
       xL2 = TMath::Log2(dx);
       dXCorr = ((St_tpcCorrectionC*)m_Corrections[k].Chair)->CalcCorrection(l, xL2);
 
-      if (TMath::Abs(dXCorr) > 10) return 3;
+      if (std::abs(dXCorr) > 10) return 3;
 
       if (nrows == 7) {// old schema without iTPC
         dXCorr += ((St_tpcCorrectionC*)m_Corrections[k].Chair)->CalcCorrection(2, xL2);
@@ -435,7 +435,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
       goto ENDL;
     }
     else if (k == kEdge) {
-      if (corl->type == 200) VarXs[kEdge] = TMath::Abs(CdEdx.edge);
+      if (corl->type == 200) VarXs[kEdge] = std::abs(CdEdx.edge);
 
       if (corl->min > 0 && corl->min > VarXs[kEdge]    ) return 2;
     }
@@ -453,7 +453,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
       if (corl->max > 0 && VarXs[k]     > corl->max) VarXs[k] = corl->max;
     }
 
-    if (TMath::Abs(corl->npar) >= 100 || iCut) {
+    if (std::abs(corl->npar) >= 100 || iCut) {
       int iok = 2;
 
       if (corl->min >= corl->max) {

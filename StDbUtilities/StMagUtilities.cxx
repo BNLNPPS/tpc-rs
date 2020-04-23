@@ -323,9 +323,9 @@ void StMagUtilities::GetE()
   GGeffectiveness      =  0.981;       // Effectiveness of GG voltage to be the average at its plane
   deltaGGeffectiveness =  0.964;       // Effectiveness of GG voltage changes to be expressed in average
   GGideal              =  CathodeV * (1.0 - Rfrac) / GGeffectiveness ;
-  StarMagE             =  TMath::Abs((CathodeV - GG) / TPC_Z0) ;     // STAR Electric Field (V/cm) Magnitude
+  StarMagE             =  std::abs((CathodeV - GG) / TPC_Z0) ;     // STAR Electric Field (V/cm) Magnitude
 
-  if (TMath::Abs(StarMagE) < 1e-6) {
+  if (std::abs(StarMagE) < 1e-6) {
     LOG_INFO << "StMagUtilities ERROR **** Calculations fail with extremely small or zero primary E field:\n";
     LOG_INFO << "StMagUtilities     StarMagE = (CathodeV - GG) / TPC_Z0 = (" << CathodeV
          << " - " << GG << ") / " << TPC_Z0 << " = " << StarMagE << " V/cm\n";
@@ -377,8 +377,8 @@ void StMagUtilities::GetTPCVoltages (int mode)
     LOG_INFO << "StMagUtilities assigning common anode voltages as " << cmnInner << " , " << cmnOuter << '\n';
 
     for (int i = 1 ; i < 25; i++ ) {
-      GLWeights[i] = ( ( TMath::Abs(anodeVolts->voltagePadrow(i, INNER[i - 1]  ) - cmnInner) < stepsInner / 2. ) &&
-                       ( TMath::Abs(anodeVolts->voltagePadrow(i, INNER[i - 1] + 1) - cmnOuter) < stepsOuter / 2. ) ? 1 : -1 );
+      GLWeights[i] = ( ( std::abs(anodeVolts->voltagePadrow(i, INNER[i - 1]  ) - cmnInner) < stepsInner / 2. ) &&
+                       ( std::abs(anodeVolts->voltagePadrow(i, INNER[i - 1] + 1) - cmnOuter) < stepsOuter / 2. ) ? 1 : -1 );
     }
   }
   else if (mode & kFullGridLeak) {
@@ -964,7 +964,7 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
         return ;
       }
   */
-  if ( TMath::Abs(x[2]) >= TPC_Z0 )
+  if ( std::abs(x[2]) >= TPC_Z0 )
   { memcpy(Xprime, x, threeFloats); return ; }
 
   Cart2Polar(x, Xprime1[0], Xprime1[1]);
@@ -1150,7 +1150,7 @@ void StMagUtilities::UndoBDistortion( const float x[], float Xprime[], int Secto
   for ( NSTEPS = 5 ; NSTEPS < 1000 ; NSTEPS += 2 ) {   // Choose ah to be about 1.0 cm, NSTEPS must be odd
     ah = ( x[2] - sign * TPC_Z0 ) / ( NSTEPS - 1 ) ; // Going Backwards! See note above.
 
-    if ( TMath::Abs(ah) < 1.0 ) break ;
+    if ( std::abs(ah) < 1.0 ) break ;
   }
 
   for ( int i = 1; i <= NSTEPS; ++i ) {              // Simpson's Integration Loop
@@ -1159,7 +1159,7 @@ void StMagUtilities::UndoBDistortion( const float x[], float Xprime[], int Secto
     Xprime[2] +=  index * (ah / 3) ;
     B3DFieldTpc( Xprime, B, Sector) ;                // Work in kGauss, cm (uses Cartesian coordinates)
 
-    if ( TMath::Abs(B[2]) > 0.001 ) {                // Protect From Divide by Zero Faults
+    if ( std::abs(B[2]) > 0.001 ) {                // Protect From Divide by Zero Faults
       Xprime[0] +=  index * (ah / 3) * ( Const_2 * B[0] - Const_1 * B[1] ) / B[2] ;
       Xprime[1] +=  index * (ah / 3) * ( Const_2 * B[1] + Const_1 * B[0] ) / B[2] ;
     }
@@ -1193,7 +1193,7 @@ void StMagUtilities::Undo2DBDistortion( const float x[], float Xprime[], int Sec
   for ( NSTEPS = 5 ; NSTEPS < 1000 ; NSTEPS += 2 ) {   // Choose ah to be about 1.0 cm, NSTEPS must be odd
     ah = ( x[2] - sign * TPC_Z0 ) / ( NSTEPS - 1 ) ; // Going Backwards! See note above.
 
-    if ( TMath::Abs(ah) < 1.0 ) break ;
+    if ( std::abs(ah) < 1.0 ) break ;
   }
 
   for ( int i = 1; i <= NSTEPS; ++i ) {              // Simpson's Integration Loop
@@ -1202,7 +1202,7 @@ void StMagUtilities::Undo2DBDistortion( const float x[], float Xprime[], int Sec
     Xprime[2] +=  index * (ah / 3) ;
     BFieldTpc( Xprime, B, Sector);                   // Work in kGauss, cm (uses Cartesian coordinates)
 
-    if ( TMath::Abs(B[2]) > 0.001 ) {                // Protect From Divide by Zero Faults
+    if ( std::abs(B[2]) > 0.001 ) {                // Protect From Divide by Zero Faults
       Xprime[0] +=  index * (ah / 3) * ( Const_2 * B[0] - Const_1 * B[1] ) / B[2] ;
       Xprime[1] +=  index * (ah / 3) * ( Const_2 * B[1] + Const_1 * B[0] ) / B[2] ;
     }
@@ -1406,7 +1406,7 @@ void StMagUtilities::UndoTwistDistortion( const float x[], float Xprime[], int S
   float z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
   sign = SectorSide( Sector, x ) ;                  // 1 = TPC West, -1 = TPC East
 
-  Zdrift = sign * ( TPC_Z0 - TMath::Abs(z) ) ;
+  Zdrift = sign * ( TPC_Z0 - std::abs(z) ) ;
 
   if (usingCartesian) {
     Xprime[0] = x[0] - (     Const_1 * YTWIST - Const_2 * XTWIST ) * Zdrift / 1000 ;
@@ -1504,13 +1504,13 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   if (usingCartesian) Cart2Polar(x, r, phi);
   else { r = x[0]; phi = x[1]; }               // Phi ranges from pi to -pi
 
-  phi0   =  ( (int)((TMath::Abs(phi) + PiOver12) / PiOver6 + 6.0 ) - 6.0 ) * PiOver6 ;
+  phi0   =  ( (int)((std::abs(phi) + PiOver12) / PiOver6 + 6.0 ) - 6.0 ) * PiOver6 ;
 
   if ( phi < 0 ) phi0 *= -1. ;
 
   y      =  r * TMath::Cos( phi0 - phi ) ;
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
-  Zdrift =  TPC_Z0 - TMath::Abs(z) ;
+  Zdrift =  TPC_Z0 - std::abs(z) ;
 
   StarMagField::Instance()->Search ( NZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
   StarMagField::Instance()->Search ( NYARRAY, YArray, y, jlow ) ;
@@ -1691,7 +1691,7 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
   if (usingCartesian) Cart2Polar(x, r, phi) ;
   else { r = x[0] ; phi = x[1] ; }                      // Phi ranges from pi to -pi
 
-  phi0   =  ( (int)((TMath::Abs(phi) + PiOver12) / PiOver6 + 6.0 ) - 6.0 ) * PiOver6 ;
+  phi0   =  ( (int)((std::abs(phi) + PiOver12) / PiOver6 + 6.0 ) - 6.0 ) * PiOver6 ;
 
   if ( phi < 0 ) phi0 *= -1.              ;
 
@@ -1699,7 +1699,7 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
   sinPhi0Phi = TMath::Sin( phi0 - phi )   ;
   y      =  r * cosPhi0Phi                ;
   z = LimitZ( Sector, x )                 ;             // Protect against discontinuity at CM
-  Zdrift =  TPC_Z0 - TMath::Abs(z)        ;
+  Zdrift =  TPC_Z0 - std::abs(z)        ;
 
   StarMagField::Instance()->Search ( nZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
   StarMagField::Instance()->Search ( nYARRAY, YArray, y, jlow )            ;
@@ -2351,7 +2351,7 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
     memset(Denominator, 0, 100 * sizeof(double));
 
     for ( int i = 0 ; i < EMap_nZ ; ++i ) {
-      z = TMath::Abs( eZList[i] ) ;
+      z = std::abs( eZList[i] ) ;
 
       for ( int j = 0 ; j < EMap_nR ; ++j ) {
         r = eRList[j] ;
@@ -2466,7 +2466,7 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
     memset(Denominator, 0, 100 * sizeof(double));
 
     for ( int i = 0 ; i < EMap_nZ ; ++i ) {
-      z = TMath::Abs( eZList[i] ) ;
+      z = std::abs( eZList[i] ) ;
 
       for ( int j = 0 ; j < EMap_nR ; ++j ) {
         r = eRList[j] ;
@@ -2629,7 +2629,7 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
     float save_Er[2] ;
 
     for ( int i = 0 ; i < EMap_nZ ; ++i ) {
-      z = TMath::Abs( eZList[i] ) ;
+      z = std::abs( eZList[i] ) ;
 
       for ( int j = 0 ; j < EMap_nR ; ++j ) {
         // Linear interpolation
@@ -2812,7 +2812,7 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
       float save_Er[2] ;
 
       for ( int i = 0 ; i < EMap_nZ ; ++i ) {
-        z = TMath::Abs( eZList[i] ) ;
+        z = std::abs( eZList[i] ) ;
 
         for ( int j = 0 ; j < EMap_nR ; ++j ) {
           // Linear interpolation
@@ -2953,7 +2953,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
     NumberOfEastInnerShorts = 0; NumberOfEastOuterShorts = 0 ; NumberOfWestInnerShorts = 0; NumberOfWestOuterShorts = 0 ;
 
     for ( int i = 0 ; i < ShortTableRows ; i++ ) {
-      if ( ( Side[i] + Cage[i] + Ring[i] + TMath::Abs(MissingResistance[i]) + TMath::Abs(Resistor[i]) ) == 0.0 ) continue ;
+      if ( ( Side[i] + Cage[i] + Ring[i] + std::abs(MissingResistance[i]) + std::abs(Resistor[i]) ) == 0.0 ) continue ;
 
       if ( Side[i] == 0 && Cage[i] == 0 ) {
         NumberOfEastInnerShorts++ ; EastInnerMissingSum += MissingResistance[i] ; EastInnerExtraSum += Resistor[i] ;
@@ -3007,7 +3007,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
 
         if (r > OFCRadius) continue; //VP defence against divergency. Not sure if correct.  JT - Yes, OK.
 
-        if (TMath::Abs(z) > TPC_Z0)  continue; //VP defence against divergency.
+        if (std::abs(z) > TPC_Z0)  continue; //VP defence against divergency.
 
         double IntegralOverZ = 0.0 ;
 
@@ -3066,7 +3066,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
               TMath::BesselK0( k * OFCRadius ) * TMath::BesselI0( k * IFCRadius ) -
               TMath::BesselK0( k * IFCRadius ) * TMath::BesselI0( k * OFCRadius ) ;
 
-          double zterm = TMath::Cos( k * (TPC_Z0 - TMath::Abs(z)) ) - 1 ;
+          double zterm = TMath::Cos( k * (TPC_Z0 - std::abs(z)) ) - 1 ;
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += zterm * qwe ;
 
@@ -3154,7 +3154,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
 
         if (r > OFCRadius) continue;
 
-        if (TMath::Abs(z) > TPC_Z0)  continue;
+        if (std::abs(z) > TPC_Z0)  continue;
 
         double IntegralOverZ = 0.0 ;
 
@@ -3175,7 +3175,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
               TMath::BesselK0( k * OFCRadius ) * TMath::BesselI0( k * IFCRadius ) -
               TMath::BesselK0( k * IFCRadius ) * TMath::BesselI0( k * OFCRadius ) ;
 
-          double zterm = TMath::Cos( k * (TPC_Z0 - TMath::Abs(z)) ) - 1 ;
+          double zterm = TMath::Cos( k * (TPC_Z0 - std::abs(z)) ) - 1 ;
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += zterm * qwe ;
 
@@ -4011,7 +4011,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   BFieldTpc(x, B) ;
   ChargeB  = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
   Pt = TMath::Sqrt( p[0] * p[0] + p[1] * p[1] ) ;
-  R0 = TMath::Abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
+  R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = x[0] + ChargeB * p[1] * R0 / Pt ;
   Y0 = x[1] - ChargeB * p[0] * R0 / Pt ;
   Rotation = TMath::Sign( (double)1.0, (x[0] - X0) * p[1] - (x[1] - Y0) * p[0] ) ;
@@ -4024,9 +4024,9 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     Direction = 1.0 ;
     R2 = TestRadius * TestRadius ;
     C0 = ( R2 - R0 * R0 + X0 * X0 + Y0 * Y0 ) ;                          // Intermediate constant
-    double X1 = 0.5 * ( C0 * X0 - TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
+    double X1 = 0.5 * ( C0 * X0 - TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
     double Y1 = ( R2 - R0 * R0 - 2 * X0 * X1 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
-    double X2 = 0.5 * ( C0 * X0 + TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
+    double X2 = 0.5 * ( C0 * X0 + TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) ) / (X0 * X0 + Y0 * Y0) ;
     double Y2 = ( R2 - R0 * R0 - 2 * X0 * X2 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     if ( X2 * p[0] +  Y2 * p[1]  <  X1 * p[0] + Y1 * p[1] ) Direction = -1.0 ; // Test which of two directions the particle goes on the circle
@@ -4050,10 +4050,10 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
     C0 = ( R[i] * R[i] - R0 * R0 + X0 * X0 + Y0 * Y0 ) ; // Intermediate constant
 
     if (Y0 == 0.0) Xtrack[index]  =  0.5 * C0 / X0 ;
-    else           Xtrack[index]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) )
+    else           Xtrack[index]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) )
                                        / (X0 * X0 + Y0 * Y0) ;
 
-    if (Y0 == 0.0) Ytrack[index]  =  Direction * TMath::Sqrt( TMath::Abs( R[i] * R[i] - Xtrack[index] * Xtrack[index] ) ) ;
+    if (Y0 == 0.0) Ytrack[index]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[index] * Xtrack[index] ) ) ;
     else           Ytrack[index]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[index] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     DeltaTheta  =  TMath::ATan2(x[1] - Y0, x[0] - X0) - TMath::ATan2(Ytrack[index] - Y0, Xtrack[index] - X0) ;
@@ -4112,7 +4112,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   double X0_new  =  X0 + FIT.GetParameter( 2 ) ;
   double Y0_new  =  Y0 + FIT.GetParameter( 1 ) ;
   double R0_new  =  R0 + FIT.GetParameter( 0 ) ;
-  double Pt_new  =  TMath::Abs( R0_new * 0.299792 * B[2] / 1000. ) ;     // P in GeV, R in cm, B in kGauss
+  double Pt_new  =  std::abs( R0_new * 0.299792 * B[2] / 1000. ) ;     // P in GeV, R in cm, B in kGauss
 
   if ( TMath::Sqrt( x[0]*x[0] + x[1]*x[1] ) <= IFCRadius )
   {  x_new[0] = x[0] ;  x_new[1] = x[1] ;  x_new[2] = x[2] ; }
@@ -4212,7 +4212,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   BFieldTpc(x, B) ;
   ChargeB  = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
   Pt = TMath::Sqrt( p[0] * p[0] + p[1] * p[1] ) ;
-  R0 = TMath::Abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
+  R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = x[0] + ChargeB * p[1] * R0 / Pt ;
   Y0 = x[1] - ChargeB * p[0] * R0 / Pt ;
 
@@ -4220,15 +4220,15 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   // Not correct because TPC rows aren't circles ... but we dont' care
 
   // Test which of the two directions the particle goes on the circle
-  if (TMath::Abs(Y0) < 0.001 )  Direction = TMath::Sign( (float)1.0, p[1] ) ;
+  if (std::abs(Y0) < 0.001 )  Direction = TMath::Sign( (float)1.0, p[1] ) ;
   else {
     Direction = 1.0 ;
     R2 = R[RefIndex] * R[RefIndex] ;
     C0 = ( R2 - R0 * R0 + X0 * X0 + Y0 * Y0 ) ;                          // Intermediate constant
-    double X1 = 0.5 * ( C0 * X0 - TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
+    double X1 = 0.5 * ( C0 * X0 - TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
                   / (X0 * X0 + Y0 * Y0) ;
     double Y1 = ( R2 - R0 * R0 - 2 * X0 * X1 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
-    double X2 = 0.5 * ( C0 * X0 + TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
+    double X2 = 0.5 * ( C0 * X0 + TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 - (C0 * C0 - 4 * Y0 * Y0 * R2) * (X0 * X0 + Y0 * Y0) ) ) )
                   / (X0 * X0 + Y0 * Y0) ;
     double Y2 = ( R2 - R0 * R0 - 2 * X0 * X2 + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
@@ -4240,11 +4240,11 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   for ( int i = 0 ; i < ROWS ; i++ ) {
     C0 = ( R[i] * R[i] - R0 * R0 + X0 * X0 + Y0 * Y0 ) ; // Intermediate constant
 
-    if ( TMath::Abs(Y0) < 0.001 ) Xtrack[i]  =  0.5 * C0 / X0 ;     // Create circular tracks and record hits on pad rows
-    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 -
+    if ( std::abs(Y0) < 0.001 ) Xtrack[i]  =  0.5 * C0 / X0 ;     // Create circular tracks and record hits on pad rows
+    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 -
                                            (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) ) / (X0 * X0 + Y0 * Y0) ;
 
-    if ( TMath::Abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( TMath::Abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
+    if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
     else           Ytrack[i]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[i] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     DeltaTheta  =  TMath::ATan2(x[1] - Y0, x[0] - X0) - TMath::ATan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
@@ -4331,7 +4331,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   double X0_new  =  Xreference - ( fit->GetParameter(1) / ( 2.0 * fit->GetParameter(0) ) )  ;
   double Y0_new  =  Yreference + ( 1.0 / ( 2.0 * fit->GetParameter(0) ) ) ;
   double R0_new  =  TMath::Sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
-  double Pt_new  =  TMath::Abs ( R0_new * 0.299792 * B[2] / 1000. ) ;
+  double Pt_new  =  std::abs ( R0_new * 0.299792 * B[2] / 1000. ) ;
   //double DCA_new =  TMath::Sqrt( X0_new*X0_new + Y0_new*Y0_new ) - R0_new ;  // Negative means (0,0) is inside the circle
 
   //LOG_INFO << "DCA (from inside) = " << DCA_new << '\n' ; // JT test
@@ -4360,7 +4360,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
   p_new[2]  *= Pt_new / ( -1 * ChargeB * R0_new * icount ) ;
 
   // Check if the charge of the track changed due to the distortions
-  float change = TMath::Abs( TMath::ATan2(Y0, X0) - TMath::ATan2(Y0_new, X0_new) ) ;
+  float change = std::abs( TMath::ATan2(Y0, X0) - TMath::ATan2(Y0_new, X0_new) ) ;
 
   if ( change > 0.9 * TMath::Pi() && change < 1.1 * TMath::Pi() ) new_Charge = -1 * Charge ;
   else  new_Charge = Charge ;
@@ -4436,7 +4436,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   float x[3] = { 0, 0, 0 } ;
   BFieldTpc(x, B) ;
   ChargeB  = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
-  R0 = TMath::Abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
+  R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.707107 * R0  ;   // Assume a test particle that shoots out at 45 degrees
   Y0 = ChargeB * -0.707107 * R0  ;
   Pz_over_Pt = TMath::SinH(PseudoRapidity) ;
@@ -4452,11 +4452,11 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   for ( int i = 0 ; i < ROWS ; i++ ) {
     C0 = ( R[i] * R[i] - R0 * R0 + X0 * X0 + Y0 * Y0 ) ; // Intermediate constant
 
-    if ( TMath::Abs(Y0) < 0.001 ) Xtrack[i]  =  0.5 * C0 / X0 ;     // Create circular tracks and record hits on pad rows
-    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( TMath::Abs( C0 * C0 * X0 * X0 -
+    if ( std::abs(Y0) < 0.001 ) Xtrack[i]  =  0.5 * C0 / X0 ;     // Create circular tracks and record hits on pad rows
+    else           Xtrack[i]  =  0.5 * ( C0 * X0 + Direction * TMath::Sqrt( std::abs( C0 * C0 * X0 * X0 -
                                            (C0 * C0 - 4 * Y0 * Y0 * R[i] * R[i]) * (X0 * X0 + Y0 * Y0) )) ) / (X0 * X0 + Y0 * Y0) ;
 
-    if ( TMath::Abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( TMath::Abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
+    if ( std::abs(Y0) < 0.001 ) Ytrack[i]  =  Direction * TMath::Sqrt( std::abs( R[i] * R[i] - Xtrack[i] * Xtrack[i] ) ) ;
     else           Ytrack[i]  =  ( R[i] * R[i] - R0 * R0 - 2 * X0 * Xtrack[i] + X0 * X0 + Y0 * Y0 ) / ( 2 * Y0 ) ;
 
     DeltaTheta  =  TMath::ATan2(-1 * Y0, -1 * X0) - TMath::ATan2(Ytrack[i] - Y0, Xtrack[i] - X0) ;
@@ -4673,7 +4673,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   float x[3] = { 0, 0, 0 } ;  // Get the B field at the vertex
   BFieldTpc(x, B) ;
   ChargeB = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
-  R0 = TMath::Abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
+  R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.0 * R0  ;   // Assume a test particle that shoots out at 0 degrees
   Y0 = ChargeB * -1.0 * R0  ;
   Pz_over_Pt = TMath::SinH(PseudoRapidity) ;
@@ -4737,7 +4737,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
     Ytrack[i] = ChargeB * TMath::Sqrt( R0 * R0 - (Xtrack[i] - X0Prime) * (Xtrack[i] - X0Prime) ) + Y0Prime ;
     HitLocalPhi = TMath::ATan2(Ytrack[i], Xtrack[i]);
 
-    while (TMath::Abs(HitLocalPhi) > PiOver12) {
+    while (std::abs(HitLocalPhi) > PiOver12) {
       // Jump local coordinates to neighboring sector
       PhiPrime -= TMath::Sign(PiOver6, HitLocalPhi);
       cosPhiPrime = TMath::Cos(PhiPrime);
@@ -4926,7 +4926,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
   memset(xx, 0, 3 * sizeof(float)); // Get the B field at the vertex
   BFieldTpc(xx, B) ;
   ChargeB = Charge * TMath::Sign((int)1, (int)(B[2] * 1000)) ;
-  R0 = TMath::Abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
+  R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.0 * R0  ;   // Assume a test particle that shoots out at 0 degrees
   Y0 = ChargeB * -1.0 * R0  ;
   Pz_over_Pt = TMath::SinH(PseudoRapidity) ;
@@ -4949,7 +4949,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
 
     // Do nothing if point is outside the TPC drift volume
     if ( R[i] < IFCRadius || R[i] > OFCRadius ||
-         TMath::Abs(Ztrack[i]) > TPC_Z0 - 0.5) continue ;
+         std::abs(Ztrack[i]) > TPC_Z0 - 0.5) continue ;
 
     // GVB: excluding a 5 mm around the GG plane in case alignment moves a
     // prompt hit there. Other PredictSpaceCharge() functions did not exclude
@@ -5255,7 +5255,7 @@ void StMagUtilities::Undo2DGridLeakDistortion( const float x[], float Xprime[], 
   float local_y  =  r * TMath::Cos( phi - phi0 ) ; // Cheat! Cheat! Use local y because charge is a flat sheet.
 
   // Assume symmetry in Z for call to table, below
-  Er_integral   =  Interpolate2DTable( ORDER, local_y, TMath::Abs(z), ROWS, COLUMNS, Rlist, Zedlist, EroverEz ) ;
+  Er_integral   =  Interpolate2DTable( ORDER, local_y, std::abs(z), ROWS, COLUMNS, Rlist, Zedlist, EroverEz ) ;
   Ephi_integral =  0.0 ;                             // E field is symmetric in phi
 
   // Get Space Charge
@@ -5423,7 +5423,7 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
       phi = Philist[k] ;
 
       for ( int i = 0 ; i < EMap_nZ ; i++ ) {
-        z = TMath::Abs(eZList[i]) ;              // Assume a symmetric solution in Z that depends only on ABS(Z)
+        z = std::abs(eZList[i]) ;              // Assume a symmetric solution in Z that depends only on ABS(Z)
 
         for ( int j = 0 ; j < neR3D ; j++ ) {
           r = eRadius[j] ;
@@ -5469,8 +5469,8 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
   if ( local_y < GAPRADIUS + WIREGAP && local_y > GAPRADIUS ) r_eff = (GAPRADIUS + WIREGAP) / TMath::Cos(phi_prime) ;
 
   // Assume symmetry in Z when looking up data in tables, below
-  Er_integral   = Interpolate3DTable( ORDER, r_eff, TMath::Abs(z), phi_prime, neR3D, EMap_nZ, PHISLICES, eRadius, eZList, Philist, ArrayoftiltEr )   ;
-  Ephi_integral = Interpolate3DTable( ORDER, r_eff, TMath::Abs(z), phi_prime, neR3D, EMap_nZ, PHISLICES, eRadius, eZList, Philist, ArrayoftiltEphi ) ;
+  Er_integral   = Interpolate3DTable( ORDER, r_eff, std::abs(z), phi_prime, neR3D, EMap_nZ, PHISLICES, eRadius, eZList, Philist, ArrayoftiltEr )   ;
+  Ephi_integral = Interpolate3DTable( ORDER, r_eff, std::abs(z), phi_prime, neR3D, EMap_nZ, PHISLICES, eRadius, eZList, Philist, ArrayoftiltEphi ) ;
   Ephi_integral *= FLIP ;                           // Note possible change of sign if we have reflection symmetry!!
 
   if (fSpaceChargeR2) GetSpaceChargeR2();           // Get latest spacecharge values from DB
@@ -5676,7 +5676,7 @@ void StMagUtilities::UndoFullGridLeakDistortion( const float x[], float Xprime[]
       phi = Philist[k == PHISLICES ? 0 : k] ;
 
       for ( int i = 0 ; i < EMap_nZ ; i++ ) {
-        z = TMath::Abs(eZList[i]) ;
+        z = std::abs(eZList[i]) ;
         TMatrix** ArrayofEroverEz   = ( eZList[i] > 0 ? ArrayofEroverEzW   : ArrayofEroverEzE   ) ;
         TMatrix** ArrayofEPhioverEz = ( eZList[i] > 0 ? ArrayofEPhioverEzW : ArrayofEPhioverEzE ) ;
 
@@ -5952,7 +5952,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
       phi = Philist[k == PHISLICES ? 0 : k] ;
 
       for ( int i = 0 ; i < EMap_nZ ; i++ ) {
-        z = TMath::Abs(eZList[i]) ;
+        z = std::abs(eZList[i]) ;
         TMatrix** ArrayofEroverEz   = ( eZList[i] > 0 ? ArrayofEroverEzW   : ArrayofEroverEzE   ) ;
         TMatrix** ArrayofEPhioverEz = ( eZList[i] > 0 ? ArrayofEPhioverEzW : ArrayofEPhioverEzE ) ;
 

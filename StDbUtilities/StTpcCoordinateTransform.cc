@@ -271,7 +271,7 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
   Long64_t row = TMath::BinarySearch(Nrows, Radii, y);
 
   if (row < Nrows - 1) {
-    if (TMath::Abs(Radii[row] - y) > TMath::Abs(Radii[row + 1] - y)) row++;
+    if (std::abs(Radii[row] - y) > std::abs(Radii[row + 1] - y)) row++;
   }
 
   row++;
