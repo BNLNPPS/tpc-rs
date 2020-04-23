@@ -562,7 +562,7 @@ void StTpcRSMaker::InitRun(int runnumber)
       pbins[bin] = 1e5;
     }
     else {
-      int nM = 0.5 * (pbins[NpbinsL - 2] + pbins[NpbinsL - 1]) * TMath::Exp(dX * (bin - NpbinsL));
+      int nM = 0.5 * (pbins[NpbinsL - 2] + pbins[NpbinsL - 1]) * std::exp(dX * (bin - NpbinsL));
       double dbin = tpcrs::irint(nM - pbins[bin - 1]);
 
       if (dbin < 1.0) dbin = 1.0;
@@ -839,10 +839,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         }
 
         double GainXCorrectionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
-        Gain *= TMath::Exp(-GainXCorrectionL);
+        Gain *= std::exp(-GainXCorrectionL);
         double GainXSigma = AddSigmaMcCorrection[iowe] + row * AddSigmaMcCorrection[iowe + 1];
 
-        if (GainXSigma > 0) Gain *= TMath::Exp(gRandom->Gaus(0., GainXSigma));
+        if (GainXSigma > 0) Gain *= std::exp(gRandom->Gaus(0., GainXSigma));
 
         if (ClusterProfile) {
           checkList[io][3]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Gain);
@@ -1007,7 +1007,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         }
 
 #ifndef __NO_1STROWCORRECTION__
-        if (row == 1) dEdxCor *= TMath::Exp(St_TpcResponseSimulatorC::instance()->FirstRowC());
+        if (row == 1) dEdxCor *= std::exp(St_TpcResponseSimulatorC::instance()->FirstRowC());
 #endif
         mGainLocal = Gain / dEdxCor / NoElPerAdc; // Account dE/dx calibration
         // end of dE/dx correction
@@ -1050,13 +1050,13 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             if (Tmax <= St_TpcResponseSimulatorC::instance()->W() / 2 * eV) break;
 
             NP = GetNoPrimaryClusters(betaGamma, charge);
-            dE = TMath::Exp(cLog10 * mdNdEL10->GetRandom());
+            dE = std::exp(cLog10 * mdNdEL10->GetRandom());
           }
           else {
             if (charge) {
               dS = - std::log(gRandom->Rndm()) / NP;
 
-              if (mdNdEL10) dE = TMath::Exp(cLog10 * mdNdEL10->GetRandom());
+              if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
               else          dE = St_TpcResponseSimulatorC::instance()->W() *
                                    gRandom->Poisson(St_TpcResponseSimulatorC::instance()->Cluster());
             }
@@ -1201,8 +1201,8 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
             zOnWire += std::abs(distFocused);
 
-            if (! iGroundWire ) QAv *= TMath::Exp( alphaVariation);
-            else                QAv *= TMath::Exp(-alphaVariation);
+            if (! iGroundWire ) QAv *= std::exp( alphaVariation);
+            else                QAv *= std::exp(-alphaVariation);
 
             if (ClusterProfile) {
               checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), QAv);
@@ -1332,10 +1332,10 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
 
   if (Q_eff > 1)   {
     // Effective charge from GEANT ghion.F
-    double w1 = 1.034 - 0.1777 * TMath::Exp(-0.08114 * Q_eff);
+    double w1 = 1.034 - 0.1777 * std::exp(-0.08114 * Q_eff);
     double w2 = beta * std::pow(Q_eff, -2. / 3.);
     double w3 = 121.4139 * w2 + 0.0378 * std::sin(190.7165 * w2);
-    Q_eff      *= 1. - w1 * TMath::Exp(-w3);
+    Q_eff      *= 1. - w1 * std::exp(-w3);
   }
 
   return Q_eff * Q_eff * dNdx;
@@ -1649,7 +1649,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double alpha[2] = {-26., -70.};
   double pi = TMath::Pi();
   // E.Mathieson (3.2b), V.Chernyatin said that it should be used this (Weber ) approximation 07/09/08
-  double rc = s / (2 * pi) * TMath::Exp(pi * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
+  double rc = s / (2 * pi) * std::exp(pi * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
   //  double rc = 4*h/pi; LOG_INFO << "rc = " << rc << " cm\n";   // E.Mathieson (4.3), no valid for our case
   double C  = 1. / (2 * std::log(rc / ra)); LOG_INFO << "C = " << C << '\n';
   double E  = 2 * pi * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
@@ -1723,7 +1723,7 @@ double StTpcRSMaker::fei(double t, double t0, double T)
 
   if (t01 > xmaxD) t01  = xmaxD;
 
-  return TMath::Exp(-t11) * (ROOT::Math::expint(t11) - ROOT::Math::expint(t01));
+  return std::exp(-t11) * (ROOT::Math::expint(t11) - ROOT::Math::expint(t01));
 }
 
 
@@ -1739,7 +1739,7 @@ double StTpcRSMaker::shapeEI(double* x, double* par)  // does not work. It is ne
   double T2 = par[3]; // tau_C
 
   if (std::abs((T1 - T2) / (T1 + T2)) < 1e-7) {
-    return TMath::Max(0., (t + t0) / T1 * fei(t, t0, T1) + TMath::Exp(-t / T1) - 1);
+    return TMath::Max(0., (t + t0) / T1 * fei(t, t0, T1) + std::exp(-t / T1) - 1);
   }
 
   if (T2 <= 0) return fei(t, t0, T1);
@@ -1776,7 +1776,7 @@ double StTpcRSMaker::shapeEI3(double* x, double* par)  // does not work. It is n
   }
 
   for (int i = 0; i < N; i++) {
-    value += A[i] * TMath::Exp(a[i] * (t + t0)) * (ROOT::Math::expint(-a[i] * (t + t0)) - ROOT::Math::expint(-a[i] * t0));
+    value += A[i] * std::exp(a[i] * (t + t0)) * (ROOT::Math::expint(-a[i] * (t + t0)) - ROOT::Math::expint(-a[i] * t0));
   }
 
   return value;
