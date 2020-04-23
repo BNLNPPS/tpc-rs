@@ -1189,10 +1189,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             zOnWire = xyzE.position().z();
             // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
             int iGridWire = (int ) std::abs(10.*distanceToWire);
-            double dist2Grid = TMath::Sign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
+            double dist2Grid = std::copysign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
             // Ground plane (1 mm spacing) focusing effect
             int iGroundWire = (int ) std::abs(10.*dist2Grid);
-            double distFocused = TMath::Sign(0.05 + 0.1 * iGroundWire, dist2Grid);
+            double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
             // OmegaTau near wires taken from comparison with data
             double tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleO();
 
