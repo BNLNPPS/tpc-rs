@@ -1123,7 +1123,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           }
 
           StThreeVector<double> xyzC = track.at(newPosition);
-          double phiXY = 2 * TMath::Pi() * gRandom->Rndm();
+          double phiXY = 2 * M_PI * gRandom->Rndm();
           double rX = std::cos(phiXY);
           double rY = std::sin(phiXY);
           double sigmaT = SigmaT;
@@ -1400,7 +1400,7 @@ double StTpcRSMaker::Gatti(double* x, double* par)
   double h = par[1]; // h = Anode-Cathode gap
   double K3  = par[3];
   double lambda = y / h;
-  double K2 = TMath::PiOver2() * (1. - 0.5 * std::sqrt(K3));
+  double K2 = M_PI_2 * (1. - 0.5 * std::sqrt(K3));
   //  double K1 = K2*std::sqrt(K3)/(2*std::atan(std::sqrt(K3)));
   double sqK3 = std::sqrt(K3);
   double ATsqK3 = 0.5 / std::atan(sqK3);
@@ -1647,18 +1647,17 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   const double mu = 2.26; // cm**2/V/sec CH4+ mobility
   // const double mu = 1.87; // cm**2/V/sec Ar+ mobility
   double alpha[2] = {-26., -70.};
-  double pi = TMath::Pi();
   // E.Mathieson (3.2b), V.Chernyatin said that it should be used this (Weber ) approximation 07/09/08
-  double rc = s / (2 * pi) * std::exp(pi * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
-  //  double rc = 4*h/pi; LOG_INFO << "rc = " << rc << " cm\n";   // E.Mathieson (4.3), no valid for our case
+  double rc = s / (2 * M_PI) * std::exp(M_PI * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
+  //  double rc = 4*h/M_PI; LOG_INFO << "rc = " << rc << " cm\n";   // E.Mathieson (4.3), no valid for our case
   double C  = 1. / (2 * std::log(rc / ra)); LOG_INFO << "C = " << C << '\n';
-  double E  = 2 * pi * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
+  double E  = 2 * M_PI * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
   // Gain variation: M = M0*(1 - k*cos(2*alpha))
-  double k = 2 * B / 3.*std::pow((pi / E0 / s), 2) * std::pow(C * Va, 3); LOG_INFO << "k = " << k << '\n';
+  double k = 2 * B / 3.*std::pow((M_PI / E0 / s), 2) * std::pow(C * Va, 3); LOG_INFO << "k = " << k << '\n';
   // Induced charge variation
   t0 = ra * ra / (4 * mu * C * Va);
   LOG_INFO << "t0 = " << 1e9 * t0 << " ns\n";                                   // E.Mathieson (2.10)
-  double Tav = t0 * h / s / (2 * pi * C);  LOG_INFO << "Tav = " << 1e9 * Tav << " ns\n";
+  double Tav = t0 * h / s / (2 * M_PI * C);  LOG_INFO << "Tav = " << 1e9 * Tav << " ns\n";
   //  double t = 5*55e-9;             LOG_INFO << "t = " << 1e9*t << " ns\n";
   double t = 180e-9;             LOG_INFO << "t = " << 1e9 * t << " ns\n";
   double rp = std::sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << '\n';
@@ -1668,7 +1667,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
   double Gains[2];
 
   for (int i = 0; i < 2; i++) {
-    Gains[i] = Aconstant * std::sin(pi / 180 * alpha[i]) + Bconstant;
+    Gains[i] = Aconstant * std::sin(M_PI / 180 * alpha[i]) + Bconstant;
     LOG_INFO << "Gain = " << Gains[i] << " at alpha = " << alpha[i] << " degree\n";
   }
 

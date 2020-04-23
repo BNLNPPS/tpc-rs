@@ -102,7 +102,7 @@ class StTpcCoordinateTransform
   // sector from Tpc local coordinates
   Int_t sectorFromCoordinate(const StThreeVector<double> &a) const
   {
-    Double_t angle = TMath::RadToDeg() * std::atan2(a.y(), a.x());
+    Double_t angle = 180 / M_PI * std::atan2(a.y(), a.x());
 
     if (angle < 0) angle += 360;
 
