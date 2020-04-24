@@ -46,6 +46,9 @@ StTpcDb::StTpcDb()
   mSwap[1] = new TGeoTranslation("Signed Drift distance to z for West", 0, 0,  mzGG);
   mHalf[0] = new TGeoHMatrix("Default for east part of TPC");
   mHalf[1] = new TGeoHMatrix("Default for west part of TPC");
+
+  SetDriftVelocity();
+  SetTpcRotations();
 }
 
 
