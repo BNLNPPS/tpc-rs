@@ -107,7 +107,6 @@ StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
 StTpcRSMaker::~StTpcRSMaker()
 {
   delete mAltro;
-  delete m_SignalSum;
   delete mdNdx;
   delete mdNdxL10;
   delete mdNdEL10;
@@ -627,8 +626,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
   for (int sector = 1; sector <= max_sectors_; sector++) {
     int nHitsInTheSector = 0;
-    free(m_SignalSum); m_SignalSum = 0;
-    ResetSignalSum(sector);
+    std::vector<SignalSum_t> signal_sums(St_tpcPadConfigC::instance()->numberOfRows(sector) * max_pads_ * max_timebins_);
 
     // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
     for (; sortedIndex < n_hits; sortedIndex++) {
@@ -1173,7 +1171,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               continue;
             }
 
-            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, *mShaperResponses[io][sector - 1]);
+            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, *mShaperResponses[io][sector - 1], signal_sums);
           }  // electrons in Cluster
 
           if (ClusterProfile) {
@@ -1239,13 +1237,11 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
     }  // hits in the sector
 
     if (nHitsInTheSector) {
-      DigitizeSector(sector, digi_data);
+      DigitizeSector(sector, digi_data, signal_sums);
 
       if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
     }
   } // sector
-
-  if (m_SignalSum) {free(m_SignalSum); m_SignalSum = 0;}
 
   if (Debug() % 10) gBenchmark->Show("TpcRS");
 
@@ -1397,11 +1393,10 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 }
 
 
-void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data)
+void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& SignalSum)
 {
   static int AdcCut = 500;
 
-  SignalSum_t* SignalSum = GetSignalSum(sector);
   double ped    = 0;
   int adc = 0;
   int index = 0;
@@ -1714,23 +1709,6 @@ double StTpcRSMaker::shapeEI3_I(double* x, double* par)   //Integral of shape ov
 }
 
 
-SignalSum_t*  StTpcRSMaker::GetSignalSum(int sector)
-{
-  if (! m_SignalSum)
-    m_SignalSum = (SignalSum_t*) malloc(St_tpcPadConfigC::instance()->numberOfRows(sector) * max_pads_ * max_timebins_ * sizeof(SignalSum_t));
-
-  return m_SignalSum;
-}
-
-
-SignalSum_t*  StTpcRSMaker::ResetSignalSum(int sector)
-{
-  GetSignalSum(sector);
-  memset (m_SignalSum, 0, St_tpcPadConfigC::instance()->numberOfRows(sector)*max_pads_ * max_timebins_ * sizeof(SignalSum_t));
-  return m_SignalSum;
-}
-
-
 double StTpcRSMaker::polya(double* x, double* par)
 {
   return tpcrs::GammaDist(x[0], par[0], par[1], par[2]);
@@ -1831,10 +1809,10 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 }
 
 
-void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper)
+void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper,
+    std::vector<SignalSum_t>& SignalSum)
 {
   static StTpcCoordinateTransform transform(gStTpcDb);
-  SignalSum_t* SignalSum = GetSignalSum(sector);
 
   for (int row = rowMin; row <= rowMax; row++) {
     if (St_tpcPadConfigC::instance()->numberOfRows(sector) == 45) { // ! iTpx

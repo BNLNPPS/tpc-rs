@@ -37,7 +37,7 @@ class StTpcRSMaker
   int         Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
-  void DigitizeSector(int sector, tpcrs::DigiData& digi_data);
+  void DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& SignalSum);
   static int    AsicThresholds(short* ADCs);
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI_I(double* x, double* par = 0);
@@ -45,8 +45,6 @@ class StTpcRSMaker
   static double shapeEI3_I(double* x, double* par = 0);
   static double fei(double t, double t0, double T);
   static double polya(double* x, double* par);
-  SignalSum_t*  GetSignalSum(int sector);
-  SignalSum_t*  ResetSignalSum(int sector);
   static double Ec(double* x, double* p); // minimal energy to create an ion pair
   static TF1* fEc(double w = 26.2);           // HEED function to generate Ec
  private:
@@ -54,7 +52,7 @@ class StTpcRSMaker
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
   void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
-  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper);
+  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper, std::vector<SignalSum_t>& SignalSum);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
 
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
@@ -66,7 +64,6 @@ class StTpcRSMaker
   static TF1F*     fgTimeShape3[2];  //!
   static TF1F*     fgTimeShape0[2];   //!
   int    options_;
-  SignalSum_t*     m_SignalSum;       //!
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
   TH1D*    mdNdEL10;                  //!
