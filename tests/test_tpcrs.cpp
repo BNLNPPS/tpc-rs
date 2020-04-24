@@ -36,9 +36,6 @@ int main(int argc, char **argv)
 
   gBenchmark = new TBenchmark();
 
-  StTpcDb::instance().SetDriftVelocity();
-  StTpcDb::instance().SetTpcRotations();
-
   StTpcRSMaker tpcrs(eCutOff);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
