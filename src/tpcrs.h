@@ -38,7 +38,7 @@ class StTpcRSMaker
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
   void DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& SignalSum);
-  static int    AsicThresholds(short* ADCs);
+  int    AsicThresholds(short* ADCs);
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI_I(double* x, double* par = 0);
   static double shapeEI3(double* x, double* par = 0);
@@ -105,7 +105,7 @@ class StTpcRSMaker
   const double electron_range_power_;  //!
   const int max_sectors_;            //!
   const int max_pads_;               //!
-  static const int max_timebins_ = 512;
+  const int max_timebins_;
   double   mCutEle;                 //! cut for delta electrons
 };
 #endif
