@@ -176,7 +176,7 @@ void StTpcRSMaker::InitRun(int runnumber)
     LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
   }
 
-  double samplingFrequency     = 1.e6 * StTpcDb::instance().Electronics()->samplingFrequency(); // Hz
+  double samplingFrequency     = 1.e6 * St_tpcElectronicsC::instance()->samplingFrequency(); // Hz
   double TimeBinWidth          = 1. / samplingFrequency;
   /*
   select firstInnerSectorAnodeWire,lastInnerSectorAnodeWire,numInnerSectorAnodeWires,firstOuterSectorAnodeWire,lastOuterSectorAnodeWire,numOuterSectorAnodeWires from  Geometry_tpc.tpcWirePlanes;
@@ -186,14 +186,14 @@ void StTpcRSMaker::InitRun(int runnumber)
   |             53.2000000000 |           120.8000000000 |                      170 |            122.7950000000 |           191.1950000000 |                      172 |
   +---------------------------+--------------------------+--------------------------+---------------------------+--------------------------+--------------------------+
    */
-  numberOfInnerSectorAnodeWires  = StTpcDb::instance().WirePlaneGeometry()->numberOfInnerSectorAnodeWires ();
-  firstInnerSectorAnodeWire      = StTpcDb::instance().WirePlaneGeometry()->firstInnerSectorAnodeWire();
-  lastInnerSectorAnodeWire       = StTpcDb::instance().WirePlaneGeometry()->lastInnerSectorAnodeWire ();
-  numberOfOuterSectorAnodeWires  = StTpcDb::instance().WirePlaneGeometry()->numberOfOuterSectorAnodeWires ();
-  firstOuterSectorAnodeWire      = StTpcDb::instance().WirePlaneGeometry()->firstOuterSectorAnodeWire();
-  lastOuterSectorAnodeWire       = StTpcDb::instance().WirePlaneGeometry()->lastOuterSectorAnodeWire ();
-  anodeWirePitch                 = StTpcDb::instance().WirePlaneGeometry()->anodeWirePitch           ();
-  anodeWireRadius                = StTpcDb::instance().WirePlaneGeometry()->anodeWireRadius();
+  numberOfInnerSectorAnodeWires  = St_tpcWirePlanesC::instance()->numberOfInnerSectorAnodeWires ();
+  firstInnerSectorAnodeWire      = St_tpcWirePlanesC::instance()->firstInnerSectorAnodeWire();
+  lastInnerSectorAnodeWire       = St_tpcWirePlanesC::instance()->lastInnerSectorAnodeWire ();
+  numberOfOuterSectorAnodeWires  = St_tpcWirePlanesC::instance()->numberOfOuterSectorAnodeWires ();
+  firstOuterSectorAnodeWire      = St_tpcWirePlanesC::instance()->firstOuterSectorAnodeWire();
+  lastOuterSectorAnodeWire       = St_tpcWirePlanesC::instance()->lastOuterSectorAnodeWire ();
+  anodeWirePitch                 = St_tpcWirePlanesC::instance()->anodeWirePitch           ();
+  anodeWireRadius                = St_tpcWirePlanesC::instance()->anodeWireRadius();
   float BFieldG[3];
   float xyz[3] = {0, 0, 0};
   StarMagField::Instance()->BField(xyz, BFieldG);
@@ -328,16 +328,16 @@ void StTpcRSMaker::InitRun(int runnumber)
 
       if (! io) {
         params[0] = St_tpcPadConfigC::instance()->innerSectorPadWidth(sector);               // w = width of pad
-        params[1] = StTpcDb::instance().WirePlaneGeometry()->innerSectorAnodeWirePadPlaneSeparation(); // h = Anode-Cathode gap
-        params[2] = StTpcDb::instance().WirePlaneGeometry()->anodeWirePitch();                         // s = wire spacing
+        params[1] = St_tpcWirePlanesC::instance()->innerSectorAnodeWirePadPlaneSeparation(); // h = Anode-Cathode gap
+        params[2] = St_tpcWirePlanesC::instance()->anodeWirePitch();                         // s = wire spacing
         params[3] = St_TpcResponseSimulatorC::instance()->K3IP();
         params[4] = 0;
         params[5] = St_tpcPadConfigC::instance()->innerSectorPadPitch(sector);
       }
       else {
         params[0] = St_tpcPadConfigC::instance()->outerSectorPadWidth(sector);              // w = width of pad
-        params[1] = StTpcDb::instance().WirePlaneGeometry()->outerSectorAnodeWirePadPlaneSeparation();// h = Anode-Cathode gap
-        params[2] = StTpcDb::instance().WirePlaneGeometry()->anodeWirePitch();                        // s = wire spacing
+        params[1] = St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation();// h = Anode-Cathode gap
+        params[2] = St_tpcWirePlanesC::instance()->anodeWirePitch();                        // s = wire spacing
         params[3] = St_TpcResponseSimulatorC::instance()->K3OP();
         params[4] = 0;
         params[5] = St_tpcPadConfigC::instance()->outerSectorPadPitch(sector);
@@ -1786,8 +1786,8 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   double driftLength = TrackSegmentHits.coorLS.position().z() + tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
 
   if (driftLength > -1.0 && driftLength <= 0) {
-    if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -StTpcDb::instance().WirePlaneGeometry()->outerSectorAnodeWirePadPlaneSeparation()) ||
-        (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -StTpcDb::instance().WirePlaneGeometry()->innerSectorAnodeWirePadPlaneSeparation()))
+    if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation()) ||
+        (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -St_tpcWirePlanesC::instance()->innerSectorAnodeWirePadPlaneSeparation()))
       driftLength = std::abs(driftLength);
   }
 

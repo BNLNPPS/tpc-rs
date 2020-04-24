@@ -35,7 +35,7 @@ StTpcDb::StTpcDb()
   }
 
   mFlip = new TGeoHMatrix;
-  mzGG = Dimensions()->gatingGridZ(); // zGG
+  mzGG = St_tpcDimensionsC::instance()->gatingGridZ(); // zGG
   double Rotation[9] = {0, 1, 0,
                           1, 0, 0,
                           0, 0, -1
@@ -116,7 +116,7 @@ void StTpcDb::SetTpcRotations()
 
    */
   //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
-  assert(Dimensions()->numberOfSectors() == 24);
+  assert(St_tpcDimensionsC::instance()->numberOfSectors() == 24);
   float gFactor = StarMagField::Instance()->GetFactor();
   double phi, theta, psi;
   int iphi;
