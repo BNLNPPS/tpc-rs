@@ -20,18 +20,9 @@ static Int_t _debug = 0;
 
 StTpcCoordinateTransform::StTpcCoordinateTransform(StTpcDb* /* globalDbPointer */)
 {
-  if (St_tpcPadConfigC::instance()
-      && St_tpcElectronicsC::instance()
-     ) {
-    mTimeBinWidth = 1. / St_tpcElectronicsC::instance()->samplingFrequency();
-    mInnerSectorzOffset = St_tpcDimensionsC::instance()->zInnerOffset();
-    mOuterSectorzOffset = St_tpcDimensionsC::instance()->zOuterOffset();
-  }
-  else {
-    LOG_ERROR << "StTpcDb IS INCOMPLETE! Cannot contstruct Coordinate transformation.\n";
-    assert(St_tpcPadConfigC::instance());
-    assert(St_tpcElectronicsC::instance());
-  }
+  mTimeBinWidth = 1. / St_tpcElectronicsC::instance()->samplingFrequency();
+  mInnerSectorzOffset = St_tpcDimensionsC::instance()->zInnerOffset();
+  mOuterSectorzOffset = St_tpcDimensionsC::instance()->zOuterOffset();
 }
 
 
