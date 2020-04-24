@@ -249,10 +249,10 @@ void StMagUtilities::GetMagFactor ()
 }
 void StMagUtilities::GetTPCParams ()
 {
-  St_tpcWirePlanesC*    wires = StTpcDb::instance().WirePlaneGeometry();
+  St_tpcWirePlanesC*    wires = St_tpcWirePlanesC::instance();
   St_tpcPadConfigC*      pads = St_tpcPadConfigC::instance();
-  St_tpcFieldCageC*     cages = StTpcDb::instance().FieldCage();
-  St_tpcDimensionsC*     dims = StTpcDb::instance().Dimensions();
+  St_tpcFieldCageC*     cages = St_tpcFieldCageC::instance();
+  St_tpcDimensionsC*     dims = St_tpcDimensionsC::instance();
 
   if (! StTpcDb::IsOldScheme()) { // new schema
     XTWIST = 0;
@@ -262,7 +262,7 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = kDisableTwistClock;
   }
   else {   // old schema
-    St_tpcGlobalPositionC* glob = StTpcDb::instance().GlobalPosition();
+    St_tpcGlobalPositionC* glob = St_tpcGlobalPositionC::instance();
     XTWIST         =   1e3 * glob->TpcEFieldRotationY() ;
     YTWIST         =  -1e3 * glob->TpcEFieldRotationX() ;
     EASTCLOCKERROR =   1e3 * cages->EastClockError();

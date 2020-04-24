@@ -59,14 +59,8 @@ class StTpcDb
   static bool         mOldScheme;     //! switch between Old and New alignment scheme
  private:
   StTpcDb();
- public:
   ~StTpcDb();
-  St_tpcWirePlanesC*     WirePlaneGeometry() {return St_tpcWirePlanesC::instance();}
-  St_tpcDimensionsC*     Dimensions() {return St_tpcDimensionsC::instance();}
-  St_tpcElectronicsC*    Electronics() {return St_tpcElectronicsC::instance();}
-  St_tpcGlobalPositionC* GlobalPosition() {return St_tpcGlobalPositionC::instance();}
-  St_tpcFieldCageC*      FieldCage() {return St_tpcFieldCageC::instance();}
-  St_tpcPadResponseC*    PadResponse() {return St_tpcPadResponseC::instance();}
+ public:
   float                triggerTimeOffset()     {return St_trgTimeOffsetC::instance()->triggerTimeOffset();}
   static bool          IsOldScheme()    {return mOldScheme;}
   void    SetDriftVelocity();
