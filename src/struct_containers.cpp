@@ -728,15 +728,13 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   return v_eff;
 }
 
-
 #include "StDetectorDbMaker/St_tpcPadGainT0C.h"
-MakeChairInstance(tpcPadGainT0,Calibrations/tpc/tpcPadGainT0);
-#include "StDetectorDbMaker/St_itpcPadGainT0C.h"
-MakeChairInstance(itpcPadGainT0,Calibrations/tpc/itpcPadGainT0);
 #include "StDetectorDbMaker/St_tpcPadGainT0BC.h"
-St_tpcPadGainT0BC *St_tpcPadGainT0BC::fgInstance = 0;
-St_tpcPadGainT0BC *St_tpcPadGainT0BC::instance() {if (! fgInstance) fgInstance = new St_tpcPadGainT0BC(); return fgInstance;}
+#include "StDetectorDbMaker/St_itpcPadGainT0C.h"
 
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0_st>::name("Calibrations/tpc/tpcPadGainT0");
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0_st>::name("Calibrations/tpc/tpcPadGainT0");
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0_st>::name("Calibrations/tpc/itpcPadGainT0");
 
 float 	St_tpcPadGainT0BC::Gain(int sector, int row, int pad) const {
   float gain = 0;
