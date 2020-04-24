@@ -94,6 +94,7 @@ StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
   electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
   max_sectors_(24),
   max_pads_(182),
+  max_timebins_(512),
   mCutEle(eCutOff)
 {
   //  SETBIT(options_,kHEED);
@@ -1423,10 +1424,10 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
       if (gain <= 0.0) continue;
 
       ped    = St_TpcResponseSimulatorC::instance()->AveragePedestal();
-      static  short ADCs[max_timebins_];
-      static  short IDTs[max_timebins_];
-      memset(ADCs, 0, sizeof(ADCs));
-      memset(IDTs, 0, sizeof(IDTs));
+      static std::vector<short> ADCs(max_timebins_, 0);
+      static std::vector<short> IDTs(max_timebins_, 0);
+      std::fill(ADCs.begin(), ADCs.end(), 0);
+      std::fill(IDTs.begin(), IDTs.end(), 0);
       int NoTB = 0;
       index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
 
@@ -1465,7 +1466,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
       if (! NoTB) continue;
 
       if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0 && ! mAltro) {
-        mAltro = new Altro(max_timebins_, ADCs);
+        mAltro = new Altro(max_timebins_, ADCs.data());
 
         if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) { // Tonko 06/25/08
           //      ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
@@ -1513,11 +1514,11 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         }
       }
       else {
-        if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) NoTB = AsicThresholds(ADCs);
+        if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) NoTB = AsicThresholds(ADCs.data());
       }
 
       if (NoTB > 0) {
-        digi_data.Add(sector, row, pad, ADCs, IDTs, max_timebins_);
+        digi_data.Add(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_);
       }
     } // pads
 
