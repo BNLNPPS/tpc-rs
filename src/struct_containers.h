@@ -829,18 +829,11 @@ struct St_tpcOmegaTauC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTa
 
 struct St_TpcPadCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcPadCorrectionMDF, MDFCorrection_st> {};
 
-class St_tpcPadGainT0BC : public TObject
+struct St_tpcPadGainT0BC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0_st>
 {
- public:
-  static St_tpcPadGainT0BC* 	instance();
   float 	Gain(int sector, int row, int pad) const;
   float 	  T0(int sector, int row, int pad) const;
   bool    livePadrow(int sector, int row) const;
- protected:
-  St_tpcPadGainT0BC() {}
-  virtual ~St_tpcPadGainT0BC() {fgInstance = 0;}
- private:
-  static St_tpcPadGainT0BC* fgInstance;
 };
 
 struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0_st>
