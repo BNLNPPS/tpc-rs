@@ -64,7 +64,7 @@ struct SignalSum_t {
 #else
 #define PrPP(A,B)
 #endif
-static bool ClusterProfile = false;
+static bool ClusterProfile = true;
 #define Laserino 170
 #define Chasrino 171
 
@@ -415,11 +415,7 @@ void StTpcRSMaker::InitRun(int runnumber)
   memset (hist, 0, sizeof(hist));
   memset (checkList, 0, sizeof(checkList));
 
-  ClusterProfile = true;
-
   mHeed = fEc(St_TpcResponseSimulatorC::instance()->W());
-
-  if (!ClusterProfile) return;
 
   int color = 1;
   struct Name_t {
