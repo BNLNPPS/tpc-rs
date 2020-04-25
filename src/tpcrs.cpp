@@ -407,9 +407,6 @@ void StTpcRSMaker::InitRun(int runnumber)
     }
   }
 
-  // tss
-  mGG = new TF1F("GaitingGridTransperency", "TMath::Max(0.,1-6.27594134307865925e+00*TMath::Exp(-2.87987e-01*(x-1.46222e+01)))", 10, 56);
-
   if (Debug()) Print();
 
   memset (hist, 0, sizeof(hist));
@@ -810,11 +807,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           hist[4][0]->Fill(TrackSegmentHits[iSegHits].Pad.sector(), TrackSegmentHits[iSegHits].Pad.row(), dEdxCor);
         }
 
-        // Apply Gating Grid
-        if (TrackSegmentHits[iSegHits].Pad.timeBucket() > mGG->GetXmin() &&
-            TrackSegmentHits[iSegHits].Pad.timeBucket() < mGG->GetXmax()) {
-          dEdxCor *= mGG->Eval(TrackSegmentHits[iSegHits].Pad.timeBucket());
-        }
+        dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket());
 
         if (dEdxCor < min_signal_) continue;
 
