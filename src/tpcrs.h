@@ -55,6 +55,12 @@ class StTpcRSMaker
   void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper, std::vector<SignalSum_t>& SignalSum);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
 
+  static double GatingGridTransparency(double x, double x_min = 10, double x_max = 56)
+  {
+    if (x <= x_min || x >= x_max) return 1;
+    return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
+  };
+
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
   /// Initializes the mShaperResponses array with shape functions
@@ -71,7 +77,6 @@ class StTpcRSMaker
   TF1F*  mChargeFraction[2][24];      //!
   TF1F*  mPadResponseFunction[2][24]; //!
   TF1F*  mPolya[2];                   //!
-  TF1F*  mGG;                         //! Gating Grid Transperency
   TF1*   mHeed;                       //!
   StTpcdEdxCorrection* m_TpcdEdxCorrection; // !
   double InnerAlphaVariation[24];   //!
