@@ -51,7 +51,7 @@ class StTpcRSMaker
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
   void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
-  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper, std::vector<SignalSum_t>& SignalSum);
+  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
 
   static double GatingGridTransparency(double x, double x_min = 10, double x_max = 56)
@@ -63,7 +63,7 @@ class StTpcRSMaker
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
   /// Initializes the mShaperResponses array with shape functions
-  void InitShaperFuncs(int io, int sector, TF1F* func[2][24],
+  void InitShaperFuncs(int io, int sector, std::array<std::array<TF1F*, 24>, 2>& funcs,
     double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);
 
   static TF1F*     fgTimeShape3[2];  //!
@@ -72,9 +72,9 @@ class StTpcRSMaker
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
   TH1D*    mdNdEL10;                  //!
-  TF1F*  mShaperResponses[2][24];     //!
-  TF1F*  mChargeFraction[2][24];      //!
-  TF1F*  mPadResponseFunction[2][24]; //!
+  std::array<std::array<TF1F*, 24>, 2>  mShaperResponses;     //!
+  std::array<std::array<TF1F*, 24>, 2>  mChargeFraction;      //!
+  std::array<std::array<TF1F*, 24>, 2>  mPadResponseFunction; //!
   TF1F*  mPolya[2];                   //!
   TF1*   mHeed;                       //!
   StTpcdEdxCorrection* m_TpcdEdxCorrection; // !
