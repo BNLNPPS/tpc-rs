@@ -88,6 +88,11 @@ static TH1*  checkList[2][21] = {0};
 
 StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
   options_(0),
+  mdNdx(nullptr),
+  mdNdxL10(nullptr),
+  mdNdEL10(nullptr),
+  mHeed(nullptr),
+  mAltro(nullptr),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
@@ -412,7 +417,10 @@ void StTpcRSMaker::InitRun(int runnumber)
   memset (hist, 0, sizeof(hist));
   memset (checkList, 0, sizeof(checkList));
 
-  mHeed = fEc(St_TpcResponseSimulatorC::instance()->W());
+  // HEED function to generate Ec, default w = 26.2
+  double w_heed = St_TpcResponseSimulatorC::instance()->W();
+  mHeed = new TF1("Ec", Ec, 0, 3.064 * w_heed, 1);
+  mHeed->SetParameter(0, w_heed);
 
   int color = 1;
   struct Name_t {
@@ -1712,14 +1720,6 @@ double StTpcRSMaker::Ec(double* x, double* p)
   if (x[0] < p[0]) return 1;
 
   return std::pow(p[0] / x[0], 4);
-}
-
-
-TF1* StTpcRSMaker::StTpcRSMaker::fEc(double w)
-{
-  TF1* f = new TF1("Ec", Ec, 0, 3.064 * w, 1);
-  f->SetParameter(0, w);
-  return f;
 }
 
 

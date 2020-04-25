@@ -46,7 +46,6 @@ class StTpcRSMaker
   static double fei(double t, double t0, double T);
   static double polya(double* x, double* par);
   static double Ec(double* x, double* p); // minimal energy to create an ion pair
-  static TF1* fEc(double w = 26.2);           // HEED function to generate Ec
  private:
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
