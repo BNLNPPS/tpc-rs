@@ -91,6 +91,9 @@ StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
   mdNdx(nullptr),
   mdNdxL10(nullptr),
   mdNdEL10(nullptr),
+  mShaperResponses{},
+  mChargeFraction{},
+  mPadResponseFunction{},
   mHeed(nullptr),
   mAltro(nullptr),
   min_signal_(1e-4),
@@ -530,7 +533,7 @@ void StTpcRSMaker::InitRun(int runnumber)
 }
 
 
-void StTpcRSMaker::InitShaperFuncs(int io, int sector, TF1F* funcs[2][24],
+void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::array<TF1F*, 24>, 2>& funcs,
   double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax)
 {
   const char io_id[2] = {'I', 'O'};
@@ -1169,7 +1172,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               continue;
             }
 
-            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, *mShaperResponses[io][sector - 1], signal_sums);
+            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, mShaperResponses[io][sector - 1], signal_sums);
           }  // electrons in Cluster
 
           if (ClusterProfile) {
@@ -1799,7 +1802,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 }
 
 
-void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F& shaper,
+void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F* shaper,
     std::vector<SignalSum_t>& SignalSum)
 {
   static StTpcCoordinateTransform transform(gStTpcDb);
@@ -1890,12 +1893,12 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
       if (XYcoupling < min_signal_)  continue;
 
-      int bin_low  = std::max(0, binT + tpcrs::irint(dt + shaper.GetXmin() - 0.5));
-      int bin_high = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper.GetXmax() + 0.5));
+      int bin_low  = std::max(0, binT + tpcrs::irint(dt + shaper->GetXmin() - 0.5));
+      int bin_high = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper->GetXmax() + 0.5));
       int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1) + bin_low;
       int Ntbks = std::min(bin_high - bin_low + 1, static_cast<int>(kTimeBacketMax));
       double tt = -dt + (bin_low - binT);
-      shaper.GetSaveL(Ntbks, tt, TimeCouplings);
+      shaper->GetSaveL(Ntbks, tt, TimeCouplings);
 
       for (int itbin = bin_low; itbin <= bin_high; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - bin_low];
