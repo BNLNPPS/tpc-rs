@@ -86,7 +86,7 @@ static const int nChecks = 21;
 static TH1*  checkList[2][21] = {0};
 
 
-StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
+StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   options_(0),
   mdNdx(nullptr),
   mdNdxL10(nullptr),
@@ -100,10 +100,10 @@ StTpcRSMaker::StTpcRSMaker(double eCutOff, const char* name):
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
   electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
+  max_electron_energy_(e_cutoff),
   max_sectors_(24),
   max_pads_(182),
-  max_timebins_(512),
-  mCutEle(eCutOff)
+  max_timebins_(512)
 {
   //  SETBIT(options_,kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
@@ -861,7 +861,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) ioH += 2;
 
-        double total_signal_  = 0;
+        double total_signal = 0;
         double lgam = tpc_hitC->lgam;
 
         if (ClusterProfile) {
@@ -914,7 +914,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           Tmax = 2 * m_e * bg2 / (1 + 2 * gamma * r + r * r);
         }
 
-        if (Tmax > mCutEle) Tmax = mCutEle;
+        if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
 
         double padH = TrackSegmentHits[iSegHits].Pad.pad();
         double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket();
@@ -1075,7 +1075,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           double rY = std::sin(phiXY);
           double sigmaT = SigmaT;
           double sigmaL = SigmaL;
-          total_signal_in_cluster_ = 0;
+          double total_signal_in_cluster = 0;
           int WireIndex = 0;
 
           for (int ie = 0; ie < Nt; ie++) {
@@ -1167,16 +1167,17 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               continue;
             }
 
-            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX, mShaperResponses[io][sector - 1], signal_sums);
+            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX,
+                           mShaperResponses[io][sector - 1], signal_sums, total_signal_in_cluster);
           }  // electrons in Cluster
 
           if (ClusterProfile) {
-            if (total_signal_in_cluster_ > 0 && checkList[io][19]) {
-              checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster_));
+            if (total_signal_in_cluster > 0 && checkList[io][19]) {
+              checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster));
             }
           }
 
-          total_signal_ += total_signal_in_cluster_;
+          total_signal += total_signal_in_cluster;
         }
         while (true);   // Clusters
 
@@ -1185,24 +1186,24 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #ifdef __DEBUG__
           if (Debug() > 12) {
             LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
-                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t total_signal_ " << total_signal_ << '\n';
+                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t total_signal " << total_signal << '\n';
           }
 #endif
           tpc_hitC->de = dESum * eV;
           tpc_hitC->ds = dSSum;
-          //	  tpc_hitC->adc = total_signal_;
+          //	  tpc_hitC->adc = total_signal;
           tpc_hitC->np = nP;
 
           if (ClusterProfile) {
-            if (total_signal_ > 0) {
+            if (total_signal > 0) {
               if (hist[ioH][0]) {
                 for (int p = 0; p < kPadMax; p++)
-                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position().z(), padsdE[p] / total_signal_);
+                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position().z(), padsdE[p] / total_signal);
               }
 
               if (hist[ioH][1]) {
                 for (int t = 0; t < kTimeBacketMax; t++)
-                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position().z(), tbksdE[t] / total_signal_);
+                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position().z(), tbksdE[t] / total_signal);
               }
             }
 
@@ -1797,8 +1798,8 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 }
 
 
-void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F* shaper,
-    std::vector<SignalSum_t>& SignalSum)
+void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+  double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum, double& total_signal_in_cluster)
 {
   static StTpcCoordinateTransform transform;
 
@@ -1900,7 +1901,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
         if (signal < min_signal_)  continue;
 
-        total_signal_in_cluster_ += signal;
+        total_signal_in_cluster += signal;
         SignalSum[index].Sum += signal;
 
         if (ClusterProfile) {
