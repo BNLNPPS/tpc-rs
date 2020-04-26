@@ -225,3 +225,8 @@ target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}
 add_dependencies(tpcrs yaml-cpp-lib)
 
 add_subdirectory(tests)
+
+# Install additional files such as README, LICENSE, etc.
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION ${TPCRS_ADDITIONAL_FILES_INSTALL_DIR})
+
+install(EXPORT tpcrsTargets DESTINATION ${TPCRS_CMAKE_CONFIG_INSTALL_DIR} FILE tpcrs-config.cmake)
