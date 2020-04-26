@@ -687,8 +687,8 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       // Track segment to propagate
       enum {NoMaxTrackSegmentHits = 100};
       static HitPoint_t TrackSegmentHits[NoMaxTrackSegmentHits];
-      msMin = 9999;
-      msMax = -9999;
+      double smin = 9999;
+      double smax = -9999;
       int nSegHits = 0;
       int sIndex = sortedIndex;
 
@@ -736,7 +736,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         // Account hits which can be splitted
         if (tpc_hitC->volume_id < 10000) mNoTpcHitsReal[tpc_hitC->track_p - 1]++;
 
-        TrackSegment2Propagate(tpc_hitC, &geant_vertex[id3 - 1], TrackSegmentHits[nSegHits]);
+        TrackSegment2Propagate(tpc_hitC, &geant_vertex[id3 - 1], TrackSegmentHits[nSegHits], smin, smax);
 
         if (TrackSegmentHits[nSegHits].Pad.timeBucket() < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket() > max_timebins_) continue;
 
@@ -758,10 +758,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       }
 
       sortedIndex = sIndex - 1; // Irakli 05/06/19, reduce extra step in for loop
-      double s = msMin;
+      double s = smin;
       memset (rowsdE, 0, sizeof(rowsdE));
 
-      for (int iSegHits = 0; iSegHits < nSegHits && s < msMax; iSegHits++) {
+      for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
         memset (rowsdEH, 0, sizeof(rowsdEH));
         g2t_tpc_hit_st* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->adc = 0;
@@ -956,7 +956,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #ifndef __NO_1STROWCORRECTION__
         if (row == 1) dEdxCor *= std::exp(St_TpcResponseSimulatorC::instance()->FirstRowC());
 #endif
-        mGainLocal = Gain / dEdxCor / NoElPerAdc; // Account dE/dx calibration
+        double gain_local = Gain / dEdxCor / NoElPerAdc; // Account dE/dx calibration
         // end of dE/dx correction
         // generate electrons: No. of primary clusters per cm
 
@@ -1080,7 +1080,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
           for (int ie = 0; ie < Nt; ie++) {
             nTotal++;
-            QAv = mPolya[io]->GetRandom();
+            double gain_gas = mPolya[io]->GetRandom();
             // transport to wire
             gRandom->Rannor(rX, rY);
             StTpcLocalSectorCoordinate xyzE(xyzC.x() + rX * sigmaT,
@@ -1148,11 +1148,11 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
             zOnWire += std::abs(distFocused);
 
-            if (! iGroundWire ) QAv *= std::exp( alphaVariation);
-            else                QAv *= std::exp(-alphaVariation);
+            if (! iGroundWire ) gain_gas *= std::exp( alphaVariation);
+            else                gain_gas *= std::exp(-alphaVariation);
 
             if (ClusterProfile) {
-              checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), QAv);
+              checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), gain_gas);
             }
 
             double dY    = mChargeFraction[io][sector - 1]->GetXmax();
@@ -1168,7 +1168,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             }
 
             GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX,
-                           mShaperResponses[io][sector - 1], signal_sums, total_signal_in_cluster);
+                           mShaperResponses[io][sector - 1], signal_sums, total_signal_in_cluster, gain_local, gain_gas);
           }  // electrons in Cluster
 
           if (ClusterProfile) {
@@ -1722,7 +1722,7 @@ double StTpcRSMaker::Ec(double* x, double* p)
 }
 
 
-void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geant_vertex, HitPoint_t &TrackSegmentHits)
+void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
 {
   int volId = tpc_hitC->volume_id % 10000;
   int sector = volId / 100;
@@ -1750,9 +1750,9 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   TrackSegmentHits.sMin = TrackSegmentHits.s - TrackSegmentHits.tpc_hitC->ds;
   TrackSegmentHits.sMax = TrackSegmentHits.s;
 
-  if (TrackSegmentHits.sMin < msMin) msMin = TrackSegmentHits.sMin;
+  if (TrackSegmentHits.sMin < smin) smin = TrackSegmentHits.sMin;
 
-  if (TrackSegmentHits.sMax > msMax) msMax = TrackSegmentHits.sMax;
+  if (TrackSegmentHits.sMax > smax) smax = TrackSegmentHits.sMax;
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -1799,7 +1799,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 
 
 void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
-  double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum, double& total_signal_in_cluster)
+  double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum, double& total_signal_in_cluster, double gain_local, double gain_gas)
 {
   static StTpcCoordinateTransform transform;
 
@@ -1855,7 +1855,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
     //	      double xPad = padMin - padX;
     for (int pad = padMin; pad <= padMax; pad++) {
-      double gain = QAv * mGainLocal;
+      double gain = gain_gas * gain_local;
       double dt = dT;
 
       //		if (St_tpcPadConfigC::instance()->numberOfRows(sector) ==45 && ! TESTBIT(options_, kGAINOAtALL)) {
