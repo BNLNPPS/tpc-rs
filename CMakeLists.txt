@@ -9,6 +9,11 @@ endif()
 
 project(tpc-rs LANGUAGES CXX)
 
+set(TPCRS_VERSION_MAJOR 0 CACHE STRING "major version of tpc-rs" FORCE)
+set(TPCRS_VERSION_MINOR 0 CACHE STRING "minor version of tpc-rs" FORCE)
+set(TPCRS_VERSION_PATCH 7 CACHE STRING "patch version of tpc-rs" FORCE)
+set(TPCRS_VERSION "${TPCRS_VERSION_MAJOR}.${TPCRS_VERSION_MINOR}.${TPCRS_VERSION_PATCH}" CACHE STRING "version of tpc-rs" FORCE)
+
 # By default build shared libraries but allow the user to change if desired
 OPTION(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 
