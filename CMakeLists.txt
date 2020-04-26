@@ -29,6 +29,37 @@ if(${ROOT_CXX_FLAGS} MATCHES "-m32")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
+# Set a debug postfix
+set(CMAKE_DEBUG_POSTFIX "-dbg")
+
+# Set installation destinations
+if(UNIX)
+    include(GNUInstallDirs)
+
+    set(TPCRS_INC_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/tpcrs")
+    set(TPCRS_RUNTIME_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
+    set(TPCRS_LIBRARY_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}")
+    set(TPCRS_ARCHIVE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}")
+    set(TPCRS_FRAMEWORK_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}")
+
+    set(TPCRS_ADDITIONAL_FILES_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/tpc-rs-${TPCRS_VERSION}")
+    set(TPCRS_CMAKE_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/tpc-rs-${TPCRS_VERSION}/cmake")
+    set(TPCRS_DATA_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/tpc-rs-${TPCRS_VERSION}/data")
+elseif(WIN32)
+    set(TPCRS_INC_INSTALL_DIR       "include/tpcrs")
+    set(TPCRS_RUNTIME_INSTALL_DIR   "bin")
+    set(TPCRS_LIBRARY_INSTALL_DIR   "bin")
+    set(TPCRS_ARCHIVE_INSTALL_DIR   "lib")
+    set(TPCRS_FRAMEWORK_INSTALL_DIR "bin")
+
+    set(TPCRS_ADDITIONAL_FILES_INSTALL_DIR "share/tpc-rs-${TPCRS_VERSION}")
+    set(TPCRS_CMAKE_CONFIG_INSTALL_DIR "share/tpc-rs-${TPCRS_VERSION}/cmake")
+    set(TPCRS_DATA_INSTALL_DIR "share/tpc-rs-${TPCRS_VERSION}/data")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+else()
+    message(FATAL_ERROR "Could not set install folders for this platform!")
+endif()
+
 
 include(ExternalProject)
 
@@ -48,11 +79,6 @@ add_library(yaml-cpp-lib STATIC IMPORTED)
 set_property(TARGET yaml-cpp-lib PROPERTY IMPORTED_LOCATION ${YAML_CPP_INSTALL_PREFIX}/lib/libyaml-cpp.a)
 add_dependencies(yaml-cpp-lib yaml-cpp)
 
-set(CMAKE_INSTALL_DATADIR "share"
-    CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where read-only data installed")
-
-set(TPCRS_DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/tpc-rs/data"
-    CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where project config data is installed")
 
 configure_file(src/config.h.in tpcrs/config.h @ONLY)
 
