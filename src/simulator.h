@@ -51,7 +51,9 @@ class StTpcRSMaker
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
   void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits);
-  void   GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT, double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum);
+  void GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+                      double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum,
+                      double& total_signal_in_cluster);
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
 
   static double GatingGridTransparency(double x, double x_min = 10, double x_max = 56)
@@ -98,7 +100,6 @@ class StTpcRSMaker
   double QAv;                       //!
   int pad0;                         //!
   int tbk0;                         //!
-  double total_signal_in_cluster_;      //!
   double padsdE[kPadMax];           //!
   double tbksdE[kTimeBacketMax];    //!
   double rowsdEH[kRowMax];          //!
@@ -107,9 +108,9 @@ class StTpcRSMaker
   const double electron_range_;       //!
   const double electron_range_energy_; //!
   const double electron_range_power_;  //!
+  const double max_electron_energy_;                 //! cut for delta electrons
   const int max_sectors_;            //!
   const int max_pads_;               //!
   const int max_timebins_;
-  double   mCutEle;                 //! cut for delta electrons
 };
 #endif
