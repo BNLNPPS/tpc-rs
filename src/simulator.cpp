@@ -16,7 +16,6 @@
 
 #include "simulator.h"
 // SCL
-#include "particles/StThreeVector.hh"
 #include "particles/StPhysicalHelix.hh"
 // ROOT
 #include "Math/SpecFuncMathMore.h"
@@ -71,9 +70,6 @@ static bool ClusterProfile = true;
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
 static const double tauC[2]   = {999.655e-9, 919.183e-9};
-TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
-TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
-
 static const int nx[2] = {200, 500};
 static const double xmin[2] =  {-10., -6};
 static const double xmax[2] =  { 10., 44};
@@ -84,6 +80,8 @@ static const double zmax = -zmin;
 static TProfile2D* hist[5][3] = {0};
 static const int nChecks = 21;
 static TH1*  checkList[2][21] = {0};
+TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
+TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
 
 
 StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
