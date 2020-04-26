@@ -1,12 +1,5 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
-# If ccache is installed use it
-find_program(CCACHE_EXECUTABLE ccache)
-if(CCACHE_EXECUTABLE)
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_EXECUTABLE})
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_EXECUTABLE})
-endif()
-
 project(tpc-rs LANGUAGES CXX)
 
 set(TPCRS_VERSION_MAJOR 0 CACHE STRING "major version of tpc-rs" FORCE)
