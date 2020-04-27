@@ -1,5 +1,5 @@
 #include "StTpcRSMaker/TF1F.h"
-#include "tpcrs/math.h"
+#include "math_funcs.h"
 
 
 void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)

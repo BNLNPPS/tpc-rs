@@ -24,7 +24,6 @@
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
-#include "TMath.h"
 #include "StTpcRSMaker/tcl.h"
 #include "Math/SpecFuncMathMore.h"
 
@@ -51,7 +50,7 @@
 
 #include "tpcrs/configurator.h"
 #include "tpcrs/logger.h"
-#include "tpcrs/math.h"
+#include "math_funcs.h"
 
 struct HitPoint_t {
   int indx;
@@ -1352,7 +1351,7 @@ double StTpcRSMaker::ShaperFunc(double* x, double* par)
   double Delta = width / tau;
   double t1 = t - Delta / 2.;
   double t2 = t1 + Delta;
-  double val = TMath::Gamma(p, t2) - TMath::Gamma(p, t1);
+  double val = tpcrs::Gamma(p, t2) - tpcrs::Gamma(p, t1);
   return val;
 }
 
@@ -1828,7 +1827,7 @@ SignalSum_t*  StTpcRSMaker::ResetSignalSum(int sector)
 
 double StTpcRSMaker::polya(double* x, double* par)
 {
-  return TMath::GammaDist(x[0], par[0], par[1], par[2]);
+  return tpcrs::GammaDist(x[0], par[0], par[1], par[2]);
 }
 
 
