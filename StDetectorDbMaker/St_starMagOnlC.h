@@ -2,7 +2,6 @@
 #define St_starMagOnlC_h
 
 #include "tpcrs/config_structs.h"
-#include "TMath.h"
 #include "starMagOnl.h"
 
 enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,
@@ -25,7 +24,7 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
 
     for (unsigned int i = 0; i < GetNRows() - 1; i++)
       if ( time >= getTimeEntry(i) && time <= getTimeEntry(i + 1) )
-        if ( TMath::Abs(getMagnetCurrentEntry(i) - getMagnetCurrentEntry(i + 1)) < 50 )
+        if ( std::abs(getMagnetCurrentEntry(i) - getMagnetCurrentEntry(i + 1)) < 50 )
           tempCurrent = getMagnetCurrentEntry(i);
 
     return tempCurrent;

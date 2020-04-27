@@ -13,7 +13,6 @@
 #define ST_COORDINATE_TRANSFORM_HH
 
 #include <stdlib.h>
-#include "TMath.h"
 // SCL
 #include "StarClassLibrary/SystemOfUnits.h"
 #include "StarClassLibrary/StThreeVector.hh"
@@ -102,7 +101,7 @@ class StTpcCoordinateTransform
   // sector from Tpc local coordinates
   Int_t sectorFromCoordinate(const StThreeVector<double> &a) const
   {
-    Double_t angle = TMath::RadToDeg() * TMath::ATan2(a.y(), a.x());
+    Double_t angle = 180 / M_PI * std::atan2(a.y(), a.x());
 
     if (angle < 0) angle += 360;
 

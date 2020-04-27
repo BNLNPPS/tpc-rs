@@ -1,10 +1,10 @@
 #include "StTpcRSMaker/TF1F.h"
-#include "TMath.h"
+#include "math_funcs.h"
 
 
 void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)
 {
-  fXmin = xmin; fXmax = xmax; fStep = 20, fdX = 1. / fStep; fNpx = TMath::Nint((fXmax - fXmin) / fdX);
+  fXmin = xmin; fXmax = xmax; fStep = 20, fdX = 1. / fStep; fNpx = tpcrs::irint((fXmax - fXmin) / fdX);
   TF1::Save(xmin, xmax, ymin, ymax, zmin, zmax);
 }
 
@@ -14,7 +14,7 @@ double TF1F::GetSaveL(double* xx)
   // Get value corresponding to X in array of fSave values
   if (xx[0] < fXmin || xx[0]  > fXmax || fdX <= 0) return 0.;
 
-  int bin     = TMath::Nint((xx[0] - fXmin) / fdX);
+  int bin     = tpcrs::irint((xx[0] - fXmin) / fdX);
   return fSave[bin];
 }
 
@@ -23,7 +23,7 @@ double TF1F::GetSaveL(int N, double x, double* y)
 {
   // Get values y[N] corresponding to x+i, i = [0, ..., N-1];
   //  memset(y, 0, N*sizeof(double));
-  int bin     = TMath::Nint((x - fXmin) / fdX);
+  int bin     = tpcrs::irint((x - fXmin) / fdX);
   int i1 = 0;
 
   while (bin < 0) {i1++; bin += fStep;}

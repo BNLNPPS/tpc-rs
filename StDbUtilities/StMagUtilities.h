@@ -14,7 +14,6 @@
 #include "StarMagField/StarMagField.h"
 class TFile;
 class TNtuple;
-#include "TMath.h"
 
 enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
 enum   Prime    { IsPrimary = 0, IsGlobal = 1 } ;
@@ -320,18 +319,18 @@ class StMagUtilities
 
   void     Cart2Polar(const float* x, float &r, float &phi)
   {
-    r      =  TMath::Sqrt( x[0] * x[0] + x[1] * x[1] ) ;
-    phi    =  TMath::ATan2(x[1], x[0]) ;
+    r      =  std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
+    phi    =  std::atan2(x[1], x[0]) ;
   }
   void     Cart2Polar(const float* x, double &r, double &phi)
   {
-    r      =  TMath::Sqrt( x[0] * x[0] + x[1] * x[1] ) ;
-    phi    =  TMath::ATan2(x[1], x[0]) ;
+    r      =  std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
+    phi    =  std::atan2(x[1], x[0]) ;
   }
   void     Polar2Cart(const double r, const double phi, float* Xprime)
   {
-    Xprime[0] = r * TMath::Cos(phi) ;
-    Xprime[1] = r * TMath::Sin(phi) ;
+    Xprime[0] = r * std::cos(phi) ;
+    Xprime[1] = r * std::sin(phi) ;
   }
 
 
