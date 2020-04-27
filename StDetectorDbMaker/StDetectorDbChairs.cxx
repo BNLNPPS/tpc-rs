@@ -1,11 +1,8 @@
 #include <cassert>
 #include "TEnv.h"
 #include "TF1.h"
-#include "TMath.h"
 #include "TString.h"
 #include "tpcrs/logger.h"
-
-using namespace ROOT::Math;
 
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT ## _st>::name(# PATH);
@@ -53,36 +50,36 @@ double St_tpcCorrectionC::CalcCorrection(int i, double x, double z, int NparMax)
 double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, int NparMax) {
   double Sum = 0;
   if (! cor) return Sum;
-  int N = TMath::Abs(cor->npar)%100;
+  int N = std::abs(cor->npar)%100;
   if (N == 0) return Sum;
   if (NparMax > 0) N = NparMax;
   static double T0, T1, T2;
   // parameterization variable
   double X = x;
-  if (cor->npar  < 0) X = TMath::Exp(x);
+  if (cor->npar  < 0) X = std::exp(x);
   else {
     switch  (cor->type) {
     case 10:// ADC correction offset + poly for ADC
     case 11:// ADC correction offset + poly for log(ADC) and |Z|
     case 12:// ADC correction offset + poly for log(ADC) and TanL
-      X = TMath::Log(x);      break;
+      X = std::log(x);      break;
     case 1: // Tchebyshev [-1,1]
-      if (cor->min < cor->max)   X = -1 + 2*TMath::Max(0.,TMath::Min(1.,(X - cor->min)/( cor->max - cor->min)));
+      if (cor->min < cor->max)   X = -1 + 2*std::max(0.,std::min(1.,(X - cor->min)/( cor->max - cor->min)));
       break;
     case 2: // Shifted TChebyshev [0,1]
-      if (cor->min < cor->max)   X = TMath::Max(0.,TMath::Min(1.,(X - cor->min)/( cor->max - cor->min)));
+      if (cor->min < cor->max)   X = std::max(0.,std::min(1.,(X - cor->min)/( cor->max - cor->min)));
       break;
     case 3:
-      if (TMath::Abs(x) >= 1) X = 0;
-      else                    X = TMath::Log(1. - TMath::Abs(x));
+      if (std::abs(x) >= 1) X = 0;
+      else                    X = std::log(1. - std::abs(x));
       break;
     case 4:
-      if (TMath::Abs(x) >= 1) X = 0;
-      else                    X = TMath::Sign(TMath::Log(1. - TMath::Abs(x)),x);
+      if (std::abs(x) >= 1) X = 0;
+      else                    X = std::copysign(std::log(1. - std::abs(x)),x);
       break;
     case 5:
       if (x < 1e-7) X = -16.118;
-      else          X = TMath::Log(x);
+      else          X = std::log(x);
       break;
     default:      X = x;    break;
     }
@@ -125,17 +122,17 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, 
   case 10: // ADC correction offset + poly for ADC
     Sum = cor->a[N-1];
     for (int n = N-2; n>=0; n--) Sum = X*Sum + cor->a[n];
-    Sum += TMath::Log(1. + cor->OffSet/x);
-    Sum  = TMath::Exp(Sum);
+    Sum += std::log(1. + cor->OffSet/x);
+    Sum  = std::exp(Sum);
     Sum *= x;
     break;
   case 11: // ADC correction offset + poly for log(ADC) and |Z|
-    Sum = cor->a[1] + z*cor->a[2] + z*X*cor->a[3] + TMath::Exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
-    Sum *= TMath::Exp(-cor->a[0]);
+    Sum = cor->a[1] + z*cor->a[2] + z*X*cor->a[3] + std::exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
+    Sum *= std::exp(-cor->a[0]);
     break;
   case 12: // ADC correction offset + poly for log(ADC) and TanL
-    Sum = cor->a[1] + z*cor->a[2] + z*z*cor->a[3] + TMath::Exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
-    Sum *= TMath::Exp(-cor->a[0]);
+    Sum = cor->a[1] + z*cor->a[2] + z*z*cor->a[3] + std::exp(X*(cor->a[4] + X*cor->a[5]) + cor->a[6]);
+    Sum *= std::exp(-cor->a[0]);
     break;
   case 1000:
   case 1100:
@@ -310,7 +307,7 @@ double St_MDFCorrectionC::Eval(int k, double *x) const {
   }
   double xx[3];
   for (int v = 0; v < NVariables(k); v++) {
-    xx[v] = TMath::Max(XMin(k)[v], TMath::Min(XMin(k)[v]+0.999*(XMax(k)[v]-XMin(k)[v]), x[v]));
+    xx[v] = std::max(XMin(k)[v], std::min(XMin(k)[v]+0.999*(XMax(k)[v]-XMin(k)[v]), x[v]));
   }
   double returnValue = fFunc[k]->GetSave(xx);
   return returnValue;
@@ -338,7 +335,7 @@ double St_MDFCorrectionC::EvalError(int k, double *x) const {
     // Add this term to the final result
     returnValue += term*term;
   }
-  returnValue = TMath::Sqrt(returnValue);
+  returnValue = std::sqrt(returnValue);
   return returnValue;
 }
 
@@ -643,12 +640,12 @@ float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
   float v1=voltage(e1-1);
   if (f2 < 0.1) return v1;
   float v2=voltage(e2-1);
-  if (TMath::Abs(v2 - v1) > 40) return -99;
-  if (TMath::Abs(v2 - v1) <  1) return v1;
+  if (std::abs(v2 - v1) > 40) return -99;
+  if (std::abs(v2 - v1) <  1) return v1;
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = TMath::Log((1.0-f2)*TMath::Exp(B*v1) + f2*TMath::Exp(B*v2)) / B;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
 MakeChairInstance(TpcAvgPowerSupply,Calibrations/tpc/TpcAvgPowerSupply);
@@ -669,7 +666,7 @@ float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = TMath::Log((1.0-f2)*TMath::Exp(B*v1) + f2*TMath::Exp(B*v2)) / B;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
 
@@ -726,7 +723,7 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
   float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = TMath::Log((1.0-f2)*TMath::Exp(B*v1) + f2*TMath::Exp(B*v2)) / B;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
 
@@ -928,9 +925,9 @@ float St_tss_tssparC::gain(int sector, int row) {
     if (v < gC->min(l) || v > gC->max(l)) return gain;
     if (gC->min(l) < -450) {
       // if range was expanded below 150 V then use only the linear approximation
-      gain  = TMath::Exp(gC->CalcCorrection(l,v, 0., 2));
+      gain  = std::exp(gC->CalcCorrection(l,v, 0., 2));
     } else {
-      gain  = TMath::Exp(gC->CalcCorrection(l,v));
+      gain  = std::exp(gC->CalcCorrection(l,v));
     }
   }
   return gain;
@@ -1021,10 +1018,10 @@ double St_SurveyC::IsOrtogonal(const double *r) {
   for (int i=0; i<2; i++) {
     for (int j=i+1; j<3; j++) {
       // check columns
-      cij = TMath::Abs(r[i]*r[j]+r[i+3]*r[j+3]+r[i+6]*r[j+6]);
+      cij = std::abs(r[i]*r[j]+r[i+3]*r[j+3]+r[i+6]*r[j+6]);
       if (cij>1E-4) cmax = cij;
       // check rows
-      cij = TMath::Abs(r[3*i]*r[3*j]+r[3*i+1]*r[3*j+1]+r[3*i+2]*r[3*j+2]);
+      cij = std::abs(r[3*i]*r[3*j]+r[3*i+1]*r[3*j+1]+r[3*i+2]*r[3*j+2]);
       if (cij>cmax) cmax = cij;
     }
   }
@@ -1045,7 +1042,7 @@ void St_SurveyC::Normalize(TGeoHMatrix &R) {
 
 const TGeoHMatrix &St_SurveyC::GetMatrix(int i) {
   assert(fRotations || fRotations[i]);
-  assert(TMath::Abs(fRotations[i]->Determinant())-1 < 1.e-3);
+  assert(std::abs(fRotations[i]->Determinant())-1 < 1.e-3);
   return *fRotations[i];
 }
 
@@ -1078,21 +1075,21 @@ const TGeoHMatrix &St_SurveyC::GetMatrixR(int i) {
 void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
   phi = the = psi = 0;  // Korn 14.10-5
   double cosDelta = (r00(i) + r11(i) + r22(i) - 1)/2; // (Tr(R) - 1)/2
-  double Delta = TMath::ACos(cosDelta);
-  if (Delta < 0) Delta += 2*TMath::Pi();
-  double sinDelta2 = TMath::Sin(Delta/2);
-  if (TMath::Abs(sinDelta2) < 1.e-7) return;
+  double Delta = std::acos(cosDelta);
+  if (Delta < 0) Delta += 2*M_PI;
+  double sinDelta2 = std::sin(Delta/2);
+  if (std::abs(sinDelta2) < 1.e-7) return;
   double c[3] = {
     (r21(i) - r12(i))/(2*sinDelta2), // a32-a23
     (r02(i) - r20(i))/(2*sinDelta2), // a13-a31
     (r10(i) - r01(i))/(2*sinDelta2)  // a21-a12
   };
-  double u = TMath::ATan2(c[0],c[1]);
-  double v = TMath::ATan(c[2]*TMath::Tan(Delta/2));
-  phi = (v - u)/2 - TMath::Pi()/2;
-  psi = (v + u)/2 - TMath::Pi()/2;
-  the = 2*TMath::ATan2(c[0]*TMath::Sin(v),c[2]*TMath::Sin(u));
-  double raddeg = 180./TMath::Pi();
+  double u = std::atan2(c[0],c[1]);
+  double v = std::atan(c[2]*std::tan(Delta/2));
+  phi = (v - u)/2 - M_PI_2;
+  psi = (v + u)/2 - M_PI_2;
+  the = 2*std::atan2(c[0]*std::sin(v),c[2]*std::sin(u));
+  double raddeg = 180./M_PI;
   phi   *= raddeg;
   the   *= raddeg;
   psi   *= raddeg;

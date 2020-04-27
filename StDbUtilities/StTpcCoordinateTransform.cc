@@ -19,9 +19,9 @@
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
-#include "TMath.h"
 #include "StarClassLibrary/StThreeVector.hh"
 #include "tpcrs/logger.h"
+#include "math_funcs.h"
 
 static Int_t _debug = 0;
 
@@ -53,7 +53,7 @@ void StTpcCoordinateTransform::operator()(const StTpcLocalSectorCoordinate &a, S
 
   Double_t probablePad = padFromLocal(a);
   Double_t                  zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  Double_t t0offset = (useT0 && sector >= 1 && sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(sector, row, TMath::Nint (probablePad)) : 0;
+  Double_t t0offset = (useT0 && sector >= 1 && sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(sector, row, tpcrs::irint (probablePad)) : 0;
   t0offset *= mTimeBinWidth;
 
   if (! useT0 && useTau) // for cluster
@@ -71,7 +71,7 @@ void StTpcCoordinateTransform::operator()(const StTpcPadCoordinate &a,  StTpcLoc
   StThreeVector<double>  tmp = xyFromRow(a);
   Int_t sector = a.sector();
   Double_t                zoffset =  (a.row() > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  Double_t t0offset = useT0 ? St_tpcPadGainT0BC::instance()->T0(a.sector(), a.row(), TMath::Nint(a.pad())) : 0;
+  Double_t t0offset = useT0 ? St_tpcPadGainT0BC::instance()->T0(a.sector(), a.row(), tpcrs::irint(a.pad())) : 0;
   t0offset *= mTimeBinWidth;
 
   if (! useT0 && useTau) // for cluster
@@ -245,10 +245,10 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
     }
   }
 
-  Long64_t row = TMath::BinarySearch(Nrows + 1, Radii, y) + 1;
+  double* r_ptr = std::lower_bound(Radii, Radii + Nrows + 1, y);
+  int row = (r_ptr != Radii + Nrows + 1) && (*r_ptr == y) ? r_ptr - Radii + 1: r_ptr - Radii;
 
   if (row <= 0) row = 1;
-
   if (row > Nrows) row = Nrows;
 
   return row;
@@ -267,10 +267,11 @@ Int_t StTpcCoordinateTransform::rowFromLocalY(Double_t y, Int_t sector)
 
   if (y > Radii[Nrows - 1]) return Nrows;
 
-  Long64_t row = TMath::BinarySearch(Nrows, Radii, y);
+  double* r_ptr = std::lower_bound(Radii, Radii + Nrows, y);
+  int row = (r_ptr != Radii + Nrows) && (*r_ptr == y) ? r_ptr - Radii : r_ptr - Radii - 1;
 
   if (row < Nrows - 1) {
-    if (TMath::Abs(Radii[row] - y) > TMath::Abs(Radii[row + 1] - y)) row++;
+    if (std::abs(Radii[row] - y) > std::abs(Radii[row + 1] - y)) row++;
   }
 
   row++;

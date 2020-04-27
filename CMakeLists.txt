@@ -192,9 +192,11 @@ add_library(tpcrs
 	StTpcDb/StTpcDb.cxx
 	src/configurator.cpp
 	src/logger.cpp
+	src/math_cephes.cpp
+	src/math_funcs.cpp
 )
 
-target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}
+target_include_directories(tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src
 	include/ ${YAML_CPP_INSTALL_PREFIX}/include/ ${CMAKE_BINARY_DIR})
 add_dependencies(tpcrs yaml-cpp-lib)
 

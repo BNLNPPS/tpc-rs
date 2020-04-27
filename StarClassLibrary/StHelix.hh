@@ -201,13 +201,13 @@ inline int StHelix::bad(double WorldSize) const
 
   if (ierr)                           return    3 + ierr * 100;
 
-  if (::fabs(mDipAngle)  > 1.58)	return   21;
+  if (std::abs(mDipAngle)  > 1.58)	return   21;
 
-  double qwe = ::fabs(::fabs(mDipAngle) - M_PI / 2);
+  double qwe = std::abs(std::abs(mDipAngle) - M_PI / 2);
 
   if (qwe < 1. / WorldSize      ) 	return   31;
 
-  if (::fabs(mCurvature) > WorldSize)	return   22;
+  if (std::abs(mCurvature) > WorldSize)	return   22;
 
   if (mCurvature < 0          )	return   32;
 

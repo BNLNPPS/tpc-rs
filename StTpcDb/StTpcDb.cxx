@@ -9,7 +9,6 @@
  **************************************************************************/
 
 #include "TDatime.h"
-#include "TMath.h"
 #include "TString.h"
 
 #include "StTpcDb/StTpcDb.h"
@@ -157,8 +156,8 @@ void StTpcDb::SetTpcRotations()
           assert(tpcGlobalPosition);
           Id = 1;
           phi   = 0.0;                                               // -gamma large uncertainty, so set to 0
-          theta = tpcGlobalPosition->PhiXZ_geom() * TMath::RadToDeg(); // -beta
-          psi   = tpcGlobalPosition->PhiYZ_geom() * TMath::RadToDeg(); // -alpha
+          theta = tpcGlobalPosition->PhiXZ_geom() * 180.0 / M_PI; // -beta
+          psi   = tpcGlobalPosition->PhiYZ_geom() * 180.0 / M_PI; // -alpha
           rotA.RotateX(-psi);
           rotA.RotateY(-theta);
           rotA.RotateZ(-phi);

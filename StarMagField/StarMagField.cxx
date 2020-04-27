@@ -42,7 +42,6 @@ To do:  <br>
 #include <string>
 #include <cassert>
 #include "StarMagField/StarMagField.h"
-#include "TMath.h"
 #include <cmath>
 StarMagField* StarMagField::fgInstance = 0;
 
@@ -400,9 +399,9 @@ void StarMagField::BField( const float x[], float B[] )
   B[0] = B[1] = B[2] = 0;
   z  = x[2] ;
   r  = std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
-  phi = atan2( x[1], x[0] ) ;
+  phi = std::atan2( x[1], x[0] ) ;
 
-  if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
+  if ( phi < 0 ) phi += 2 * M_PI ;           // Table uses phi from 0 to 2*Pi
 
 
 
@@ -416,11 +415,11 @@ void StarMagField::BField( const float x[], float B[] )
 
 
 
-  float za = fabs(z);
+  float za = std::abs(z);
 
   if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {//     beam Dipole
-    B[1] = TMath::Sign(fBDipole, z);
-    B[2] = fabs(B[1] / 1000.);
+    B[1] = std::copysign(fBDipole, z);
+    B[2] = std::abs(B[1] / 1000.);
     return;
   }
 
@@ -446,7 +445,7 @@ void StarMagField::BField( const float x[], float B[] )
 
   if (za <= 342.20  && r >= 303.29 && r <= 364.25) { // within Map
 
-    phi1 = phi * TMath::RadToDeg();
+    phi1 = phi * 180.0 / M_PI;
 
     if (phi1 > 12) phi1 = phi1 - int(phi1 / 12) * 12;
 
@@ -473,9 +472,9 @@ void StarMagField::BField( const float x[], float B[] )
     static const float one = 1;
     float wz = (za - ZList[nZ - 1] ) / (BFLD.zmaxx - ZList[nZ - 1]);
     float wr = (r  - Radius[nR - 1]) / (BFLD.rmaxx - Radius[nR - 1]);
-    float w  = TMath::Min(TMath::Max(zero, TMath::Max(wz, wr)), one);
-    float rm = TMath::Min(r, Radius[nR - 1]);
-    float zm = TMath::Sign(TMath::Min(za, ZList[nZ - 1]), z);
+    float w  = std::min(std::max(zero, std::max(wz, wr)), one);
+    float rm = std::min(r, Radius[nR - 1]);
+    float zm = std::copysign(std::min(za, ZList[nZ - 1]), z);
     float BrI, BzI;
     Interpolate2DBfield( rm, zm, BrI, BzI ) ;
     Br_value = (1 - w) * BrI + w * Br_value;
@@ -504,9 +503,9 @@ void StarMagField::B3DField( const float x[], float B[] )
   r  = sqrt( x[0] * x[0] + x[1] * x[1] ) ;
 
   if ( r != 0.0 ) {
-    phi = TMath::ATan2( x[1], x[0] ) ;
+    phi = std::atan2( x[1], x[0] ) ;
 
-    if ( phi < 0 ) phi += 2 * TMath::Pi() ;           // Table uses phi from 0 to 2*Pi
+    if ( phi < 0 ) phi += 2 * M_PI ;           // Table uses phi from 0 to 2*Pi
 
     Interpolate3DBfield( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
     B[0] = Br_value * (x[0] / r) - Bphi_value * (x[1] / r) ;
@@ -566,7 +565,7 @@ void StarMagField::ReadField( )
   }
 
   if ( fMap == kMapped ) {                  	// Mapped field values
-    if ( fabs(fFactor) > 0.8 ) {    		// Scale from full field data
+    if ( std::abs(fFactor) > 0.8 ) {    		// Scale from full field data
       if ( fFactor > 0 ) {
         filename   = "bfield_full_positive_2D.dat" ;
         filename3D = "bfield_full_positive_3D.dat" ;
@@ -657,7 +656,7 @@ void StarMagField::ReadField( )
           fgets  ( cname, sizeof(cname), b3Dfile ) ;
           sscanf ( cname, " %f %f %f %f %f %f ",
                    &R3D[k], &Z3D[j], &Phi3D[i], &Br3D[i][j][k], &Bz3D[i][j][k], &Bphi3D[i][j][k] ) ;
-          Phi3D[i] *= TMath::Pi() / 180. ;   // Convert to Radians  phi = 0 to 2*Pi
+          Phi3D[i] *= M_PI / 180. ;   // Convert to Radians  phi = 0 to 2*Pi
 
           if (fBzdZCorrection && fBrdZCorrection) {
             Br3D[i][j][k] += fFactor * fBrdZCorrection->Interpolate(Z3D[j], R3D[k]);
@@ -716,9 +715,9 @@ void StarMagField::ReadField( )
                    &R3DSteel[k], &Z3DSteel[j], &Phi3DSteel[i], &Bx3DSteel[i][j][k], &Bz3DSteel[i][j][k], &By3DSteel[i][j][k] ) ;
 
           //added by Lijuan
-          Br3DSteel[i][j][k] = cos(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + sin(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
+          Br3DSteel[i][j][k] = std::cos(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::sin(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
 
-          Bphi3DSteel[i][j][k] = 0 - sin(Phi3DSteel[i] * TMath::DegToRad()) * Bx3DSteel[i][j][k] + cos(Phi3DSteel[i] * TMath::DegToRad()) * By3DSteel[i][j][k];
+          Bphi3DSteel[i][j][k] = 0 - std::sin(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::cos(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
         }
       }
     }
@@ -783,7 +782,7 @@ void StarMagField::Interpolate2ExtDBfield( const float r, const float z, float &
     first = false;
   }
 
-  float za = fabs(z);
+  float za = std::abs(z);
 
   if (za > BFLD.zz2 || r > BFLD.rrm) return;
 
@@ -982,7 +981,7 @@ float StarMagField::Interpolate( const float Xarray[], const float Yarray[],
 void StarMagField::Search( int N, const float Xarray[], float x, int &low )
 
 {
-  assert(! TMath::IsNaN(x));
+  assert(! std::isnan(x));
   long middle, high ;
   int  ascend = 0, increment = 1 ;
 
