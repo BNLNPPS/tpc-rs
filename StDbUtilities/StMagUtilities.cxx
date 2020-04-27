@@ -107,7 +107,6 @@ To do:  <br>
 #include "TGraphErrors.h"
 #include "TF1.h"
 #include "TH2.h"
-#include "TMath.h"
 #include "TRandom.h"
 #include "StTpcDb/StTpcDb.h"
 #include "StDetectorDbMaker/St_tpcHVPlanesC.h"
@@ -127,6 +126,7 @@ To do:  <br>
 //#include "StDetectorDbMaker/StDetectorDbMagnet.h"
 
 #include "tpcrs/logger.h"
+#include "math_funcs.h"
 
 static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
 StMagUtilities* StMagUtilities::fgInstance = 0 ;
@@ -2370,12 +2370,12 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
           double k  = (2 * n - 1) * M_PI / TPC_Z0 ;
           double Cn = -4.0 * IFCShift / ( k * TPC_Z0 ) ;
           double Numerator =
-            TMath::BesselK0( k * OFCRadius ) * TMath::BesselI1( k * r ) +
-            TMath::BesselK1( k * r )         * TMath::BesselI0( k * OFCRadius ) ;
+            tpcrs::BesselK0( k * OFCRadius ) * tpcrs::BesselI1( k * r ) +
+            tpcrs::BesselK1( k * r )         * tpcrs::BesselI0( k * OFCRadius ) ;
 
           if (Denominator[n] == 0) Denominator[n] =
-              TMath::BesselK0( k * OFCRadius ) * TMath::BesselI0( k * IFCRadius ) -
-              TMath::BesselK0( k * IFCRadius ) * TMath::BesselI0( k * OFCRadius ) ;
+              tpcrs::BesselK0( k * OFCRadius ) * tpcrs::BesselI0( k * IFCRadius ) -
+              tpcrs::BesselK0( k * IFCRadius ) * tpcrs::BesselI0( k * OFCRadius ) ;
 
           double zterm = 1 + std::cos( k * z ) ;
           double qwe = Numerator / Denominator[n] ;
@@ -2488,14 +2488,14 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
           //double zterm = 1.0 + std::cos( k *  z ) ;   // Uniform Charge Density
           double Cn = -4.0 / ( k * k * k * TPC_Z0 * StarMagE ) ;
           double Numerator =
-            TMath::BesselI1( k * r )         * TMath::BesselK0( k * OFCRadius ) -
-            TMath::BesselI1( k * r )         * TMath::BesselK0( k * IFCRadius ) +
-            TMath::BesselK1( k * r )         * TMath::BesselI0( k * OFCRadius ) -
-            TMath::BesselK1( k * r )         * TMath::BesselI0( k * IFCRadius ) ;
+            tpcrs::BesselI1( k * r )         * tpcrs::BesselK0( k * OFCRadius ) -
+            tpcrs::BesselI1( k * r )         * tpcrs::BesselK0( k * IFCRadius ) +
+            tpcrs::BesselK1( k * r )         * tpcrs::BesselI0( k * OFCRadius ) -
+            tpcrs::BesselK1( k * r )         * tpcrs::BesselI0( k * IFCRadius ) ;
 
           if (Denominator[n] == 0) Denominator[n] =
-              TMath::BesselK0( k * OFCRadius ) * TMath::BesselI0( k * IFCRadius ) -
-              TMath::BesselK0( k * IFCRadius ) * TMath::BesselI0( k * OFCRadius ) ;
+              tpcrs::BesselK0( k * OFCRadius ) * tpcrs::BesselI0( k * IFCRadius ) -
+              tpcrs::BesselK0( k * IFCRadius ) * tpcrs::BesselI0( k * OFCRadius ) ;
 
           double qwe = Numerator / Denominator[n] ;
           IntegralOverZ += Cn * zterm * qwe ;
@@ -3058,14 +3058,14 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
           //    Eout  =  2 * -1*deltaV / ( k * Rfrac * CathodeV ) ;  // (test) Gating Grid studies (note -1)
           //  }
           //else { Ein = 0.0 ; Eout = 0.0 ; }  // (test) Gating Grid studies
-          double An   =  Ein  * TMath::BesselK0( k * OFCRadius ) - Eout * TMath::BesselK0( k * IFCRadius ) ;
-          double Bn   =  Eout * TMath::BesselI0( k * IFCRadius ) - Ein  * TMath::BesselI0( k * OFCRadius ) ;
+          double An   =  Ein  * tpcrs::BesselK0( k * OFCRadius ) - Eout * tpcrs::BesselK0( k * IFCRadius ) ;
+          double Bn   =  Eout * tpcrs::BesselI0( k * IFCRadius ) - Ein  * tpcrs::BesselI0( k * OFCRadius ) ;
           double Numerator =
-            An * TMath::BesselI1( k * r ) - Bn * TMath::BesselK1( k * r ) ;
+            An * tpcrs::BesselI1( k * r ) - Bn * tpcrs::BesselK1( k * r ) ;
 
           if (Denominator[n] == 0) Denominator[n] =
-              TMath::BesselK0( k * OFCRadius ) * TMath::BesselI0( k * IFCRadius ) -
-              TMath::BesselK0( k * IFCRadius ) * TMath::BesselI0( k * OFCRadius ) ;
+              tpcrs::BesselK0( k * OFCRadius ) * tpcrs::BesselI0( k * IFCRadius ) -
+              tpcrs::BesselK0( k * IFCRadius ) * tpcrs::BesselI0( k * OFCRadius ) ;
 
           double zterm = std::cos( k * (TPC_Z0 - std::abs(z)) ) - 1 ;
           double qwe = Numerator / Denominator[n] ;
@@ -3167,14 +3167,14 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
                            (k * (CathodeV - GGideal));  // Error potential on the IFC
           double Eout =  Ein ;                // Error potential on the OFC
 
-          double An   =  Ein  * TMath::BesselK0( k * OFCRadius ) - Eout * TMath::BesselK0( k * IFCRadius ) ;
-          double Bn   =  Eout * TMath::BesselI0( k * IFCRadius ) - Ein  * TMath::BesselI0( k * OFCRadius ) ;
+          double An   =  Ein  * tpcrs::BesselK0( k * OFCRadius ) - Eout * tpcrs::BesselK0( k * IFCRadius ) ;
+          double Bn   =  Eout * tpcrs::BesselI0( k * IFCRadius ) - Ein  * tpcrs::BesselI0( k * OFCRadius ) ;
           double Numerator =
-            An * TMath::BesselI1( k * r ) - Bn * TMath::BesselK1( k * r ) ;
+            An * tpcrs::BesselI1( k * r ) - Bn * tpcrs::BesselK1( k * r ) ;
 
           if (Denominator[n] == 0) Denominator[n] =
-              TMath::BesselK0( k * OFCRadius ) * TMath::BesselI0( k * IFCRadius ) -
-              TMath::BesselK0( k * IFCRadius ) * TMath::BesselI0( k * OFCRadius ) ;
+              tpcrs::BesselK0( k * OFCRadius ) * tpcrs::BesselI0( k * IFCRadius ) -
+              tpcrs::BesselK0( k * IFCRadius ) * tpcrs::BesselI0( k * OFCRadius ) ;
 
           double zterm = std::cos( k * (TPC_Z0 - std::abs(z)) ) - 1 ;
           double qwe = Numerator / Denominator[n] ;

@@ -21,7 +21,7 @@
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
 #include "StarClassLibrary/StThreeVector.hh"
 #include "tpcrs/logger.h"
-#include "tpcrs/math.h"
+#include "math_funcs.h"
 
 static Int_t _debug = 0;
 
