@@ -1,27 +1,23 @@
-//
-//
 // gamma and related functions from Cephes library
 // see:  http://www.netlib.org/cephes
 //
 // Copyright 1985, 1987, 2000 by Stephen L. Moshier
 //
+// This code is copied from the ROOT project v6.20.04 covered by the LGPL
+// 
+// https://root.cern/
+// https://github.com/root-project/root
 //
+// The original files:
+//
+// root/math/mathcore/src/SpecFuncCephes.cxx
 
-#include "SpecFuncCephes.h"
-#include "Math/Math.h"
-
+#include "math_cephes.h"
 
 #include <cmath>
-
 #include <limits>
 
-
-
-namespace ROOT {
-namespace Math {
-
-namespace Cephes {
-
+namespace tpcrs {
 
 static double kBig = 4.503599627370496e15;
 static double kBiginv =  2.22044604925031308085e-16;
@@ -222,11 +218,11 @@ double lgam( double x )
          p += 1.0;
          z = p - q;
       }
-      z = q * std::sin( ROOT::Math::Pi() * z );
+      z = q * std::sin( M_PI * z );
       if( z == 0 )
          return (std::numeric_limits<double>::infinity());
-/* z = log(ROOT::Math::Pi()) - log( z ) - w;*/
-      z = std::log(ROOT::Math::Pi()) - std::log( z ) - w;
+/* z = log(M_PI) - log( z ) - w;*/
+      z = std::log(M_PI) - std::log( z ) - w;
       return( z );
    }
 
@@ -311,7 +307,7 @@ static double STIR[5] = {
    8.33333333333482257126E-2,
 };
 
-#define SQTPI   std::sqrt(2*ROOT::Math::Pi())        /* sqrt(2*pi) */
+#define SQTPI   std::sqrt(2*M_PI)        /* sqrt(2*pi) */
 /* Stirling formula for the gamma function */
 static double stirf( double x)
 {
@@ -366,13 +362,13 @@ double gamma( double x )
             p += 1.0;
             z = q - p;
          }
-         z = q * std::sin( ROOT::Math::Pi() * z );
+         z = q * std::sin( M_PI * z );
          if( z == 0 )
          {
             return( sgngam * std::numeric_limits<double>::infinity());
          }
          z = std::abs(z);
-         z = ROOT::Math::Pi()/(z * stirf(q) );
+         z = M_PI/(z * stirf(q) );
       }
       else
       {
@@ -427,7 +423,7 @@ small:
 /* implementation based on cephes log gamma */
 double beta(double z, double w)
 {
-   return std::exp(ROOT::Math::Cephes::lgam(z) + ROOT::Math::Cephes::lgam(w)- ROOT::Math::Cephes::lgam(z+w) );
+   return std::exp(lgam(z) + lgam(w)- lgam(z+w) );
 }
 
 
@@ -548,7 +544,7 @@ double incbet( double aa, double bb, double xx )
       t *= pow(x,a);
       t /= a;
       t *= w;
-      t *= ROOT::Math::Cephes::gamma(a+b) / (ROOT::Math::Cephes::gamma(a) * ROOT::Math::Cephes::gamma(b));
+      t *= gamma(a+b) / (gamma(a) * gamma(b));
       goto done;
    }
 /* Resort to logarithms.  */
@@ -882,7 +878,7 @@ double erfc( double a )
       x = a;
 
    if( x < 1.0 )
-      return( 1.0 - ROOT::Math::Cephes::erf(a) );
+      return( 1.0 - erf(a) );
 
    z = -a * a;
 
@@ -928,14 +924,12 @@ double erf( double x)
    double y, z;
 
    if( std::abs(x) > 1.0 )
-      return( 1.0 - ROOT::Math::Cephes::erfc(x) );
+      return( 1.0 - erfc(x) );
    z = x * x;
    y = x * Polynomialeval( z, erfT, 4 ) / Polynomial1eval( z, erfU, 5 );
    return( y );
 
 }
-
-} // end namespace Cephes
 
 
 /*---------------------------------------------------------------------------*/
@@ -976,7 +970,4 @@ double Polynomial1eval(double x, double* a, unsigned int N)
    }
 }
 
-
-} // end namespace Math
-} // end namespace ROOT
-
+}

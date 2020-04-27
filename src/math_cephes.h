@@ -5,18 +5,19 @@
 //
 //  granted permission from the author to be used in MathCore
 //
+// This code is copied from the ROOT project v6.20.04 covered by the LGPL
+// 
+// https://root.cern/
+// https://github.com/root-project/root
+//
+// The original files:
+//
+// root/math/mathcore/src/SpecFuncCephes.h
 
+#ifndef TPCRS_MATH_CEPHES_H_
+#define TPCRS_MATH_CEPHES_H_
 
-
-
-#ifndef ROOT_Math_SpecFunCephes
-#define ROOT_Math_SpecFunCephes
-
-namespace ROOT {
-   namespace Math {
-
-      namespace Cephes {
-
+namespace tpcrs {
 
 //---
 /* the machine roundoff error */
@@ -99,17 +100,10 @@ double igami (double a, double y);
 /* inverse of incomplete beta */
 double incbi (double a, double b, double y);
 
-
-} // end namespace Cephes
-
 /* routines for efficient polynomial evaluation*/
 double Polynomialeval(double x, double* a, unsigned int N);
 double Polynomial1eval(double x, double* a, unsigned int N);
 
+}
 
-} // end namespace Math
-} // end namespace ROOT
-
-
-#endif /* SpecFun */
-
+#endif
