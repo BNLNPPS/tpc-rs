@@ -14,6 +14,7 @@
 // The original files:
 //
 // root/math/mathcore/src/TMath.cxx
+// root/math/mathcore/inc/PdfFuncMathCore.h
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,6 +149,40 @@ Double_t TMath::BesselK1(Double_t x)
       result = (exp(-x)/sqrt(x))*(q1+y*(q2+y*(q3+y*(q4+y*(q5+y*(q6+y*q7))))));
    }
    return result;
+}
+
+
+/**
+
+Probability density function of the gamma distribution.
+
+\f[ p(x) = {1 \over \Gamma(\alpha) \theta^{\alpha}} x^{\alpha-1} e^{-x/\theta} \f]
+
+for x>0. For detailed description see
+<A HREF="http://mathworld.wolfram.com/GammaDistribution.html">
+Mathworld</A>.
+
+@ingroup PdfFunc
+
+*/
+inline double gamma_pdf(double x, double alpha, double theta, double x0 = 0) {
+  // Inlined to enable clad-auto-derivation for this function.
+
+  if ((x-x0) < 0) {
+    return 0.0;
+  } else if ((x-x0) == 0) {
+
+    if (alpha == 1) {
+      return 1.0/theta;
+    } else {
+      return 0.0;
+    }
+
+  } else if (alpha == 1) {
+    return std::exp(-(x-x0)/theta)/theta;
+  } else {
+    return std::exp((alpha - 1) * std::log((x-x0)/theta) - (x-x0)/theta - ROOT::Math::lgamma(alpha))/theta;
+  }
 }
 
 
