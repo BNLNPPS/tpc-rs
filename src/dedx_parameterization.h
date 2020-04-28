@@ -1,5 +1,5 @@
-#ifndef dEdxParameterization_h
-#define dEdxParameterization_h
+#ifndef TPCRS_DEDX_PARAMETERIZATION_H_
+#define TPCRS_DEDX_PARAMETERIZATION_H_
 
 #include "TH1.h"
 #include "TH3.h"

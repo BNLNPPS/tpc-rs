@@ -1,5 +1,5 @@
-#ifndef TPCRS_MATH_H_
-#define TPCRS_MATH_H_
+#ifndef TPCRS_MATH_FUNCS_H_
+#define TPCRS_MATH_FUNCS_H_
 
 namespace tpcrs {
 

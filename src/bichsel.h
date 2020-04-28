@@ -1,5 +1,5 @@
-#ifndef Bichsel_h
-#define Bichsel_h
+#ifndef TPCRS_BICHSEL_H_
+#define TPCRS_BICHSEL_H_
 
 #include "TString.h"
 

@@ -7,8 +7,8 @@
  *              the data, and returns the data to the user via simple
  *              interface classes.
  **************************************************************************/
-#ifndef ClassStTpcDb
-#define ClassStTpcDb
+#ifndef TPCRS_TPC_DB_H_
+#define TPCRS_TPC_DB_H_
 
 #include "TGeoMatrix.h"
 

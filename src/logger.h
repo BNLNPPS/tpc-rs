@@ -1,5 +1,5 @@
-#ifndef tpcrs_logging_h
-#define tpcrs_logging_h
+#ifndef TPCRS_LOGGER_H_
+#define TPCRS_LOGGER_H_
 
 #include <iostream>
 

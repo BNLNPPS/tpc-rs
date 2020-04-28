@@ -4,8 +4,8 @@
  * Description: the STAR Magnetic Field
   ***********************************************************************/
 
-#ifndef StarMagField_H
-#define StarMagField_H
+#ifndef TPCRS_MAG_FIELD_H_
+#define TPCRS_MAG_FIELD_H_
 
 #include <cmath>
 #include "TH2.h"

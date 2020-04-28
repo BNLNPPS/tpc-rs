@@ -1,5 +1,5 @@
-#ifndef STAR_ST_TRS_MAKER_HH
-#define STAR_ST_TRS_MAKER_HH
+#ifndef TPCRS_SIMULATOR_H_
+#define TPCRS_SIMULATOR_H_
 
 #include <vector>
 #include <utility>

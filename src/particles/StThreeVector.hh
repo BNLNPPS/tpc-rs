@@ -8,8 +8,8 @@
  *            platforms. If member templates are not supported the
  *            ST_NO_MEMBER_TEMPLATES flag has to be set. tu.
  **************************************************************************/
-#ifndef ST_THREE_VECTOR_HH
-#define ST_THREE_VECTOR_HH
+#ifndef TPCRS_V_COORDS_H_
+#define TPCRS_V_COORDS_H_
 #include <iostream>
 #include <cmath>
 #include <stdexcept>

@@ -1,5 +1,5 @@
-#ifndef tpcrs_structs_containers_h
-#define tpcrs_structs_containers_h
+#ifndef TPCRS_STRUCT_CONTAINERS_H_
+#define TPCRS_STRUCT_CONTAINERS_H_
 
 #include "TArrayF.h"
 #include "TArrayD.h"
