@@ -17,8 +17,6 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_definitions(-Wfatal-errors)
-
 # This library depends on ROOT
 find_package(ROOT REQUIRED COMPONENTS Cint Table MathMore Geom)
 
