@@ -17,8 +17,8 @@
 	*	\verbinclude Altro/Altro.C.log
 	*/
 
-#include "tpcrs/logger.h"
 #include "altro.h"
+#include "logger.h"
 
 /**	@brief Consturctor of Altro Class
 	*

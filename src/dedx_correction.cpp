@@ -9,7 +9,7 @@
 
 #include "bichsel.h"
 #include "dedx_correction.h"
-#include "tpcrs/logger.h"
+#include "logger.h"
 #include "struct_containers.h"
 #include "tpc_db.h"
 

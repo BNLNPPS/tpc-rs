@@ -15,7 +15,7 @@
 #include <map>
 #include <vector>
 
-#include "tpcrs/logger.h"
+#include "logger.h"
 
 class StParticleDefinition;
 using std::vector;

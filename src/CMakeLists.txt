@@ -2,10 +2,8 @@ configure_file(config.h.in config.h @ONLY)
 
 set(header_files
     ${TPCRS_SOURCE_DIR}/include/tpcrs/configurator.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/config_structs.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/config_yaml.h
     ${TPCRS_SOURCE_DIR}/include/tpcrs/digi_data.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/enums.h
+    ${TPCRS_SOURCE_DIR}/include/tpcrs/structs.h
 )
 
 set(source_files

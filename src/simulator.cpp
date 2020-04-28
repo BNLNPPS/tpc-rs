@@ -33,10 +33,11 @@
 #include "bichsel.h"
 #include "dedx_correction.h"
 #include "tpcrs/configurator.h"
-#include "tpcrs/logger.h"
-#include "struct_containers.h"
+#include "logger.h"
 #include "mag_utilities.h"
 #include "math_funcs.h"
+#include "struct_containers.h"
+
 
 struct HitPoint_t {
   int indx;

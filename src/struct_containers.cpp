@@ -3,8 +3,10 @@
 #include "TF1.h"
 #include "TF2.h"
 #include "TF3.h"
-#include "tpcrs/logger.h"
+
+#include "logger.h"
 #include "struct_containers.h"
+
 
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT ## _st>::name(# PATH);

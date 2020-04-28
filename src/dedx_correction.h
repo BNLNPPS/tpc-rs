@@ -3,8 +3,9 @@
 
 #include "TF1.h"
 
-#include "tpcrs/config_structs.h"
+#include "config_structs.h"
 #include "struct_containers.h"
+
 
 struct dE_t {
   float dE;
