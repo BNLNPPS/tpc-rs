@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
 project(TPCRS LANGUAGES CXX)
 
+include(CTest)
+
 set(TPCRS_VERSION_MAJOR 0 CACHE STRING "major version of tpc-rs" FORCE)
 set(TPCRS_VERSION_MINOR 0 CACHE STRING "minor version of tpc-rs" FORCE)
 set(TPCRS_VERSION_PATCH 7 CACHE STRING "patch version of tpc-rs" FORCE)
@@ -63,7 +65,10 @@ endif()
 include(cmake/ExternalProject_yaml-cpp.cmake)
 
 add_subdirectory(src)
-add_subdirectory(tests)
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 # Install additional files such as README, LICENSE, etc.
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION ${TPCRS_ADDITIONAL_FILES_INSTALL_DIR})
