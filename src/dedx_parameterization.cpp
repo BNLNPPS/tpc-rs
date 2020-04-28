@@ -5,7 +5,7 @@
 #include "TSystem.h"
 
 #include "dedx_parameterization.h"
-#include "tpcrs/logger.h"
+#include "logger.h"
 
 #define  PrP(A)  LOG_INFO << "\t" << (#A) << " = \t" << ( A )
 

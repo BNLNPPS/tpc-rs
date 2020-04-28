@@ -18,7 +18,7 @@
 
 #include <cmath>
 
-#include "tpcrs/logger.h"
+#include "logger.h"
 #include "math_cephes.h"
 
 namespace tpcrs {

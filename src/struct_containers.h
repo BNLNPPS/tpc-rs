@@ -7,9 +7,10 @@
 #include "TMath.h"
 #include "TF1.h"
 
-#include "tpcrs/enums.h"
 #include "tpcrs/structs.h"
-#include "tpcrs/config_structs.h"
+#include "enums.h"
+#include "config_structs.h"
+
 
 struct St_asic_thresholdsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_asic_thresholdsC, asic_thresholds_st>
 {

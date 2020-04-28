@@ -8,20 +8,17 @@
  *              interface classes.
  **************************************************************************/
 
+#include "TEnv.h"
+#include "TGeoManager.h"
+#include "TVector3.h"
 #include "TString.h"
 
-#include "TVector3.h"
-#include "TGeoManager.h"
-#include "TEnv.h"
-
+#include "enums.h"
+#include "logger.h"
 #include "mag_field.h"
-#include "tpcrs/logger.h"
-#include "tpcrs/enums.h"
 #include "tpc_db.h"
 
 bool StTpcDb::mOldScheme = true;
-
-
 
 
 StTpcDb::StTpcDb()
