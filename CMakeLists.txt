@@ -25,6 +25,7 @@ if(${ROOT_CXX_FLAGS} MATCHES "-m32")
     message(STATUS "tpc-rs: Found -m32 option in $ROOT_CXX_FLAGS (root-config). Will proceed with 32 bit build")
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS FALSE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+    set(CMAKE_SIZEOF_VOID_P 4)
 endif()
 
 # Set a debug postfix
