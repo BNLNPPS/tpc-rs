@@ -1,5 +1,5 @@
-#ifndef tpcrs_config_yaml_h
-#define tpcrs_config_yaml_h
+#ifndef TPCRS_CONFIG_YAML_H_
+#define TPCRS_CONFIG_YAML_H_
 
 #include <algorithm>
 #include <array>

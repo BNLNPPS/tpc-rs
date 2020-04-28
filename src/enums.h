@@ -1,5 +1,5 @@
-#ifndef tpcrs_enums_h
-#define tpcrs_enums_h
+#ifndef TPCRS_ENUMS_H_
+#define TPCRS_ENUMS_H_
 
 struct TPC
 {

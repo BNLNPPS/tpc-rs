@@ -1,5 +1,5 @@
-#ifndef STAR_StTpcdEdxCorrection
-#define STAR_StTpcdEdxCorrection
+#ifndef TPCRS_DEDX_CORRECTION_H_
+#define TPCRS_DEDX_CORRECTION_H_
 
 #include "TF1.h"
 

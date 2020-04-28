@@ -1,5 +1,5 @@
-#ifndef tpcrs_config_structs_h
-#define tpcrs_config_structs_h
+#ifndef TPCRS_CONFIG_STRUCTS_H_
+#define TPCRS_CONFIG_STRUCTS_H_
 
 #include <cassert>
 #include <iostream>

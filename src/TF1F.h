@@ -1,5 +1,5 @@
-#ifndef TF1F_h
-#define TF1F_h
+#ifndef TPCRS_TF1F_H_
+#define TPCRS_TF1F_H_
 
 #include "TF1.h"
 #include <string>
