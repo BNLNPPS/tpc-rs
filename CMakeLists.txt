@@ -79,6 +79,7 @@ add_library(yaml-cpp-lib STATIC IMPORTED)
 set_property(TARGET yaml-cpp-lib PROPERTY IMPORTED_LOCATION ${YAML_CPP_INSTALL_PREFIX}/lib/libyaml-cpp.a)
 add_dependencies(yaml-cpp-lib yaml-cpp)
 
+add_subdirectory(src)
 add_subdirectory(tests)
 
 # Install additional files such as README, LICENSE, etc.
