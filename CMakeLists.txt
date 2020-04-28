@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
-project(tpc-rs LANGUAGES CXX)
+project(TPCRS LANGUAGES CXX)
 
 set(TPCRS_VERSION_MAJOR 0 CACHE STRING "major version of tpc-rs" FORCE)
 set(TPCRS_VERSION_MINOR 0 CACHE STRING "minor version of tpc-rs" FORCE)
