@@ -8,7 +8,7 @@
 
 #include "Rtypes.h"
 
-#include "StarClassLibrary/StThreeVector.hh"
+#include "particles/StThreeVector.hh"
 
 class StTpcCoordinate
 {

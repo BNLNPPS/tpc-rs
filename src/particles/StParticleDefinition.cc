@@ -11,9 +11,9 @@
 
 #include <ostream>
 
-#include "StarClassLibrary/StParticleDefinition.hh"
-#include "StarClassLibrary/StParticleTable.hh"
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StParticleDefinition.hh"
+#include "particles/StParticleTable.hh"
+#include "particles/SystemOfUnits.h"
 
 StParticleDefinition::StParticleDefinition(
   const string       &aName,

@@ -14,7 +14,7 @@ root_generate_dictionary(
     INCDIRS ${CMAKE_SOURCE_DIR}
 )
 
-target_include_directories(test_tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/include/ ${YAML_CPP_INSTALL_PREFIX}/include/)
+target_include_directories(test_tpcrs PRIVATE ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/include/ ${YAML_CPP_INSTALL_PREFIX}/include/)
 target_link_libraries(test_tpcrs tpcrs ${ROOT_LIBRARIES} ${YAML_CPP_INSTALL_PREFIX}/lib/libyaml-cpp.a)
 
 

@@ -6,14 +6,14 @@
 #ifndef ST_TPC_COORDINATES_HH
 #define ST_TPC_COORDINATES_HH
 
-#include "StDbUtilities/StTpcPadCoordinate.hh"
-#include "StDbUtilities/StTpcLocalCoordinate.hh"
-#include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
-#include "StDbUtilities/StGlobalCoordinate.hh"
+#include "coords/StTpcPadCoordinate.hh"
+#include "coords/StTpcLocalCoordinate.hh"
+#include "coords/StTpcLocalSectorCoordinate.hh"
+#include "coords/StGlobalCoordinate.hh"
 
-#include "StDbUtilities/StTpcLocalDirection.hh"
-#include "StDbUtilities/StTpcLocalSectorDirection.hh"
-#include "StDbUtilities/StGlobalDirection.hh"
-#include "StDbUtilities/StTpcCoordinateTransform.hh"
+#include "coords/StTpcLocalDirection.hh"
+#include "coords/StTpcLocalSectorDirection.hh"
+#include "coords/StGlobalDirection.hh"
+#include "coords/StTpcCoordinateTransform.hh"
 
 #endif

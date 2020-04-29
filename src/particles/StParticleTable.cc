@@ -7,22 +7,22 @@
  * Although the code is in large parts different (modified or rewritten)
  * and adapted to the STAR framework the basic idea stays the same.
  **************************************************************************/
-#include "StarClassLibrary/StParticleTable.hh"
-#include "StarClassLibrary/StParticleDefinition.hh"
+#include "particles/StParticleTable.hh"
+#include "particles/StParticleDefinition.hh"
 
-#include "StarClassLibrary/StarPDGEncoding.hh"
+#include "particles/StarPDGEncoding.hh"
 #define kUndefined _undefined_particle_id++
 long _undefined_particle_id = 2000000000; /* Unique PDG ID for each undefined particle */
 
 #include <iostream>
 
-#include "StarClassLibrary/StAntiDeuteron.hh"
-#include "StarClassLibrary/StAntiTriton.hh"
-#include "StarClassLibrary/StAntiAlpha.hh"
-#include "StarClassLibrary/StAntiHelium3.hh"
-#include "StarClassLibrary/StAntiHyperTriton.hh"
-#include "StarClassLibrary/StHyperTriton.hh"
-#include "StarClassLibrary/StHDibaryon.hh"
+#include "particles/StAntiDeuteron.hh"
+#include "particles/StAntiTriton.hh"
+#include "particles/StAntiAlpha.hh"
+#include "particles/StAntiHelium3.hh"
+#include "particles/StAntiHyperTriton.hh"
+#include "particles/StHyperTriton.hh"
+#include "particles/StHDibaryon.hh"
 
 
 StParticleTable* StParticleTable::mParticleTable = 0;

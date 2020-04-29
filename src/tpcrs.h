@@ -1,10 +1,10 @@
 #ifndef STAR_ST_TRS_MAKER_HH
 #define STAR_ST_TRS_MAKER_HH
 
-#include "StTpcRSMaker/TF1F.h"
+#include "TF1F.h"
 #include "TH1.h"
-#include "StTpcDb/StTpcDb.h"
 #include "tpcrs/digi_data.h"
+#include "tpc_db.h"
 
 class Altro;
 class StTpcdEdxCorrection;

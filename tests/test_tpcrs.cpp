@@ -6,16 +6,16 @@
 #include "Ttypes.h"
 #include "TBenchmark.h"
 
-#include "StarMagField/StarMagField.h"
-#include "StTpcDb/StTpcDb.h"
-#include "StTpcRSMaker/StTpcRSMaker.h"
 #include "MagFactor.h"
 
 #include "tests/GeantEvent.h"
 
+#include "mag_field.h"
 #include "tpcrs/configurator.h"
 #include "tpcrs/config_yaml.h"
 #include "tpcrs/digi_data.h"
+#include "tpcrs.h"
+#include "tpc_db.h"
 
 
 int main(int argc, char **argv)

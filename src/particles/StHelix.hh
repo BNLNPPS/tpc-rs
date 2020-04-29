@@ -14,7 +14,7 @@
 #include <ostream>
 #include <utility>
 #include <algorithm>
-#include "StarClassLibrary/StThreeVector.hh"
+#include "particles/StThreeVector.hh"
 
 class StHelix
 {

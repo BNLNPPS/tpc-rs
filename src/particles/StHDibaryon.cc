@@ -24,8 +24,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StarClassLibrary/StHDibaryon.hh" 
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StHDibaryon.hh" 
+#include "particles/SystemOfUnits.h"
 
 StHDibaryon::StHDibaryon(const string  &  aName,  
 		   double           mass,     

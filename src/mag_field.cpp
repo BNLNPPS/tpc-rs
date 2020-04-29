@@ -41,8 +41,9 @@ To do:  <br>
 */
 #include <string>
 #include <cassert>
-#include "StarMagField/StarMagField.h"
 #include <cmath>
+#include "mag_field.h"
+
 StarMagField* StarMagField::fgInstance = 0;
 
 

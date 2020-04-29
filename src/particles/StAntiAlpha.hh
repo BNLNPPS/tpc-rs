@@ -29,7 +29,7 @@
 #ifndef StAntiAlpha_hh
 #define StAntiAlpha_hh
 
-#include "StarClassLibrary/StIon.hh"
+#include "particles/StIon.hh"
 
 class StAntiAlpha : public StIon {
 public:

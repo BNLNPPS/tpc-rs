@@ -9,7 +9,7 @@
  *
  * These Routines deal positions ONLY!
  ***********************************************************************/
-#include "StDbUtilities/StTpcCoordinateTransform.hh"
+#include "coords/StTpcCoordinateTransform.hh"
 #include <iostream>
 #include "StDetectorDbMaker/St_tpcPadrowT0C.h"
 #include "StDetectorDbMaker/St_tpcSectorT0offsetC.h"
@@ -19,7 +19,7 @@
 #include "StDetectorDbMaker/St_tpcPadConfigC.h"
 #include "StDetectorDbMaker/St_tpcPadPlanesC.h"
 #include "StDetectorDbMaker/St_iTPCSurveyC.h"
-#include "StarClassLibrary/StThreeVector.hh"
+#include "particles/StThreeVector.hh"
 #include "tpcrs/logger.h"
 #include "math_funcs.h"
 

@@ -1,8 +1,11 @@
 #ifndef Bichsel_h
 #define Bichsel_h
+
 #include "TString.h"
-#include "StBichsel/dEdxParameterization.h"
-class tpcCorrection_st;
+
+#include "dedx_parameterization.h"
+
+
 class Bichsel
 {
  public:

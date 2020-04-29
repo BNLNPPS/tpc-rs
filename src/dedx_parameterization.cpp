@@ -1,12 +1,13 @@
 #include <cassert>
-#include "StBichsel/dEdxParameterization.h"
-#include "TSystem.h"
+
+#include "TFile.h"
 #include "TDirectory.h"
-#include "TF1.h"
-#include "TError.h"
+#include "TSystem.h"
+
+#include "dedx_parameterization.h"
+#include "tpcrs/logger.h"
 
 #define  PrP(A)  LOG_INFO << "\t" << (#A) << " = \t" << ( A )
-
 
 
 dEdxParameterization::dEdxParameterization(const char* Tag, int keep3D,
@@ -37,8 +38,7 @@ dEdxParameterization::dEdxParameterization(const char* Tag, int keep3D,
   static const char* path  = ".:./StarDb/dEdxModel:./StarDb/global/dEdx:./StRoot/StBichsel:$STAR/StarDb/dEdxModel:$STAR/StarDb/global/dEdx:$STAR/StRoot/StBichsel";
   char* file = gSystem->Which(path, rootf, kReadPermission);
 
-  if (! file) Fatal("dEdxParameterization::GetFile", "File %s has not been found in path %s", rootf, path);
-  else        Warning("dEdxParameterization::GetFile", "File %s has been found as %s", rootf, file);
+  assert(file && "File not found");
 
   TFile*       pFile = new TFile(file);
   delete [] file;

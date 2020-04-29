@@ -1,4 +1,4 @@
-#include "StDbUtilities/StGlobalDirection.hh"
+#include "coords/StGlobalDirection.hh"
 std::ostream &operator<<(std::ostream &os, const StGlobalDirection &a)
 {
   return os << "GC direction ( "

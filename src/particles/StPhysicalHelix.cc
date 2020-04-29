@@ -4,9 +4,9 @@
  * Parametrization of a physical helix.
  **************************************************************************/
 #include <cmath>
-#include "StarClassLibrary/StHelix.hh"
-#include "StarClassLibrary/StPhysicalHelix.hh"
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StHelix.hh"
+#include "particles/StPhysicalHelix.hh"
+#include "particles/SystemOfUnits.h"
 
 static const double c_light   = 2.99792458e+8 * meter/second;
 
