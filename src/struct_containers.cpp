@@ -1094,3 +1094,128 @@ void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
   the   *= raddeg;
   psi   *= raddeg;
 }
+
+
+double St_spaceChargeCorC::getSpaceChargeCoulombs(double scaleFactor)
+  {
+    St_trigDetSumsC* scalers = St_trigDetSumsC::instance();
+    if (! scalers ) return 0;
+    double zf = zeroField(0); // potential validity margin for scalers
+    if (zf>0 && zf<1) scalers->setValidityMargin(zf);
+    double coulombs = 0;
+
+    bool use_powers = true;
+
+    for (int row=0;row< (int) GetNRows();row++) {
+      double mult = 0;
+      switch ((int) getSpaceChargeDetector(row)) {
+        case (0) : mult = scalers->getMult(); break; // vpdx as of 2007-12-19
+        case (1) : mult = scalers->getBBCX(); break;
+        case (2) : mult = scalers->getZDCX(); break;
+        case (3) : mult = scalers->getZDCEast()+scalers->getZDCWest(); break;
+        case (4) : mult = scalers->getBBCEast()+scalers->getBBCWest(); break;
+        case (5) : mult = scalers->getZDCEast(); break;
+        case (6) : mult = scalers->getZDCWest(); break;
+        case (7) : mult = scalers->getBBCEast(); break;
+        case (8) : mult = scalers->getBBCWest(); break;
+        case (9) : mult = scalers->getBBCYellowBkg(); break;
+        case (10): mult = scalers->getBBCBlueBkg(); break;
+        case (11): mult = scalers->getPVPDEast(); break;
+        case (12): mult = scalers->getPVPDWest(); break;
+        case (13) : mult = scalers->getCTBOrTOFp(); break; // zdcx-no-killer as of 2011
+        case (14) : mult = scalers->getCTBEast(); break; // zdce-no-killer as of 2011
+        case (15) : mult = scalers->getCTBWest(); break; // zdcw-no-killer as of 2011
+
+        default  : mult = 0.;
+      }
+      if (mult < 0) {
+        Mark();
+        return 0; // Unphysical scaler rates will be uncorrected
+      } else UnMark();
+      double saturation = getSpaceChargeSatRate(row);
+      double correction = getSpaceChargeCorrection(scaleFactor,row);
+      double factor     = getSpaceChargeFactor(row);
+      double offset     = getSpaceChargeOffset(row);
+      double intens = (mult < saturation) ? mult : saturation;
+      if (use_powers) coulombs += ::pow(intens-offset,factor) * correction ;
+      else coulombs += factor * (intens-offset) * correction ;
+    }
+    return coulombs;
+  }
+
+double St_tpcChargeEventC::timeDifference(unsigned long long bunchCrossingNumber, int idx) {
+    // time difference between the event # idx and bunchCrossingNumber
+    return ((double) (bunchCrossingNumber - eventBunchCrossing(idx))) /
+      (St_starClockOnlC::instance()->Frequency());
+  }
+
+int St_tpcChargeEventC::indexBeforeBunchCrossing(unsigned long long bunchCrossingNumber) {
+  // optimized search for typically looking for an index which
+  // is the same or very close to previously found index
+
+  int lastIndex = nChargeEvents() - 1;
+  if (lastIndex < 0) return -999;
+
+  if (localSearchUpperIndex < 0) { // no search yet
+    // start from the middle and move outwards
+    localSearchLowerIndex = nChargeEvents() / 2;
+    localSearchUpperIndex = localSearchLowerIndex;
+  }
+
+  // try the same one as before first
+  int direction = 0;
+  if (bunchCrossingNumber >= eventBunchCrossing(localSearchUpperIndex) &&
+      localSearchLowerIndex != lastIndex) direction = 1;
+  else if (bunchCrossingNumber < eventBunchCrossing(localSearchLowerIndex)) direction = -1;
+  else return localSearchLowerIndex;
+
+  int delta = 1; // look up or down just one first
+
+  while (direction > 0) { // look for higher indices
+    localSearchLowerIndex = localSearchUpperIndex;
+    localSearchUpperIndex = std::min(lastIndex,localSearchUpperIndex + delta);
+    delta = localSearchUpperIndex - localSearchLowerIndex;
+    if (bunchCrossingNumber < eventBunchCrossing(localSearchUpperIndex)) direction = 0;
+    else if (localSearchUpperIndex == lastIndex) {
+      localSearchLowerIndex = lastIndex;
+      return lastIndex; // local indices will be lastIndex,lastIndex
+    } else delta *= 2; // expand range and keep looking for higher indices
+  }
+  while (direction < 0) { // look for lower indices
+    localSearchUpperIndex = localSearchLowerIndex;
+    localSearchLowerIndex = std::max(0,localSearchLowerIndex - delta);
+    delta = localSearchUpperIndex - localSearchLowerIndex;
+    if (bunchCrossingNumber >= eventBunchCrossing(localSearchLowerIndex)) direction = 0;
+    else if (localSearchLowerIndex == 0) {
+      localSearchUpperIndex = 0;
+      return -1; // local indices will be 0,0
+    } else delta *= 2; // expand range and keep looking for lower indices
+  }
+
+  // already know that the result is within range
+  while (delta > 1) {
+    int tempIndex = localSearchLowerIndex + (delta/2);
+    if (bunchCrossingNumber < eventBunchCrossing(tempIndex)) localSearchUpperIndex = tempIndex;
+    else localSearchLowerIndex = tempIndex;
+    delta = localSearchUpperIndex - localSearchLowerIndex;
+  }
+  // found
+  return localSearchLowerIndex;
+}
+
+int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, unsigned long long bunchCrossingWindow) {
+  int idx2 = indexBeforeBunchCrossing(bunchCrossingNumber);
+  int idx1 = indexBeforeBunchCrossing(bunchCrossingNumber-bunchCrossingWindow);
+  int n = idx2-idx1;
+  idx1++; // start from after the bunchCrossingWindow starts
+  localStoreCharges.Set(n,&(eventCharges()[idx1]));
+  localStoreTimesSinceCharges.Set(n);
+  for (int i=0; i<n; i++) // must convert to times
+    localStoreTimesSinceCharges.AddAt(timeDifference(bunchCrossingNumber,idx1+i),i);
+  return n;
+}
+
+int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, double timeWindow) {
+  return findChargeTimes(bunchCrossingNumber,
+    (unsigned long long) (timeWindow*(St_starClockOnlC::instance()->Frequency())));
+}
