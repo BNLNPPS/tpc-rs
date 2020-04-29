@@ -21,7 +21,6 @@
 #include "Math/SpecFuncMathMore.h"
 #include "TRandom.h"
 #include "TFile.h"
-#include "TBenchmark.h"
 #include "TProfile2D.h"
 #include "tcl.h"
 
@@ -579,13 +578,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-#ifdef __DEBUG__
-  if (Debug() % 10) {
-    gBenchmark->Reset();
-    gBenchmark->Start("TpcRS");
-    LOG_INFO << "\n -- Begin TpcRS Processing -- \n";
-  }
-#endif
   double vminI = St_tpcGainCorrectionC::instance()->Struct(1)->min;
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
@@ -1238,8 +1230,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
     }
   } // sector
-
-  if (Debug() % 10) gBenchmark->Show("TpcRS");
 
   if (m_TpcdEdxCorrection) {
     St_tpcGainCorrectionC::instance()->Struct(1)->min = vminI;

@@ -3,8 +3,6 @@
 #include <string>
 
 #include "TChain.h"
-#include "Ttypes.h"
-#include "TBenchmark.h"
 
 #include "tests/GeantEvent.h"
 
@@ -33,8 +31,6 @@ int main(int argc, char **argv)
             << "eCutOff:    " << eCutOff << "\n";
 
   tpcrs::Configurator::Instance().Configure(testName);
-
-  gBenchmark = new TBenchmark();
 
   StTpcRSMaker tpcrs(eCutOff);
 
