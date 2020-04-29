@@ -29,7 +29,7 @@
 #ifndef StAntiTriton_hh
 #define StAntiTriton_hh
 
-#include "StarClassLibrary/StIon.hh"
+#include "particles/StIon.hh"
 
 class StAntiTriton : public StIon {
 public:

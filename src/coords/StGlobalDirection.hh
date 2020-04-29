@@ -3,7 +3,8 @@
 
 #include <ostream>
 
-#include "StDbUtilities/StGlobalCoordinate.hh"
+#include "coords/StGlobalCoordinate.hh"
+
 class StGlobalDirection : public StGlobalCoordinate
 {
  public:

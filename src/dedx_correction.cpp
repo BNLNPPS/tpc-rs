@@ -7,9 +7,6 @@
 
 #include <iostream>
 
-#include "StdEdxY2Maker/StTpcdEdxCorrection.h"
-#include "StTpcDb/StTpcDb.h"
-#include "StBichsel/Bichsel.h"
 #include "StDetectorDbMaker/St_tss_tssparC.h"
 #include "StDetectorDbMaker/St_TpcEdgeC.h"
 #include "StDetectorDbMaker/St_TpcAdcCorrectionBC.h"
@@ -43,7 +40,11 @@
 #include "StDetectorDbMaker/St_TpcAvgPowerSupplyC.h"
 #include "StDetectorDbMaker/St_tpcTimeDependenceC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
+
+#include "bichsel.h"
+#include "dedx_correction.h"
 #include "tpcrs/logger.h"
+#include "tpc_db.h"
 
 
 StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :

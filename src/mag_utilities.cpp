@@ -99,7 +99,6 @@ To do:  <br>
 #include <cassert>
 #include <iomanip>
 #include <iostream>
-#include "StDbUtilities/StMagUtilities.h"
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TCanvas.h"
@@ -108,7 +107,6 @@ To do:  <br>
 #include "TF1.h"
 #include "TH2.h"
 #include "TRandom.h"
-#include "StTpcDb/StTpcDb.h"
 #include "StDetectorDbMaker/St_tpcHVPlanesC.h"
 #include "StDetectorDbMaker/St_tpcAnodeHVavgC.h"
 #include "StDetectorDbMaker/St_tpcHighVoltagesC.h"
@@ -122,11 +120,13 @@ To do:  <br>
 #include "StDetectorDbMaker/St_tpcCalibResolutionsC.h"
 #include "StDetectorDbMaker/St_tpcChargeEventC.h"
 #include "StDetectorDbMaker/St_tpcSCGLC.h"
-#include "StDbUtilities/StTpcCoordinateTransform.hh"
+#include "coords/StTpcCoordinateTransform.hh"
 //#include "StDetectorDbMaker/StDetectorDbMagnet.h"
 
 #include "tpcrs/logger.h"
+#include "mag_utilities.h"
 #include "math_funcs.h"
+#include "tpc_db.h"
 
 static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
 StMagUtilities* StMagUtilities::fgInstance = 0 ;

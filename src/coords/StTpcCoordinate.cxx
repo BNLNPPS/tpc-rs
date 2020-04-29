@@ -1,7 +1,7 @@
-#include "StDbUtilities/StTpcLocalDirection.hh"
-#include "StDbUtilities/StTpcLocalCoordinate.hh"
-#include "StDbUtilities/StTpcLocalSectorDirection.hh"
-#include "StDbUtilities/StTpcLocalSectorCoordinate.hh"
+#include "coords/StTpcLocalDirection.hh"
+#include "coords/StTpcLocalCoordinate.hh"
+#include "coords/StTpcLocalSectorDirection.hh"
+#include "coords/StTpcLocalSectorCoordinate.hh"
 
 
 StTpcLocalCoordinate::StTpcLocalCoordinate(double x, double y, double z) : StTpcCoordinate(x, y, z, 0, 0) {}

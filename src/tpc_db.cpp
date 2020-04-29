@@ -11,15 +11,15 @@
 #include "TDatime.h"
 #include "TString.h"
 
-#include "StTpcDb/StTpcDb.h"
 #include "TVector3.h"
 #include "TGeoManager.h"
 #include "StDetectorDbMaker/StTpcSurveyC.h"
 #include "StDetectorDbMaker/St_tpcDriftVelocityC.h"
-#include "StarMagField/StarMagField.h"
 #include "TEnv.h"
+#include "mag_field.h"
 #include "tpcrs/logger.h"
 #include "tpcrs/enums.h"
+#include "tpc_db.h"
 
 StTpcDb* gStTpcDb = 0;
 bool StTpcDb::mOldScheme = true;

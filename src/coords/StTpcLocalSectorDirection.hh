@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-#include "StDbUtilities/StTpcCoordinate.h"
+#include "coords/StTpcCoordinate.h"
 
 class StTpcLocalSectorDirection : public StTpcCoordinate
 {

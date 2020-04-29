@@ -26,8 +26,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StarClassLibrary/StAntiAlpha.hh" 
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StAntiAlpha.hh" 
+#include "particles/SystemOfUnits.h"
 
 StAntiAlpha::StAntiAlpha(const string  &  aName,  
 		 double           mass,     

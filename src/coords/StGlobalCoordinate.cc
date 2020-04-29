@@ -4,7 +4,7 @@
  * Description:  Raw data information along with access functions
  *************************************************************************/
 
-#include "StDbUtilities/StGlobalCoordinate.hh"
+#include "coords/StGlobalCoordinate.hh"
 
 // Non-member functions
 std::ostream &operator<<(std::ostream &os, const StGlobalCoordinate &a)

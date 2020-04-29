@@ -24,7 +24,7 @@
 #ifndef StHDibaryon_hh
 #define StHDibaryon_hh
 
-#include "StarClassLibrary/StBaryon.hh"
+#include "particles/StBaryon.hh"
 
 class StHDibaryon : public StBaryon {
 public:

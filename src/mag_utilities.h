@@ -11,7 +11,7 @@
 #include "TArrayF.h"
 #include "TArrayD.h"
 #include "TMatrix.h"      // TMatrix keeps changing ... keep it here until proven otherwise.
-#include "StarMagField/StarMagField.h"
+#include "mag_field.h"
 class TFile;
 class TNtuple;
 

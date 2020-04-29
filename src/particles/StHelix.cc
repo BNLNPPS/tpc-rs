@@ -5,8 +5,8 @@
  **************************************************************************/
 #include <limits>
 #include <float.h>
-#include "StarClassLibrary/StHelix.hh"
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StHelix.hh"
+#include "particles/SystemOfUnits.h"
 
 const double StHelix::NoSolution = 3.e+33;
 

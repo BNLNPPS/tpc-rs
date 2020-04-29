@@ -29,8 +29,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StarClassLibrary/StAntiDeuteron.hh" 
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StAntiDeuteron.hh" 
+#include "particles/SystemOfUnits.h"
 
 StAntiDeuteron::StAntiDeuteron(const string  &  aName,  
 		       double           mass,     

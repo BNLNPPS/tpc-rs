@@ -9,7 +9,7 @@
 
 #include <ostream>
 
-#include "StarClassLibrary/StThreeVector.hh"
+#include "particles/StThreeVector.hh"
 
 class StGlobalCoordinate
 {

@@ -14,22 +14,21 @@
 #include <numeric>
 #include <vector>
 
-#include "StTpcRSMaker/StTpcRSMaker.h"
+#include "tpcrs.h"
 // SCL
-#include "StarClassLibrary/StThreeVector.hh"
-#include "StarClassLibrary/StPhysicalHelix.hh"
+#include "particles/StThreeVector.hh"
+#include "particles/StPhysicalHelix.hh"
 // ROOT
 #include "TTableSorter.h"
 #include "TRandom.h"
 #include "TFile.h"
 #include "TBenchmark.h"
 #include "TProfile2D.h"
-#include "StTpcRSMaker/tcl.h"
+#include "tcl.h"
 #include "Math/SpecFuncMathMore.h"
 
-#include "StDbUtilities/StCoordinates.hh"
-#include "StDbUtilities/StTpcCoordinateTransform.hh"
-#include "StDbUtilities/StMagUtilities.h"
+#include "coords/StCoordinates.hh"
+#include "coords/StTpcCoordinateTransform.hh"
 #include "StDetectorDbMaker/St_tpcAltroParamsC.h"
 #include "StDetectorDbMaker/St_asic_thresholdsC.h"
 #include "StDetectorDbMaker/St_tss_tssparC.h"
@@ -42,14 +41,14 @@
 #include "StDetectorDbMaker/St_TpcAvgCurrentC.h"
 #include "StDetectorDbMaker/St_TpcAvgPowerSupplyC.h"
 #include "StDetectorDbMaker/St_trigDetSumsC.h"
-#include "StarClassLibrary/StParticleTable.hh"
-#include "StarClassLibrary/StParticleDefinition.hh"
-#include "StTpcRSMaker/Altro.h"
-#include "StBichsel/Bichsel.h"
-#include "StdEdxY2Maker/StTpcdEdxCorrection.h"
-
+#include "particles/StParticleTable.hh"
+#include "particles/StParticleDefinition.hh"
+#include "altro.h"
+#include "bichsel.h"
+#include "dedx_correction.h"
 #include "tpcrs/configurator.h"
 #include "tpcrs/logger.h"
+#include "mag_utilities.h"
 #include "math_funcs.h"
 
 struct HitPoint_t {

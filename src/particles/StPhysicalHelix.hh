@@ -6,8 +6,8 @@
 #ifndef ST_PHYSICAL_HELIX_HH
 #define ST_PHYSICAL_HELIX_HH
 
-#include "StarClassLibrary/StThreeVector.hh"
-#include "StarClassLibrary/StHelix.hh"
+#include "particles/StThreeVector.hh"
+#include "particles/StHelix.hh"
 
 class StPhysicalHelix : public StHelix
 {

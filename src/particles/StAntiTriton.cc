@@ -26,8 +26,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StarClassLibrary/StAntiTriton.hh" 
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StAntiTriton.hh" 
+#include "particles/SystemOfUnits.h"
 
 StAntiTriton::StAntiTriton(const string  &  aName,  
 		   double           mass,     

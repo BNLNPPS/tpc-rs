@@ -26,8 +26,8 @@
  * Initial Revision
  *
  **************************************************************************/
-#include "StarClassLibrary/StAntiHelium3.hh" 
-#include "StarClassLibrary/SystemOfUnits.h"
+#include "particles/StAntiHelium3.hh" 
+#include "particles/SystemOfUnits.h"
 
 StAntiHelium3::StAntiHelium3(const string  &  aName,  
 		   double           mass,     

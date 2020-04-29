@@ -24,7 +24,7 @@
 #ifndef StBaryon_hh
 #define StBaryon_hh
 
-#include "StarClassLibrary/StParticleDefinition.hh"
+#include "particles/StParticleDefinition.hh"
 
 class StBaryon : public StParticleDefinition {
 public:
