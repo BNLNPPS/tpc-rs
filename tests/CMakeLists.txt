@@ -35,6 +35,7 @@ set(_tests
 set(_disabled_tests
 "starY12_CuAu200"
 "starY12_UU200"
+"starY10_AuAu62"
 )
 
 foreach(_test_args ${_tests})
