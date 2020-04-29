@@ -5,13 +5,14 @@
  ***********************************************************************/
 #ifndef TPCRS_MAG_UTILITIES_H_
 #define TPCRS_MAG_UTILITIES_H_
-#define  __NEW_MagUtilities__
+
 #include <cmath>
 
 #include "TArrayF.h"
 #include "TArrayD.h"
-#include "TMatrix.h"      // TMatrix keeps changing ... keep it here until proven otherwise.
+#include "TMatrix.h"
 #include "mag_field.h"
+
 class TFile;
 class TNtuple;
 
@@ -19,7 +20,6 @@ enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
 enum   Prime    { IsPrimary = 0, IsGlobal = 1 } ;
 
 // Bit counting starts at 1 for the mode switch (...,3,2,1)
-
 enum   DistortSelect {
   kBMap              = 0x08,     // Bit 4
   kPadrow13          = 0x10,     // Bit 5
@@ -41,10 +41,12 @@ enum   DistortSelect {
   kDistoSmearing     = 0x100000, // Bit 21
   kPadrow40          = 0x200000, // Bit 22
   kAbortGap          = 0x400000  // Bit 23
-} ;
+};
+
 enum   CorrectSelect {
   kIterateUndo       = 0x1       // Bit 1
-} ;
+};
+
 enum   EBMapSizes {
   BMap_nZ    =          57,           // Number of Z points in table. Measured STAR B field Maps from Steve T.
   BMap_nR    =          28,           // Number of R points in table.
@@ -52,7 +54,7 @@ enum   EBMapSizes {
   EMap_nZ    =         224,           // Number of Z points in table. Standard STAR distortion tables for interpolating.
   EMap_nR    =          82,           // Number of R points in table
   EMap_nPhi  =          13            // Number of Phi points in table ( add one for 360 == 0 )
-} ;
+};
 
 // DO NOT change the numbering of these constants. StBFChain depends
 // on these values to build an option flag. The option flag used in
@@ -71,7 +73,6 @@ class St_spaceChargeCorC;
 class St_tpcChargeEventC;
 class TRandom;
 
-//class TMatrix ;
 
 class StMagUtilities
 {
@@ -329,19 +330,6 @@ class StMagUtilities
     Xprime[0] = r * std::cos(phi) ;
     Xprime[1] = r * std::sin(phi) ;
   }
-
-
-
-
 };
 
 #endif
-
-
-
-
-
-
-
-
-

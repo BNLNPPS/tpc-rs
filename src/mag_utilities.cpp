@@ -22,8 +22,6 @@ according to a scale factor provided during instantiation.
 All corrections automatically adjust themselves for different
 B field settings and E field settings.  Even reversed fields.
 
-<p>
-
 An enumerated argument provided at the time of instantiation selects
 a constant magnetic field (value=1) or the measured magnetic field (value=2)
 at a field setting that you select manually.  Alternatively, you can use the
@@ -36,23 +34,15 @@ enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
 "kMapped = 2"   means you want to read values from the measured magnet maps.
 The other enumerations are undefined and reserved for future expansion.
 
-<p>
-
 This code works in kGauss, cm - but note that the Bfield maps on disk
 are in gauss, cm.
-
-<p>
 
 A mode switch can be used to select the distortions that will be
 applied to the data.  A choice of mode = 0 will give the default
 set of distortions.  Other modes can be selected by turning on the
 appropriate bit field, shown below.
 
-<br>
-
 Bit counting starts at 1 for the mode switch (...,3,2,1) <br>
-
-<br>
 
 enum   DistortSelect                                                  <br>
 {                                                                     <br>
@@ -83,11 +73,7 @@ than shown here in order to allow the first bit to be used
 as an on/off flag and then it is shifted away before entering
 StMagUtilities.  This can be summarized by saying:
 
-<br>
-
 Bit counting starts at 0 for the chain option flag (...,3,2,1,0) <br>
-
-<p>
 
 To do:  <br>
 - Add a routine to distort the track if we are given a Geant Vector full of points == a track
@@ -153,21 +139,16 @@ double SpaceChargeRadialDependence(double Radius)
   return ( 3191. / (Radius * Radius) + 122.5 / Radius - 0.395 ) / 15823. ;
 }
 
-
-
-
-
 struct Distortion_t {
   float sector, xL, yL, zL, xLC, yLC, zLC;
 };
+
 static Distortion_t D;
 static const char* Dnames = {"sector:xL:yL:zL:xLC:yLC:zLC"};
 
-
 StMagUtilities* StMagUtilities::Instance()  { return fgInstance; }
 
-
-void    StMagUtilities::SetDoDistortionT  (TFile* f)
+void StMagUtilities::SetDoDistortionT  (TFile* f)
 {
   if (! f) return;
 
@@ -175,8 +156,7 @@ void    StMagUtilities::SetDoDistortionT  (TFile* f)
   fgDoDistortion = new TNtuple("DoDist", "Result of DoDistrotion in TPC CS", Dnames);
 }
 
-
-void    StMagUtilities::SetUnDoDistortionT(TFile* f)
+void StMagUtilities::SetUnDoDistortionT(TFile* f)
 {
   if (! f) return;
 
@@ -230,9 +210,6 @@ StMagUtilities::StMagUtilities ( const StarMagField::EBField map, const float fa
 }
 
 
-
-
-
 void StMagUtilities::GetDistoSmearing (int mode)
 {
   fCalibResolutions = ((mode & kDistoSmearing) > 0 ? St_tpcCalibResolutionsC::instance() : 0);
@@ -240,13 +217,11 @@ void StMagUtilities::GetDistoSmearing (int mode)
 }
 
 
-
-
-
 void StMagUtilities::GetMagFactor ()
 {
   gFactor = St_MagFactorC::instance()->ScaleFactor();
 }
+
 void StMagUtilities::GetTPCParams ()
 {
   St_tpcWirePlanesC*    wires = St_tpcWirePlanesC::instance();
@@ -834,22 +809,12 @@ void StMagUtilities::CommonStart ( int mode )
 
   doingDistortion = false;
   DoOnce = true;
-
 }
-
-
-
-
-
-
-
-
 
 
 void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector )
 {
   // Control by flags JCD Oct 4, 2001
-  //
   // NOTE: x[],Xprime[] must be Cartesian for this function!
 
   if (!x) {
@@ -905,19 +870,6 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
     return;
   } // end of iteration
 
-
-  // Set it up
-  /*
-    memcpy(Xprime1,x,threeFloats);
-
-
-    float r2 = x[0]*x[0] + x[1]*x[1] ;   // Point must be inside TPC to be suffer distortions, check this.
-    if ( r2 >= OFCRadius*OFCRadius || r2 <= IFCRadius*IFCRadius || x[2] >= TPC_Z0 || x[2] <= -1*TPC_Z0 )
-      {
-        memcpy(Xprime,x,threeFloats);
-        return ;
-      }
-  */
   if ( std::abs(x[2]) >= TPC_Z0 )
   { memcpy(Xprime, x, threeFloats); return ; }
 
@@ -930,12 +882,12 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
   usingCartesian = false;
 
   if (mDistortionMode & kBMap) {
-    FastUndoBDistortion    ( Xprime1, Xprime2, Sector ) ;
+    FastUndoBDistortion( Xprime1, Xprime2, Sector ) ;
     memcpy(Xprime1, Xprime2, threeFloats);
   }
 
   if (mDistortionMode & kFast2DBMap) {
-    FastUndo2DBDistortion    ( Xprime1, Xprime2, Sector ) ;
+    FastUndo2DBDistortion( Xprime1, Xprime2, Sector ) ;
     memcpy(Xprime1, Xprime2, threeFloats);
   }
 
@@ -1026,7 +978,7 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
 
   DoOnce = false;
 
-  if (! iterateDistortion && fgUnDoDistortion) {
+  if (!iterateDistortion && fgUnDoDistortion) {
     D.sector = Sector;
     D.xL = x[0];
     D.yL = x[1];
@@ -1039,21 +991,16 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
 }
 
 
-
-
-
 /// Main Entry Point for requests to DO the E and B field distortions (for simulations)
 void StMagUtilities::DoDistortion( const float x[], float Xprime[], int Sector )
 {
-
   // NOTE: x[],Xprime[] must be Cartesian for this function!
-
   bool tempIterDist = iterateDistortion;
   bool tempDoingDist = doingDistortion;
   iterateDistortion = false; // Do not iterate for DoDistortion()
   doingDistortion = true;
 
-  UndoDistortion ( x, Xprime, Sector ) ;
+  UndoDistortion(x, Xprime, Sector) ;
 
   Xprime[0] = 2 * x[0] - Xprime[0] ;
   Xprime[1] = 2 * x[1] - Xprime[1] ;
@@ -1074,11 +1021,6 @@ void StMagUtilities::DoDistortion( const float x[], float Xprime[], int Sector )
 
   doingDistortion = tempDoingDist;
 }
-
-
-
-
-
 
 /// B field distortions in 3D ( no Table ) - calculate the distortions due to the shape of the B field
 /*!
@@ -1375,13 +1317,7 @@ void StMagUtilities::UndoTwistDistortion( const float x[], float Xprime[], int S
   }
 
   Xprime[2] = x[2] ;                                   // Subtract to undo the distortion
-
 }
-
-
-
-
-
 
 /// Pad row 13 distortion
 /*!
@@ -1392,7 +1328,6 @@ void StMagUtilities::UndoTwistDistortion( const float x[], float Xprime[], int S
  */
 void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int Sector )
 {
-
   const int   ORDER    =  2           ;         // ORDER = 1 is linear, ORDER = 2 is quadratice interpolation (Leave at 2 for legacy reasons)
   const int   NZDRIFT  =  19          ;         // Dimension of the vector to contain ZDriftArray
   const int   NYARRAY  =  37          ;         // Dimension of the vector to contain the YArray
@@ -1492,13 +1427,7 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
-
-
-
 
 /// PadRow 40 and/or PadRow 13 distortion correction
 /*!
@@ -1693,7 +1622,6 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
 
 void StMagUtilities::GetGLWallData ( const int select, float DataInTheGap[] )
 {
-
   //  The data were calculated on a grid with the following parameters.  The center of the gap is at point 5000.
   //
   //  COLUMNS = 10001     // Radial direction in TPC
@@ -1715,8 +1643,6 @@ void StMagUtilities::GetGLWallData ( const int select, float DataInTheGap[] )
   //  Sum these maps with the following weights:
   //  Total = output_113_113[] - ((Outer_GLW_Voltage+113.0)/100.0)*output_100_diff[] + ((Inner_GLW_Voltage+113.0)/100.0)*output_diff_100[]
   //  Note that only 1001 points (centered around 5000) are saved in the maps.  The remaining 9000 points are zero and so are suppressed.
-
-
 
   float output_nowall_oldTPC[1001] = {
     -0.0399262,  -0.0363446,  -0.0319311,   -0.026963,  -0.0217547,  -0.0166374,  -0.0119395, -0.00796491, -0.00497478, -0.00317029,
@@ -2147,11 +2073,6 @@ void StMagUtilities::GetGLWallData ( const int select, float DataInTheGap[] )
   }
 
 }
-
-
-
-
-
 
 /// Clock distortion
 /*!
@@ -5822,7 +5743,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
     for ( int m = -1; m < 2 ; m += 2 ) { // west (m = -1), then east (m = 1)
       TMatrix** ArrayofEroverEz   = ( m < 0 ? ArrayofEroverEzW   : ArrayofEroverEzE   ) ;
       TMatrix** ArrayofEPhioverEz = ( m < 0 ? ArrayofEPhioverEzW : ArrayofEPhioverEzE ) ;
-      int*    Seclist           = ( m < 0 ? SeclistW           : SeclistE           ) ;
+      int*      Seclist           = ( m < 0 ? SeclistW           : SeclistE           ) ;
 
 
       for ( int k = 0 ; k < PHISLICES ; k++ ) {
