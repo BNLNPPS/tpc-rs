@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 
 #include "tpcrs/configurator.h"
-#include "tpcrs/config.h"
+#include "config.h"
 
 namespace tpcrs {
 
