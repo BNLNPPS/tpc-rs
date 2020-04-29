@@ -89,7 +89,6 @@ class Bichsel
   double IfitTrs (int part, double log10bg) const {return m_dEdxParameterization->Get(IfitTrs (part), log10bg);}  // Estimation for Ifit from TpcRS
   double IfitTrsB(int part, double log10bg) const {return m_dEdxParameterization->Get(IfitTrsB(part), log10bg);}  // Estimation for Ifit - Bichsel from TpcRS
   double IfitTrsS(int part, double log10bg) const {return m_dEdxParameterization->Get(IfitTrsS(part), log10bg);}  // Estimation for relative sigma beta*gamma dependence for Ifit from TpcRS normalized to MIP
-
 };
-#endif
 
+#endif

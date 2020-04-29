@@ -34,9 +34,8 @@ StTpcDb::StTpcDb()
   mFlip = new TGeoHMatrix;
   mzGG = St_tpcDimensionsC::instance()->gatingGridZ(); // zGG
   double Rotation[9] = {0, 1, 0,
-                          1, 0, 0,
-                          0, 0, -1
-                         };
+                        1, 0, 0,
+                        0, 0, -1};
   //  double Translation[3] = {0, 0, mzGG};
   mFlip->SetName("Flip"); mFlip->SetRotation(Rotation);// mFlip->SetTranslation(Translation);
   mSwap[0] = new TGeoTranslation("Signed Drift distance to z for East", 0, 0, -mzGG);
@@ -47,8 +46,6 @@ StTpcDb::StTpcDb()
   SetDriftVelocity();
   SetTpcRotations();
 }
-
-
 
 
 StTpcDb::~StTpcDb()
@@ -126,7 +123,7 @@ void StTpcDb::SetTpcRotations()
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = false;
 
-  if (! mOldScheme) {
+  if (!mOldScheme) {
     LOG_INFO << "StTpcDb::SetTpcRotations use new schema for Rotation matrices\n";
   }
   else {
@@ -141,10 +138,10 @@ void StTpcDb::SetTpcRotations()
     if (sector == 0) {k2 = k1; k1 = kUndefSector;}
 
     for (k = k1; k < k2; k++) {
-      int Id     = 0;
+      int Id = 0;
       TGeoHMatrix rotA; // After alignment
 
-      if (!sector ) { // TPC Reference System
+      if (!sector) { // TPC Reference System
         if (mOldScheme) { // old scheme
           St_tpcGlobalPositionC* tpcGlobalPosition = St_tpcGlobalPositionC::instance();
           assert(tpcGlobalPosition);
@@ -156,14 +153,13 @@ void StTpcDb::SetTpcRotations()
           rotA.RotateY(-theta);
           rotA.RotateZ(-phi);
           double transTpcRefSys[3] = {tpcGlobalPosition->LocalxShift(),
-                                        tpcGlobalPosition->LocalyShift(),
-                                        tpcGlobalPosition->LocalzShift()
-                                       };
+                                      tpcGlobalPosition->LocalyShift(),
+                                      tpcGlobalPosition->LocalzShift() };
           rotA.SetTranslation(transTpcRefSys);
         }
         else {
           rotA = StTpcPosition::instance()->GetMatrix();
-          *mHalf[TPC::Half::first] = StTpcHalfPosition::instance()->GetEastMatrix();
+          *mHalf[TPC::Half::first]  = StTpcHalfPosition::instance()->GetEastMatrix();
           *mHalf[TPC::Half::second] = StTpcHalfPosition::instance()->GetWestMatrix();
         }
       }
@@ -185,7 +181,7 @@ void StTpcDb::SetTpcRotations()
             rotm = (TGeoRotation*) listOfMatrices->FindObject(Rot);
           }
 
-          if (! rotm) {
+          if (!rotm) {
             if (sector <= 12) rotm = new TGeoRotation(Rot);
             else              rotm = new TGeoRotation(Rot,   90.0,    0.0,  90.0,  -90.0,  180.0,    0.00); // Flip (x,y,z) => ( x,-y,-z)
 
@@ -205,14 +201,16 @@ void StTpcDb::SetTpcRotations()
           break;
 
         case kSubSInner2SupS:
-          if (mOldScheme) 	  rotA = Flip();
-          else                    rotA = Flip() * StTpcInnerSectorPosition::instance()->GetMatrix(sector - 1);
+          if (mOldScheme) rotA = Flip();
+          else            rotA = Flip() * StTpcInnerSectorPosition::instance()->GetMatrix(sector - 1);
 
           break;
 
         case kSubSOuter2SupS:
-          if (mOldScheme) rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
-          else           {
+          if (mOldScheme)
+            rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
+          else
+          {
             rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
 
             if (StTpcOuterSectorPosition::instance()->GetNRows() > 24) {

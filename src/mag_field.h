@@ -8,8 +8,10 @@
 #define TPCRS_MAG_FIELD_H_
 
 #include <cmath>
+
 #include "TH2.h"
 #include "TGeoMatrix.h"
+
 
 class StarMagField
 {
@@ -25,21 +27,17 @@ class StarMagField
       float &Br_value, float &Bz_value ) ;
   void    Interpolate3DBfield ( const float r, const float z, const float phi,
                                         float &Br_value, float &Bz_value, float &Bphi_value ) ;
-
  private:
 
   void    ReadField ( ) ;
   TGeoRotation fStarMagFieldRotation;
   TH2F* fBzdZCorrection; // correction due to endcap calomiter
   TH2F* fBrdZCorrection; // correction due to endcap calomiter
+
  public:
-  //added by Lijuan
 
   void    Interpolate3DBSteelfield ( const float r, const float z, const float phi,
       float &Br_value, float &Bz_value, float &Bphi_value );
-  //end added by Lijuan
-
-
 
   EBField  fMap;       // (D) = kMapped; Global flag to indicate static arrays are full
   float  fFactor;    // (D) = 1.0    ; Multiplicative factor (allows scaling and sign reversal)
@@ -59,9 +57,7 @@ class StarMagField
   float  Bx3DSteel[nPhiSteel][nZSteel][nRSteel], By3DSteel[nPhiSteel][nZSteel][nRSteel] ;
   static bool     mConstBz;
 
-  //added by Lijuan
   float  Br3DSteel[nPhiSteel][nZSteel][nRSteel], Bphi3DSteel[nPhiSteel][nZSteel][nRSteel] ;
-  //end added by Lijuan
 
  private:
 
