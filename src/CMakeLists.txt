@@ -9,8 +9,6 @@ set(header_files
 set(source_files
     particles/StParticleTable.cc
     particles/StParticleDefinition.cc
-    particles/StPhysicalHelix.cc
-    particles/StHelix.cc
     particles/StHyperTriton.cc
     particles/StAntiAlpha.cc
     particles/StAntiHyperTriton.cc
@@ -141,6 +139,7 @@ set(source_files
     logger.cpp
     math_cephes.cpp
     math_funcs.cpp
+    track_helix.cpp
 )
 
 add_library(tpcrs ${header_files} ${source_files})

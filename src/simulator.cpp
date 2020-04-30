@@ -15,9 +15,7 @@
 #include <vector>
 
 #include "simulator.h"
-// SCL
-#include "particles/StPhysicalHelix.hh"
-// ROOT
+
 #include "Math/SpecFuncMathMore.h"
 #include "TRandom.h"
 #include "TFile.h"
@@ -28,14 +26,15 @@
 #include "coords/StTpcCoordinateTransform.hh"
 #include "particles/StParticleTable.hh"
 #include "particles/StParticleDefinition.hh"
+#include "tpcrs/configurator.h"
 #include "altro.h"
 #include "bichsel.h"
 #include "dedx_correction.h"
-#include "tpcrs/configurator.h"
 #include "logger.h"
 #include "mag_utilities.h"
 #include "math_funcs.h"
 #include "struct_containers.h"
+#include "track_helix.h"
 
 
 struct HitPoint_t {
@@ -815,7 +814,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                             };
         // Magnetic field BField must be in kilogauss
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-        StPhysicalHelix track(TrackSegmentHits[iSegHits].dirLS.position(),
+        TrackHelix track(TrackSegmentHits[iSegHits].dirLS.position(),
                               TrackSegmentHits[iSegHits].coorLS.position(),
                               BField[2]* 1e-14 * charge, 1);
         StThreeVector<double> unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
