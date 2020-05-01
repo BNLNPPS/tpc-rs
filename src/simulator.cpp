@@ -581,8 +581,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
   g2t_track_st* geant_track = &g2t_track.front();
 
-  const g2t_vertex_st* geant_vertex = &g2t_vertex.front();
-
   g2t_tpc_hit_st* tpc_hit_begin = const_cast<g2t_tpc_hit_st*>(&g2t_tpc_hit.front());
   g2t_tpc_hit_st* tpc_hit = tpc_hit_begin;
 
@@ -720,7 +718,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         // Account hits which can be splitted
         if (tpc_hitC->volume_id < 10000) mNoTpcHitsReal[tpc_hitC->track_p - 1]++;
 
-        TrackSegment2Propagate(tpc_hitC, &geant_vertex[id3 - 1], TrackSegmentHits[nSegHits], smin, smax);
+        TrackSegment2Propagate(tpc_hitC, g2t_vertex[id3 - 1], TrackSegmentHits[nSegHits], smin, smax);
 
         if (TrackSegmentHits[nSegHits].Pad.timeBucket < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket > max_timebins_) continue;
 
@@ -1704,7 +1702,7 @@ double StTpcRSMaker::Ec(double* x, double* p)
 }
 
 
-void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
+void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
 {
   int volId = tpc_hitC->volume_id % 10000;
   int sector = volId / 100;
@@ -1763,7 +1761,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   transform( dirLT, TrackSegmentHits.dirLS);  PrPP(Make, TrackSegmentHits.dirLS);
   transform(   BLT, TrackSegmentHits.BLS);    PrPP(Make, TrackSegmentHits.BLS);
 
-  double tof = geant_vertex->ge_tof;
+  double tof = geant_vertex.ge_tof;
   //	if (! TESTBIT(options_, kNoToflight))
   tof += tpc_hitC->tof;
   double driftLength = TrackSegmentHits.coorLS.position.z + tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
