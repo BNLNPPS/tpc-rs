@@ -30,7 +30,6 @@ class StTpcRSMaker
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   ~StTpcRSMaker();
-  void InitRun(int runnumber = 0);
   void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                   std::vector<g2t_track_st>& g2t_track,
             const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
