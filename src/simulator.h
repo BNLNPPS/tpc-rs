@@ -19,6 +19,16 @@ class SignalSum_t;
 class StTpcRSMaker
 {
  public:
+
+  StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
+  ~StTpcRSMaker();
+
+  void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
+                  std::vector<g2t_track_st>& g2t_track,
+            const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
+
+ private:
+
   enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
               kBICHSEL     = 1,// switch to Bichsel from GEANT
               kHEED        = 6,// switch to HEED
@@ -28,11 +38,6 @@ class StTpcRSMaker
               kNoToflight  = 5 // don't account for particle time of flight
              };
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
-  StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
-  ~StTpcRSMaker();
-  void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
-                  std::vector<g2t_track_st>& g2t_track,
-            const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
   int         Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
@@ -45,7 +50,6 @@ class StTpcRSMaker
   static double fei(double t, double t0, double T);
   static double polya(double* x, double* par);
   static double Ec(double* x, double* p); // minimal energy to create an ion pair
- private:
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
