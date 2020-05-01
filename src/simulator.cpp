@@ -607,8 +607,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
     for (; sortedIndex < n_hits; sortedIndex++) {
       int indx = sorted_index[sortedIndex];
 
-      if (indx < 0) break;
-
       g2t_tpc_hit_st* tpc_hit = const_cast<g2t_tpc_hit_st*>(tpc_hit_begin + indx);
       int volId = tpc_hit->volume_id % 10000;
       int iSector = volId / 100;
