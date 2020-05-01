@@ -736,15 +736,11 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         if (dEdxCor < min_signal_) continue;
 
         // Initialize propagation
-        float BField[3] = {(float ) TrackSegmentHits[iSegHits].BLS.position.x,
-                           (float ) TrackSegmentHits[iSegHits].BLS.position.y,
-                           (float ) TrackSegmentHits[iSegHits].BLS.position.z
-                          };
         // Magnetic field BField must be in kilogauss
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
         TrackHelix track(TrackSegmentHits[iSegHits].dirLS.position,
                          TrackSegmentHits[iSegHits].coorLS.position,
-                         BField[2] * 1e-14 * charge, 1);
+                         TrackSegmentHits[iSegHits].BLS.position.z * 1e-14 * charge, 1);
         Coords unit = TrackSegmentHits[iSegHits].dirLS.position.unit();
         double L2L[9] = {unit.z,                  - unit.x*unit.z, unit.x,
                          unit.x,                  - unit.y*unit.z, unit.y,
