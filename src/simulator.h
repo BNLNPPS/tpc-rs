@@ -53,7 +53,7 @@ class StTpcRSMaker
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
-  void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st* gver, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
+  void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
   void GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
                       double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum,
                       double& total_signal_in_cluster, double gain_local, double gain_gas);
