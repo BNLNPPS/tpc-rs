@@ -105,33 +105,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   SETBIT(options_, kBICHSEL); // Default is Bichsel
   SETBIT(options_, kdEdxCorr);
   SETBIT(options_, kDistortion);
-  InitRun(0);
-}
 
-
-StTpcRSMaker::~StTpcRSMaker()
-{
-  delete mAltro;
-  delete mdNdx;
-  delete mdNdxL10;
-  delete mdNdEL10;
-
-  for (int io = 0; io < 2; io++) {// Inner/Outer
-    for (int sec = 0; sec < max_sectors_; sec++) {
-      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
-
-      delete mChargeFraction[io][sec];
-      delete mPadResponseFunction[io][sec];
-    }
-    delete mPolya[io];
-  }
-
-  delete m_TpcdEdxCorrection;
-}
-
-
-void StTpcRSMaker::InitRun(int runnumber)
-{
   if (TESTBIT(options_, kBICHSEL)) {
     LOG_INFO << "StTpcRSMaker:: use H.Bichsel model for dE/dx simulation\n";
 
@@ -521,6 +495,27 @@ void StTpcRSMaker::InitRun(int runnumber)
 
   delete [] pbins;
   delete [] pbinsL;
+}
+
+
+StTpcRSMaker::~StTpcRSMaker()
+{
+  delete mAltro;
+  delete mdNdx;
+  delete mdNdxL10;
+  delete mdNdEL10;
+
+  for (int io = 0; io < 2; io++) {// Inner/Outer
+    for (int sec = 0; sec < max_sectors_; sec++) {
+      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
+
+      delete mChargeFraction[io][sec];
+      delete mPadResponseFunction[io][sec];
+    }
+    delete mPolya[io];
+  }
+
+  delete m_TpcdEdxCorrection;
 }
 
 
