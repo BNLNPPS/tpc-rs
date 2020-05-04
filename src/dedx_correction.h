@@ -66,6 +66,44 @@ class StTpcdEdxCorrection
     kTpcdEdxCor            = 30,//
     kTpcAllCorrections     = 31 //
   };
+
+  struct Corrections {
+    enum Bits : unsigned {
+      kAll                    = ~(0u),
+      kAdcCorrection          = 1u <<  1,
+      kEdge                   = 1u <<  2,
+      kAdcCorrectionMDF       = 1u <<  3,
+      kTpcdCharge             = 1u <<  4,
+      kTpcrCharge             = 1u <<  5,
+      kTpcCurrentCorrection   = 1u <<  6,
+      kTpcSecRowB             = 1u <<  7,
+      kTpcSecRowC             = 1u <<  8,
+      kTpcRowQ                = 1u <<  9,
+      ktpcPressure            = 1u << 10,
+      ktpcTime                = 1u << 11,
+      kDrift                  = 1u << 12,
+      kMultiplicity           = 1u << 13,
+      kzCorrection            = 1u << 14,
+      ktpcMethaneIn           = 1u << 15,
+      ktpcGasTemperature      = 1u << 16,
+      ktpcWaterOut            = 1u << 17,
+      kSpaceCharge            = 1u << 18,
+      kPhiDirection           = 1u << 19,
+      kTanL                   = 1u << 20,
+      kdXCorrection           = 1u << 21,
+      kTpcEffectivedX         = 1u << 22,
+      kTpcPadTBins            = 1u << 23,
+      kTpcZDC                 = 1u << 24,
+      kTpcPadMDF              = 1u << 25,
+      kTpcLast                = 1u << 26,
+      kTpcNoAnodeVGainC       = 1u << 27,
+      kTpcLengthCorrection    = 1u << 28,
+      kTpcLengthCorrectionMDF = 1u << 29,
+      kTpcdEdxCor             = 1u << 30,
+      kTpcAllCorrections      = 1u << 31
+    };
+  };
+
   StTpcdEdxCorrection(int Option = 0, int debug = 0);
   ~StTpcdEdxCorrection();
   int dEdxCorrection(dEdxY2_t &dEdx, bool doIT = true);

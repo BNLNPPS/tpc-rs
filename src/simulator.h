@@ -10,10 +10,10 @@
 #include "tpcrs/digi_data.h"
 #include "tpcrs/structs.h"
 #include "coords.h"
+#include "dedx_correction.h"
 #include "tpc_db.h"
 
 class Altro;
-class StTpcdEdxCorrection;
 class HitPoint_t;
 class SignalSum_t;
 
@@ -99,7 +99,7 @@ class StTpcRSMaker
   std::array<std::vector<TF1F>, 2>  mPadResponseFunction; //!
   TF1F*  mPolya[2];                   //!
   TF1    mHeed;                       //!
-  StTpcdEdxCorrection* m_TpcdEdxCorrection; // !
+  StTpcdEdxCorrection m_TpcdEdxCorrection; // !
   double InnerAlphaVariation[24];   //!
   double OuterAlphaVariation[24];   //!
   Altro* mAltro;                      //!
