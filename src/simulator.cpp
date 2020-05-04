@@ -88,9 +88,15 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   mdNdxL10(nullptr),
   mdNdEL10(nullptr),
   mShaperResponses{},
-  mChargeFraction{},
-  mPadResponseFunction{},
-  mHeed(nullptr),
+  mChargeFraction{
+    std::vector<TF1F>(24, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6)),
+    std::vector<TF1F>(24, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6))
+  },
+  mPadResponseFunction{
+    std::vector<TF1F>(24, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6)),
+    std::vector<TF1F>(24, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6))
+  },
+  mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * St_TpcResponseSimulatorC::instance()->W(), 1),
   mAltro(nullptr),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
@@ -261,107 +267,69 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
       {"io",    io}
     };
 
-    if (! fgTimeShape3[io]) {// old electronics, intergation + shaper alltogether
-      fgTimeShape3[io] = new TF1F(Form("TimeShape3%s", Names[io]),
-                                  shapeEI3, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 7);
-      for (int i = 0; i != params3.size(); ++i) {
-        fgTimeShape3[io]->SetParName(i, params3[i].first.c_str());
-        fgTimeShape3[io]->SetParameter(i, params3[i].second);
-      }
-      params3[5].second = fgTimeShape3[io]->Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
-      fgTimeShape3[io]->SetTitle(fgTimeShape3[io]->GetName());
-      fgTimeShape3[io]->GetXaxis()->SetTitle("time (secs)");
-      fgTimeShape3[io]->GetYaxis()->SetTitle("signal");
+    // old electronics, intergation + shaper alltogether
+    fgTimeShape3[io] = new TF1F(Form("TimeShape3%s", Names[io]), shapeEI3, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 7);
+    for (int i = 0; i != params3.size(); ++i) {
+      fgTimeShape3[io]->SetParName(i, params3[i].first.c_str());
+      fgTimeShape3[io]->SetParameter(i, params3[i].second);
     }
+    params3[5].second = fgTimeShape3[io]->Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
+    fgTimeShape3[io]->SetTitle(fgTimeShape3[io]->GetName());
+    fgTimeShape3[io]->GetXaxis()->SetTitle("time (secs)");
+    fgTimeShape3[io]->GetYaxis()->SetTitle("signal");
 
-    if (! fgTimeShape0[io]) {// new electronics only integration
-      fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]),
-                                  shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 5);
-      params0[3].second = St_TpcResponseSimulatorC::instance()->tauC()[io];
-      for (int i = 0; i != params0.size(); ++i) {
-        fgTimeShape0[io]->SetParName(i, params0[i].first.c_str());
-        fgTimeShape0[io]->SetParameter(i, params0[i].second);
-      }
-      params0[3].second = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
-      fgTimeShape0[io]->SetTitle(fgTimeShape0[io]->GetName());
-      fgTimeShape0[io]->GetXaxis()->SetTitle("time (secs)");
-      fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
+    // new electronics only integration
+    fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]), shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 5);
+    params0[3].second = St_TpcResponseSimulatorC::instance()->tauC()[io];
+    for (int i = 0; i != params0.size(); ++i) {
+      fgTimeShape0[io]->SetParName(i, params0[i].first.c_str());
+      fgTimeShape0[io]->SetParameter(i, params0[i].second);
     }
+    params0[3].second = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
+    fgTimeShape0[io]->SetTitle(fgTimeShape0[io]->GetName());
+    fgTimeShape0[io]->GetXaxis()->SetTitle("time (secs)");
+    fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
 
     for (int sector = 1; sector <= max_sectors_; sector++) {
       //                             w       h         s      a       l   i
       //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
       //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
-      double xmaxP =  4.5;//4.5*St_tpcPadConfigC::instance()->innerSectorPadWidth(sector);// 4.5
-      double xminP = -xmaxP;
-      double params[6];
+      double params[6]{
+        io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadWidth(sector) :               // w = width of pad
+                       St_tpcPadConfigC::instance()->outerSectorPadWidth(sector),
+        io == kInner ? St_tpcWirePlanesC::instance()->innerSectorAnodeWirePadPlaneSeparation() : // h = Anode-Cathode gap
+                       St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation(),
+        io == kInner ? St_tpcWirePlanesC::instance()->anodeWirePitch() :                         // s = wire spacing
+                       St_tpcWirePlanesC::instance()->anodeWirePitch(),
+        io == kInner ? St_TpcResponseSimulatorC::instance()->K3IP() :
+                       St_TpcResponseSimulatorC::instance()->K3OP(),
+        0,
+        io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadPitch(sector) :
+                       St_tpcPadConfigC::instance()->outerSectorPadPitch(sector)
+      };
 
-      if (! io) {
-        params[0] = St_tpcPadConfigC::instance()->innerSectorPadWidth(sector);               // w = width of pad
-        params[1] = St_tpcWirePlanesC::instance()->innerSectorAnodeWirePadPlaneSeparation(); // h = Anode-Cathode gap
-        params[2] = St_tpcWirePlanesC::instance()->anodeWirePitch();                         // s = wire spacing
-        params[3] = St_TpcResponseSimulatorC::instance()->K3IP();
-        params[4] = 0;
-        params[5] = St_tpcPadConfigC::instance()->innerSectorPadPitch(sector);
-      }
-      else {
-        params[0] = St_tpcPadConfigC::instance()->outerSectorPadWidth(sector);              // w = width of pad
-        params[1] = St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation();// h = Anode-Cathode gap
-        params[2] = St_tpcWirePlanesC::instance()->anodeWirePitch();                        // s = wire spacing
-        params[3] = St_TpcResponseSimulatorC::instance()->K3OP();
-        params[4] = 0;
-        params[5] = St_tpcPadConfigC::instance()->outerSectorPadPitch(sector);
-      }
+      mPadResponseFunction[io][sector - 1].SetParameters(params);
+      mPadResponseFunction[io][sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
+      mPadResponseFunction[io][sector - 1].SetRange(-2.5, 2.5); // Cut tails
+      mPadResponseFunction[io][sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
 
-      if ( !mPadResponseFunction[io][sector - 1] ) {
-        mPadResponseFunction[io][sector - 1] = new TF1F(io == 0 ? "PadResponseFunctionInner" : "PadResponseFunctionOuter", StTpcRSMaker::PadResponseFunc, xminP, xmaxP, 6);
-        mPadResponseFunction[io][sector - 1]->SetParameters(params);
-        mPadResponseFunction[io][sector - 1]->SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
-        mPadResponseFunction[io][sector - 1]->SetTitle(mPadResponseFunction[io][sector - 1]->GetName());
-        mPadResponseFunction[io][sector - 1]->GetXaxis()->SetTitle("pads");
-        mPadResponseFunction[io][sector - 1]->GetYaxis()->SetTitle("Signal");
-        // Cut tails
-        double x = 2.5;//cm   xmaxP;
-        mPadResponseFunction[io][sector - 1]->SetRange(-x, x);
-        mPadResponseFunction[io][sector - 1]->Save(xminP, xmaxP, 0, 0, 0, 0);
+      params[0] = io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadLength(sector) :
+                                 St_tpcPadConfigC::instance()->outerSectorPadLength(sector);
+      params[3] = io == kInner ? St_TpcResponseSimulatorC::instance()->K3IR()               :
+                                 St_TpcResponseSimulatorC::instance()->K3OR();
+      params[5] = 1.;
+
+      // Cut the tails
+      double x_range = 2.5;
+      for (; x_range > 1.5; x_range -= 0.05) {
+        double r = mChargeFraction[io][sector - 1].Eval(x_range) / mChargeFraction[io][sector - 1].Eval(0);
+        if (r > 1e-2) break;
       }
 
-      if ( !mChargeFraction[io][sector - 1] ) {
-        xmaxP = 2.5;//5*St_tpcPadConfigC::instance()->innerSectorPadLength(sector); // 1.42
-        xminP = -xmaxP;
-        mChargeFraction[io][sector - 1] = new TF1F(io == 0 ? "ChargeFractionInner" : "ChargeFractionOuter", StTpcRSMaker::PadResponseFunc, xminP, xmaxP, 6);
-
-        if (!io) {
-          params[0] = St_tpcPadConfigC::instance()->innerSectorPadLength(sector);
-          params[3] = St_TpcResponseSimulatorC::instance()->K3IR();
-          params[4] = 0;
-          params[5] = 1.;
-        }
-        else {
-          params[0] = St_tpcPadConfigC::instance()->outerSectorPadLength(sector);
-          params[3] = St_TpcResponseSimulatorC::instance()->K3OR();
-          params[4] = 0;
-          params[5] = 1.;
-        }
-
-        mChargeFraction[io][sector - 1]->SetParameters(params);
-        mChargeFraction[io][sector - 1]->SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
-        mChargeFraction[io][sector - 1]->SetTitle(mChargeFraction[io][sector - 1]->GetName());
-        mChargeFraction[io][sector - 1]->GetXaxis()->SetTitle("Distance (cm)");
-        mChargeFraction[io][sector - 1]->GetYaxis()->SetTitle("Signal");
-        // Cut tails
-        double x = xmaxP;
-        double ymax = mChargeFraction[io][sector - 1]->Eval(0);
-
-        for (; x > 1.5; x -= 0.05) {
-          double r = mChargeFraction[io][sector - 1]->Eval(x) / ymax;
-
-          if (r > 1e-2) break;
-        }
-
-        mChargeFraction[io][sector - 1]->SetRange(-x, x);
-        mChargeFraction[io][sector - 1]->Save(xminP, xmaxP, 0, 0, 0, 0);
-      }
+      mChargeFraction[io][sector - 1].SetParameters(params);
+      mChargeFraction[io][sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
+      mChargeFraction[io][sector - 1].SetRange(-x_range, x_range);
+      mChargeFraction[io][sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
 
       //  TF1F *func = new TF1F("funcP","x*sqrt(x)/exp(2.5*x)",0,10);
       // see http://www4.rcf.bnl.gov/~lebedev/tec/polya.html
@@ -386,9 +354,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   memset(checkList, 0, sizeof(checkList));
 
   // HEED function to generate Ec, default w = 26.2
-  double w_heed = St_TpcResponseSimulatorC::instance()->W();
-  mHeed = new TF1("Ec", Ec, 0, 3.064 * w_heed, 1);
-  mHeed->SetParameter(0, w_heed);
+  mHeed.SetParameter(0, St_TpcResponseSimulatorC::instance()->W());
 
   int color = 1;
   struct Name_t {
@@ -507,9 +473,6 @@ StTpcRSMaker::~StTpcRSMaker()
   for (int io = 0; io < 2; io++) {// Inner/Outer
     for (int sec = 0; sec < max_sectors_; sec++) {
       if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
-
-      delete mChargeFraction[io][sec];
-      delete mPadResponseFunction[io][sec];
     }
     delete mPolya[io];
   }
@@ -957,7 +920,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
           if (xRange > 0) {Nr = rs.size();}
 
-          while ((EC = mHeed->GetRandom()) < dEr) {
+          while ((EC = mHeed.GetRandom()) < dEr) {
             dEr -= EC;
 
             if (Nr) {
@@ -1058,7 +1021,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, gain_gas);
             }
 
-            double dY    = mChargeFraction[io][sector - 1]->GetXmax();
+            double dY    = mChargeFraction[io][sector - 1].GetXmax();
             double yLmin = yOnWire - dY;
             double yLmax = yOnWire + dY;
             int    rowMin  = transform.rowFromLocalY(yLmin, sector);
@@ -1765,7 +1728,7 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT); // #1
 
     double dely = transform.yFromRow(sector, row) - yOnWire;
-    double localYDirectionCoupling = mChargeFraction[io][sector - 1]->GetSaveL(&dely);
+    double localYDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(&dely);
 
     if (ClusterProfile) {
       checkList[io][10]->Fill(TrackSegmentHits.xyzG.position.z, localYDirectionCoupling);
@@ -1782,14 +1745,14 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 
     if (CentralPad > PadsAtRow) continue;
 
-    int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1]->GetXmax()) + 1;
+    int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1].GetXmax()) + 1;
     int padMin   = std::max(CentralPad - DeltaPad, 1);
     int padMax   = std::min(CentralPad + DeltaPad, PadsAtRow);
     int Npads    = std::min(padMax - padMin + 1, static_cast<int>(kPadMax));
     double xPadMin = padMin - padX;
     static double XDirectionCouplings[kPadMax];
     static double TimeCouplings[kTimeBacketMax];
-    mPadResponseFunction[io][sector - 1]->GetSaveL(Npads, xPadMin, XDirectionCouplings);
+    mPadResponseFunction[io][sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
     //double xPad = padMin - padX;
     for (int pad = padMin; pad <= padMax; pad++) {
@@ -1798,7 +1761,7 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 
       //if (St_tpcPadConfigC::instance()->numberOfRows(sector) ==45 && ! TESTBIT(options_, kGAINOAtALL))
       if (! TESTBIT(options_, kGAINOAtALL)) {
-        gain   *= St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
+        gain *= St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
 
         if (gain <= 0.0) continue;
 
