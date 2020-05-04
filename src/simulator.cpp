@@ -50,7 +50,6 @@ struct HitPoint_t {
 
 struct SignalSum_t {
   float      Sum;
-  short      Adc;
   short  TrackId;
 };
 
@@ -1195,7 +1194,6 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         if (adc > 1023) adc = 1023;
         if (adc < 1) continue;
 
-        binned_charge[index].Adc = adc;
         NoTB++;
         ADCs[bin] = adc;
         IDTs[bin] = binned_charge[index].TrackId;
@@ -1203,8 +1201,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         if (adc > 3 * pedRMS) AdcSumBeforeAltro += adc;
         if (Debug() > 11 && binned_charge[index].Sum > 0) {
           LOG_INFO << "digi R/P/T/I = " << row << " /\t" << pad << " /\t" << bin << " /\t" << index
-                   << "\tSum/Adc/TrackId = " << binned_charge[index].Sum << " /\t"
-                   << binned_charge[index].Adc << " /\t" << binned_charge[index].TrackId << '\n';
+                   << "\tSum/TrackId = " << binned_charge[index].Sum << " /\t" << binned_charge[index].TrackId << '\n';
         }
 #endif
       }
@@ -1804,8 +1801,7 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 #ifdef __DEBUG__
         if (Debug() > 13 && (binned_charge[index].Sum > 0 || ! std::isfinite(binned_charge[index].Sum)) ) {
           LOG_INFO << "simu row = " << TrackSegmentHits.tpc_hitC->volume_id % 100 << "\tR/P/T/I = " << row << " /\t" << pad << " /\t" << itbin << " /\t" << index
-                   << "\tSum/Adc/TrackId = " << binned_charge[index].Sum << " /\t"
-                   << binned_charge[index].Adc << " /\t" << binned_charge[index].TrackId
+                   << "\tSum/TrackId = " << binned_charge[index].Sum << " /\t" << binned_charge[index].TrackId
                    << "\tsignal = " << signal
                    << "\trow Min/Max = " << rowMin << "/" << rowMax
                    << '\n';
