@@ -46,6 +46,7 @@ class StTpcRSMaker
     return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
   };
 
+  enum InOut {kInner, kOuter};
   enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
               kBICHSEL     = 1,// switch to Bichsel from GEANT
               kHEED        = 6,// switch to HEED
@@ -85,10 +86,10 @@ class StTpcRSMaker
   TH1D*    mdNdxL10;                  //!
   TH1D*    mdNdEL10;                  //!
   std::array<std::array<TF1F*, 24>, 2>  mShaperResponses;     //!
-  std::array<std::array<TF1F*, 24>, 2>  mChargeFraction;      //!
-  std::array<std::array<TF1F*, 24>, 2>  mPadResponseFunction; //!
+  std::array<std::vector<TF1F>, 2>  mChargeFraction;      //!
+  std::array<std::vector<TF1F>, 2>  mPadResponseFunction; //!
   TF1F*  mPolya[2];                   //!
-  TF1*   mHeed;                       //!
+  TF1    mHeed;                       //!
   StTpcdEdxCorrection* m_TpcdEdxCorrection; // !
   double InnerAlphaVariation[24];   //!
   double OuterAlphaVariation[24];   //!
