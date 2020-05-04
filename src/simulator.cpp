@@ -81,6 +81,7 @@ static TH1*  checkList[2][21] = {0};
 TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
 TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
 
+using dEdxCorr = StTpcdEdxCorrection::Corrections;
 
 StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   options_(0),
@@ -97,6 +98,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     std::vector<TF1F>(24, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6))
   },
   mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * St_TpcResponseSimulatorC::instance()->W(), 1),
+  m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug()),
   mAltro(nullptr),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
@@ -135,18 +137,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     mdNdxL10->SetDirectory(0);
   }
   else {LOG_INFO << "StTpcRSMaker:: use GEANT321 model for dE/dx simulation\n";}
-
-  // Distortions
-  if (TESTBIT(options_, kdEdxCorr)) {
-    LOG_INFO << "StTpcRSMaker:: use Tpc dE/dx correction from calibaration\n";
-    int Mask = -1; // 22 bits
-    CLRBIT(Mask, StTpcdEdxCorrection::kAdcCorrection);
-    CLRBIT(Mask, StTpcdEdxCorrection::kAdcCorrectionMDF);
-    CLRBIT(Mask, StTpcdEdxCorrection::kdXCorrection);
-    //    CLRBIT(Mask,StTpcdEdxCorrection::kEdge);
-    //    CLRBIT(Mask,StTpcdEdxCorrection::kTanL);
-    m_TpcdEdxCorrection = new StTpcdEdxCorrection(Mask, Debug());
-  }
 
   if (TESTBIT(options_, kDistortion)) {
     LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
@@ -476,8 +466,6 @@ StTpcRSMaker::~StTpcRSMaker()
     }
     delete mPolya[io];
   }
-
-  delete m_TpcdEdxCorrection;
 }
 
 
@@ -539,17 +527,15 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   // TODO: Confirm proper handling of empty input containers
   const g2t_tpc_hit_st* tpc_hit_begin = &g2t_tpc_hit.front();
 
-  if (m_TpcdEdxCorrection) {
-    St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
-    St_tpcGainCorrectionC::instance()->Struct(1)->min = -500;
+  St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
+  St_tpcGainCorrectionC::instance()->Struct(1)->min = -500;
 
-    if (Debug()) {
-      LOG_INFO << "Reset min for gain Correction to I/O\t"
-               << St_tpcGainCorrectionC::instance()->Struct(1)->min
-               << "\t"
-               << St_tpcGainCorrectionC::instance()->Struct(0)->min
-               << " (V)\n";
-    }
+  if (Debug()) {
+    LOG_INFO << "Reset min for gain Correction to I/O\t"
+             << St_tpcGainCorrectionC::instance()->Struct(1)->min
+             << "\t"
+             << St_tpcGainCorrectionC::instance()->Struct(0)->min
+             << " (V)\n";
   }
 
   // sort
@@ -983,17 +969,15 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
     }
   } // sector
 
-  if (m_TpcdEdxCorrection) {
-    St_tpcGainCorrectionC::instance()->Struct(1)->min = vminI;
-    St_tpcGainCorrectionC::instance()->Struct(0)->min = vminO;
+  St_tpcGainCorrectionC::instance()->Struct(1)->min = vminI;
+  St_tpcGainCorrectionC::instance()->Struct(0)->min = vminO;
 
-    if (Debug()) {
-      LOG_INFO << "Reset min for gain Correction to I/O\t"
-               << St_tpcGainCorrectionC::instance()->Struct(1)->min
-               << "\t"
-               << St_tpcGainCorrectionC::instance()->Struct(0)->min
-               << " (V)\n";
-    }
+  if (Debug()) {
+    LOG_INFO << "Reset min for gain Correction to I/O\t"
+             << St_tpcGainCorrectionC::instance()->Struct(1)->min
+             << "\t"
+             << St_tpcGainCorrectionC::instance()->Struct(0)->min
+             << " (V)\n";
   }
 }
 
@@ -1870,51 +1854,49 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
 {
   double dEdxCor = 1;
 
-  if (m_TpcdEdxCorrection) {
-    //    dEdxCor = -1;
-    double dStep =  std::abs(TrackSegmentHits.tpc_hitC->ds);
-    dEdxY2_t CdEdx;
-    memset (&CdEdx, 0, sizeof(dEdxY2_t));
-    CdEdx.DeltaZ = 5.2;
-    CdEdx.QRatio = -2;
-    CdEdx.QRatioA = -2.;
-    CdEdx.QSumA = 0;
-    CdEdx.sector = TrackSegmentHits.Pad.sector;
-    CdEdx.row    = TrackSegmentHits.Pad.row;
-    CdEdx.pad    = tpcrs::irint(TrackSegmentHits.Pad.pad);
-    CdEdx.edge   = CdEdx.pad;
+  //    dEdxCor = -1;
+  double dStep =  std::abs(TrackSegmentHits.tpc_hitC->ds);
+  dEdxY2_t CdEdx;
+  memset (&CdEdx, 0, sizeof(dEdxY2_t));
+  CdEdx.DeltaZ = 5.2;
+  CdEdx.QRatio = -2;
+  CdEdx.QRatioA = -2.;
+  CdEdx.QSumA = 0;
+  CdEdx.sector = TrackSegmentHits.Pad.sector;
+  CdEdx.row    = TrackSegmentHits.Pad.row;
+  CdEdx.pad    = tpcrs::irint(TrackSegmentHits.Pad.pad);
+  CdEdx.edge   = CdEdx.pad;
 
-    if (CdEdx.edge > 0.5 * St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
-      CdEdx.edge += 1 - St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
+  if (CdEdx.edge > 0.5 * St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
+    CdEdx.edge += 1 - St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
 
-    CdEdx.F.dE     = 1;
-    CdEdx.F.dx     = dStep;
-    CdEdx.xyz[0] = TrackSegmentHits.coorLS.position.x;
-    CdEdx.xyz[1] = TrackSegmentHits.coorLS.position.y;
-    CdEdx.xyz[2] = TrackSegmentHits.coorLS.position.z;
-    double probablePad = St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
-    double pitch = (CdEdx.row <= St_tpcPadConfigC::instance()->numberOfInnerRows(CdEdx.sector)) ?
-                     St_tpcPadConfigC::instance()->innerSectorPadPitch(CdEdx.sector) :
-                     St_tpcPadConfigC::instance()->outerSectorPadPitch(CdEdx.sector);
-    double PhiMax = std::atan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
-    CdEdx.PhiR   = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
-    CdEdx.xyzD[0] = TrackSegmentHits.dirLS.position.x;
-    CdEdx.xyzD[1] = TrackSegmentHits.dirLS.position.y;
-    CdEdx.xyzD[2] = TrackSegmentHits.dirLS.position.z;
-    CdEdx.ZdriftDistance = CdEdx.xyzD[2];
-    CdEdx.zG      = CdEdx.xyz[2];
+  CdEdx.F.dE     = 1;
+  CdEdx.F.dx     = dStep;
+  CdEdx.xyz[0] = TrackSegmentHits.coorLS.position.x;
+  CdEdx.xyz[1] = TrackSegmentHits.coorLS.position.y;
+  CdEdx.xyz[2] = TrackSegmentHits.coorLS.position.z;
+  double probablePad = St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
+  double pitch = (CdEdx.row <= St_tpcPadConfigC::instance()->numberOfInnerRows(CdEdx.sector)) ?
+                   St_tpcPadConfigC::instance()->innerSectorPadPitch(CdEdx.sector) :
+                   St_tpcPadConfigC::instance()->outerSectorPadPitch(CdEdx.sector);
+  double PhiMax = std::atan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
+  CdEdx.PhiR   = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
+  CdEdx.xyzD[0] = TrackSegmentHits.dirLS.position.x;
+  CdEdx.xyzD[1] = TrackSegmentHits.dirLS.position.y;
+  CdEdx.xyzD[2] = TrackSegmentHits.dirLS.position.z;
+  CdEdx.ZdriftDistance = CdEdx.xyzD[2];
+  CdEdx.zG      = CdEdx.xyz[2];
 
-    if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
+  if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
 
-    CdEdx.ZdriftDistance = TrackSegmentHits.coorLS.position.z; // drift length
-    St_tpcGasC* tpcGas = m_TpcdEdxCorrection->tpcGas();
+  CdEdx.ZdriftDistance = TrackSegmentHits.coorLS.position.z; // drift length
+  St_tpcGasC* tpcGas = m_TpcdEdxCorrection.tpcGas();
 
-    if (tpcGas)
-      CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * tpcGas->Struct()->ppmOxygenIn;
+  if (tpcGas)
+    CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * tpcGas->Struct()->ppmOxygenIn;
 
-    if (! m_TpcdEdxCorrection->dEdxCorrection(CdEdx)) {
-      dEdxCor = CdEdx.F.dE;
-    }
+  if (! m_TpcdEdxCorrection.dEdxCorrection(CdEdx)) {
+    dEdxCor = CdEdx.F.dE;
   }
 
   return dEdxCor;
