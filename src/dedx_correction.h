@@ -71,14 +71,10 @@ class StTpcdEdxCorrection
   int dEdxCorrection(dEdxY2_t &dEdx, bool doIT = true);
   void SettpcGas               (St_tpcGasC*          m = 0) {m_tpcGas = m;}
 
-  void SetDebug(int m = 0) {m_Debug = m;}
-  void SetMask (int m = 0) {m_Mask = m;}
   void ReSetCorrections();
   St_tpcGasC*         tpcGas()              {return m_tpcGas;}
   //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
 
-  int Debug()                            {return m_Debug;}
-  int Mask()                             {return m_Mask;}
   float           Adc2GeV()              {return mAdc2GeV;}
   void Print(Option_t* opt = "") const;
  private:
