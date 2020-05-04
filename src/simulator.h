@@ -13,7 +13,6 @@
 #include "dedx_correction.h"
 #include "tpc_db.h"
 
-class Altro;
 class HitPoint_t;
 class SignalSum_t;
 
@@ -102,7 +101,6 @@ class StTpcRSMaker
   StTpcdEdxCorrection m_TpcdEdxCorrection; // !
   double InnerAlphaVariation[24];   //!
   double OuterAlphaVariation[24];   //!
-  Altro* mAltro;                      //!
   int    numberOfInnerSectorAnodeWires; //!
   double firstInnerSectorAnodeWire; //!
   double lastInnerSectorAnodeWire;  //!

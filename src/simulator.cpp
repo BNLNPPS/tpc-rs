@@ -99,7 +99,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   },
   mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * St_TpcResponseSimulatorC::instance()->W(), 1),
   m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug()),
-  mAltro(nullptr),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
@@ -455,7 +454,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
 StTpcRSMaker::~StTpcRSMaker()
 {
-  delete mAltro;
   delete mdNdx;
   delete mdNdxL10;
   delete mdNdEL10;
@@ -1213,42 +1211,34 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
 
       if (!NoTB) continue;
 
-      if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0 && ! mAltro) {
-        mAltro = new Altro(max_timebins_, ADCs.data());
+      if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) {
+        Altro mAltro(max_timebins_, ADCs.data());
 
-        if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) { // Tonko 06/25/08
+        if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) {
           //      ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
-          mAltro->ConfigAltro(                    0,                  1,                     0,          1,                 1);
-          //       ConfigBaselineCorrection_1(int mode, int ValuePeDestal, int *PedestalMem, int polarity)
-          //altro->ConfigBaselineCorrection_1(4, 0, PedestalMem, 0);  // Tonko 06/25/08
-          mAltro->ConfigTailCancellationFilter(St_tpcAltroParamsC::instance()->K1(),
-                                               St_tpcAltroParamsC::instance()->K2(),
-                                               St_tpcAltroParamsC::instance()->K3(), // K1-3
-                                               St_tpcAltroParamsC::instance()->L1(),
-                                               St_tpcAltroParamsC::instance()->L2(),
-                                               St_tpcAltroParamsC::instance()->L3());// L1-3
+          mAltro.ConfigAltro(                    0,                  1,                     0,          1,                 1);
+          mAltro.ConfigTailCancellationFilter(St_tpcAltroParamsC::instance()->K1(),
+                                              St_tpcAltroParamsC::instance()->K2(),
+                                              St_tpcAltroParamsC::instance()->K3(), // K1-3
+                                              St_tpcAltroParamsC::instance()->L1(),
+                                              St_tpcAltroParamsC::instance()->L2(),
+                                              St_tpcAltroParamsC::instance()->L3());// L1-3
         }
         else {
-          mAltro->ConfigAltro(0, 0, 0, 1, 1);
+          mAltro.ConfigAltro(0, 0, 0, 1, 1);
         }
 
-        mAltro->ConfigZerosuppression(St_tpcAltroParamsC::instance()->Threshold(),
-                                      St_tpcAltroParamsC::instance()->MinSamplesaboveThreshold(),
-                                      0, 0);
-        mAltro->PrintParameters();
-      }
-
-      if (mAltro) {
-        mAltro->RunEmulation();
+        mAltro.ConfigZerosuppression(St_tpcAltroParamsC::instance()->Threshold(),
+                                     St_tpcAltroParamsC::instance()->MinSamplesaboveThreshold(),
+                                     0, 0);
+        mAltro.RunEmulation();
         NoTB = 0;
-        int ADCsum = 0;
 
         for (int i = 0; i < max_timebins_; i++) {
-          if (ADCs[i] && ! mAltro->ADCkeep[i]) {ADCs[i] = 0;}
+          if (ADCs[i] && !mAltro.ADCkeep[i]) {ADCs[i] = 0;}
 
           if (ADCs[i]) {
             NoTB++;
-            ADCsum += ADCs[i];
 #ifdef __DEBUG__
             if (ADCs[i] > 3 * pedRMS) AdcSumAfterAltro += ADCs[i];
             if (Debug() > 12) {
