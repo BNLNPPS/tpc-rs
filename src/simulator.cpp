@@ -1163,15 +1163,7 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 
 void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& binned_charge)
 {
-  static int AdcCut = 500;
-
-  double ped  = 0;
-  int adc     = 0;
-  int index   = 0;
-  double gain = 1;
-  int row, pad, bin;
-
-  for (row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
+  for (int row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
     int nPadsPerRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
     double pedRMS = St_TpcResponseSimulatorC::instance()->AveragePedestalRMS();
 
@@ -1185,31 +1177,22 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
     float AdcSumBeforeAltro = 0, AdcSumAfterAltro = 0;
 #endif
 
-    for (pad = 1; pad <= nPadsPerRow; pad++) {
-      gain = St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
+    for (int pad = 1; pad <= nPadsPerRow; pad++) {
+      double gain = St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
 
       if (gain <= 0.0) continue;
 
-      ped    = St_TpcResponseSimulatorC::instance()->AveragePedestal();
+      double ped = St_TpcResponseSimulatorC::instance()->AveragePedestal();
       static std::vector<short> ADCs(max_timebins_, 0);
       static std::vector<short> IDTs(max_timebins_, 0);
       std::fill(ADCs.begin(), ADCs.end(), 0);
       std::fill(IDTs.begin(), IDTs.end(), 0);
       int NoTB = 0;
-      index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
+      int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
 
-      for (bin = 0; bin < max_timebins_; bin++, index++) {
-        //	int index= max_timebins_*((row-1)*max_pads_+pad-1)+bin;
-        // Digits : gain + ped
-        //  GG TF1F *ff = new TF1F("ff","TMath::Sqrt(4.76658e+01*TMath::Exp(-2.87987e-01*(x-1.46222e+01)))",21,56)
-        double pRMS = pedRMS;
-
-        if (pRMS > 0) {
-          adc = (int) (binned_charge[index].Sum / gain + gRandom->Gaus(ped, pRMS));
-          adc = adc - (int) ped;
-        }
-        else
-          adc = (int) (binned_charge[index].Sum / gain);
+      for (int bin = 0; bin < max_timebins_; bin++, index++) {
+        int adc = pedRMS > 0 ? int(binned_charge[index].Sum / gain + gRandom->Gaus(ped, pedRMS)) - int(ped) :
+                               int(binned_charge[index].Sum / gain);
 
         if (adc > 1023) adc = 1023;
         if (adc < 1) continue;
@@ -1220,7 +1203,6 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         IDTs[bin] = binned_charge[index].TrackId;
 #ifdef __DEBUG__
         if (adc > 3 * pedRMS) AdcSumBeforeAltro += adc;
-
         if (Debug() > 11 && binned_charge[index].Sum > 0) {
           LOG_INFO << "digi R/P/T/I = " << row << " /\t" << pad << " /\t" << bin << " /\t" << index
                    << "\tSum/Adc/TrackId = " << binned_charge[index].Sum << " /\t"
@@ -1269,7 +1251,6 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
             ADCsum += ADCs[i];
 #ifdef __DEBUG__
             if (ADCs[i] > 3 * pedRMS) AdcSumAfterAltro += ADCs[i];
-
             if (Debug() > 12) {
               LOG_INFO << "Altro R/P/T/I = " << row << " /\t" << pad << " /\t" << i
                        << "\tAdc/TrackId = " << ADCs[i] << " /\t" << IDTs[i] << '\n';
