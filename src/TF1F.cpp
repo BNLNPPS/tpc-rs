@@ -9,12 +9,12 @@ void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin,
 }
 
 
-double TF1F::GetSaveL(double* xx)
+double TF1F::GetSaveL(double* x)
 {
   // Get value corresponding to X in array of fSave values
-  if (xx[0] < fXmin || xx[0]  > fXmax || fdX <= 0) return 0.;
+  if (x[0] < fXmin || x[0]  > fXmax || fdX <= 0) return 0.;
 
-  int bin     = tpcrs::irint((xx[0] - fXmin) / fdX);
+  int bin     = tpcrs::irint((x[0] - fXmin) / fdX);
   return fSave[bin];
 }
 
@@ -36,23 +36,6 @@ double TF1F::GetSaveL(int N, double x, double* y)
 }
 
 
-double TF1F::GetSaveL(int N, double* x, double* y)
-{
-  // Get values y[N] corresponding to x[N] in array of fSave values
-  memset(y, 0, N * sizeof(double));
-
-  if (GetNpx() <= 0) return 0.;
-
-  for (int i = 0; i < N; i++) {
-    if (x[i] > fXmin) {
-      int bin     = int((x[i] - fXmin) / fdX);
-
-      if (bin < GetNpx() - 3) y[i] = fSave[bin];
-    }
-  }
-
-  return y[0];
-}
 #if ROOT_VERSION_CODE >= 393216 /* = ROOT_VERSION(6,0,0) */
 TF1F::TF1F(): TF1() {fNpx = 200;}
 TF1F::TF1F(const char* name, const char* formula, double xmin, double xmax)

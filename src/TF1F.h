@@ -48,7 +48,6 @@ class TF1F : public TF1
   virtual void Save(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax);
   double GetSaveL(double* xx);
   double GetSaveL(int N, double x, double* y);
-  double GetSaveL(int N, double* x, double* y);
  protected:
   double fXmin;
   double fXmax;
