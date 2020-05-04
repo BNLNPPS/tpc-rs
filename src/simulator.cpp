@@ -849,7 +849,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         memset(padsdE, 0, sizeof(padsdE));
         memset(tbksdE, 0, sizeof(tbksdE));
         float dEr = 0;
-        std::vector<float> rs(10);
 
         do {// Clusters
           float dS = 0;
@@ -912,30 +911,13 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           if (dE > electron_range_energy_)
             xRange = electron_range_ * std::pow((dE + dEr) / electron_range_energy_, electron_range_power_);
 
-          int Nt = 0; // HeedCsize(dE, dEr,rs);
-          float dET = dE + dEr;
-          dEr = dET;
-          float EC;
-          int   Nr = 0;
+          std::vector<float> rs = NumberOfElectronsInCluster(mHeed, dE, dEr);
 
-          if (xRange > 0) {Nr = rs.size();}
-
-          while ((EC = mHeed.GetRandom()) < dEr) {
-            dEr -= EC;
-
-            if (Nr) {
-              if (Nr <= Nt) { Nr = 2 * Nt + 1; rs.resize(Nr); }
-              rs[Nt] = 1 - dEr / dET;
-            }
-
-            Nt++;
-          }
-
-          if (!Nt) continue;
+          if (!rs.size()) continue;
 
           if (ClusterProfile) {
-            checkList[io][8]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Nt);
-            checkList[io][11]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Nt);
+            checkList[io][8]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, rs.size());
+            checkList[io][11]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, rs.size());
           }
 
           Coords xyzC = track.at(newPosition);
@@ -945,8 +927,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           double total_signal_in_cluster = 0;
           int WireIndex = 0;
 
-          for (int ie = 0; ie < Nt; ie++) {
-            nTotal++;
+          for (int ie = 0; ie < rs.size(); ie++) {
             double gain_gas = mPolya[io]->GetRandom();
             // transport to wire
             gRandom->Rannor(rX, rY);
@@ -1042,6 +1023,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
               checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster));
             }
           }
+          nTotal = rs.size();
 
           total_signal += total_signal_in_cluster;
         }
@@ -1697,6 +1679,23 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   TrackSegmentHits.coorLS.position.z = driftLength; PrPP(Make, TrackSegmentHits.coorLS);
   transform(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, TrackSegmentHits.Pad);
+}
+
+
+std::vector<float> StTpcRSMaker::NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr)
+{
+  std::vector<float> rs;
+
+  float dET = dE + dEr;
+  dEr = dET;
+  float EC;
+
+  while ((EC = mHeed.GetRandom()) < dEr) {
+    dEr -= EC;
+    rs.push_back(1 - dEr / dET);
+  }
+
+  return rs;
 }
 
 
