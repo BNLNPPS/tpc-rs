@@ -96,7 +96,7 @@ class StTpcRSMaker
   std::array<std::array<TF1F*, 24>, 2>  mShaperResponses;     //!
   std::array<std::vector<TF1F>, 2>  mChargeFraction;      //!
   std::array<std::vector<TF1F>, 2>  mPadResponseFunction; //!
-  TF1F*  mPolya[2];                   //!
+  TF1F   mPolya[2];                   //!
   TF1    mHeed;                       //!
   StTpcdEdxCorrection m_TpcdEdxCorrection; // !
   double InnerAlphaVariation[24];   //!

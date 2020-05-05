@@ -95,6 +95,10 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     std::vector<TF1F>(24, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6)),
     std::vector<TF1F>(24, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6))
   },
+  mPolya{
+    TF1F("PolyaInner;x = G/G_0;signal", polya, 0, 10, 3),
+    TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
+  },
   mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * St_TpcResponseSimulatorC::instance()->W(), 1),
   m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug()),
   min_signal_(1e-4),
@@ -223,19 +227,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   }
 
   for (int io = 0; io < 2; io++) {// In/Out
-    //  mPolya = new TF1F("Polya;x = G/G_0;signal","sqrt(x)/exp(1.5*x)",0,10); // original Polya
-    //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
-    //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
-    double gamma;
-
-    if (!io ) gamma = St_TpcResponseSimulatorC::instance()->PolyaInner();
-    else      gamma = St_TpcResponseSimulatorC::instance()->PolyaOuter();
-
-    if (gamma <= 0) gamma = 1.38;
-
-    mPolya[io] = new TF1F(io == 0 ? "PolyaInner;x = G/G_0;signal" : "PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3);
-    mPolya[io]->SetParameters(gamma, 0., 1. / gamma);
-
     FuncParams_t params3{
       {"t0",    t0IO[io]},
       {"tauF",  St_TpcResponseSimulatorC::instance()->tauF()},
@@ -339,6 +330,15 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
   memset(hist, 0, sizeof(hist));
   memset(checkList, 0, sizeof(checkList));
+
+  //  mPolya = new TF1F("Polya;x = G/G_0;signal","sqrt(x)/exp(1.5*x)",0,10); // original Polya
+  //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
+  //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
+  //if (gamma <= 0) gamma = 1.38;
+  double gamma_inn = St_TpcResponseSimulatorC::instance()->PolyaInner();
+  double gamma_out = St_TpcResponseSimulatorC::instance()->PolyaOuter();
+  mPolya[kInner].SetParameters(gamma_inn, 0., 1. / gamma_inn);
+  mPolya[kOuter].SetParameters(gamma_out, 0., 1. / gamma_out);
 
   // HEED function to generate Ec, default w = 26.2
   mHeed.SetParameter(0, St_TpcResponseSimulatorC::instance()->W());
@@ -460,7 +460,6 @@ StTpcRSMaker::~StTpcRSMaker()
     for (int sec = 0; sec < max_sectors_; sec++) {
       if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
     }
-    delete mPolya[io];
   }
 }
 
@@ -1571,7 +1570,7 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
                    0.0,       unit.x*unit.x + unit.y*unit.y, unit.z};
 
   for (int ie = 0; ie < rs.size(); ie++) {
-    double gain_gas = mPolya[io]->GetRandom();
+    double gain_gas = mPolya[io].GetRandom();
     // transport to wire
     gRandom->Rannor(rX, rY);
     StTpcLocalSectorCoordinate xyzE{xyzC.x + rX * SigmaT,
