@@ -704,10 +704,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         TrackHelix track(TrackSegmentHits[iSegHits].dirLS.position,
                          TrackSegmentHits[iSegHits].coorLS.position,
                          TrackSegmentHits[iSegHits].BLS.position.z * 1e-14 * charge, 1);
-        Coords unit = TrackSegmentHits[iSegHits].dirLS.position.unit();
-        double L2L[9] = {unit.z,                  - unit.x*unit.z, unit.x,
-                         unit.x,                  - unit.y*unit.z, unit.y,
-                         0.0,       unit.x*unit.x + unit.y*unit.y, unit.z};
 #ifdef __DEBUG__
         if (Debug() > 11) PrPP(Make, track);
 #endif
@@ -921,108 +917,9 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           }
 
           Coords xyzC = track.at(newPosition);
-          double phiXY = 2 * M_PI * gRandom->Rndm();
-          double rX = std::cos(phiXY);
-          double rY = std::sin(phiXY);
-          double total_signal_in_cluster = 0;
-          int WireIndex = 0;
 
-          for (int ie = 0; ie < rs.size(); ie++) {
-            double gain_gas = mPolya[io]->GetRandom();
-            // transport to wire
-            gRandom->Rannor(rX, rY);
-            StTpcLocalSectorCoordinate xyzE{xyzC.x + rX * SigmaT,
-                                            xyzC.y + rY * SigmaT,
-                                            xyzC.z + gRandom->Gaus(0, SigmaL), sector, row};
-
-            if (xRange > 0) {
-              double xyzRangeL[3] = {rs[ie] * xRange * rX, rs[ie] * xRange * rY, 0.};
-              double xyzR[3] = {0};
-              TCL::mxmpy(L2L, xyzRangeL, xyzR, 3, 3, 1);
-#ifdef __DEBUG__
-              if (Debug() > 13) {
-                LOG_INFO << "xyzRangeL: " << xyzRangeL[0] << " " << xyzRangeL[1] << " " << xyzRangeL[2] << '\n';
-                LOG_INFO << "L2L: " << L2L[0] << " " << L2L[1] << " " << L2L[2]
-                                    << L2L[3] << " " << L2L[4] << " " << L2L[3]
-                                    << L2L[6] << " " << L2L[7] << " " << L2L[8] << '\n';
-                LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << '\n';
-              }
-#endif
-              for (int i=0; i<3; i++) xyzE.position[i] += xyzR[i];
-            }
-
-            double y = xyzE.position.y;
-            double alphaVariation = InnerAlphaVariation[sector - 1];
-
-            // Transport to wire
-            if (y <= lastInnerSectorAnodeWire) {
-              WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
-#ifndef __NO_1STROWCORRECTION__
-              if (St_tpcPadConfigC::instance()->iTPC(sector)) {// two first and two last wires are removed, and 3rd wire is fat wiere
-                if (WireIndex <= 3 || WireIndex >= numberOfInnerSectorAnodeWires - 3) continue;
-              }
-              else {   // old TPC the first and last wires are fat ones
-                if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue;
-              }
-#else
-              if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue; // to check the 1-st pad row effect
-#endif
-              yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
-            }
-            else { // the first and last wires are fat ones
-              WireIndex = tpcrs::irint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
-
-              if (WireIndex <= 1 || WireIndex >= numberOfOuterSectorAnodeWires) continue;
-
-              yOnWire = firstOuterSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
-              alphaVariation = OuterAlphaVariation[sector - 1];
-            }
-
-            double distanceToWire = y - yOnWire; // Calculated effective distance to wire affected by Lorentz shift
-            xOnWire = xyzE.position.x;
-            zOnWire = xyzE.position.z;
-            // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
-            int iGridWire = int(std::abs(10.*distanceToWire));
-            double dist2Grid = std::copysign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
-            // Ground plane (1 mm spacing) focusing effect
-            int iGroundWire = int(std::abs(10.*dist2Grid));
-            double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
-            // OmegaTau near wires taken from comparison with data
-            double tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleO();
-
-            if (y < firstOuterSectorAnodeWire) tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleI();
-
-            xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
-            zOnWire += std::abs(distFocused);
-
-            if (! iGroundWire ) gain_gas *= std::exp( alphaVariation);
-            else                gain_gas *= std::exp(-alphaVariation);
-
-            if (ClusterProfile) {
-              checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, gain_gas);
-            }
-
-            double dY    = mChargeFraction[io][sector - 1].GetXmax();
-            double yLmin = yOnWire - dY;
-            double yLmax = yOnWire + dY;
-            int    rowMin  = transform.rowFromLocalY(yLmin, sector);
-            int    rowMax  = transform.rowFromLocalY(yLmax, sector);
-            double yRmin = transform.yFromRow(sector, rowMin) - St_tpcPadConfigC::instance()->PadLengthAtRow(sector, rowMin) / 2;
-            double yRmax = transform.yFromRow(sector, rowMax) + St_tpcPadConfigC::instance()->PadLengthAtRow(sector, rowMax) / 2;
-
-            if (yRmin > yLmax || yRmax < yLmin) {
-              continue;
-            }
-
-            GenerateSignal(TrackSegmentHits[iSegHits], sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX,
-                           mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
-          }  // electrons in Cluster
-
-          if (ClusterProfile) {
-            if (total_signal_in_cluster > 0 && checkList[io][19]) {
-              checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster));
-            }
-          }
+          double total_signal_in_cluster =
+            LoopOverElectronsInCluster(rs, TrackSegmentHits[iSegHits], binned_charge, sector, row, xRange, xyzC, gain_local, SigmaT, SigmaL, OmegaTau);
           nTotal = rs.size();
 
           total_signal += total_signal_in_cluster;
@@ -1696,6 +1593,132 @@ std::vector<float> StTpcRSMaker::NumberOfElectronsInCluster(const TF1& heed, flo
   }
 
   return rs;
+}
+
+
+double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+  int sector, int row,
+  double xRange, Coords xyzC, double gain_local,
+  double SigmaT, double SigmaL, double OmegaTau)
+{
+  double phiXY = 2 * M_PI * gRandom->Rndm();
+  double rX = std::cos(phiXY);
+  double rY = std::sin(phiXY);
+  double total_signal_in_cluster = 0;
+  int WireIndex = 0;
+
+  int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
+  double sigmaJitterT = St_TpcResponseSimulatorC::instance()->SigmaJitterTI();
+  double sigmaJitterX = St_TpcResponseSimulatorC::instance()->SigmaJitterXI();
+  if (io) { // Outer
+    sigmaJitterT = St_TpcResponseSimulatorC::instance()->SigmaJitterTO();
+    sigmaJitterX = St_TpcResponseSimulatorC::instance()->SigmaJitterXO();
+  }
+
+  Coords unit = TrackSegmentHits.dirLS.position.unit();
+  double L2L[9] = {unit.z,                  - unit.x*unit.z, unit.x,
+                   unit.x,                  - unit.y*unit.z, unit.y,
+                   0.0,       unit.x*unit.x + unit.y*unit.y, unit.z};
+
+  for (int ie = 0; ie < rs.size(); ie++) {
+    double gain_gas = mPolya[io]->GetRandom();
+    // transport to wire
+    gRandom->Rannor(rX, rY);
+    StTpcLocalSectorCoordinate xyzE{xyzC.x + rX * SigmaT,
+                                    xyzC.y + rY * SigmaT,
+                                    xyzC.z + gRandom->Gaus(0, SigmaL), sector, row};
+    if (xRange > 0) {
+      double xyzRangeL[3] = {rs[ie] * xRange * rX, rs[ie] * xRange * rY, 0.};
+      double xyzR[3] = {0};
+      TCL::mxmpy(L2L, xyzRangeL, xyzR, 3, 3, 1);
+#ifdef __DEBUG__
+      if (Debug() > 13) {
+        LOG_INFO << "xyzRangeL: " << xyzRangeL[0] << " " << xyzRangeL[1] << " " << xyzRangeL[2] << '\n';
+        LOG_INFO << "L2L: " << L2L[0] << " " << L2L[1] << " " << L2L[2]
+                            << L2L[3] << " " << L2L[4] << " " << L2L[3]
+                            << L2L[6] << " " << L2L[7] << " " << L2L[8] << '\n';
+        LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << '\n';
+      }
+#endif
+      for (int i=0; i<3; i++) xyzE.position[i] += xyzR[i];
+    }
+
+    double y = xyzE.position.y;
+    double alphaVariation = InnerAlphaVariation[sector - 1];
+
+    // Transport to wire
+    if (y <= lastInnerSectorAnodeWire) {
+      WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
+#ifndef __NO_1STROWCORRECTION__
+      if (St_tpcPadConfigC::instance()->iTPC(sector)) {// two first and two last wires are removed, and 3rd wire is fat wiere
+        if (WireIndex <= 3 || WireIndex >= numberOfInnerSectorAnodeWires - 3) continue;
+      }
+      else {   // old TPC the first and last wires are fat ones
+        if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue;
+      }
+#else
+      if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue; // to check the 1-st pad row effect
+#endif
+      yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
+    }
+    else { // the first and last wires are fat ones
+      WireIndex = tpcrs::irint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
+
+      if (WireIndex <= 1 || WireIndex >= numberOfOuterSectorAnodeWires) continue;
+
+      yOnWire = firstOuterSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
+      alphaVariation = OuterAlphaVariation[sector - 1];
+    }
+
+    double distanceToWire = y - yOnWire; // Calculated effective distance to wire affected by Lorentz shift
+    xOnWire = xyzE.position.x;
+    zOnWire = xyzE.position.z;
+    // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
+    int iGridWire = int(std::abs(10.*distanceToWire));
+    double dist2Grid = std::copysign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
+    // Ground plane (1 mm spacing) focusing effect
+    int iGroundWire = int(std::abs(10.*dist2Grid));
+    double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
+    // OmegaTau near wires taken from comparison with data
+    double tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleO();
+
+    if (y < firstOuterSectorAnodeWire) tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleI();
+
+    xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
+    zOnWire += std::abs(distFocused);
+
+    if (! iGroundWire ) gain_gas *= std::exp( alphaVariation);
+    else                gain_gas *= std::exp(-alphaVariation);
+
+    if (ClusterProfile) {
+      checkList[io][9]->Fill(TrackSegmentHits.xyzG.position.z, gain_gas);
+    }
+
+    double dY     = mChargeFraction[io][sector - 1].GetXmax();
+    double yLmin  = yOnWire - dY;
+    double yLmax  = yOnWire + dY;
+
+    static CoordTransform transform;
+    int    rowMin = transform.rowFromLocalY(yLmin, sector);
+    int    rowMax = transform.rowFromLocalY(yLmax, sector);
+    double yRmin  = transform.yFromRow(sector, rowMin) - St_tpcPadConfigC::instance()->PadLengthAtRow(sector, rowMin) / 2;
+    double yRmax  = transform.yFromRow(sector, rowMax) + St_tpcPadConfigC::instance()->PadLengthAtRow(sector, rowMax) / 2;
+
+    if (yRmin > yLmax || yRmax < yLmin) {
+      continue;
+    }
+
+    GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX,
+                   mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
+  }  // electrons in Cluster
+
+  if (ClusterProfile) {
+    if (total_signal_in_cluster > 0 && checkList[io][19]) {
+      checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster));
+    }
+  }
+
+  return total_signal_in_cluster;
 }
 
 
