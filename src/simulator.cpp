@@ -1645,7 +1645,7 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
       continue;
     }
 
-    GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, sigmaJitterT, sigmaJitterX,
+    GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, sigmaJitterT,
                    mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
   }  // electrons in Cluster
 
@@ -1660,7 +1660,7 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
 
 
 void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
-  double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double& total_signal_in_cluster, double gain_local, double gain_gas)
+  TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double& total_signal_in_cluster, double gain_local, double gain_gas)
 {
   static CoordTransform transform;
 
@@ -1679,7 +1679,7 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 
     if (binT < 0 || binT >= max_timebins_) continue;
 
-    double dT = bin -  binT + St_TpcResponseSimulatorC::instance()->T0offset();
+    double dT = bin - binT + St_TpcResponseSimulatorC::instance()->T0offset();
     dT += (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ?
           St_TpcResponseSimulatorC::instance()->T0offsetI() :
           St_TpcResponseSimulatorC::instance()->T0offsetO();
@@ -1710,12 +1710,10 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
     static double TimeCouplings[kTimeBacketMax];
     mPadResponseFunction[io][sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
-    //double xPad = padMin - padX;
     for (int pad = padMin; pad <= padMax; pad++) {
       double gain = gain_gas * gain_local;
       double dt = dT;
 
-      //if (St_tpcPadConfigC::instance()->numberOfRows(sector) ==45 && ! TESTBIT(options_, kGAINOAtALL))
       if (! TESTBIT(options_, kGAINOAtALL)) {
         gain *= St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
 
