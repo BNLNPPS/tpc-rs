@@ -9,6 +9,7 @@
 
 #include "tpcrs/digi_data.h"
 #include "tpcrs/structs.h"
+#include "coords.h"
 #include "tpc_db.h"
 
 class Altro;
@@ -67,6 +68,12 @@ class StTpcRSMaker
     HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex);
 
   void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
+
+  double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+    int sector, int row,
+    double xRange, Coords xyzC, double gain_local,
+    double SigmaT, double SigmaL, double OmegaTau);
+
   void GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
                       double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& binned_charge,
                       double& total_signal_in_cluster, double gain_local, double gain_gas);
