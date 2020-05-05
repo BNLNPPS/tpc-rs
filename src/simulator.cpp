@@ -1831,21 +1831,19 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 }
 
 
-double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
+double StTpcRSMaker::dEdxCorrection(const HitPoint_t &path_segment)
 {
   double dEdxCor = 1;
-
-  //    dEdxCor = -1;
-  double dStep =  std::abs(TrackSegmentHits.tpc_hitC->ds);
+  double dStep =  std::abs(path_segment.tpc_hitC->ds);
   dEdxY2_t CdEdx;
   memset (&CdEdx, 0, sizeof(dEdxY2_t));
   CdEdx.DeltaZ = 5.2;
   CdEdx.QRatio = -2;
   CdEdx.QRatioA = -2.;
   CdEdx.QSumA = 0;
-  CdEdx.sector = TrackSegmentHits.Pad.sector;
-  CdEdx.row    = TrackSegmentHits.Pad.row;
-  CdEdx.pad    = tpcrs::irint(TrackSegmentHits.Pad.pad);
+  CdEdx.sector = path_segment.Pad.sector;
+  CdEdx.row    = path_segment.Pad.row;
+  CdEdx.pad    = tpcrs::irint(path_segment.Pad.pad);
   CdEdx.edge   = CdEdx.pad;
 
   if (CdEdx.edge > 0.5 * St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
@@ -1853,24 +1851,24 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
 
   CdEdx.F.dE     = 1;
   CdEdx.F.dx     = dStep;
-  CdEdx.xyz[0] = TrackSegmentHits.coorLS.position.x;
-  CdEdx.xyz[1] = TrackSegmentHits.coorLS.position.y;
-  CdEdx.xyz[2] = TrackSegmentHits.coorLS.position.z;
+  CdEdx.xyz[0] = path_segment.coorLS.position.x;
+  CdEdx.xyz[1] = path_segment.coorLS.position.y;
+  CdEdx.xyz[2] = path_segment.coorLS.position.z;
   double probablePad = St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
   double pitch = (CdEdx.row <= St_tpcPadConfigC::instance()->numberOfInnerRows(CdEdx.sector)) ?
                    St_tpcPadConfigC::instance()->innerSectorPadPitch(CdEdx.sector) :
                    St_tpcPadConfigC::instance()->outerSectorPadPitch(CdEdx.sector);
   double PhiMax = std::atan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
   CdEdx.PhiR   = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
-  CdEdx.xyzD[0] = TrackSegmentHits.dirLS.position.x;
-  CdEdx.xyzD[1] = TrackSegmentHits.dirLS.position.y;
-  CdEdx.xyzD[2] = TrackSegmentHits.dirLS.position.z;
+  CdEdx.xyzD[0] = path_segment.dirLS.position.x;
+  CdEdx.xyzD[1] = path_segment.dirLS.position.y;
+  CdEdx.xyzD[2] = path_segment.dirLS.position.z;
   CdEdx.ZdriftDistance = CdEdx.xyzD[2];
   CdEdx.zG      = CdEdx.xyz[2];
 
   if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
 
-  CdEdx.ZdriftDistance = TrackSegmentHits.coorLS.position.z; // drift length
+  CdEdx.ZdriftDistance = path_segment.coorLS.position.z; // drift length
   St_tpcGasC* tpcGas = m_TpcdEdxCorrection.tpcGas();
 
   if (tpcGas)
