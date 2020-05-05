@@ -80,7 +80,7 @@ class StTpcRSMaker
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
 
-  double dEdxCorrection(HitPoint_t &TrackSegmentHits);
+  double dEdxCorrection(const HitPoint_t &path_segment);
 
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
