@@ -37,7 +37,6 @@
 
 
 struct HitPoint_t {
-  int indx;
   int TrackId;
   double s; // track length to current point
   double sMin, sMax;
@@ -1017,7 +1016,6 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
 
     if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << tpc_hitC << '\n';
 
-    TrackSegmentHits[nSegHits].indx = indx;
     TrackSegmentHits[nSegHits].s = tpc_hitC->length;
 
     if (tpc_hitC->length == 0 && nSegHits > 0) {
