@@ -742,8 +742,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 #endif
         if (bg > betaGamma) betaGamma = bg;
 
-        double bg2 = betaGamma * betaGamma;
-        gamma = std::sqrt(bg2 + 1.);
+        gamma = std::sqrt(betaGamma * betaGamma + 1.);
         double Tmax;
 
         if (mass < 2 * m_e) {
@@ -752,7 +751,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         }
         else {
           double r = m_e / mass;
-          Tmax = 2 * m_e * bg2 / (1 + 2 * gamma * r + r * r);
+          Tmax = 2 * m_e * betaGamma * betaGamma / (1 + 2 * gamma * r + r * r);
         }
 
         if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
