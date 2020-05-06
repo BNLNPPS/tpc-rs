@@ -57,3 +57,80 @@ provided with a pre-generated input and the corresponding output from the main
     cd tpc-rs/build
     ctest -R quick
     ctest -R long
+
+
+## How It Works
+
+The TPC detector geometry is assumed to have a cylindrical shape constructed out
+of trapezoidal sectors oriented along the main axis. The entire volume is split
+in the middle into two halves by a central membrane. Each sector has sensitive
+readout elements, pads, assembled in rows on the outside planes of the sectors.
+A set of sector, row, and pad numbers compose a hardware address which in
+combination with the timing information can be used to measure spatial
+coordinates of interactions occurring within the TPC volume.
+
+```c++
+struct DigiChannel
+{
+  unsigned int sector : 5, row : 7, pad : 10, timebin : 10;
+}
+```
+
+The output of the TPC response simulator needs to resemble the data coming from
+real measurements. In the simplest case the output is just a collection of ADC
+values associated with corresponding digitization channels. In case of
+zero-suppressed channels, the ADC values can be indexed by `DigiChannel` as
+shown below for `DigiHit`:
+
+```c++
+struct DigiHit
+{
+  DigiChannel channel;
+  int adc;
+}
+```
+
+The main response simulator routine expects a list of simulated hits with the
+following data members:
+
+```c++
+struct SimulatedHit
+{
+  int track_id;    /// Unique id of the particle produced this hit
+  int particle_id; /// Physical particle id
+  int volume_id;   /// Volume id packed as a four digit decimal number SSRR, SS = sector, RR = pad row
+  double x[3];     /// Position of the simulated hit at the center of a pad row layer
+  double p[3];     /// Local particle momentum at point x
+  double de;       /// Energy deposited by the particle within pad row boundaries
+  double ds;       /// Path length within pad row boundaries
+  double s;        /// Distance from the origin to the point x. Used in hit ordering
+  double tof;      /// Time of flight up to the point x including the vertex production time
+  float lgam;      /// log_10(E_kin/mass) -- deprecated
+}
+```
+
+Currently, the simulated hits must be sorted by sector, track id, and the
+distance to the track origin in order to insure that the simulated hits are
+grouped according to their parent tracks.
+
+For all generated particles path segments are built around the simulated hits
+after applying all distortion and misalignment effects. The boundaries of pad
+row layers define the start and end points of each segment.
+
+The path of a particle within the pad row layer is simulated by stepping along
+the helix specified by the position and the momentum at the distorted hit. The
+total number of steps, N, and their sizes, ds_i, are defined by a stochastic
+model describing the production of primary electrons with the particle
+parameters adjusted accordingly at every step.
+
+<img src="doc/gfx/tpc_rs_segment.svg" width=600 />
+
+Based on the energy of each primary electron secondary electrons are generated
+in turn according to a stochastic distribution. The secondary electrons are then
+transported to the readout plane taking into account the transverse and
+longitudinal diffusions effects. The algorithm identifies the pads receiving the
+charge spread among multiple rows and pads from each electron. The amount of
+charge deposited in each pad is corrected based on empirical coupling
+distributions in transverse and longitudinal directions. Finally, the charges
+from all electrons are combined and assigned to individual digitization
+channels.
