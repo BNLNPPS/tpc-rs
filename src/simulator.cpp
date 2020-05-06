@@ -764,12 +764,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         tbk0 = tpcrs::irint(tbkH + xmin[1]);
         double OmegaTau = St_TpcResponseSimulatorC::instance()->OmegaTau() *
                             TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
-        double NP = std::abs(tpc_hitC->de) / (St_TpcResponseSimulatorC::instance()->W() * eV *
-                      St_TpcResponseSimulatorC::instance()->Cluster()); // from GEANT
 
-        if (ClusterProfile) {
-          checkList[io][6]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, NP);
-        }
 
         double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position.z);
         double D = 1. + OmegaTau * OmegaTau;
@@ -800,6 +795,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         // end of dE/dx correction
         // generate electrons: No. of primary clusters per cm
 
+        double NP;
         if (mdNdx || mdNdxL10) {
           NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
 #ifdef __DEBUG__
