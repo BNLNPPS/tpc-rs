@@ -112,8 +112,6 @@ class StTpcRSMaker
   double innerSectorAnodeVoltage[24];//!
   double outerSectorAnodeVoltage[24];//!
   double xOnWire, yOnWire, zOnWire; //!
-  double padsdE[kPadMax];           //!
-  double tbksdE[kTimeBacketMax];    //!
   double rowsdE[kRowMax];           //!
   const double min_signal_;           //!
   const double electron_range_;       //!
