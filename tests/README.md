@@ -28,6 +28,7 @@ The archives with data files (ROOT and YAML) containing input and the respective
 output values for the tests can be downloaded from a google drive.
 
 Build Type | -mXX | Notes      | tar.gz Archive
+Debug      | 64   |            | [1CJASQerc5KqCyOSEU043VkOfJx_OtI2Z](https://drive.google.com/open?id=1CJASQerc5KqCyOSEU043VkOfJx_OtI2Z)
 Release    | 32   | no output? | [17N9nJ5iZxX-O2uVdGDpRHSkvwu32G4jh](https://drive.google.com/open?id=17N9nJ5iZxX-O2uVdGDpRHSkvwu32G4jh)
 Debug      | 32   |            | [1XESdyqg6kXhu5gPrgS3drq3UIBu0f1l5](https://drive.google.com/open?id=1XESdyqg6kXhu5gPrgS3drq3UIBu0f1l5)
 Debug      | 32   | <= v0.0.6  | [1Y2qPEN-sypcbWdrzFe4K7gGNCay5jpB8](https://drive.google.com/open?id=1Y2qPEN-sypcbWdrzFe4K7gGNCay5jpB8)
