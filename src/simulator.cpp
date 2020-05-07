@@ -66,11 +66,6 @@ struct SignalSum_t {
 
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
-static const int nx[2] = {200, 500};
-static const double xmax[2] =  { 10., 44};
-static const int nz = 42;
-static const double zmin = -210;
-static const double zmax = -zmin;
 TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
 TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
 
@@ -334,56 +329,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
   // HEED function to generate Ec, default w = 26.2
   mHeed.SetParameter(0, St_TpcResponseSimulatorC::instance()->W());
-
-  int color = 1;
-  struct Name_t {
-    const char* Name;
-    const char* Title;
-  };
-  const Name_t InOut[6] = {
-    {"Inner", "Inner old electronics or iTPC"},
-    {"Outer", "Outer old electronics or ITPC"},
-    {"InnerX", "Inner new electronics"},
-    {"OuterX", "Outer new electronics"},
-    {"I", "Inner"},
-    {"O", "Outer"}
-  };
-  const Name_t PadTime[3] = {
-    {"Pad", "Pad"},
-    {"Time", "Time"},
-    {"Row", "Row"},
-  };
-
-  const int Npbins  = 151;
-  const int NpbinsL =  10;
-  const double Xmax = 1e5;
-  double    dX = std::log(Xmax / 10) / (Npbins - NpbinsL);
-  double* pbins = new double[Npbins];
-  double* pbinsL =  new double[Npbins];
-  pbins[0] = 0.5;
-  pbinsL[0] = std::log(pbins[0]);
-
-  for (int bin = 1; bin < Npbins; bin++) {
-    if (bin <= NpbinsL) {
-      pbins[bin] = pbins[bin - 1] + 1;
-    }
-    else if (bin == Npbins - 1) {
-      pbins[bin] = 1e5;
-    }
-    else {
-      int nM = 0.5 * (pbins[NpbinsL - 2] + pbins[NpbinsL - 1]) * std::exp(dX * (bin - NpbinsL));
-      double dbin = tpcrs::irint(nM - pbins[bin - 1]);
-
-      if (dbin < 1.0) dbin = 1.0;
-
-      pbins[bin] = pbins[bin - 1] + dbin;
-    }
-
-    pbinsL[bin] = std::log(pbins[bin]);
-  }
-
-  delete [] pbins;
-  delete [] pbinsL;
 }
 
 
