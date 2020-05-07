@@ -19,7 +19,6 @@
 #include "Math/SpecFuncMathMore.h"
 #include "TRandom.h"
 #include "TFile.h"
-#include "TProfile2D.h"
 #include "tcl.h"
 
 #include "particles/StParticleTable.hh"
@@ -62,7 +61,6 @@ struct SignalSum_t {
 #else
 #define PrPP(A,B)
 #endif
-static bool ClusterProfile = true;
 #define LASERINO 170
 #define CHASRINO 171
 
@@ -73,10 +71,6 @@ static const double xmax[2] =  { 10., 44};
 static const int nz = 42;
 static const double zmin = -210;
 static const double zmax = -zmin;
-//                     io pt
-static TProfile2D* hist[5][3] = {0};
-static const int nChecks = 21;
-static TH1*  checkList[2][21] = {0};
 TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
 TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
 
@@ -329,9 +323,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
   if (Debug()) Print();
 
-  memset(hist, 0, sizeof(hist));
-  memset(checkList, 0, sizeof(checkList));
-
   //  mPolya = new TF1F("Polya;x = G/G_0;signal","sqrt(x)/exp(1.5*x)",0,10); // original Polya
   //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
   //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
@@ -363,49 +354,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     {"Row", "Row"},
   };
 
-  for (int io = 2; io < 4; io++) {
-    for (int pt = 0; pt < 2; pt++) {
-      TString Name(InOut[io].Name); Name += PadTime[pt].Name; Name += "Mc";
-      TString Title(InOut[io].Title); Title += PadTime[pt].Title; Title += "Mc";
-      hist[io][pt] = (TProfile2D*) gDirectory->Get(Name);
-
-      if (! hist[io][pt]) {
-        hist[io][pt] = new TProfile2D(Name, Title, nx[pt], xmin[pt], xmax[pt], nz, zmin, zmax, "");
-        hist[io][pt]->SetMarkerStyle(20);
-        hist[io][pt]->SetMarkerColor(color++);
-      }
-    }
-  }
-
-  hist[4][0] = new TProfile2D("dEdxCorSecRow", "dEdx correction versus sector and row",
-                              max_sectors_, 0.5, max_sectors_ + 0.5,
-                              St_tpcPadConfigC::instance()->numberOfRows(20), 0.5, St_tpcPadConfigC::instance()->numberOfRows(20) + 0.5, "");
-  hist[4][1] = new TProfile2D("GainSecRow", "Overall gain versus sector and row",
-                              max_sectors_, 0.5, max_sectors_ + 0.5,
-                              St_tpcPadConfigC::instance()->numberOfRows(20), 0.5, St_tpcPadConfigC::instance()->numberOfRows(20) + 0.5, "");
-  const Name_t Checks[21] = {
-    {"dEGeant", "dE in Geant"}, // 0
-    {"dSGeant", "ds in Geant"}, // 1
-    {"Gain", "Gas Gain after Voltage"}, // 2
-    {"GainMc", "Gas Gain after MC correction"}, // 3
-    {"dEdxCor", "correction of dEdx"}, // 4
-    {"lgam", "lgam"}, // 5
-    {"NPGEANT", "no. of primary electros from GEANT"}, // 6
-    {"NP", "no. of primary electros"}, // 7
-    {"Nt", "total no. of electors per cluster"}, // 8
-    {"Qav", "Gas gain flactuations"}, // 9
-    {"localYDirectionCoupling", "localYDirectionCoupling"}, //10
-    {"n0", "No. electrons per primary interaction"}, //11
-    {"padGain", "padGain"}, // 12
-    {"localXDirectionCoupling", "localXDirectionCoupling"}, // 13
-    {"XYcoupling", "XYcoupling"}, //14
-    {"dE", "dE"}, // 15
-    {"dS", "dS"}, // 16
-    {"adc", "adc"}, // 17
-    {"NE", "Total no. of generated electors"}, // 18
-    {"dECl", "Total log(signal/Nt) in a cluster versus Wire Index"}, // 19
-    {"nPdT", "log(Total no. of conducting electrons) - log(no. of primary one) versus log(no. primary electrons)"} // 20
-  };
   const int Npbins  = 151;
   const int NpbinsL =  10;
   const double Xmax = 1e5;
@@ -432,18 +380,6 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     }
 
     pbinsL[bin] = std::log(pbins[bin]);
-  }
-
-  for (int io = 0; io < 2; io++) {
-    for (int i = 0; i < nChecks; i++) {
-      TString Name(Checks[i].Name); Name += InOut[4 + io].Name;
-      TString Title(Checks[i].Title); Title += InOut[4 + io].Title;
-
-      if      (i == 11) checkList[io][i] = new TH2D(Name, Title, nz, zmin, zmax, 100, -0.5, 99.5);
-      else if (i == 19) checkList[io][i] = new TH2D(Name, Title, 173, -.5, 172.5, 200, -10, 10);
-      else if (i == 20) checkList[io][i] = new TH2D(Name, Title, Npbins - 1, pbinsL, 500, -2.0, 8.0);
-      else              checkList[io][i] = new TProfile(Name, Title, nz, zmin, zmax, "");
-    }
   }
 
   delete [] pbins;
@@ -649,28 +585,15 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
         // Generate signal
         double Gain = St_tss_tssparC::instance()->gain(sector, row);
 
-        if (ClusterProfile) {
-          checkList[io][2]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Gain);
-        }
-
         double GainXCorrectionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
         Gain *= std::exp(-GainXCorrectionL);
         double GainXSigma = AddSigmaMcCorrection[iowe] + row * AddSigmaMcCorrection[iowe + 1];
 
         if (GainXSigma > 0) Gain *= std::exp(gRandom->Gaus(0., GainXSigma));
 
-        if (ClusterProfile) {
-          checkList[io][3]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Gain);
-        }
-
         // dE/dx correction
         double dEdxCor = dEdxCorrection(TrackSegmentHits[iSegHits]);
         if (dEdxCor <= 0.) continue;
-
-        if (ClusterProfile) {
-          checkList[io][4]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, dEdxCor);
-          hist[4][0]->Fill(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row, dEdxCor);
-        }
 
         dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket);
 
@@ -702,12 +625,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
           PrPP(Make, TrackSegmentHits[iSegHits].Pad);
           transform(TrackSegmentHits[iSegHits].coorLS, TrackSegmentHits[iSegHits].Pad, false, false); // don't use T0, don't use Tau
           PrPP(Make, TrackSegmentHits[iSegHits].Pad);
-        }
-
-        int ioH = St_tpcAltroParamsC::instance()->N(sector - 1) >= 0 ? io + 2 : io;
-
-        if (ClusterProfile) {
-          checkList[io][5]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->lgam);
         }
 
         static const double m_e = .51099907e-3;
@@ -801,16 +718,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
 #endif
         }
 
-        if (ClusterProfile) {
-          checkList[io][7]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, NP);
-        }
-
         int nP = 0;
         double dESum = 0;
         double dSSum = 0;
         int   nTotal = 0;
-        memset(padsdE, 0, sizeof(padsdE));
-        memset(tbksdE, 0, sizeof(tbksdE));
         float dEr = 0;
 
         do {// Clusters
@@ -878,11 +789,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
 
           if (!rs.size()) continue;
 
-          if (ClusterProfile) {
-            checkList[io][8]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, rs.size());
-            checkList[io][11]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, rs.size());
-          }
-
           Coords xyzC = track.at(newPosition);
 
           double total_signal_in_cluster =
@@ -903,27 +809,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
           tpc_hitC->de = dESum * eV;
           tpc_hitC->ds = dSSum;
           tpc_hitC->np = nP;
-
-          if (ClusterProfile) {
-            if (total_signal > 0) {
-              if (hist[ioH][0]) {
-                for (int p = 0; p < kPadMax; p++)
-                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position.z, padsdE[p] / total_signal);
-              }
-
-              if (hist[ioH][1]) {
-                for (int t = 0; t < kTimeBacketMax; t++)
-                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position.z, tbksdE[t] / total_signal);
-              }
-            }
-
-            checkList[io][15]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->de);
-            checkList[io][16]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->ds);
-            checkList[io][18]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, nTotal);
-
-            if (nP > 0 && nTotal > 0)
-              checkList[io][20]->Fill(std::log(nP), std::log(nTotal) - std::log(nP));
-          }
         }
 
         nHitsInTheSector++;
@@ -936,10 +821,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
 
         int row = tpc_hitC->volume_id % 100;
         tpc_hitC->adc += rowsdE[row - 1];
-        int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
-
-        if (checkList[io][17])
-          checkList[io][17]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->adc);
       }
     }  // hits in the sector
 
@@ -1459,12 +1340,6 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit* tpc_hitC, const g2t_verte
   int row = coorS.row;
   transform(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
 
-  if (ClusterProfile) {
-    int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) ? 0 : 1);
-    checkList[io][0]->Fill(TrackSegmentHits.tpc_hitC->x[2], std::abs(TrackSegmentHits.tpc_hitC->de));
-    checkList[io][1]->Fill(TrackSegmentHits.tpc_hitC->x[2],          TrackSegmentHits.tpc_hitC->ds );
-  }
-
   // move up, calculate field at center of TPC
   static float BFieldG[3];
   StarMagField::Instance().BField(tpc_hitC->x, BFieldG);
@@ -1614,10 +1489,6 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
     if (! iGroundWire ) gain_gas *= std::exp( alphaVariation);
     else                gain_gas *= std::exp(-alphaVariation);
 
-    if (ClusterProfile) {
-      checkList[io][9]->Fill(TrackSegmentHits.xyzG.position.z, gain_gas);
-    }
-
     double dY     = mChargeFraction[io][sector - 1].GetXmax();
     double yLmin  = yOnWire - dY;
     double yLmax  = yOnWire + dY;
@@ -1635,12 +1506,6 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
     GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, sigmaJitterT,
                    mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
   }  // electrons in Cluster
-
-  if (ClusterProfile) {
-    if (total_signal_in_cluster > 0 && checkList[io][19]) {
-      checkList[io][19]->Fill(WireIndex, std::log(total_signal_in_cluster));
-    }
-  }
 
   return total_signal_in_cluster;
 }
@@ -1676,10 +1541,6 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
     double dely = transform.yFromRow(sector, row) - yOnWire;
     double localYDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(&dely);
 
-    if (ClusterProfile) {
-      checkList[io][10]->Fill(TrackSegmentHits.xyzG.position.z, localYDirectionCoupling);
-    }
-
     if (localYDirectionCoupling < min_signal_) continue;
 
     float padX = Pad.pad;
@@ -1709,24 +1570,11 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
         dt -= St_tpcPadGainT0BC::instance()->T0(sector, row, pad);
       }
 
-      if (ClusterProfile) {
-        checkList[io][12]->Fill(TrackSegmentHits.xyzG.position.z, gain);
-        hist[4][1]->Fill(sector, row, gain);
-      }
-
       double localXDirectionCoupling = gain * XDirectionCouplings[pad - padMin];
 
       if (localXDirectionCoupling < min_signal_) continue;
 
-      if (ClusterProfile) {
-        checkList[io][13]->Fill(TrackSegmentHits.xyzG.position.z, localXDirectionCoupling);
-      }
-
       double XYcoupling = localYDirectionCoupling * localXDirectionCoupling;
-
-      if (ClusterProfile) {
-        checkList[io][14]->Fill(TrackSegmentHits.xyzG.position.z, XYcoupling);
-      }
 
       if (XYcoupling < min_signal_)  continue;
 
@@ -1744,14 +1592,6 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 
         total_signal_in_cluster += signal;
         binned_charge[index].Sum += signal;
-
-        if (ClusterProfile) {
-          if (pad >= pad0 && pad < pad0 + kPadMax &&
-              itbin >= tbk0 &&  itbin < tbk0 + kTimeBacketMax) {
-            padsdE[pad - pad0]   += signal;
-            tbksdE[itbin - tbk0] += signal;
-          }
-        }
 
         rowsdE[row - 1]  += signal;
 
