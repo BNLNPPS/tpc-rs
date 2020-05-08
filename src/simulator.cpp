@@ -95,12 +95,12 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   mdNdEL10(nullptr),
   mShaperResponses{},
   mChargeFraction{
-    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6)),
-    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6))
+    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6)),
+    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6))
   },
   mPadResponseFunction{
-    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6)),
-    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6))
+    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6)),
+    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6))
   },
   mPolya{
     TF1F("PolyaInner;x = G/G_0;signal", polya, 0, 10, 3),
