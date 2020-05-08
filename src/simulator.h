@@ -29,6 +29,15 @@ class StTpcRSMaker
 
  private:
 
+  const double min_signal_;           //!
+  const double electron_range_;       //!
+  const double electron_range_energy_; //!
+  const double electron_range_power_;  //!
+  const double max_electron_energy_;                 //! cut for delta electrons
+  const int max_sectors_;            //!
+  const int max_pads_;               //!
+  const int max_timebins_;
+
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI_I(double* x, double* par = 0);
   static double shapeEI3(double* x, double* par = 0);
@@ -113,13 +122,5 @@ class StTpcRSMaker
   double outerSectorAnodeVoltage[24];//!
   double xOnWire, yOnWire, zOnWire; //!
   double rowsdE[kRowMax];           //!
-  const double min_signal_;           //!
-  const double electron_range_;       //!
-  const double electron_range_energy_; //!
-  const double electron_range_power_;  //!
-  const double max_electron_energy_;                 //! cut for delta electrons
-  const int max_sectors_;            //!
-  const int max_pads_;               //!
-  const int max_timebins_;
 };
 #endif

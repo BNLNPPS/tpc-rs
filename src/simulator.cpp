@@ -72,6 +72,14 @@ TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
 
 StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
+  min_signal_(1e-4),
+  electron_range_(0.0055), // Electron Range(.055mm)
+  electron_range_energy_(3000), // eV
+  electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
+  max_electron_energy_(e_cutoff),
+  max_sectors_(24),
+  max_pads_(182),
+  max_timebins_(512),
   options_(0),
   mdNdx(nullptr),
   mdNdxL10(nullptr),
@@ -90,15 +98,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * St_TpcResponseSimulatorC::instance()->W(), 1),
-  m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug()),
-  min_signal_(1e-4),
-  electron_range_(0.0055), // Electron Range(.055mm)
-  electron_range_energy_(3000), // eV
-  electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
-  max_electron_energy_(e_cutoff),
-  max_sectors_(24),
-  max_pads_(182),
-  max_timebins_(512)
+  m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
 {
   //  SETBIT(options_,kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
