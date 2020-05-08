@@ -565,7 +565,7 @@ inline bool operator< (const g2t_tpc_hit_st& lhs, const g2t_tpc_hit_st& rhs)
 
 
 void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
-                        std::vector<g2t_track_st>& g2t_track,
+                        const std::vector<g2t_track_st>& g2t_track,
                         const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
@@ -575,8 +575,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-  g2t_track_st* geant_track = &g2t_track.front();
-
   const g2t_tpc_hit_st* tpc_hit_begin = &g2t_tpc_hit.front();
 
   if (m_TpcdEdxCorrection) {
@@ -627,20 +625,17 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       if (tpc_hit->volume_id <= 0 || tpc_hit->volume_id > 1000000) continue;
 
       int parent_track_idx  = tpc_hit->track_p;
-      int id3 = 0, ipart = 8, charge = 1;
       double mass = 0;
 
-      if (geant_track) {
-        id3        = geant_track[parent_track_idx - 1].start_vertex_p;
-        assert(id3 > 0 && id3 <= g2t_vertex.size());
-        ipart      = geant_track[parent_track_idx - 1].ge_pid;
-        charge     = (int) geant_track[parent_track_idx - 1].charge;
-        StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
+      int id3        = g2t_track[parent_track_idx - 1].start_vertex_p;
+      assert(id3 > 0 && id3 <= g2t_vertex.size());
+      int ipart      = g2t_track[parent_track_idx - 1].ge_pid;
+      int charge     = (int) g2t_track[parent_track_idx - 1].charge;
+      StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
 
-        if (particle) {
-          mass = particle->mass();
-          charge = particle->charge();
-        }
+      if (particle) {
+        mass = particle->mass();
+        charge = particle->charge();
       }
 
       if (ipart == Laserino || ipart == Chasrino) {
@@ -812,7 +807,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           // special case stopped electrons
           if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
             int Id         = tpc_hitC->track_p;
-            int ipart      = geant_track[Id - 1].ge_pid;
+            int ipart      = g2t_track[Id - 1].ge_pid;
 
             if (ipart == 3) {
               eKin = -tpc_hitC->de;
@@ -1771,7 +1766,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 }
 
 
-void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
   double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum, double& total_signal_in_cluster, double gain_local, double gain_gas)
 {
   static CoordTransform transform;
