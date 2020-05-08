@@ -229,6 +229,8 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
     FuncParams_t params0{
       {"t0",    t0IO[io]},
+      {"tauF",  0},
+      {"tauP",  0},
       {"tauI",  io ? Cfg<TpcResponseSimulator>().tauXO : Cfg<TpcResponseSimulator>().tauXI},
       {"width", TimeBinWidth},
       {"tauC",  0},
@@ -247,13 +249,13 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     fgTimeShape3[io]->GetYaxis()->SetTitle("signal");
 
     // new electronics only integration
-    fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]), shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 5);
-    params0[3].second = io ? Cfg<TpcResponseSimulator>().tauCO : Cfg<TpcResponseSimulator>().tauCI;
+    fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]), shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 7);
+    params0[5].second = io ? Cfg<TpcResponseSimulator>().tauCO : Cfg<TpcResponseSimulator>().tauCI;
     for (int i = 0; i != params0.size(); ++i) {
       fgTimeShape0[io]->SetParName(i, params0[i].first.c_str());
       fgTimeShape0[io]->SetParameter(i, params0[i].second);
     }
-    params0[3].second = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
+    params0[5].second = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
     fgTimeShape0[io]->SetTitle(fgTimeShape0[io]->GetName());
     fgTimeShape0[io]->GetXaxis()->SetTitle("time (secs)");
     fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
@@ -1172,8 +1174,8 @@ double StTpcRSMaker::shapeEI(double* x, double* par)
   if (t <= 0) return 0;
 
   double t0    = par[0];
-  double tau_I = par[1];
-  double tau_C = par[3];
+  double tau_I = par[3];
+  double tau_C = par[5];
 
   if (std::abs((tau_I - tau_C) / (tau_I + tau_C)) < 1e-7) {
     return std::max(0., (t + t0) / tau_I * fei(t, t0, tau_I) + std::exp(-t / tau_I) - 1);
@@ -1222,11 +1224,11 @@ double StTpcRSMaker::shapeEI3(double* x, double* par)
 double StTpcRSMaker::shapeEI_I(double* x, double* par)   //Integral of shape over time bin
 {
   static double sqrt2 = std::sqrt(2.);
-  double TimeBinWidth = par[2];
-  double norm = par[3];
+  double TimeBinWidth = par[4];
+  double norm = par[5];
   double t1 = TimeBinWidth * (x[0] - 0.5);
   double t2 = t1 + TimeBinWidth;
-  int io = (int) par[4];
+  int io = (int) par[6];
   assert(io >= 0 && io <= 1);
   return sqrt2 * fgTimeShape0[io]->Integral(t1, t2) / norm;
 }
