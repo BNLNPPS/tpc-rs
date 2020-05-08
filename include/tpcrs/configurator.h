@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "yaml-cpp/yaml.h"
+#include "tpcrs/structs.h"
 
 
 namespace tpcrs {
@@ -48,6 +49,30 @@ class Configurator
 
   YAML::Node yaml;
 };
+
+template<typename Struct_t> std::string ConfigNodeName() { return "undefined"; };
+
+
+template<typename Struct_t>
+const Struct_t& Cfg(int i = 0)
+{
+  static std::vector<Struct_t> rows;
+  static std::string name{ConfigNodeName<Struct_t>()};
+
+  if (rows.size()) {
+    return rows[i];
+  }
+  else {
+    try {
+      rows.push_back( Configurator::YAML(name).as<Struct_t>() );
+    } catch (std::exception& e) {
+      rows = Configurator::YAML(name).as< std::vector<Struct_t> >();
+    }
+  }
+
+  return rows[i];
+}
+
 
 }
 
