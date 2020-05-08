@@ -575,14 +575,9 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-
-  std::vector<int> mNoTpcHitsAll(g2t_track.size() + 1);
-  std::vector<int> mNoTpcHitsReal(g2t_track.size() + 1);
-
   g2t_track_st* geant_track = &g2t_track.front();
 
-  g2t_tpc_hit_st* tpc_hit_begin = const_cast<g2t_tpc_hit_st*>(&g2t_tpc_hit.front());
-  g2t_tpc_hit_st* tpc_hit = tpc_hit_begin;
+  const g2t_tpc_hit_st* tpc_hit_begin = &g2t_tpc_hit.front();
 
   if (m_TpcdEdxCorrection) {
     St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
@@ -616,7 +611,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
       if (indx < 0) break;
 
-      tpc_hit = tpc_hit_begin + indx;
+      g2t_tpc_hit_st* tpc_hit = const_cast<g2t_tpc_hit_st*>(tpc_hit_begin + indx);
       int volId = tpc_hit->volume_id % 10000;
       int iSector = volId / 100;
 
@@ -674,56 +669,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       int nSegHits = 0;
       int sIndex = sortedIndex;
 
-      if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tn_hits = " << n_hits << '\n';
-
-      parent_track_idx = 0;
-      int TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
-
-      for (nSegHits = 0, sIndex = sortedIndex; sIndex < n_hits && nSegHits < NoMaxTrackSegmentHits; sIndex++)
-      {
-        indx = sorted_index[sIndex];
-        g2t_tpc_hit_st* tpc_hitC = tpc_hit_begin + indx;
-
-        if ((tpc_hitC->volume_id % 10000) / 100 != sector) break;
-
-        if (parent_track_idx > 0 && parent_track_idx != tpc_hitC->track_p) break;
-
-        parent_track_idx = tpc_hitC->track_p;
-
-        if (nSegHits == 1) { // No Loopers !
-          if (TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 <= tpc_hitC->volume_id % 100) {
-            TrackDirection = 0;
-          }
-          else {
-            TrackDirection = 1;
-          }
-        }
-        else if (nSegHits > 1) {
-          if ((! TrackDirection && TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 > tpc_hitC->volume_id % 100) ||
-              (  TrackDirection && TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 < tpc_hitC->volume_id % 100))
-            break;
-        }
-
-        if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << tpc_hitC << '\n';
-
-        TrackSegmentHits[nSegHits].indx = indx;
-        TrackSegmentHits[nSegHits].s = tpc_hitC->length;
-
-        if (tpc_hitC->length == 0 && nSegHits > 0) {
-          TrackSegmentHits[nSegHits].s = TrackSegmentHits[nSegHits - 1].s + TrackSegmentHits[nSegHits].tpc_hitC->ds;
-        }
-
-        // Increase hit counters
-        mNoTpcHitsAll[tpc_hitC->track_p - 1]++;
-        // Account hits which can be splitted
-        if (tpc_hitC->volume_id < 10000) mNoTpcHitsReal[tpc_hitC->track_p - 1]++;
-
-        TrackSegment2Propagate(tpc_hitC, g2t_vertex[id3 - 1], TrackSegmentHits[nSegHits], smin, smax);
-
-        if (TrackSegmentHits[nSegHits].Pad.timeBucket < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket > max_timebins_) continue;
-
-        nSegHits++;
-      }
+      BuildTrackSegments(sector, sorted_index, sortedIndex, tpc_hit_begin, g2t_vertex[id3 - 1], TrackSegmentHits, smin, smax, nSegHits, sIndex);
 
       if (! nSegHits) continue;
 
@@ -740,6 +686,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       }
 
       sortedIndex = sIndex - 1; // Irakli 05/06/19, reduce extra step in for loop
+
       double s = smin;
       memset (rowsdE, 0, sizeof(rowsdE));
 
@@ -1234,14 +1181,60 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                << " (V)\n";
     }
   }
+}
 
-    // Reset no. Tpc hits in g2t_track
-    geant_track = &g2t_track.front();
 
-    for (int i = 0; i < g2t_track.size(); i++, geant_track++) {
-      int Id = geant_track->id;
-      geant_track->n_tpc_hit = (mNoTpcHitsReal[Id - 1] << 8) + (0xff & mNoTpcHitsAll[Id - 1]);
+void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
+  const g2t_tpc_hit_st* tpc_hit_begin, const g2t_vertex_st& geant_vertex,
+  HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex)
+{
+  int n_hits = sorted_index.size();
+
+  if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tn_hits = " << n_hits << '\n';
+
+  int parent_track_idx = 0;
+  int TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
+
+  for (nSegHits = 0, sIndex = sortedIndex; sIndex < n_hits && nSegHits < 100; sIndex++)
+  {
+    int indx = sorted_index[sIndex];
+    g2t_tpc_hit_st* tpc_hitC = const_cast<g2t_tpc_hit_st*>(tpc_hit_begin + indx);
+
+    if ((tpc_hitC->volume_id % 10000) / 100 != sector) break;
+
+    if (parent_track_idx > 0 && parent_track_idx != tpc_hitC->track_p) break;
+
+    parent_track_idx = tpc_hitC->track_p;
+
+    if (nSegHits == 1) { // No Loopers !
+      if (TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 <= tpc_hitC->volume_id % 100) {
+        TrackDirection = 0;
+      }
+      else {
+        TrackDirection = 1;
+      }
     }
+    else if (nSegHits > 1) {
+      if ((! TrackDirection && TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 > tpc_hitC->volume_id % 100) ||
+          (  TrackDirection && TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 < tpc_hitC->volume_id % 100))
+        break;
+    }
+
+    if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << tpc_hitC << '\n';
+
+    TrackSegmentHits[nSegHits].indx = indx;
+    TrackSegmentHits[nSegHits].s = tpc_hitC->length;
+
+    if (tpc_hitC->length == 0 && nSegHits > 0) {
+      TrackSegmentHits[nSegHits].s = TrackSegmentHits[nSegHits - 1].s + TrackSegmentHits[nSegHits].tpc_hitC->ds;
+    }
+
+    TrackSegment2Propagate(tpc_hitC, geant_vertex, TrackSegmentHits[nSegHits], smin, smax);
+
+    if (TrackSegmentHits[nSegHits].Pad.timeBucket < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket > max_timebins_) continue;
+
+    nSegHits++;
+  }
 }
 
 
