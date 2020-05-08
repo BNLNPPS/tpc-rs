@@ -1,5 +1,4 @@
 #include <cassert>
-#include "TEnv.h"
 #include "TF1.h"
 #include "TF2.h"
 #include "TF3.h"
@@ -14,12 +13,6 @@ template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT #
 
 #define MakeChairInstance2(STRUCT,CLASS,PATH) \
 template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::name(# PATH);
-
-#define MakeChairAltInstance(STRUCT,PATHA,PATHB,AorB)	\
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C, STRUCT>::name(AorB==0 ? # PATHA : # PATHB);
-
-#define MakeChairAltInstance2(STRUCT,CLASS,PATHA,PATHB,AorB)	\
-template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::name(AorB==0 ? # PATHA : # PATHB);
 
 static int _debug = 0;
 //__________________Calibrations/tpc______________________________________________________________
@@ -342,7 +335,7 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
 }
 MakeChairInstance(tpcPadResponse,Calibrations/tpc/tpcPadResponse);
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
-MakeChairAltInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0,Calibrations/tpc/tpcPadrowT0B,gEnv->GetValue("NewTpcAlignment",0));
+MakeChairInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0);
 MakeChairInstance(tpcSectorT0offset,Calibrations/tpc/tpcSectorT0offset);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 unsigned char          St_tpcPadConfigC::iTpc(int sector)                     {unsigned char iTPC = Struct()->itpc[sector-1];  return iTPC;}
@@ -904,7 +897,7 @@ unsigned int       St_tpcRDOMasksC::getSectorMask(unsigned int sector) {
 }
 
 //___________________Conditions/trg_____________________________________________________________
-MakeChairAltInstance(trgTimeOffset,Conditions/trg/trgTimeOffset,Conditions/trg/trgTimeOffsetB,gEnv->GetValue("NewTpcAlignment",0));
+MakeChairInstance(trgTimeOffset,Conditions/trg/trgTimeOffset);
 //___________________Geometry/tpc_____________________________________________________________
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
@@ -912,9 +905,9 @@ MakeChairInstance(tpcPadConfig,Geometry/tpc/tpcPadConfig);
 MakeChairInstance(tpcGlobalPosition,Geometry/tpc/tpcGlobalPosition);
 MakeChairInstance(tpcFieldCageShort,Geometry/tpc/tpcFieldCageShort);
 MakeChairInstance(tpcHVPlanes,Geometry/tpc/tpcHVPlanes);
-MakeChairAltInstance2(Survey,StTpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPositionB,gEnv->GetValue("NewTpcAlignment",0));
-MakeChairAltInstance2(Survey,StTpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPositionB,gEnv->GetValue("NewTpcAlignment",0));
-MakeChairAltInstance2(Survey,StTpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPositionB,gEnv->GetValue("NewTpcAlignment",0));
+MakeChairInstance2(Survey,StTpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPosition);
+MakeChairInstance2(Survey,StTpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPosition);
+MakeChairInstance2(Survey,StTpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPosition);
 MakeChairInstance2(Survey,StTpcHalfPosition,Geometry/tpc/TpcHalfPosition);
 MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
 MakeChairInstance(iTPCSurvey,Geometry/tpc/iTPCSurvey);
