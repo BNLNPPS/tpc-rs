@@ -24,7 +24,7 @@ class StTpcRSMaker
   ~StTpcRSMaker();
 
   void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
-                  std::vector<g2t_track_st>& g2t_track,
+            const std::vector<g2t_track_st>& g2t_track,
             const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
 
  private:
@@ -59,9 +59,10 @@ class StTpcRSMaker
     HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex);
 
   void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
-  void GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+  void GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
                       double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum,
                       double& total_signal_in_cluster, double gain_local, double gain_gas);
+
   double dEdxCorrection(HitPoint_t &TrackSegmentHits);
 
   static double GatingGridTransparency(double x, double x_min = 10, double x_max = 56)
