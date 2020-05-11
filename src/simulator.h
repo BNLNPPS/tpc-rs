@@ -72,7 +72,7 @@ class StTpcRSMaker
   int    AsicThresholds(short* ADCs);
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-    g2t_tpc_hit* tpc_hit_begin, const g2t_vertex& geant_vertex,
+    std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
     HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex);
 
   void TrackSegment2Propagate(g2t_tpc_hit* tpc_hitC, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
