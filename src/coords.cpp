@@ -1,5 +1,6 @@
 #include <ostream>
 
+#include "tpcrs/configurator.h"
 #include "coords.h"
 #include "math_funcs.h"
 
@@ -88,12 +89,13 @@ std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorDirection &a)
   return os << "TPC_Local_Sector Direction( (" << OS;
 }
 
+using tpcrs::Cfg;
 
 CoordTransform::CoordTransform()
 {
-  mTimeBinWidth = 1. / St_tpcElectronicsC::instance()->samplingFrequency();
-  mInnerSectorzOffset = St_tpcDimensionsC::instance()->zInnerOffset();
-  mOuterSectorzOffset = St_tpcDimensionsC::instance()->zOuterOffset();
+  mTimeBinWidth = 1e6 / Cfg<starClockOnl>().frequency;
+  mInnerSectorzOffset = Cfg<tpcEffectiveGeom>().z_inner_offset;
+  mOuterSectorzOffset = Cfg<tpcEffectiveGeom>().z_outer_offset;
 }
 
 
@@ -113,7 +115,7 @@ void CoordTransform::operator()(const StTpcLocalSectorCoordinate &a, StTpcPadCoo
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
-    t0offset -= 3.0 * St_tss_tssparC::instance()->tau();   // correct for convolution lagtime
+    t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
 
   double t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(sector) * 1e-6;
   double tb = tBFromZ(a.position.z + zoffset - t0zoffset, sector, row, probablePad);
@@ -130,7 +132,7 @@ void CoordTransform::operator()(const StTpcPadCoordinate &a, StTpcLocalSectorCoo
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
-    t0offset -= 3.0 * St_tss_tssparC::instance()->tau();   // correct for convolution lagtime
+    t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
 
   double t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(a.sector) * 1e-6;
   //t0 offset -- DH  27-Mar-00
@@ -218,8 +220,8 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
     row = St_tpcPadConfigC::instance()->numberOfRows(sector);
 
   double trigT0 = StTpcDb::instance().triggerTimeOffset() * 1e6; // units are s
-  double elecT0 = St_tpcElectronicsC::instance()->tZero();    // units are us
-  double sectT0 = St_tpcPadrowT0C::instance()->T0(sector, row);  // units are us
+  double elecT0 = Cfg<tpcElectronics>().tZero;    // units are us
+  double sectT0 = Cfg<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
   int l = sector;
 
@@ -243,8 +245,8 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
     row = St_tpcPadConfigC::instance()->numberOfRows(sector);
 
   double trigT0 = StTpcDb::instance().triggerTimeOffset() * 1e6; // units are s
-  double elecT0 = St_tpcElectronicsC::instance()->tZero();    // units are us
-  double sectT0 = St_tpcPadrowT0C::instance()->T0(sector, row);  // units are us
+  double elecT0 = Cfg<tpcElectronics>().tZero;    // units are us
+  double sectT0 = Cfg<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
   double time = z / (StTpcDb::instance().DriftVelocity(sector) * 1e-6);
   int l = sector;

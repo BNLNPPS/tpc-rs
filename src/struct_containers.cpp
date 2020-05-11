@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "struct_containers.h"
 
+using tpcrs::Cfg;
 
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT>::name(# PATH);
@@ -875,6 +876,33 @@ float St_tss_tssparC::gain(int sector, int row) {
   }
   return gain;
 }
+
+
+float GainCorrection(int sector, int row)
+{
+  int l = 0;
+  double V_nominal = 1390;
+  float V = 0;
+  float gain = 0;
+  if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) {l = 1; V_nominal = 1170;}
+  St_tpcGainCorrectionC *gC = St_tpcGainCorrectionC::instance();
+  int NRows = gC->GetNRows();
+  if (l >= NRows) return gain;
+  V = St_tpcAnodeHVavgC::instance()->voltagePadrow(sector,row);
+  if (V > 0) {
+    double v = V - V_nominal;
+    if (v < gC->min(l) || v > gC->max(l)) return gain;
+    if (gC->min(l) < -450) {
+      // if range was expanded below 150 V then use only the linear approximation
+      gain  = std::exp(gC->CalcCorrection(l,v, 0., 2));
+    } else {
+      gain  = std::exp(gC->CalcCorrection(l,v));
+    }
+  }
+  return gain;
+}
+
+
 //__________________Calibrations/rich______________________________________________________________
 MakeChairInstance(richvoltages,Calibrations/rich/richvoltages);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
@@ -1073,7 +1101,7 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(double scaleFactor)
 double St_tpcChargeEventC::timeDifference(unsigned long long bunchCrossingNumber, int idx) {
     // time difference between the event # idx and bunchCrossingNumber
     return ((double) (bunchCrossingNumber - eventBunchCrossing(idx))) /
-      (St_starClockOnlC::instance()->Frequency());
+      (Cfg<starClockOnl>().frequency);
   }
 
 int St_tpcChargeEventC::indexBeforeBunchCrossing(unsigned long long bunchCrossingNumber) {
@@ -1144,5 +1172,5 @@ int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, 
 
 int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, double timeWindow) {
   return findChargeTimes(bunchCrossingNumber,
-    (unsigned long long) (timeWindow*(St_starClockOnlC::instance()->Frequency())));
+    (unsigned long long) (timeWindow*Cfg<starClockOnl>().frequency));
 }

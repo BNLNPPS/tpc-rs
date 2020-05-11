@@ -7,6 +7,7 @@
 #include "TMath.h"
 #include "TF1.h"
 
+#include "tpcrs/configurator.h"
 #include "tpcrs/structs.h"
 #include "enums.h"
 #include "config_structs.h"
@@ -633,7 +634,7 @@ struct St_tpcDimensionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDimen
   double      gatingGridZ(int sector = 20)
   {
     return St_tpcPadConfigC::instance()->outerSectorPadPlaneZ(sector)
-           - St_tpcWirePlanesC::instance()->outerSectorGatingGridPadPlaneSeparation();
+           - tpcrs::Cfg<tpcWirePlanes>().outerSectorGatingGridPadSep;
   }
   double      zInnerOffset()                  {return St_tpcEffectiveGeomC::instance()->z_inner_offset();}
   double      zOuterOffset()                  {return St_tpcEffectiveGeomC::instance()->z_outer_offset();}
@@ -667,7 +668,7 @@ struct St_tpcElectronicsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcElec
   int 	numberOfTimeBins(int i = 0) 	{return Struct(i)->numberOfTimeBins;}
   double 	nominalGain(int i = 0) 	{return Struct(i)->nominalGain;}
   //  double 	samplingFrequency(int i = 0) 	{return Struct(i)->samplingFrequency;}  obsolete
-  double      samplingFrequency(int i = 0) {return 1e-6 * St_starClockOnlC::instance()->CurrentFrequency(i);}
+  double      samplingFrequency(int i = 0) {return 1e-6 * tpcrs::Cfg<starClockOnl>(i).frequency;}
   double 	tZero(int i = 0) 	        {return Struct(i)->tZero;}
   double 	adcCharge(int i = 0) 	        {return Struct(i)->adcCharge;}
   double 	adcConversion(int i = 0) 	{return Struct(i)->adcConversion;}
@@ -1245,7 +1246,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   {
     // 111 is a guess using the maximum seen filled bunches in RHIC so far
     // (not always the case, but we don't have access to this number)
-    double Nbc = St_starClockOnlC::instance()->CurrentFrequency() * ((double) n_bunches) / 120.;
+    double Nbc = tpcrs::Cfg<starClockOnl>().frequency * ((double) n_bunches) / 120.;
     return -Nbc * TMath::Log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
   }
  private:
@@ -1299,5 +1300,7 @@ struct St_tss_tssparC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tss_tssparC
   float 	y_laser(int i = 0) 	{return Struct(i)->y_laser;}
   float 	z_laser(int i = 0) 	{return Struct(i)->z_laser;}
 };
+
+float GainCorrection(int sector, int row);
 
 #endif
