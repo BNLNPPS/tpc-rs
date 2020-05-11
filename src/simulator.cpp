@@ -70,6 +70,7 @@ TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
 TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
 
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
+using tpcrs::Cfg;
 
 StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   min_signal_(1e-4),
@@ -77,7 +78,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   electron_range_energy_(3000), // eV
   electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
   max_electron_energy_(e_cutoff),
-  max_sectors_(24),
+  max_sectors_(Cfg<tpcDimensions>().numberOfSectors),
   max_pads_(182),
   max_timebins_(512),
   options_(0),
@@ -86,18 +87,18 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   mdNdEL10(nullptr),
   mShaperResponses{},
   mChargeFraction{
-    std::vector<TF1F>(24, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6)),
-    std::vector<TF1F>(24, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6))
+    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6)),
+    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, -2.5, 2.5, 6))
   },
   mPadResponseFunction{
-    std::vector<TF1F>(24, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6)),
-    std::vector<TF1F>(24, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6))
+    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6)),
+    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, -4.5, 4.5, 6))
   },
   mPolya{
     TF1F("PolyaInner;x = G/G_0;signal", polya, 0, 10, 3),
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
-  mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * St_TpcResponseSimulatorC::instance()->W(), 1),
+  mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * Cfg<TpcResponseSimulator>().W, 1),
   m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
 {
   //  SETBIT(options_,kHEED);
@@ -133,8 +134,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
   }
 
-  double samplingFrequency     = 1.e6 * St_tpcElectronicsC::instance()->samplingFrequency(); // Hz
-  double TimeBinWidth          = 1. / samplingFrequency;
+  double TimeBinWidth = 1. / Cfg<starClockOnl>().frequency;
   /*
   select firstInnerSectorAnodeWire,lastInnerSectorAnodeWire,numInnerSectorAnodeWires,firstOuterSectorAnodeWire,lastOuterSectorAnodeWire,numOuterSectorAnodeWires from  Geometry_tpc.tpcWirePlanes;
   +---------------------------+--------------------------+--------------------------+---------------------------+--------------------------+--------------------------+
@@ -143,14 +143,14 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   |             53.2000000000 |           120.8000000000 |                      170 |            122.7950000000 |           191.1950000000 |                      172 |
   +---------------------------+--------------------------+--------------------------+---------------------------+--------------------------+--------------------------+
    */
-  numberOfInnerSectorAnodeWires  = St_tpcWirePlanesC::instance()->numberOfInnerSectorAnodeWires ();
-  firstInnerSectorAnodeWire      = St_tpcWirePlanesC::instance()->firstInnerSectorAnodeWire();
-  lastInnerSectorAnodeWire       = St_tpcWirePlanesC::instance()->lastInnerSectorAnodeWire ();
-  numberOfOuterSectorAnodeWires  = St_tpcWirePlanesC::instance()->numberOfOuterSectorAnodeWires ();
-  firstOuterSectorAnodeWire      = St_tpcWirePlanesC::instance()->firstOuterSectorAnodeWire();
-  lastOuterSectorAnodeWire       = St_tpcWirePlanesC::instance()->lastOuterSectorAnodeWire ();
-  anodeWirePitch                 = St_tpcWirePlanesC::instance()->anodeWirePitch           ();
-  anodeWireRadius                = St_tpcWirePlanesC::instance()->anodeWireRadius();
+  numberOfInnerSectorAnodeWires  = Cfg<tpcWirePlanes>().numInnerSectorAnodeWires;
+  firstInnerSectorAnodeWire      = Cfg<tpcWirePlanes>().firstInnerSectorAnodeWire;
+  lastInnerSectorAnodeWire       = Cfg<tpcWirePlanes>().lastInnerSectorAnodeWire;
+  numberOfOuterSectorAnodeWires  = Cfg<tpcWirePlanes>().numOuterSectorAnodeWires;
+  firstOuterSectorAnodeWire      = Cfg<tpcWirePlanes>().firstOuterSectorAnodeWire;
+  lastOuterSectorAnodeWire       = Cfg<tpcWirePlanes>().lastOuterSectorAnodeWire;
+  anodeWirePitch                 = Cfg<tpcWirePlanes>().anodeWirePitch;
+  anodeWireRadius                = Cfg<tpcWirePlanes>().anodeWireRadius;
   float BFieldG[3];
   float xyz[3] = {0, 0, 0};
   StarMagField::Instance().BField(xyz, BFieldG);
@@ -219,9 +219,9 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   for (int io = 0; io < 2; io++) {// In/Out
     FuncParams_t params3{
       {"t0",    t0IO[io]},
-      {"tauF",  St_TpcResponseSimulatorC::instance()->tauF()},
-      {"tauP",  St_TpcResponseSimulatorC::instance()->tauP()},
-      {"tauI",  St_TpcResponseSimulatorC::instance()->tauIntegration()},
+      {"tauF",  Cfg<TpcResponseSimulator>().tauF},
+      {"tauP",  Cfg<TpcResponseSimulator>().tauP},
+      {"tauI",  Cfg<TpcResponseSimulator>().tauIntegration},
       {"width", TimeBinWidth},
       {"tauC",  0},
       {"io",    io}
@@ -229,7 +229,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
     FuncParams_t params0{
       {"t0",    t0IO[io]},
-      {"tauI",  St_TpcResponseSimulatorC::instance()->tauX()[io]},
+      {"tauI",  io ? Cfg<TpcResponseSimulator>().tauXO : Cfg<TpcResponseSimulator>().tauXI},
       {"width", TimeBinWidth},
       {"tauC",  0},
       {"io",    io}
@@ -248,7 +248,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
     // new electronics only integration
     fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]), shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 5);
-    params0[3].second = St_TpcResponseSimulatorC::instance()->tauC()[io];
+    params0[3].second = io ? Cfg<TpcResponseSimulator>().tauCO : Cfg<TpcResponseSimulator>().tauCI;
     for (int i = 0; i != params0.size(); ++i) {
       fgTimeShape0[io]->SetParName(i, params0[i].first.c_str());
       fgTimeShape0[io]->SetParameter(i, params0[i].second);
@@ -259,18 +259,17 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
 
     for (int sector = 1; sector <= max_sectors_; sector++) {
-      //                             w       h         s      a       l   i
+      //                            w       h        s       a       l  i
       //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
       //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
       double params[6]{
-        io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadWidth(sector) :               // w = width of pad
+        io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadWidth(sector) :  // w = width of pad
                        St_tpcPadConfigC::instance()->outerSectorPadWidth(sector),
-        io == kInner ? St_tpcWirePlanesC::instance()->innerSectorAnodeWirePadPlaneSeparation() : // h = Anode-Cathode gap
-                       St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation(),
-        io == kInner ? St_tpcWirePlanesC::instance()->anodeWirePitch() :                         // s = wire spacing
-                       St_tpcWirePlanesC::instance()->anodeWirePitch(),
-        io == kInner ? St_TpcResponseSimulatorC::instance()->K3IP() :
-                       St_TpcResponseSimulatorC::instance()->K3OP(),
+        io == kInner ? Cfg<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
+                       Cfg<tpcWirePlanes>().outerSectorAnodeWirePadSep,
+        Cfg<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
+        io == kInner ? Cfg<TpcResponseSimulator>().K3IP :
+                       Cfg<TpcResponseSimulator>().K3OP,
         0,
         io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadPitch(sector) :
                        St_tpcPadConfigC::instance()->outerSectorPadPitch(sector)
@@ -283,8 +282,8 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 
       params[0] = io == kInner ? St_tpcPadConfigC::instance()->innerSectorPadLength(sector) :
                                  St_tpcPadConfigC::instance()->outerSectorPadLength(sector);
-      params[3] = io == kInner ? St_TpcResponseSimulatorC::instance()->K3IR()               :
-                                 St_TpcResponseSimulatorC::instance()->K3OR();
+      params[3] = io == kInner ? Cfg<TpcResponseSimulator>().K3IR :
+                                 Cfg<TpcResponseSimulator>().K3OR;
       params[5] = 1.;
 
       // Cut the tails
@@ -308,7 +307,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
       // Valeri Cherniatin (cherniat@bnlarm.bnl.gov) recomends m=1.38
       // Trs uses x**1.5/exp(x)
       // tss used x**0.5/exp(1.5*x)
-      if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) { // old TPC
+      if (Cfg<tpcAltroParams>(sector - 1).N < 0) { // old TPC
         InitShaperFuncs(io, sector, mShaperResponses, StTpcRSMaker::shapeEI3_I, params3, timeBinMin, timeBinMax);
       } else {//Altro
         InitShaperFuncs(io, sector, mShaperResponses, StTpcRSMaker::shapeEI_I,  params0, timeBinMin, timeBinMax);
@@ -322,13 +321,13 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
   //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
   //if (gamma <= 0) gamma = 1.38;
-  double gamma_inn = St_TpcResponseSimulatorC::instance()->PolyaInner();
-  double gamma_out = St_TpcResponseSimulatorC::instance()->PolyaOuter();
+  double gamma_inn = Cfg<TpcResponseSimulator>().PolyaInner;
+  double gamma_out = Cfg<TpcResponseSimulator>().PolyaOuter;
   mPolya[kInner].SetParameters(gamma_inn, 0., 1. / gamma_inn);
   mPolya[kOuter].SetParameters(gamma_out, 0., 1. / gamma_out);
 
   // HEED function to generate Ec, default w = 26.2
-  mHeed.SetParameter(0, St_TpcResponseSimulatorC::instance()->W());
+  mHeed.SetParameter(0, Cfg<TpcResponseSimulator>().W);
 }
 
 
@@ -516,19 +515,19 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
         if (sector > 12) iowe += 4;
         if (io)          iowe += 2;
 
-        float* AdditionalMcCorrection = St_TpcResponseSimulatorC::instance()->SecRowCor();
-        float* AddSigmaMcCorrection   = St_TpcResponseSimulatorC::instance()->SecRowSig();
+        const float* AdditionalMcCorrection = Cfg<TpcResponseSimulator>().SecRowCorIW;
+        const float* AddSigmaMcCorrection   = Cfg<TpcResponseSimulator>().SecRowSigIW;
         // Generate signal
-        double sigmaJitterT = St_TpcResponseSimulatorC::instance()->SigmaJitterTI();
-        double sigmaJitterX = St_TpcResponseSimulatorC::instance()->SigmaJitterXI();
+        double sigmaJitterT = Cfg<TpcResponseSimulator>().SigmaJitterTI;
+        double sigmaJitterX = Cfg<TpcResponseSimulator>().SigmaJitterXI;
 
         if (io) { // Outer
-          sigmaJitterT = St_TpcResponseSimulatorC::instance()->SigmaJitterTO();
-          sigmaJitterX = St_TpcResponseSimulatorC::instance()->SigmaJitterXO();
+          sigmaJitterT = Cfg<TpcResponseSimulator>().SigmaJitterTO;
+          sigmaJitterX = Cfg<TpcResponseSimulator>().SigmaJitterXO;
         }
 
         // Generate signal
-        double Gain = St_tss_tssparC::instance()->gain(sector, row);
+        double Gain = GainCorrection(sector, row);
 
         double GainXCorrectionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
         Gain *= std::exp(-GainXCorrectionL);
@@ -620,34 +619,34 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
         double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket;
         tpc_hitC->pad = padH;
         tpc_hitC->timebucket = tbkH;
-        double OmegaTau = St_TpcResponseSimulatorC::instance()->OmegaTau() *
+        double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
                             TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
 
 
         double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position.z);
         double D = 1. + OmegaTau * OmegaTau;
-        double SigmaT = St_TpcResponseSimulatorC::instance()->transverseDiffusion() * std::sqrt(driftLength / D);
+        double SigmaT = Cfg<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
 
-        //	double SigmaL = St_TpcResponseSimulatorC::instance()->longitudinalDiffusion()*std::sqrt(2*driftLength  );
+        //	double SigmaL = Cfg<TpcResponseSimulator>().longitudinalDiffusion*std::sqrt(2*driftLength  );
         if (sigmaJitterX > 0) {SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);}
 
-        double SigmaL     = St_TpcResponseSimulatorC::instance()->longitudinalDiffusion() * std::sqrt(driftLength);
-        double NoElPerAdc = St_TpcResponseSimulatorC::instance()->NoElPerAdc();
+        double SigmaL     = Cfg<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
+        double NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdc;
 
         if (NoElPerAdc <= 0) {
           if (St_tpcPadConfigC::instance()->iTPC(sector) && St_tpcPadConfigC::instance()->IsRowInner(sector, row)) {
-            NoElPerAdc = St_TpcResponseSimulatorC::instance()->NoElPerAdcX(); // iTPC
+            NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdcX; // iTPC
           }
           else if (St_tpcPadConfigC::instance()->IsRowInner(sector, row)) {
-            NoElPerAdc = St_TpcResponseSimulatorC::instance()->NoElPerAdcI(); // inner TPX
+            NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdcI; // inner TPX
           }
           else {
-            NoElPerAdc = St_TpcResponseSimulatorC::instance()->NoElPerAdcO(); // outer TPX
+            NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdcO; // outer TPX
           }
         }
 
 #ifndef __NO_1STROWCORRECTION__
-        if (row == 1) dEdxCor *= std::exp(St_TpcResponseSimulatorC::instance()->FirstRowC());
+        if (row == 1) dEdxCor *= std::exp(Cfg<TpcResponseSimulator>().FirstRowC);
 #endif
         double gain_local = Gain / dEdxCor / NoElPerAdc; // Account dE/dx calibration
         // end of dE/dx correction
@@ -681,7 +680,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
             bg = std::sqrt(gamma * gamma - 1.);
             Tmax = 0.5 * m_e * (gamma - 1);
 
-            if (Tmax <= St_TpcResponseSimulatorC::instance()->W() / 2 * eV) break;
+            if (Tmax <= Cfg<TpcResponseSimulator>().W / 2 * eV) break;
 
             NP = GetNoPrimaryClusters(betaGamma, charge);
             dE = std::exp(cLog10 * mdNdEL10->GetRandom());
@@ -691,8 +690,8 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
               dS = - std::log(gRandom->Rndm()) / NP;
 
               if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
-              else          dE = St_TpcResponseSimulatorC::instance()->W() *
-                                 gRandom->Poisson(St_TpcResponseSimulatorC::instance()->Cluster());
+              else          dE = Cfg<TpcResponseSimulator>().W *
+                                 gRandom->Poisson(Cfg<TpcResponseSimulator>().Cluster);
             }
             else { // charge == 0 geantino
               // for LASERINO assume dE/dx = 25 keV/cm;
@@ -711,7 +710,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
 
           if (newPosition > s_upper) break;
 
-          if (dE < St_TpcResponseSimulatorC::instance()->W() / 2 || E > Tmax) continue;
+          if (dE < Cfg<TpcResponseSimulator>().W / 2 || E > Tmax) continue;
 
           if (eKin > 0) {
             if (eKin >= E) {eKin -= E;}
@@ -930,10 +929,10 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
   PrPP(Print, St_tpcPadConfigC::instance()->numberOfRows(20));
   PrPP(Print, St_tpcPadConfigC::instance()->numberOfInnerRows(20));
   PrPP(Print, max_pads_);
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->W());// = 26.2);//*eV
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->Cluster());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->longitudinalDiffusion());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->transverseDiffusion());
+  PrPP(Print, Cfg<TpcResponseSimulator>().W);// = 26.2);//*eV
+  PrPP(Print, Cfg<TpcResponseSimulator>().Cluster);
+  PrPP(Print, Cfg<TpcResponseSimulator>().longitudinalDiffusion);
+  PrPP(Print, Cfg<TpcResponseSimulator>().transverseDiffusion);
   //  PrPP(Print, Gain);
   PrPP(Print, max_timebins_);
   PrPP(Print, numberOfInnerSectorAnodeWires);
@@ -943,27 +942,27 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
   PrPP(Print, firstOuterSectorAnodeWire);
   PrPP(Print, lastOuterSectorAnodeWire);
   PrPP(Print, anodeWirePitch);
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->OmegaTau()); // tan of Lorentz angle
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->NoElPerAdcI());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->NoElPerAdcO());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->NoElPerAdcX());
+  PrPP(Print, Cfg<TpcResponseSimulator>().OmegaTau); // tan of Lorentz angle
+  PrPP(Print, Cfg<TpcResponseSimulator>().NoElPerAdcI);
+  PrPP(Print, Cfg<TpcResponseSimulator>().NoElPerAdcO);
+  PrPP(Print, Cfg<TpcResponseSimulator>().NoElPerAdcX);
   PrPP(Print, anodeWireRadius);
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->AveragePedestal());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->AveragePedestalRMS());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->AveragePedestalRMSX());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->FanoFactor());
+  PrPP(Print, Cfg<TpcResponseSimulator>().AveragePedestal);
+  PrPP(Print, Cfg<TpcResponseSimulator>().AveragePedestalRMS);
+  PrPP(Print, Cfg<TpcResponseSimulator>().AveragePedestalRMSX);
+  PrPP(Print, Cfg<TpcResponseSimulator>().FanoFactor);
 
   for (int sector = 1; sector <= 24; sector++) {
     PrPP(Print, innerSectorAnodeVoltage[sector-1]);
     PrPP(Print, outerSectorAnodeVoltage[sector-1]);
   }
 
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->K3IP());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->K3IR());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->K3OP());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->K3OR());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->SigmaJitterTI());
-  PrPP(Print, St_TpcResponseSimulatorC::instance()->SigmaJitterTO());
+  PrPP(Print, Cfg<TpcResponseSimulator>().K3IP);
+  PrPP(Print, Cfg<TpcResponseSimulator>().K3IR);
+  PrPP(Print, Cfg<TpcResponseSimulator>().K3OP);
+  PrPP(Print, Cfg<TpcResponseSimulator>().K3OR);
+  PrPP(Print, Cfg<TpcResponseSimulator>().SigmaJitterTI);
+  PrPP(Print, Cfg<TpcResponseSimulator>().SigmaJitterTO);
 }
 
 
@@ -971,11 +970,11 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
 {
   for (int row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
     int nPadsPerRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
-    double pedRMS = St_TpcResponseSimulatorC::instance()->AveragePedestalRMS();
+    double pedRMS = Cfg<TpcResponseSimulator>().AveragePedestalRMS;
 
-    if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) {
+    if (Cfg<tpcAltroParams>(sector - 1).N > 0) {
       if (! (St_tpcPadConfigC::instance()->iTPC(sector) && St_tpcPadConfigC::instance()->IsRowInner(sector, row))) {
-        pedRMS = St_TpcResponseSimulatorC::instance()->AveragePedestalRMSX();
+        pedRMS = Cfg<TpcResponseSimulator>().AveragePedestalRMSX;
       }
     }
 
@@ -988,7 +987,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
 
       if (gain <= 0.0) continue;
 
-      double ped = St_TpcResponseSimulatorC::instance()->AveragePedestal();
+      double ped = Cfg<TpcResponseSimulator>().AveragePedestal;
       static std::vector<short> ADCs(max_timebins_, 0);
       static std::vector<short> IDTs(max_timebins_, 0);
       std::fill(ADCs.begin(), ADCs.end(), 0);
@@ -1017,26 +1016,24 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
 
       if (!num_time_bins) continue;
 
-      if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) {
+      if (Cfg<tpcAltroParams>(sector - 1).N >= 0) {
         Altro altro_sim(max_timebins_, ADCs.data());
 
-        if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) {
+        if (Cfg<tpcAltroParams>(sector - 1).N > 0) {
           //      ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
           altro_sim.ConfigAltro(                    0,                  1,                     0,          1,                 1);
-          altro_sim.ConfigTailCancellationFilter(St_tpcAltroParamsC::instance()->K1(),
-                                              St_tpcAltroParamsC::instance()->K2(),
-                                              St_tpcAltroParamsC::instance()->K3(), // K1-3
-                                              St_tpcAltroParamsC::instance()->L1(),
-                                              St_tpcAltroParamsC::instance()->L2(),
-                                              St_tpcAltroParamsC::instance()->L3());// L1-3
+          altro_sim.ConfigTailCancellationFilter(Cfg<tpcAltroParams>().Altro_K1,
+                                              Cfg<tpcAltroParams>().Altro_K2,
+                                              Cfg<tpcAltroParams>().Altro_K3,
+                                              Cfg<tpcAltroParams>().Altro_L1,
+                                              Cfg<tpcAltroParams>().Altro_L2,
+                                              Cfg<tpcAltroParams>().Altro_L3);
         }
         else {
           altro_sim.ConfigAltro(0, 0, 0, 1, 1);
         }
 
-        altro_sim.ConfigZerosuppression(St_tpcAltroParamsC::instance()->Threshold(),
-                                     St_tpcAltroParamsC::instance()->MinSamplesaboveThreshold(),
-                                     0, 0);
+        altro_sim.ConfigZerosuppression(Cfg<tpcAltroParams>().Altro_thr, Cfg<tpcAltroParams>().Altro_seq, 0, 0);
         altro_sim.RunEmulation();
         num_time_bins = 0;
 
@@ -1057,7 +1054,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         }
       }
       else {
-        if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) num_time_bins = AsicThresholds(ADCs.data());
+        if (Cfg<tpcAltroParams>(sector - 1).N < 0) num_time_bins = AsicThresholds(ADCs.data());
       }
 
       if (num_time_bins > 0) {
@@ -1082,11 +1079,11 @@ int StTpcRSMaker::AsicThresholds(short* ADCs)
   int noTbleft = 0;
 
   for (unsigned int tb = 0; tb < max_timebins_; tb++) {
-    if (ADCs[tb] <= St_asic_thresholdsC::instance()->thresh_lo()) {
+    if (ADCs[tb] <= Cfg<asic_thresholds>().thresh_lo) {
       if (! t1) ADCs[tb] = 0;
       else {
-        if (nSeqLo <= St_asic_thresholdsC::instance()->n_seq_lo() ||
-            nSeqHi <= St_asic_thresholdsC::instance()->n_seq_hi())
+        if (nSeqLo <= Cfg<asic_thresholds>().n_seq_lo ||
+            nSeqHi <= Cfg<asic_thresholds>().n_seq_hi)
           for (unsigned int t = t1; t <= tb; t++) ADCs[t] = 0;
         else noTbleft += nSeqLo;
       }
@@ -1098,7 +1095,7 @@ int StTpcRSMaker::AsicThresholds(short* ADCs)
 
     if (! t1) t1 = tb;
 
-    if (ADCs[tb] > St_asic_thresholdsC::instance()->thresh_hi()) {nSeqHi++;}
+    if (ADCs[tb] > Cfg<asic_thresholds>().thresh_hi) {nSeqHi++;}
   }
 
   return noTbleft;
@@ -1312,8 +1309,8 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit* tpc_hitC, const g2t_verte
   double driftLength = TrackSegmentHits.coorLS.position.z + tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
 
   if (driftLength > -1.0 && driftLength <= 0) {
-    if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation()) ||
-        (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -St_tpcWirePlanesC::instance()->innerSectorAnodeWirePadPlaneSeparation()))
+    if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > - Cfg<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
+        (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > - Cfg<tpcWirePlanes>().innerSectorAnodeWirePadSep))
       driftLength = std::abs(driftLength);
   }
 
@@ -1352,11 +1349,11 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
   int WireIndex = 0;
 
   int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
-  double sigmaJitterT = St_TpcResponseSimulatorC::instance()->SigmaJitterTI();
-  double sigmaJitterX = St_TpcResponseSimulatorC::instance()->SigmaJitterXI();
+  double sigmaJitterT = Cfg<TpcResponseSimulator>().SigmaJitterTI;
+  double sigmaJitterX = Cfg<TpcResponseSimulator>().SigmaJitterXI;
   if (io) { // Outer
-    sigmaJitterT = St_TpcResponseSimulatorC::instance()->SigmaJitterTO();
-    sigmaJitterX = St_TpcResponseSimulatorC::instance()->SigmaJitterXO();
+    sigmaJitterT = Cfg<TpcResponseSimulator>().SigmaJitterTO;
+    sigmaJitterX = Cfg<TpcResponseSimulator>().SigmaJitterXO;
   }
 
   Coords unit = TrackSegmentHits.dirLS.position.unit();
@@ -1424,9 +1421,9 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
     int iGroundWire = int(std::abs(10.*dist2Grid));
     double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
     // OmegaTau near wires taken from comparison with data
-    double tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleO();
+    double tanLorentz = OmegaTau / Cfg<TpcResponseSimulator>().OmegaTauScaleO;
 
-    if (y < firstOuterSectorAnodeWire) tanLorentz = OmegaTau / St_TpcResponseSimulatorC::instance()->OmegaTauScaleI();
+    if (y < firstOuterSectorAnodeWire) tanLorentz = OmegaTau / Cfg<TpcResponseSimulator>().OmegaTauScaleI;
 
     xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
     zOnWire += std::abs(distFocused);
@@ -1476,10 +1473,10 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 
     if (binT < 0 || binT >= max_timebins_) continue;
 
-    double dT = bin - binT + St_TpcResponseSimulatorC::instance()->T0offset();
+    double dT = bin - binT + Cfg<TpcResponseSimulator>().T0offset;
     dT += (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ?
-          St_TpcResponseSimulatorC::instance()->T0offsetI() :
-          St_TpcResponseSimulatorC::instance()->T0offsetO();
+          Cfg<TpcResponseSimulator>().T0offsetI :
+          Cfg<TpcResponseSimulator>().T0offsetO;
 
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT); // #1
 

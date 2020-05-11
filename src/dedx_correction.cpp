@@ -218,24 +218,24 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
     if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) kTpcOutIn = kiTpc;
   }
 
-  St_tss_tssparC* tsspar = St_tss_tssparC::instance();
+  const tss_tsspar& tsspar = tpcrs::Cfg<tss_tsspar>();
   float gasGain = 1;
   float gainNominal = 0;
 
   if (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) {
-    gainNominal = tsspar->gain_out() * tsspar->wire_coupling_out();
-    gasGain = tsspar->gain_out(sector, row) * tsspar->wire_coupling_out();
+    gainNominal = tsspar.gain_out * tsspar.wire_coupling_out;
+    gasGain = GainCorrection(sector, row) * tsspar.wire_coupling_out;
   }
   else {
-    gainNominal = tsspar->gain_in() * tsspar->wire_coupling_in();
-    gasGain = tsspar->gain_in(sector, row) * tsspar->wire_coupling_in();
+    gainNominal = tsspar.gain_in * tsspar.wire_coupling_in;
+    gasGain = GainCorrection(sector, row) * tsspar.wire_coupling_in;
   }
 
   if (gasGain <= 0.0) return 4;
 
   //  double gainAVcorr = gasGain/gainNominal;
-  mAdc2GeV = tsspar->ave_ion_pot() * tsspar->scale() / gainNominal;
-  double Adc2GeVReal = tsspar->ave_ion_pot() * tsspar->scale() / gasGain;
+  mAdc2GeV = tsspar.ave_ion_pot * tsspar.scale / gainNominal;
+  double Adc2GeVReal = tsspar.ave_ion_pot * tsspar.scale / gasGain;
   tpcGas* gas = m_tpcGas->Struct();
   double ZdriftDistanceO2 = ZdriftDistance * gas->ppmOxygenIn;
   double ZdriftDistanceO2W = ZdriftDistanceO2 * gas->ppmWaterOut;

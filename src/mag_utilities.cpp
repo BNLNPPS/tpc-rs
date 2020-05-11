@@ -93,6 +93,7 @@ To do:  <br>
 #include "TF1.h"
 #include "TRandom.h"
 
+#include "tpcrs/configurator.h"
 #include "coords.h"
 #include "logger.h"
 #include "mag_utilities.h"
@@ -224,10 +225,8 @@ void StMagUtilities::GetMagFactor ()
 
 void StMagUtilities::GetTPCParams ()
 {
-  St_tpcWirePlanesC*    wires = St_tpcWirePlanesC::instance();
   St_tpcPadConfigC*      pads = St_tpcPadConfigC::instance();
   St_tpcFieldCageC*     cages = St_tpcFieldCageC::instance();
-  St_tpcDimensionsC*     dims = St_tpcDimensionsC::instance();
 
   if (! StTpcDb::IsOldScheme()) { // new schema
     XTWIST = 0;
@@ -245,8 +244,10 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = 0;
   }
 
+  using tpcrs::Cfg;
+
   StarDriftV     =  1e-6 * StTpcDb::instance().DriftVelocity() ;
-  TPC_Z0         =  dims->gatingGridZ() ;
+  TPC_Z0         =  Cfg<tpcPadPlanes>().outerSectorPadPlaneZ - Cfg<tpcWirePlanes>().outerSectorGatingGridPadSep;
   IFCShift       =  cages->InnerFieldCageShift();
 
   for (int sec = 1; sec <= 24; sec++) {
@@ -258,13 +259,13 @@ void StMagUtilities::GetTPCParams ()
   }
 
   IFCRadius      =    47.90 ;  // Radius of the Inner Field Cage (GVB: not sure where in DB?)
-  OFCRadius      =  dims->senseGasOuterRadius();
-  INNERGGFirst   =  wires->firstInnerSectorGatingGridWire();
-  OUTERGGFirst   =  wires->firstOuterSectorGatingGridWire();
+  OFCRadius      =  Cfg<tpcDimensions>().senseGasOuterRadius;
+  INNERGGFirst   =  Cfg<tpcWirePlanes>().firstInnerSectorGatingGridWire;
+  OUTERGGFirst   =  Cfg<tpcWirePlanes>().firstOuterSectorGatingGridWire;
   INNERGGLast    =  INNERGGFirst +
-                    wires->gatingGridWirePitch() * (wires->numInnerSectorGatingGridWires() - 1);
+                    Cfg<tpcWirePlanes>().gatingGridWirePitch * (Cfg<tpcWirePlanes>().numInnerSectorGatingGridWires - 1);
   OUTERGGLast    =  OUTERGGFirst +
-                    wires->gatingGridWirePitch() * (wires->numOuterSectorGatingGridWires() - 1);
+                    Cfg<tpcWirePlanes>().gatingGridWirePitch * (Cfg<tpcWirePlanes>().numOuterSectorGatingGridWires - 1);
   GAPRADIUS      =  0.5 * (INNERGGLast + OUTERGGFirst);
   // Note (2012-10-25): currently GAPRADIUS from the DB (121.7975) differs very slightly
   //                    (by 25 microns) from non-DB value (121.8000)

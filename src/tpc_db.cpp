@@ -13,6 +13,7 @@
 #include "TVector3.h"
 #include "TString.h"
 
+#include "tpcrs/configurator.h"
 #include "enums.h"
 #include "logger.h"
 #include "mag_field.h"
@@ -32,7 +33,7 @@ StTpcDb::StTpcDb()
   }
 
   mFlip = new TGeoHMatrix;
-  mzGG = St_tpcDimensionsC::instance()->gatingGridZ(); // zGG
+  mzGG = tpcrs::Cfg<tpcPadPlanes>().outerSectorPadPlaneZ - tpcrs::Cfg<tpcWirePlanes>().outerSectorGatingGridPadSep;
   double Rotation[9] = {0, 1, 0,
                         1, 0, 0,
                         0, 0, -1};
@@ -113,7 +114,7 @@ void StTpcDb::SetTpcRotations()
 
    */
   //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
-  assert(St_tpcDimensionsC::instance()->numberOfSectors() == 24);
+  assert(tpcrs::Cfg<tpcDimensions>().numberOfSectors == 24);
   float gFactor = St_MagFactorC::instance()->ScaleFactor();
   double phi, theta, psi;
   int iphi;

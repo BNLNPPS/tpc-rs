@@ -52,6 +52,18 @@ class Configurator
 
 template<typename Struct_t> std::string ConfigNodeName() { return "undefined"; };
 
+template<> std::string ConfigNodeName<asic_thresholds>();
+template<> std::string ConfigNodeName<starClockOnl>();
+template<> std::string ConfigNodeName<TpcResponseSimulator>();
+template<> std::string ConfigNodeName<tpcAltroParams>();
+template<> std::string ConfigNodeName<tpcEffectiveGeom>();
+template<> std::string ConfigNodeName<tpcDimensions>();
+template<> std::string ConfigNodeName<tpcPadPlanes>();
+template<> std::string ConfigNodeName<tpcElectronics>();
+template<> std::string ConfigNodeName<tpcPadrowT0>();
+template<> std::string ConfigNodeName<tpcWirePlanes>();
+template<> std::string ConfigNodeName<tss_tsspar>();
+
 
 template<typename Struct_t>
 const Struct_t& Cfg(int i = 0)

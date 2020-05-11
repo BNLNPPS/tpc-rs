@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 
 #include "tpcrs/configurator.h"
+#include "tpcrs/structs.h"
 #include "config.h"
 
 namespace tpcrs {
@@ -37,5 +38,18 @@ std::string Configurator::Locate(std::string filename)
 
   return "";
 }
+
+
+template<> std::string ConfigNodeName<asic_thresholds>()      { return "Calibrations/tpc/asic_thresholds"; };
+template<> std::string ConfigNodeName<tpcAltroParams>()       { return "Calibrations/tpc/tpcAltroParams"; };
+template<> std::string ConfigNodeName<tpcEffectiveGeom>()     { return "Calibrations/tpc/tpcEffectiveGeom"; };
+template<> std::string ConfigNodeName<tpcElectronics>()       { return "Calibrations/tpc/tpcElectronics"; };
+template<> std::string ConfigNodeName<tpcPadrowT0>()          { return "Calibrations/tpc/tpcPadrowT0"; };
+template<> std::string ConfigNodeName<TpcResponseSimulator>() { return "Calibrations/tpc/TpcResponseSimulator"; };
+template<> std::string ConfigNodeName<tpcDimensions>()        { return "Geometry/tpc/tpcDimensions"; };
+template<> std::string ConfigNodeName<tpcPadPlanes>()         { return "Geometry/tpc/tpcPadPlanes"; };
+template<> std::string ConfigNodeName<tpcWirePlanes>()        { return "Geometry/tpc/tpcWirePlanes"; };
+template<> std::string ConfigNodeName<starClockOnl>()         { return "RunLog/onl/starClockOnl"; };
+template<> std::string ConfigNodeName<tss_tsspar>()           { return "tpc/tsspars/tsspar"; };
 
 }
