@@ -93,7 +93,10 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   mdNdx(nullptr),
   mdNdxL10(nullptr),
   mdNdEL10(nullptr),
-  mShaperResponses{},
+  mShaperResponses{
+    std::vector<TF1F>(max_sectors_, TF1F("ShaperFuncInner;Time [bin];Signal", StTpcRSMaker::shapeEI_I, 0, 1, 7)),
+    std::vector<TF1F>(max_sectors_, TF1F("ShaperFuncOuter;Time [bin];Signal", StTpcRSMaker::shapeEI_I, 0, 1, 7))
+  },
   mChargeFraction{
     std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6)),
     std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6))
@@ -340,40 +343,31 @@ StTpcRSMaker::~StTpcRSMaker()
   delete mdNdx;
   delete mdNdxL10;
   delete mdNdEL10;
-
-  for (int io = 0; io < 2; io++) {// Inner/Outer
-    for (int sec = 0; sec < max_sectors_; sec++) {
-      if (mShaperResponses[io][sec] && !mShaperResponses[io][sec]->TestBit(TObject::kNotDeleted)) {delete mShaperResponses[io][sec];}
-    }
-  }
 }
 
 
-void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::array<TF1F*, 24>, 2>& funcs,
+void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
   double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax)
 {
-  const char io_id[2] = {'I', 'O'};
-  funcs[io][sector - 1] = new TF1F(Form("ShaperFunc_%c_S%02i", io_id[io], sector), shape, timeBinMin, timeBinMax, params.size());
-  funcs[io][sector - 1]->SetTitle(funcs[io][sector - 1]->GetName());
-  funcs[io][sector - 1]->GetXaxis()->SetTitle("time (buckets)");
-  funcs[io][sector - 1]->GetYaxis()->SetTitle("signal");
+  funcs[io][sector - 1].SetFunction(shape);
+  funcs[io][sector - 1].SetRange(timeBinMin, timeBinMax);
 
   for (int i = 0; i != params.size(); ++i) {
-    funcs[io][sector - 1]->SetParName(i, params[i].first.c_str());
-    funcs[io][sector - 1]->SetParameter(i, params[i].second);
+    funcs[io][sector - 1].SetParName(i, params[i].first.c_str());
+    funcs[io][sector - 1].SetParameter(i, params[i].second);
   }
 
   // Cut tails
   double t = timeBinMax;
-  double ymax = funcs[io][sector - 1]->Eval(0.5);
+  double ymax = funcs[io][sector - 1].Eval(0.5);
 
   for (; t > 5; t -= 1) {
-    double r = funcs[io][sector - 1]->Eval(t) / ymax;
+    double r = funcs[io][sector - 1].Eval(t) / ymax;
     if (r > 1e-2) break;
   }
 
-  funcs[io][sector - 1]->SetRange(timeBinMin, t);
-  funcs[io][sector - 1]->Save(timeBinMin, t, 0, 0, 0, 0);
+  funcs[io][sector - 1].SetRange(timeBinMin, t);
+  funcs[io][sector - 1].Save(timeBinMin, t, 0, 0, 0, 0);
 }
 
 
@@ -1450,7 +1444,7 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
     }
 
     GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, sigmaJitterT,
-                   mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
+                   &mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
   }  // electrons in Cluster
 
   return total_signal_in_cluster;
