@@ -75,7 +75,7 @@ class StTpcRSMaker
     std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
     HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex);
 
-  void TrackSegment2Propagate(g2t_tpc_hit* tpc_hitC, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
+  void TrackSegment2Propagate(g2t_tpc_hit& geant_hit, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
 
   double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,
