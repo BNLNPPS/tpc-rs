@@ -397,7 +397,6 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-  g2t_tpc_hit* tpc_hit_begin = &geant_hits.front();
 
   St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
   St_tpcGainCorrectionC::instance()->Struct(1)->min = -500;
@@ -481,7 +480,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
       int nSegHits = 0;
       int sIndex = sortedIndex;
 
-      BuildTrackSegments(sector, sorted_index, sortedIndex, tpc_hit_begin, geant_vertices[id3 - 1], TrackSegmentHits, smin, smax, nSegHits, sIndex);
+      BuildTrackSegments(sector, sorted_index, sortedIndex, gaent_hits, geant_vertices[id3 - 1], TrackSegmentHits, smin, smax, nSegHits, sIndex);
 
       if (!nSegHits) continue;
 
@@ -787,7 +786,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
 
 
 void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-  g2t_tpc_hit* tpc_hit_begin, const g2t_vertex& geant_vertex,
+  std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
   HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex)
 {
   int n_hits = sorted_index.size();
@@ -800,7 +799,7 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
   for (nSegHits = 0, sIndex = sortedIndex; sIndex < n_hits && nSegHits < 100; sIndex++)
   {
     int indx = sorted_index[sIndex];
-    g2t_tpc_hit* tpc_hitC = tpc_hit_begin + indx;
+    g2t_tpc_hit* tpc_hitC = &geant_hits[indx];
 
     if ((tpc_hitC->volume_id % 10000) / 100 != sector) break;
 
