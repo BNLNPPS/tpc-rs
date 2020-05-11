@@ -93,7 +93,7 @@ class StTpcRSMaker
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
   /// Initializes the mShaperResponses array with shape functions
-  void InitShaperFuncs(int io, int sector, std::array<std::array<TF1F*, 24>, 2>& funcs,
+  void InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
     double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);
 
   static TF1F     fgTimeShape3[2];  //!
@@ -102,7 +102,7 @@ class StTpcRSMaker
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
   TH1D*    mdNdEL10;                  //!
-  std::array<std::array<TF1F*, 24>, 2>  mShaperResponses;     //!
+  std::array<std::vector<TF1F>, 2>  mShaperResponses;     //!
   std::array<std::vector<TF1F>, 2>  mChargeFraction;      //!
   std::array<std::vector<TF1F>, 2>  mPadResponseFunction; //!
   TF1F   mPolya[2];                   //!
