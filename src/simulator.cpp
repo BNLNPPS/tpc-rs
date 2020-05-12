@@ -473,14 +473,13 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
       if (ipart == 3) charge = -101;
 
       // Track segment to propagate
-      enum {max_track_segments = 100};
-      static HitPoint_t TrackSegmentHits[max_track_segments];
       double smin = 9999;
       double smax = -9999;
-      int nSegHits = 0;
       int sIndex = sortedIndex;
 
-      BuildTrackSegments(sector, sorted_index, sortedIndex, gaent_hits, geant_vertices[id3 - 1], TrackSegmentHits, smin, smax, nSegHits, sIndex);
+      std::vector<HitPoint_t> TrackSegmentHits;
+      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, geant_vertices[id3 - 1], TrackSegmentHits, smin, smax, sIndex);
+      int nSegHits = TrackSegmentHits.size();
 
       if (!nSegHits) continue;
 
@@ -787,16 +786,19 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
 
 void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
   std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
-  HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex)
+  std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex)
 {
   int n_hits = sorted_index.size();
 
   if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tn_hits = " << n_hits << '\n';
 
+  segments.resize(100);
+  HitPoint_t prev_segment;
   int parent_track_idx = 0;
   int TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
+  int num_segments = 0;
 
-  for (nSegHits = 0, sIndex = sortedIndex; sIndex < n_hits && nSegHits < 100; sIndex++)
+  for (sIndex = sortedIndex; sIndex < n_hits && num_segments < 100; sIndex++)
   {
     int indx = sorted_index[sIndex];
     g2t_tpc_hit& geant_hit = geant_hits[indx];
@@ -807,34 +809,38 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
 
     parent_track_idx = geant_hit.track_p;
 
-    if (nSegHits == 1) { // No Loopers !
-      if (TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 <= geant_hit.volume_id % 100) {
+    if (num_segments == 1) { // No Loopers !
+      if (prev_segment.tpc_hitC->volume_id % 100 <= geant_hit.volume_id % 100) {
         TrackDirection = 0;
       }
       else {
         TrackDirection = 1;
       }
     }
-    else if (nSegHits > 1) {
-      if ((! TrackDirection && TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 > geant_hit.volume_id % 100) ||
-          (  TrackDirection && TrackSegmentHits[nSegHits - 1].tpc_hitC->volume_id % 100 < geant_hit.volume_id % 100))
+    else if (num_segments > 1) {
+      if ((! TrackDirection && prev_segment.tpc_hitC->volume_id % 100 > geant_hit.volume_id % 100) ||
+          (  TrackDirection && prev_segment.tpc_hitC->volume_id % 100 < geant_hit.volume_id % 100))
         break;
     }
 
     if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << &geant_hit << '\n';
 
-    TrackSegmentHits[nSegHits].s = geant_hit.length;
+    HitPoint_t curr_segment;
+    curr_segment.s = geant_hit.length;
 
-    if (geant_hit.length == 0 && nSegHits > 0) {
-      TrackSegmentHits[nSegHits].s = TrackSegmentHits[nSegHits - 1].s + TrackSegmentHits[nSegHits].tpc_hitC->ds;
+    if (geant_hit.length == 0 && num_segments > 1) {
+      curr_segment.s = prev_segment.s + curr_segment.tpc_hitC->ds;
     }
 
-    TrackSegment2Propagate(geant_hit, geant_vertex, TrackSegmentHits[nSegHits], smin, smax);
+    TrackSegment2Propagate(geant_hit, geant_vertex, curr_segment, smin, smax);
 
-    if (TrackSegmentHits[nSegHits].Pad.timeBucket < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket > max_timebins_) continue;
+    if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
 
-    nSegHits++;
+    segments[num_segments++] = curr_segment;
+    prev_segment = curr_segment;
   }
+
+  segments.resize(num_segments);
 }
 
 
