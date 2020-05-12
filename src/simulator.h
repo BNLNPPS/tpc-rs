@@ -73,7 +73,7 @@ class StTpcRSMaker
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
     std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
-    HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex);
+    std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex);
 
   void TrackSegment2Propagate(g2t_tpc_hit& geant_hit, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
 
