@@ -12,7 +12,7 @@
 #include "config_structs.h"
 
 
-struct St_asic_thresholdsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_asic_thresholdsC, asic_thresholds_st>
+struct St_asic_thresholdsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_asic_thresholdsC, asic_thresholds>
 {
   int 	thresh_lo(int i = 0) 	{return Struct(i)->thresh_lo;}
   int 	thresh_hi(int i = 0) 	{return Struct(i)->thresh_hi;}
@@ -20,7 +20,7 @@ struct St_asic_thresholdsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_asic_t
   int 	n_seq_hi(int i = 0) 	{return Struct(i)->n_seq_hi;}
 };
 
-struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0_st>
+struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0>
 {
   int 	run(int i = 0) 	const {return Struct(i)->run;}
   float 	Gain(int sector, int row, int pad) const
@@ -41,7 +41,7 @@ struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadG
   }
 };
 
-struct St_iTPCSurveyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_iTPCSurveyC, iTPCSurvey_st> {
+struct St_iTPCSurveyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_iTPCSurveyC, iTPCSurvey> {
   int 	Id(int i = 0) 	const {return Struct(i)->Id;}
   float 	Angle(int i = 0) 	const {return Struct(i)->Angle;}
   float 	dx(int i = 0) 	const {return Struct(i)->dx;}
@@ -51,12 +51,12 @@ struct St_iTPCSurveyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_iTPCSurveyC
   char* 	comment(int i = 0) 	const {return Struct(i)->comment;}
 };
 
-struct St_MagFactorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_MagFactorC, MagFactor_st> {
+struct St_MagFactorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_MagFactorC, MagFactor> {
   float 	ScaleFactor(int i = 0) {return Struct(i)->ScaleFactor;}
 };
 
 struct St_MDFCorrectionC : tpcrs::IConfigStruct {
-  virtual MDFCorrection_st* Struct(int i = 0) const = 0;
+  virtual MDFCorrection* Struct(int i = 0) const = 0;
   enum EMDFPolyType {
     kMonomials,
     kChebyshev,
@@ -94,7 +94,7 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
   TF1         **fFunc;
 };
 
-struct St_richvoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages_st>
+struct St_richvoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages>
 {
   unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
   unsigned int 	startStatusTime(int i = 0) 	{return Struct(i)->startStatusTime;}
@@ -106,7 +106,7 @@ enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,
                        eZeroMField, eHalfMFieldPolA, eFullMFieldPolA
                       };
 
-struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC, starMagOnl_st>
+struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC, starMagOnl>
 {
   unsigned int 	runNumber(int i = 0) 	{return Struct(i)->runNumber;}
   unsigned int 	time(int i = 0) 	{return Struct(i)->time;}
@@ -167,7 +167,7 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
 };
 
 struct St_spaceChargeCorC : tpcrs::IConfigStruct {
-  virtual spaceChargeCor_st* Struct(int i = 0) const = 0;
+  virtual spaceChargeCor* Struct(int i = 0) const = 0;
   double 	fullFieldB(int i = 0) 	{return Struct(i)->fullFieldB;}
   double 	halfFieldB(int i = 0) 	{return Struct(i)->halfFieldB;}
   double 	zeroField(int i = 0) 	        {return Struct(i)->zeroField;}
@@ -197,11 +197,11 @@ struct St_spaceChargeCorC : tpcrs::IConfigStruct {
 
 };
 
-struct St_spaceChargeCorR1C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR1C, spaceChargeCor_st> {};
+struct St_spaceChargeCorR1C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR1C, spaceChargeCor> {};
 
-struct St_spaceChargeCorR2C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR2C, spaceChargeCor_st> {};
+struct St_spaceChargeCorR2C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR2C, spaceChargeCor> {};
 
-struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClockOnlC, starClockOnl_st>
+struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClockOnlC, starClockOnl>
 {
   unsigned int    RunNumber(int i = 0)           {return Struct(i)->runNumber;}
   double  CurrentFrequency(int i = 0)    {return Struct(i)->frequency;}
@@ -216,7 +216,7 @@ struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClock
 };
 
 struct St_SurveyC : tpcrs::IConfigStruct {
-  virtual Survey_st* Struct(int i = 0) const = 0;
+  virtual Survey* Struct(int i = 0) const = 0;
 
   void Initialize()
   {
@@ -271,9 +271,9 @@ struct St_SurveyC : tpcrs::IConfigStruct {
   TGeoHMatrix  **fRotations;
 };
 
-struct St_TpcAdcCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcAdcCorrectionMDF, MDFCorrection_st> {};
+struct St_TpcAdcCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcAdcCorrectionMDF, MDFCorrection> {};
 
-struct St_tpcAltroParamsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAltroParamsC, tpcAltroParams_st>
+struct St_tpcAltroParamsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAltroParamsC, tpcAltroParams>
 {
   int 	N(int i = 0) 	{return Struct(i)->N;}
   int  	Threshold(int i = 0) 	{return Struct(i)->Altro_thr;}
@@ -286,7 +286,7 @@ struct St_tpcAltroParamsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAltr
   int  	L3(int i = 0) 	{return Struct(i)->Altro_L3;}
 };
 
-struct St_tpcAnodeHVavgC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVavgC, tpcAnodeHVavg_st>
+struct St_tpcAnodeHVavgC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVavgC, tpcAnodeHVavg>
 {
   unsigned short          sector(int i = 0) 	const {return Struct(i)->sector;}
   unsigned short          socket(int i = 0) 	const {return Struct(i)->socket;}
@@ -299,7 +299,7 @@ struct St_tpcAnodeHVavgC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnode
   bool            tripped(int sec = 1, int padrow = 1)       const;// { return (voltage() < -100); }
 };
 
-struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC, tpcAnodeHV_st>
+struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC, tpcAnodeHV>
 {
   unsigned short 	 sector(int i = 0) 	const {return Struct(i)->sector;}
   unsigned short 	 socket(int i = 0) 	const {return Struct(i)->socket;}
@@ -310,7 +310,7 @@ struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC
   static  void   sockets(int sector, int padrow, int &e1, int &e2, float &f2);
 };
 
-struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent_st>
+struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>
 {
   int 	run(int i = 0) 	const {return Struct(i)->run;}
   int 	start_time(int i = 0) 	const {return Struct(i)->start_time;}
@@ -336,7 +336,7 @@ struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCu
   float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, ChannelFromRow(sector, row));}
 };
 
-struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgPowerSupplyC, TpcAvgPowerSupply_st>
+struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgPowerSupplyC, TpcAvgPowerSupply>
 {
   int 	run(int i = 0) 	const {return Struct(i)->run;}
   int 	start_time(int i = 0) 	const {return Struct(i)->start_time;}
@@ -369,12 +369,12 @@ struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcA
   bool        livePadrow(int sec = 1, int padrow = 1) const { return voltagePadrow(sec, padrow) >  500;}
 };
 
-struct St_tpcCalibResolutionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcCalibResolutionsC, tpcCalibResolutions_st> {
+struct St_tpcCalibResolutionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcCalibResolutionsC, tpcCalibResolutions> {
   float 	SpaceCharge(int i = 0) 	{return Struct(i)->SpaceCharge;}
   float 	GridLeak(int i = 0)	 	{return Struct(i)->GridLeak;}
 };
 
-struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent_st> {
+struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent> {
   int nChargeEvents()                            {return Struct()->nChargeEvents;}
   unsigned int* eventBunchCrossingsLow()         {return Struct()->eventBunchCrossingsLow;}
   unsigned int* eventBunchCrossingsHigh()        {return Struct()->eventBunchCrossingsHigh;}
@@ -424,7 +424,7 @@ struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChar
 
 struct St_tpcCorrectionC : tpcrs::IConfigStruct
 {
-  virtual tpcCorrection_st* Struct(int i = 0) const = 0;
+  virtual tpcCorrection* Struct(int i = 0) const = 0;
   int 	type(int i = 0) 	const {return Struct(i)->type;}
   int 	idx(int i = 0) 	const {return Struct(i)->idx;}
   int 	nrows(int i = 0) 	const {return Struct(i)->nrows;}
@@ -434,18 +434,18 @@ struct St_tpcCorrectionC : tpcrs::IConfigStruct
   double 	max(int i = 0) 	const {return Struct(i)->max;}
   double* 	a(int i = 0) 	        const {return Struct(i)->a;}
   double CalcCorrection(int i, double x, double z = 0, int NparMax = -1);
-  double SumSeries(tpcCorrection_st* cor, double x, double z = 0, int NparMax = -1);
+  double SumSeries(tpcCorrection* cor, double x, double z = 0, int NparMax = -1);
 };
 
-struct St_TpcAdcCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcAdcCorrectionBC, tpcCorrection_st> {};
+struct St_TpcAdcCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcAdcCorrectionBC, tpcCorrection> {};
 
-struct St_TpcCurrentCorrectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcCurrentCorrectionC, tpcCorrection_st> {};
+struct St_TpcCurrentCorrectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcCurrentCorrectionC, tpcCorrection> {};
 
-struct St_TpcdChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdChargeC, tpcCorrection_st> {};
+struct St_TpcdChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdChargeC, tpcCorrection> {};
 
-struct St_TpcdEdxCorC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdEdxCorC, tpcCorrection_st> {};
+struct St_TpcdEdxCorC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdEdxCorC, tpcCorrection> {};
 
-struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig_st>
+struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>
 {
   unsigned char          iTpc(int sector);
   unsigned char          iTPC(int sector) {return iTpc(sector);}
@@ -501,7 +501,7 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };
 
-struct St_tpcWirePlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcWirePlanesC, tpcWirePlanes_st>
+struct St_tpcWirePlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcWirePlanesC, tpcWirePlanes>
 {
   double 	anodeWireRadius(int i = 0) 	            {return Struct(i)->anodeWireRadius;}
   double 	frischGridWireRadius(int i = 0) 	    {return Struct(i)->frischGridWireRadius;}
@@ -549,7 +549,7 @@ struct St_tpcWirePlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcWireP
   int   	numberOfOuterSectorGatingGridWires(int i = 0) {return numOuterSectorGatingGridWires(i);}
 };
 
-struct St_tpcEffectiveGeomC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcEffectiveGeomC, tpcEffectiveGeom_st>
+struct St_tpcEffectiveGeomC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcEffectiveGeomC, tpcEffectiveGeom>
 {
   double 	drift_length_correction(int i = 0) {return Struct(i)->drift_length_correction;}
   double 	z_inner_offset(int i = 0) 	  {return Struct(i)->z_inner_offset;}
@@ -559,7 +559,7 @@ struct St_tpcEffectiveGeomC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcEf
   /*  double 	scale(int i = 0)                {return Struct(i)->scale;} */
 };
 
-struct St_tpcDimensionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDimensionsC, tpcDimensions_st>
+struct St_tpcDimensionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDimensionsC, tpcDimensions>
 {
   int 	numberOfSectors(int i = 0) 	{return Struct(i)->numberOfSectors;}
   double 	tpcInnerRadius(int i = 0) 	{return Struct(i)->tpcInnerRadius;}
@@ -644,25 +644,25 @@ struct St_tpcDimensionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDimen
   double ofcRadius() {return tpcOuterRadius();}
 };
 
-struct St_TpcDriftDistOxygenC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcDriftDistOxygenC, tpcCorrection_st> {};
+struct St_TpcDriftDistOxygenC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcDriftDistOxygenC, tpcCorrection> {};
 
-struct St_tpcDriftVelocityC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDriftVelocityC, tpcDriftVelocity_st> {
+struct St_tpcDriftVelocityC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDriftVelocityC, tpcDriftVelocity> {
   float 	laserDriftVelocityEast(int i = 0) 	{return Struct(i)->laserDriftVelocityEast;}
   float 	laserDriftVelocityWest(int i = 0) 	{return Struct(i)->laserDriftVelocityWest;}
   float 	cathodeDriftVelocityEast(int i = 0) 	{return Struct(i)->cathodeDriftVelocityEast;}
   float 	cathodeDriftVelocityWest(int i = 0) 	{return Struct(i)->cathodeDriftVelocityWest;}
 };
 
-struct St_TpcdXCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdXCorrectionBC, tpcCorrection_st> {};
+struct St_TpcdXCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdXCorrectionBC, tpcCorrection> {};
 
-struct St_TpcEdgeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcEdgeC, tpcCorrection_st> {};
+struct St_TpcEdgeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcEdgeC, tpcCorrection> {};
 
-struct St_TpcEffectivedXC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcEffectivedXC, TpcEffectivedX_st> {
+struct St_TpcEffectivedXC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcEffectivedXC, TpcEffectivedX> {
   float 	scaleInner(int i = 0) 	const {return Struct(i)->scaleInner;}
   float 	scaleOuter(int i = 0) 	const {return Struct(i)->scaleOuter;}
 };
 
-struct St_tpcElectronicsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcElectronicsC, tpcElectronics_st>
+struct St_tpcElectronicsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcElectronicsC, tpcElectronics>
 {
   int 	numberOfTimeBins(int i = 0) 	{return Struct(i)->numberOfTimeBins;}
   double 	nominalGain(int i = 0) 	{return Struct(i)->nominalGain;}
@@ -676,7 +676,7 @@ struct St_tpcElectronicsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcElec
   double 	tau(int i = 0) 	        {return Struct(i)->tau;}
 };
 
-struct St_tpcFieldCageC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcFieldCageC, tpcFieldCage_st>
+struct St_tpcFieldCageC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcFieldCageC, tpcFieldCage>
 {
   float 	innerFieldCageShift(int i = 0) {return Struct(i)->innerFieldCageShift;}
   float 	InnerFieldCageShift(int i = 0) {return innerFieldCageShift(i);}
@@ -686,7 +686,7 @@ struct St_tpcFieldCageC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcFieldC
   float 	WestClockError(int i = 0) 	{return westClockError(i);}
 };
 
-struct St_tpcFieldCageShortC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcFieldCageShortC, tpcFieldCageShort_st> {
+struct St_tpcFieldCageShortC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcFieldCageShortC, tpcFieldCageShort> {
   float 	side(int i = 0) 	        {return Struct(i)->side;}
   float 	cage(int i = 0) 	        {return Struct(i)->cage;}
   float 	ring(int i = 0) 	        {return Struct(i)->ring;}
@@ -694,10 +694,10 @@ struct St_tpcFieldCageShortC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcF
   float 	MissingResistance(int i = 0) 	{return Struct(i)->MissingResistance;}
 };
 
-struct St_tpcGainCorrectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcGainCorrectionC, tpcCorrection_st>
+struct St_tpcGainCorrectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcGainCorrectionC, tpcCorrection>
 {};
 
-struct St_tpcGasC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGasC, tpcGas_st>
+struct St_tpcGasC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGasC, tpcGas>
 {
   float 	barometricPressure(int i = 0) {return Struct(i)->barometricPressure;}
   float 	inputTPCGasPressure(int i = 0) {return Struct(i)->inputTPCGasPressure;}
@@ -717,9 +717,9 @@ struct St_tpcGasC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGasC, tpcGas
   float 	flowRateRecirculation(int i = 0) {return Struct(i)->flowRateRecirculation;}
 };
 
-struct St_tpcGasTemperatureC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcGasTemperatureC, tpcCorrection_st> {};
+struct St_tpcGasTemperatureC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcGasTemperatureC, tpcCorrection> {};
 
-struct St_tpcGlobalPositionC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGlobalPositionC, tpcGlobalPosition_st>
+struct St_tpcGlobalPositionC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGlobalPositionC, tpcGlobalPosition>
 {
   float 	LocalxShift(int i = 0)       const {return Struct(i)->LocalxShift;}
   float 	LocalyShift(int i = 0)       const {return Struct(i)->LocalyShift;}
@@ -761,7 +761,7 @@ enum StGLpos {
   kGLouter=2
 };
 
-struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLeakC, tpcGridLeak_st> {
+struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLeakC, tpcGridLeak> {
   double 	InnerGLRadius(int i = 0) 	{return Struct(i)->InnerGLRadius;}
   double 	MiddlGLRadius(int i = 0) 	{return Struct(i)->MiddlGLRadius;}
   double 	OuterGLRadius(int i = 0) 	{return Struct(i)->OuterGLRadius;}
@@ -797,7 +797,7 @@ struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLea
   }
 };
 
-struct St_tpcHighVoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHighVoltagesC, tpcHighVoltages_st> {
+struct St_tpcHighVoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHighVoltagesC, tpcHighVoltages> {
   float 	cathode(int i = 0)          {return Struct(i)->cathode;}
   float 	gatedGridRef(int i = 0)     {return Struct(i)->gatedGridRef;}
   float* 	gridLeakWallTip(int i = 0)  {return Struct(i)->gridLeakWallTip;}
@@ -808,17 +808,17 @@ struct St_tpcHighVoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHig
   double      getGridLeakWallSide(int sector = 1) {return gridLeakWallSide()[sector-1];}
 };
 
-struct St_tpcHVPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHVPlanesC, tpcHVPlanes_st> {};
+struct St_tpcHVPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHVPlanesC, tpcHVPlanes> {};
 
-struct St_TpcLengthCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcLengthCorrectionBC, tpcCorrection_st> {};
+struct St_TpcLengthCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcLengthCorrectionBC, tpcCorrection> {};
 
-struct St_TpcLengthCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcLengthCorrectionMDF, MDFCorrection_st> {};
+struct St_TpcLengthCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcLengthCorrectionMDF, MDFCorrection> {};
 
-struct St_tpcMethaneInC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcMethaneInC, tpcCorrection_st> {};
+struct St_tpcMethaneInC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcMethaneInC, tpcCorrection> {};
 
-struct St_TpcMultiplicityC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcMultiplicityC, tpcCorrection_st> {};
+struct St_TpcMultiplicityC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcMultiplicityC, tpcCorrection> {};
 
-struct St_tpcOmegaTauC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTauC, tpcOmegaTau_st> {
+struct St_tpcOmegaTauC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTauC, tpcOmegaTau> {
  public:
   float 	tensorV1(int i = 0) 	     {return Struct(i)->tensorV1;}
   float 	tensorV2(int i = 0) 	     {return Struct(i)->tensorV2;}
@@ -828,16 +828,16 @@ struct St_tpcOmegaTauC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTa
                                              {return Struct(i)->distortionCorrectionsMode;}
 };
 
-struct St_TpcPadCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcPadCorrectionMDF, MDFCorrection_st> {};
+struct St_TpcPadCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcPadCorrectionMDF, MDFCorrection> {};
 
-struct St_tpcPadGainT0BC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0_st>
+struct St_tpcPadGainT0BC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0>
 {
   float 	Gain(int sector, int row, int pad) const;
   float 	  T0(int sector, int row, int pad) const;
   bool    livePadrow(int sector, int row) const;
 };
 
-struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0_st>
+struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0>
 {
   int 	run()           	const {return Struct()->run;}
   float 	Gain(int sector, int row, int pad) const
@@ -868,7 +868,7 @@ struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGai
   }
 };
 
-struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPlanesC, tpcPadPlanes_st>
+struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPlanesC, tpcPadPlanes>
 {
   int 	padRows(int i = 0) 	         {return Struct(i)->padRows;}
   int 	innerPadRows(int i = 0) 	 {return Struct(i)->innerPadRows;}
@@ -976,7 +976,7 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
   }
 };
 
-struct St_tpcPadResponseC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadResponseC, tpcPadResponse_st>
+struct St_tpcPadResponseC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadResponseC, tpcPadResponse>
 {
   float 	innerGasGainFluctuation(int i = 0) 	{return Struct(i)->innerGasGainFluctuation;}
   float 	outerGasGainFluctuation(int i = 0) 	{return Struct(i)->outerGasGainFluctuation;}
@@ -996,17 +996,17 @@ struct St_tpcPadResponseC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadR
   float 	InnerOuterFactor(int i = 0) 	        {return Struct(i)->InnerOuterFactor;}
 };
 
-struct St_tpcPadrowT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadrowT0C, tpcPadrowT0_st> {
+struct St_tpcPadrowT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadrowT0C, tpcPadrowT0> {
   float T0(int sector, int row) {return Struct(sector-1)->T0[row-1];}
 };
 
-struct St_TpcPhiDirectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcPhiDirectionC, tpcCorrection_st> {};
+struct St_TpcPhiDirectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcPhiDirectionC, tpcCorrection> {};
 
-struct St_tpcPressureBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcPressureBC, tpcCorrection_st> {};
+struct St_tpcPressureBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcPressureBC, tpcCorrection> {};
 
-struct St_TpcrChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcrChargeC, tpcCorrection_st> {};
+struct St_TpcrChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcrChargeC, tpcCorrection> {};
 
-struct St_tpcRDOMapC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMapC, tpcRDOMap_st> {
+struct St_tpcRDOMapC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMapC, tpcRDOMap> {
   unsigned char 	nrows(int i = 0) 	const {return Struct(i)->nrows;}
   unsigned char 	index(int i = 0) 	const {return Struct(i)->idx;}
   unsigned char 	row(int i = 0) 	const {return Struct(i)->row;}
@@ -1016,7 +1016,7 @@ struct St_tpcRDOMapC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMapC, 
   int         rdo(int padrow, int pad = 0) const;
 };
 
-struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMasksC, tpcRDOMasks_st>
+struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMasksC, tpcRDOMasks>
 {
   unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
   unsigned int 	sector(int i = 0) 	        {return Struct(i)->sector;}
@@ -1055,13 +1055,13 @@ struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMask
   bool       isRowOn(int sector, int row) {return isOn(sector, rdoForPadrow(sector, row));}
 };
 
-struct St_tpcRDOT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOT0offsetC, tpcRDOT0offset_st> {
+struct St_tpcRDOT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOT0offsetC, tpcRDOT0offset> {
   unsigned char* 	isShifted(int i = 0) 	const {return Struct(i)->isShifted;}
   bool        IsShfited(int sector) const {return isShifted()[sector-1];}
   float       T0(int sector, int padrow, int pad) const;
 };
 
-struct St_TpcResponseSimulatorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcResponseSimulatorC, TpcResponseSimulator_st>
+struct St_TpcResponseSimulatorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcResponseSimulatorC, TpcResponseSimulator>
 {
   float 	I0(int i = 0) 	const {return Struct(i)->I0;}
   float 	Cluster(int i = 0) 	const {return Struct(i)->Cluster;}
@@ -1116,9 +1116,9 @@ struct St_TpcResponseSimulatorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_T
   float       FirstRowC(int i = 0)      const {return  Struct(i)->FirstRowC;}
 };
 
-struct St_TpcRowQC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcRowQC, tpcCorrection_st> {};
+struct St_TpcRowQC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcRowQC, tpcCorrection> {};
 
-struct St_tpcSCGLC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSCGLC, tpcSCGL_st> {
+struct St_tpcSCGLC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSCGLC, tpcSCGL> {
   float* SC()                             {return Struct()->SC;}
   float* SCoffset()                       {return Struct()->SCoffset;}
   float* SCexponent()                     {return Struct()->SCexponent;}
@@ -1133,33 +1133,33 @@ struct St_tpcSCGLC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSCGLC, tpcS
 
 struct St_TpcSecRowCorC : tpcrs::IConfigStruct
 {
-  virtual TpcSecRowCor_st* Struct(int i = 0) const = 0;
+  virtual TpcSecRowCor* Struct(int i = 0) const = 0;
 
   float* 	GainScale(int i = 0) 	        {return Struct(i)->GainScale;}
   float* 	GainRms(int i = 0) 	        {return Struct(i)->GainRms;}
 };
 
-struct St_TpcSecRowBC : tpcrs::ConfigStruct<St_TpcSecRowCorC, St_TpcSecRowBC, TpcSecRowCor_st> {};
+struct St_TpcSecRowBC : tpcrs::ConfigStruct<St_TpcSecRowCorC, St_TpcSecRowBC, TpcSecRowCor> {};
 
-struct St_TpcSecRowCC : tpcrs::ConfigStruct<St_TpcSecRowCorC, St_TpcSecRowCC, TpcSecRowCor_st> {};
+struct St_TpcSecRowCC : tpcrs::ConfigStruct<St_TpcSecRowCorC, St_TpcSecRowCC, TpcSecRowCor> {};
 
-struct St_tpcSectorT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSectorT0offsetC, tpcSectorT0offset_st> {
+struct St_tpcSectorT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSectorT0offsetC, tpcSectorT0offset> {
   float* 	t0(int i = 0) 	        {return Struct(i)->t0;}
   float       t0offset(int sector=1)        {return t0()[sector-1];}
 };
 
-struct St_TpcSpaceChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcSpaceChargeC, tpcCorrection_st> {};
+struct St_TpcSpaceChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcSpaceChargeC, tpcCorrection> {};
 
-struct StTpcInnerSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcInnerSectorPosition, Survey_st> {// Inner part of sector to Super Sector
+struct StTpcInnerSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcInnerSectorPosition, Survey> {// Inner part of sector to Super Sector
 };
 
-struct StTpcOuterSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcOuterSectorPosition, Survey_st> {// Outer part of sector to Super Sector
+struct StTpcOuterSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcOuterSectorPosition, Survey> {// Outer part of sector to Super Sector
 };
 
-struct StTpcSuperSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcSuperSectorPosition, Survey_st> {// Extra rotation for whole Super Sector to half Tpc
+struct StTpcSuperSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcSuperSectorPosition, Survey> {// Extra rotation for whole Super Sector to half Tpc
 };
 
-struct StTpcHalfPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey_st> {// Extra rotation for half of Tpc  to Tpc
+struct StTpcHalfPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey> {// Extra rotation for half of Tpc  to Tpc
   const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(TPC::Half::first);}
   const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(TPC::Half::second);}
   const TGeoHMatrix  &GetEastMatrixR() {return  GetMatrixR(TPC::Half::first);}
@@ -1167,21 +1167,21 @@ struct StTpcHalfPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Su
   static void Normalize(TGeoHMatrix &R) {}
 };
 
-struct StTpcPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcPosition, Survey_st> {// Global position of TPC in Magnet
+struct StTpcPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcPosition, Survey> {// Global position of TPC in Magnet
   const TGeoHMatrix  &GetMatrix() {return  St_SurveyC::GetMatrix(0);}
 };
 
-struct St_TpcTanLC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcTanLC, tpcCorrection_st> {};
+struct St_TpcTanLC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcTanLC, tpcCorrection> {};
 
-struct St_tpcTimeDependenceC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcTimeDependenceC, tpcCorrection_st> {};
+struct St_tpcTimeDependenceC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcTimeDependenceC, tpcCorrection> {};
 
-struct St_tpcWaterOutC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcWaterOutC, tpcCorrection_st> {};
+struct St_tpcWaterOutC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcWaterOutC, tpcCorrection> {};
 
-struct St_TpcZCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZCorrectionBC, tpcCorrection_st> {};
+struct St_TpcZCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZCorrectionBC, tpcCorrection> {};
 
-struct St_TpcZDCC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZDCC, tpcCorrection_st> {};
+struct St_TpcZDCC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZDCC, tpcCorrection> {};
 
-struct St_trgTimeOffsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeOffsetC, trgTimeOffset_st>
+struct St_trgTimeOffsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeOffsetC, trgTimeOffset>
 {
   float 	offset(int i = 0)     	   {return Struct(i)->offset;}
   float 	laserOffset(int i = 0) 	   {return Struct(i)->laserOffset;}
@@ -1193,7 +1193,7 @@ struct St_trgTimeOffsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeO
   bool        mLaser;
 };
 
-struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums_st>
+struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>
 {
   unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
   unsigned int 	timeOffset(int i = 0) 	{return Struct(i)->timeOffset;}
@@ -1252,7 +1252,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   double	fMargin;
 };
 
-struct St_tss_tssparC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tss_tssparC, tss_tsspar_st>
+struct St_tss_tssparC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tss_tssparC, tss_tsspar>
 {
   char* 	fileout(int i = 0) 	{return Struct(i)->fileout;}
   int 	dynam(int i = 0) 	{return Struct(i)->dynam;}

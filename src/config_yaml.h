@@ -22,8 +22,8 @@ using std::vector;
 
 namespace YAML {
 template<>
-struct convert<tpcCalibResolutions_st> {
-  static Node encode(const tpcCalibResolutions_st& st) {
+struct convert<tpcCalibResolutions> {
+  static Node encode(const tpcCalibResolutions& st) {
     Node node;
     
     node["SpaceCharge"] = st.SpaceCharge;
@@ -32,7 +32,7 @@ struct convert<tpcCalibResolutions_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcCalibResolutions_st& st) {
+  static bool decode(const Node& node, tpcCalibResolutions& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -50,8 +50,8 @@ struct convert<tpcCalibResolutions_st> {
 
 namespace YAML {
 template<>
-struct convert<MDFCorrection_st> {
-  static Node encode(const MDFCorrection_st& st) {
+struct convert<MDFCorrection> {
+  static Node encode(const MDFCorrection& st) {
     Node node;
     
     node["idx"] = static_cast<int>(st.idx);
@@ -73,7 +73,7 @@ struct convert<MDFCorrection_st> {
     return node;
   };
 
-  static bool decode(const Node& node, MDFCorrection_st& st) {
+  static bool decode(const Node& node, MDFCorrection& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -102,8 +102,8 @@ struct convert<MDFCorrection_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcGlobalPosition_st> {
-  static Node encode(const tpcGlobalPosition_st& st) {
+struct convert<tpcGlobalPosition> {
+  static Node encode(const tpcGlobalPosition& st) {
     Node node;
     
     node["LocalxShift"] = st.LocalxShift;
@@ -124,7 +124,7 @@ struct convert<tpcGlobalPosition_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcGlobalPosition_st& st) {
+  static bool decode(const Node& node, tpcGlobalPosition& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -152,8 +152,8 @@ struct convert<tpcGlobalPosition_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcRDOMasks_st> {
-  static Node encode(const tpcRDOMasks_st& st) {
+struct convert<tpcRDOMasks> {
+  static Node encode(const tpcRDOMasks& st) {
     Node node;
     
     node["runNumber"] = st.runNumber;
@@ -162,7 +162,7 @@ struct convert<tpcRDOMasks_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcRDOMasks_st& st) {
+  static bool decode(const Node& node, tpcRDOMasks& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -178,8 +178,8 @@ struct convert<tpcRDOMasks_st> {
 
 namespace YAML {
 template<>
-struct convert<tss_tsspar_st> {
-  static Node encode(const tss_tsspar_st& st) {
+struct convert<tss_tsspar> {
+  static Node encode(const tss_tsspar& st) {
     Node node;
     
     node["fileout"] = string(st.fileout);
@@ -226,7 +226,7 @@ struct convert<tss_tsspar_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tss_tsspar_st& st) {
+  static bool decode(const Node& node, tss_tsspar& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -284,8 +284,8 @@ struct convert<tss_tsspar_st> {
 
 namespace YAML {
 template<>
-struct convert<starMagOnl_st> {
-  static Node encode(const starMagOnl_st& st) {
+struct convert<starMagOnl> {
+  static Node encode(const starMagOnl& st) {
     Node node;
     
     node["runNumber"] = st.runNumber;
@@ -294,7 +294,7 @@ struct convert<starMagOnl_st> {
     return node;
   };
 
-  static bool decode(const Node& node, starMagOnl_st& st) {
+  static bool decode(const Node& node, starMagOnl& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -310,8 +310,8 @@ struct convert<starMagOnl_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcOmegaTau_st> {
-  static Node encode(const tpcOmegaTau_st& st) {
+struct convert<tpcOmegaTau> {
+  static Node encode(const tpcOmegaTau& st) {
     Node node;
     
     node["tensorV1"] = st.tensorV1;
@@ -320,7 +320,7 @@ struct convert<tpcOmegaTau_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcOmegaTau_st& st) {
+  static bool decode(const Node& node, tpcOmegaTau& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -336,8 +336,8 @@ struct convert<tpcOmegaTau_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcFieldCageShort_st> {
-  static Node encode(const tpcFieldCageShort_st& st) {
+struct convert<tpcFieldCageShort> {
+  static Node encode(const tpcFieldCageShort& st) {
     Node node;
     
     node["side"] = st.side;
@@ -348,7 +348,7 @@ struct convert<tpcFieldCageShort_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcFieldCageShort_st& st) {
+  static bool decode(const Node& node, tpcFieldCageShort& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -366,8 +366,8 @@ struct convert<tpcFieldCageShort_st> {
 
 namespace YAML {
 template<>
-struct convert<g2t_tpc_hit_st> {
-  static Node encode(const g2t_tpc_hit_st& st) {
+struct convert<g2t_tpc_hit> {
+  static Node encode(const g2t_tpc_hit& st) {
     Node node;
     
     node["id"] = st.id;
@@ -390,7 +390,7 @@ struct convert<g2t_tpc_hit_st> {
     return node;
   };
 
-  static bool decode(const Node& node, g2t_tpc_hit_st& st) {
+  static bool decode(const Node& node, g2t_tpc_hit& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -420,8 +420,8 @@ struct convert<g2t_tpc_hit_st> {
 
 namespace YAML {
 template<>
-struct convert<TpcSecRowCor_st> {
-  static Node encode(const TpcSecRowCor_st& st) {
+struct convert<TpcSecRowCor> {
+  static Node encode(const TpcSecRowCor& st) {
     Node node;
     
     node["GainScale"] = reinterpret_cast<const array<float, 100>&>( st.GainScale );
@@ -431,7 +431,7 @@ struct convert<TpcSecRowCor_st> {
     return node;
   };
 
-  static bool decode(const Node& node, TpcSecRowCor_st& st) {
+  static bool decode(const Node& node, TpcSecRowCor& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -448,8 +448,8 @@ struct convert<TpcSecRowCor_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcRDOMap_st> {
-  static Node encode(const tpcRDOMap_st& st) {
+struct convert<tpcRDOMap> {
+  static Node encode(const tpcRDOMap& st) {
     Node node;
     
     node["idx"] = st.idx;
@@ -461,7 +461,7 @@ struct convert<tpcRDOMap_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcRDOMap_st& st) {
+  static bool decode(const Node& node, tpcRDOMap& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -480,8 +480,8 @@ struct convert<tpcRDOMap_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcAnodeHVavg_st> {
-  static Node encode(const tpcAnodeHVavg_st& st) {
+struct convert<tpcAnodeHVavg> {
+  static Node encode(const tpcAnodeHVavg& st) {
     Node node;
     
     node["sector"] = st.sector;
@@ -493,7 +493,7 @@ struct convert<tpcAnodeHVavg_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcAnodeHVavg_st& st) {
+  static bool decode(const Node& node, tpcAnodeHVavg& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -512,8 +512,8 @@ struct convert<tpcAnodeHVavg_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcFieldCage_st> {
-  static Node encode(const tpcFieldCage_st& st) {
+struct convert<tpcFieldCage> {
+  static Node encode(const tpcFieldCage& st) {
     Node node;
     
     node["innerFieldCageShift"] = st.innerFieldCageShift;
@@ -522,7 +522,7 @@ struct convert<tpcFieldCage_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcFieldCage_st& st) {
+  static bool decode(const Node& node, tpcFieldCage& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -538,8 +538,8 @@ struct convert<tpcFieldCage_st> {
 
 namespace YAML {
 template<>
-struct convert<trigDetSums_st> {
-  static Node encode(const trigDetSums_st& st) {
+struct convert<trigDetSums> {
+  static Node encode(const trigDetSums& st) {
     Node node;
     
     node["runNumber"] = st.runNumber;
@@ -564,7 +564,7 @@ struct convert<trigDetSums_st> {
     return node;
   };
 
-  static bool decode(const Node& node, trigDetSums_st& st) {
+  static bool decode(const Node& node, trigDetSums& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -596,8 +596,8 @@ struct convert<trigDetSums_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcRDOT0offset_st> {
-  static Node encode(const tpcRDOT0offset_st& st) {
+struct convert<tpcRDOT0offset> {
+  static Node encode(const tpcRDOT0offset& st) {
     Node node;
     
     node["isShifted"] = vector<int>(st.isShifted, st.isShifted + 24);
@@ -607,7 +607,7 @@ struct convert<tpcRDOT0offset_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcRDOT0offset_st& st) {
+  static bool decode(const Node& node, tpcRDOT0offset& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -624,8 +624,8 @@ struct convert<tpcRDOT0offset_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadPlanes_st> {
-  static Node encode(const tpcPadPlanes_st& st) {
+struct convert<tpcPadPlanes> {
+  static Node encode(const tpcPadPlanes& st) {
     Node node;
     
     node["padRows"] = st.padRows;
@@ -666,7 +666,7 @@ struct convert<tpcPadPlanes_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcPadPlanes_st& st) {
+  static bool decode(const Node& node, tpcPadPlanes& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -714,8 +714,8 @@ struct convert<tpcPadPlanes_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcChargeEvent_st> {
-  static Node encode(const tpcChargeEvent_st& st) {
+struct convert<tpcChargeEvent> {
+  static Node encode(const tpcChargeEvent& st) {
     Node node;
     
     node["nChargeEvents"] = st.nChargeEvents;
@@ -729,7 +729,7 @@ struct convert<tpcChargeEvent_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcChargeEvent_st& st) {
+  static bool decode(const Node& node, tpcChargeEvent& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -750,8 +750,8 @@ struct convert<tpcChargeEvent_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcDriftVelocity_st> {
-  static Node encode(const tpcDriftVelocity_st& st) {
+struct convert<tpcDriftVelocity> {
+  static Node encode(const tpcDriftVelocity& st) {
     Node node;
     
     node["laserDriftVelocityEast"] = st.laserDriftVelocityEast;
@@ -761,7 +761,7 @@ struct convert<tpcDriftVelocity_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcDriftVelocity_st& st) {
+  static bool decode(const Node& node, tpcDriftVelocity& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -778,8 +778,8 @@ struct convert<tpcDriftVelocity_st> {
 
 namespace YAML {
 template<>
-struct convert<starClockOnl_st> {
-  static Node encode(const starClockOnl_st& st) {
+struct convert<starClockOnl> {
+  static Node encode(const starClockOnl& st) {
     Node node;
     
     node["runNumber"] = st.runNumber;
@@ -788,7 +788,7 @@ struct convert<starClockOnl_st> {
     return node;
   };
 
-  static bool decode(const Node& node, starClockOnl_st& st) {
+  static bool decode(const Node& node, starClockOnl& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -804,8 +804,8 @@ struct convert<starClockOnl_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcWirePlanes_st> {
-  static Node encode(const tpcWirePlanes_st& st) {
+struct convert<tpcWirePlanes> {
+  static Node encode(const tpcWirePlanes& st) {
     Node node;
     
     node["anodeWireRadius"] = st.anodeWireRadius;
@@ -837,7 +837,7 @@ struct convert<tpcWirePlanes_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcWirePlanes_st& st) {
+  static bool decode(const Node& node, tpcWirePlanes& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -876,8 +876,8 @@ struct convert<tpcWirePlanes_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcSectorT0offset_st> {
-  static Node encode(const tpcSectorT0offset_st& st) {
+struct convert<tpcSectorT0offset> {
+  static Node encode(const tpcSectorT0offset& st) {
     Node node;
     
     node["t0"] = reinterpret_cast<const array<float, 48>&>( st.t0 );
@@ -885,7 +885,7 @@ struct convert<tpcSectorT0offset_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcSectorT0offset_st& st) {
+  static bool decode(const Node& node, tpcSectorT0offset& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -900,8 +900,8 @@ struct convert<tpcSectorT0offset_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadResponse_st> {
-  static Node encode(const tpcPadResponse_st& st) {
+struct convert<tpcPadResponse> {
+  static Node encode(const tpcPadResponse& st) {
     Node node;
     
     node["innerGasGainFluctuation"] = st.innerGasGainFluctuation;
@@ -926,7 +926,7 @@ struct convert<tpcPadResponse_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcPadResponse_st& st) {
+  static bool decode(const Node& node, tpcPadResponse& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -958,8 +958,8 @@ struct convert<tpcPadResponse_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcHighVoltages_st> {
-  static Node encode(const tpcHighVoltages_st& st) {
+struct convert<tpcHighVoltages> {
+  static Node encode(const tpcHighVoltages& st) {
     Node node;
     
     node["cathode"] = st.cathode;
@@ -971,7 +971,7 @@ struct convert<tpcHighVoltages_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcHighVoltages_st& st) {
+  static bool decode(const Node& node, tpcHighVoltages& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -990,8 +990,8 @@ struct convert<tpcHighVoltages_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcCorrection_st> {
-  static Node encode(const tpcCorrection_st& st) {
+struct convert<tpcCorrection> {
+  static Node encode(const tpcCorrection& st) {
     Node node;
     
     node["type"] = st.type;
@@ -1006,7 +1006,7 @@ struct convert<tpcCorrection_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcCorrection_st& st) {
+  static bool decode(const Node& node, tpcCorrection& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1028,8 +1028,8 @@ struct convert<tpcCorrection_st> {
 
 namespace YAML {
 template<>
-struct convert<g2t_track_st> {
-  static Node encode(const g2t_track_st& st) {
+struct convert<g2t_track> {
+  static Node encode(const g2t_track& st) {
     Node node;
     
     node["eg_label"] = st.eg_label;
@@ -1111,7 +1111,7 @@ struct convert<g2t_track_st> {
     return node;
   };
 
-  static bool decode(const Node& node, g2t_track_st& st) {
+  static bool decode(const Node& node, g2t_track& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1200,8 +1200,8 @@ struct convert<g2t_track_st> {
 
 namespace YAML {
 template<>
-struct convert<iTPCSurvey_st> {
-  static Node encode(const iTPCSurvey_st& st) {
+struct convert<iTPCSurvey> {
+  static Node encode(const iTPCSurvey& st) {
     Node node;
     
     node["Id"] = st.Id;
@@ -1214,7 +1214,7 @@ struct convert<iTPCSurvey_st> {
     return node;
   };
 
-  static bool decode(const Node& node, iTPCSurvey_st& st) {
+  static bool decode(const Node& node, iTPCSurvey& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1236,8 +1236,8 @@ struct convert<iTPCSurvey_st> {
 
 namespace YAML {
 template<>
-struct convert<TpcEffectivedX_st> {
-  static Node encode(const TpcEffectivedX_st& st) {
+struct convert<TpcEffectivedX> {
+  static Node encode(const TpcEffectivedX& st) {
     Node node;
     
     node["scaleInner"] = st.scaleInner;
@@ -1245,7 +1245,7 @@ struct convert<TpcEffectivedX_st> {
     return node;
   };
 
-  static bool decode(const Node& node, TpcEffectivedX_st& st) {
+  static bool decode(const Node& node, TpcEffectivedX& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1260,8 +1260,8 @@ struct convert<TpcEffectivedX_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcSCGL_st> {
-  static Node encode(const tpcSCGL_st& st) {
+struct convert<tpcSCGL> {
+  static Node encode(const tpcSCGL& st) {
     Node node;
     
     node["SC"] = reinterpret_cast<const array<float, 8>&>( st.SC );
@@ -1283,7 +1283,7 @@ struct convert<tpcSCGL_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcSCGL_st& st) {
+  static bool decode(const Node& node, tpcSCGL& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1314,8 +1314,8 @@ struct convert<tpcSCGL_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcHVPlanes_st> {
-  static Node encode(const tpcHVPlanes_st& st) {
+struct convert<tpcHVPlanes> {
+  static Node encode(const tpcHVPlanes& st) {
     Node node;
     
     node["CM_shift_z"] = st.CM_shift_z;
@@ -1330,7 +1330,7 @@ struct convert<tpcHVPlanes_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcHVPlanes_st& st) {
+  static bool decode(const Node& node, tpcHVPlanes& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1352,8 +1352,8 @@ struct convert<tpcHVPlanes_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadConfig_st> {
-  static Node encode(const tpcPadConfig_st& st) {
+struct convert<tpcPadConfig> {
+  static Node encode(const tpcPadConfig& st) {
     Node node;
     
     node["itpc"] = vector<int>(st.itpc, st.itpc + 24);
@@ -1361,7 +1361,7 @@ struct convert<tpcPadConfig_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcPadConfig_st& st) {
+  static bool decode(const Node& node, tpcPadConfig& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1376,8 +1376,8 @@ struct convert<tpcPadConfig_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcAltroParams_st> {
-  static Node encode(const tpcAltroParams_st& st) {
+struct convert<tpcAltroParams> {
+  static Node encode(const tpcAltroParams& st) {
     Node node;
     
     node["N"] = st.N;
@@ -1392,7 +1392,7 @@ struct convert<tpcAltroParams_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcAltroParams_st& st) {
+  static bool decode(const Node& node, tpcAltroParams& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1414,8 +1414,8 @@ struct convert<tpcAltroParams_st> {
 
 namespace YAML {
 template<>
-struct convert<itpcPadGainT0_st> {
-  static Node encode(const itpcPadGainT0_st& st) {
+struct convert<itpcPadGainT0> {
+  static Node encode(const itpcPadGainT0& st) {
     Node node;
     
     node["run"] = st.run;
@@ -1426,7 +1426,7 @@ struct convert<itpcPadGainT0_st> {
     return node;
   };
 
-  static bool decode(const Node& node, itpcPadGainT0_st& st) {
+  static bool decode(const Node& node, itpcPadGainT0& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1444,8 +1444,8 @@ struct convert<itpcPadGainT0_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcGridLeak_st> {
-  static Node encode(const tpcGridLeak_st& st) {
+struct convert<tpcGridLeak> {
+  static Node encode(const tpcGridLeak& st) {
     Node node;
     
     node["InnerGLRadius"] = st.InnerGLRadius;
@@ -1460,7 +1460,7 @@ struct convert<tpcGridLeak_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcGridLeak_st& st) {
+  static bool decode(const Node& node, tpcGridLeak& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1482,8 +1482,8 @@ struct convert<tpcGridLeak_st> {
 
 namespace YAML {
 template<>
-struct convert<g2t_vertex_st> {
-  static Node encode(const g2t_vertex_st& st) {
+struct convert<g2t_vertex> {
+  static Node encode(const g2t_vertex& st) {
     Node node;
     
     node["ge_volume"] = string(st.ge_volume);
@@ -1509,7 +1509,7 @@ struct convert<g2t_vertex_st> {
     return node;
   };
 
-  static bool decode(const Node& node, g2t_vertex_st& st) {
+  static bool decode(const Node& node, g2t_vertex& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1544,8 +1544,8 @@ struct convert<g2t_vertex_st> {
 
 namespace YAML {
 template<>
-struct convert<TpcAvgCurrent_st> {
-  static Node encode(const TpcAvgCurrent_st& st) {
+struct convert<TpcAvgCurrent> {
+  static Node encode(const TpcAvgCurrent& st) {
     Node node;
     
     node["run"] = st.run;
@@ -1558,7 +1558,7 @@ struct convert<TpcAvgCurrent_st> {
     return node;
   };
 
-  static bool decode(const Node& node, TpcAvgCurrent_st& st) {
+  static bool decode(const Node& node, TpcAvgCurrent& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1578,8 +1578,8 @@ struct convert<TpcAvgCurrent_st> {
 
 namespace YAML {
 template<>
-struct convert<spaceChargeCor_st> {
-  static Node encode(const spaceChargeCor_st& st) {
+struct convert<spaceChargeCor> {
+  static Node encode(const spaceChargeCor& st) {
     Node node;
     
     node["fullFieldB"] = st.fullFieldB;
@@ -1595,7 +1595,7 @@ struct convert<spaceChargeCor_st> {
     return node;
   };
 
-  static bool decode(const Node& node, spaceChargeCor_st& st) {
+  static bool decode(const Node& node, spaceChargeCor& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1618,8 +1618,8 @@ struct convert<spaceChargeCor_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcEffectiveGeom_st> {
-  static Node encode(const tpcEffectiveGeom_st& st) {
+struct convert<tpcEffectiveGeom> {
+  static Node encode(const tpcEffectiveGeom& st) {
     Node node;
     
     node["drift_length_correction"] = st.drift_length_correction;
@@ -1630,7 +1630,7 @@ struct convert<tpcEffectiveGeom_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcEffectiveGeom_st& st) {
+  static bool decode(const Node& node, tpcEffectiveGeom& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1648,8 +1648,8 @@ struct convert<tpcEffectiveGeom_st> {
 
 namespace YAML {
 template<>
-struct convert<TpcResponseSimulator_st> {
-  static Node encode(const TpcResponseSimulator_st& st) {
+struct convert<TpcResponseSimulator> {
+  static Node encode(const TpcResponseSimulator& st) {
     Node node;
     
     node["I0"] = st.I0;
@@ -1708,7 +1708,7 @@ struct convert<TpcResponseSimulator_st> {
     return node;
   };
 
-  static bool decode(const Node& node, TpcResponseSimulator_st& st) {
+  static bool decode(const Node& node, TpcResponseSimulator& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1774,8 +1774,8 @@ struct convert<TpcResponseSimulator_st> {
 
 namespace YAML {
 template<>
-struct convert<richvoltages_st> {
-  static Node encode(const richvoltages_st& st) {
+struct convert<richvoltages> {
+  static Node encode(const richvoltages& st) {
     Node node;
     
     node["runNumber"] = st.runNumber;
@@ -1785,7 +1785,7 @@ struct convert<richvoltages_st> {
     return node;
   };
 
-  static bool decode(const Node& node, richvoltages_st& st) {
+  static bool decode(const Node& node, richvoltages& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1802,8 +1802,8 @@ struct convert<richvoltages_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcElectronics_st> {
-  static Node encode(const tpcElectronics_st& st) {
+struct convert<tpcElectronics> {
+  static Node encode(const tpcElectronics& st) {
     Node node;
     
     node["numberOfTimeBins"] = st.numberOfTimeBins;
@@ -1818,7 +1818,7 @@ struct convert<tpcElectronics_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcElectronics_st& st) {
+  static bool decode(const Node& node, tpcElectronics& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1840,8 +1840,8 @@ struct convert<tpcElectronics_st> {
 
 namespace YAML {
 template<>
-struct convert<Survey_st> {
-  static Node encode(const Survey_st& st) {
+struct convert<Survey> {
+  static Node encode(const Survey& st) {
     Node node;
     
     node["Id"] = st.Id;
@@ -1867,7 +1867,7 @@ struct convert<Survey_st> {
     return node;
   };
 
-  static bool decode(const Node& node, Survey_st& st) {
+  static bool decode(const Node& node, Survey& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1902,15 +1902,15 @@ struct convert<Survey_st> {
 
 namespace YAML {
 template<>
-struct convert<MagFactor_st> {
-  static Node encode(const MagFactor_st& st) {
+struct convert<MagFactor> {
+  static Node encode(const MagFactor& st) {
     Node node;
     
     node["ScaleFactor"] = st.ScaleFactor;
     return node;
   };
 
-  static bool decode(const Node& node, MagFactor_st& st) {
+  static bool decode(const Node& node, MagFactor& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1924,8 +1924,8 @@ struct convert<MagFactor_st> {
 
 namespace YAML {
 template<>
-struct convert<TpcAvgPowerSupply_st> {
-  static Node encode(const TpcAvgPowerSupply_st& st) {
+struct convert<TpcAvgPowerSupply> {
+  static Node encode(const TpcAvgPowerSupply& st) {
     Node node;
     
     node["run"] = st.run;
@@ -1940,7 +1940,7 @@ struct convert<TpcAvgPowerSupply_st> {
     return node;
   };
 
-  static bool decode(const Node& node, TpcAvgPowerSupply_st& st) {
+  static bool decode(const Node& node, TpcAvgPowerSupply& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1962,8 +1962,8 @@ struct convert<TpcAvgPowerSupply_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcAnodeHV_st> {
-  static Node encode(const tpcAnodeHV_st& st) {
+struct convert<tpcAnodeHV> {
+  static Node encode(const tpcAnodeHV& st) {
     Node node;
     
     node["sector"] = st.sector;
@@ -1972,7 +1972,7 @@ struct convert<tpcAnodeHV_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcAnodeHV_st& st) {
+  static bool decode(const Node& node, tpcAnodeHV& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -1988,8 +1988,8 @@ struct convert<tpcAnodeHV_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadGainT0_st> {
-  static Node encode(const tpcPadGainT0_st& st) {
+struct convert<tpcPadGainT0> {
+  static Node encode(const tpcPadGainT0& st) {
     Node node;
     
     node["run"] = st.run;
@@ -2000,7 +2000,7 @@ struct convert<tpcPadGainT0_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcPadGainT0_st& st) {
+  static bool decode(const Node& node, tpcPadGainT0& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -2018,8 +2018,8 @@ struct convert<tpcPadGainT0_st> {
 
 namespace YAML {
 template<>
-struct convert<asic_thresholds_st> {
-  static Node encode(const asic_thresholds_st& st) {
+struct convert<asic_thresholds> {
+  static Node encode(const asic_thresholds& st) {
     Node node;
     
     node["thresh_lo"] = st.thresh_lo;
@@ -2029,7 +2029,7 @@ struct convert<asic_thresholds_st> {
     return node;
   };
 
-  static bool decode(const Node& node, asic_thresholds_st& st) {
+  static bool decode(const Node& node, asic_thresholds& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -2046,8 +2046,8 @@ struct convert<asic_thresholds_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcDimensions_st> {
-  static Node encode(const tpcDimensions_st& st) {
+struct convert<tpcDimensions> {
+  static Node encode(const tpcDimensions& st) {
     Node node;
     
     node["numberOfSectors"] = st.numberOfSectors;
@@ -2134,7 +2134,7 @@ struct convert<tpcDimensions_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcDimensions_st& st) {
+  static bool decode(const Node& node, tpcDimensions& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -2228,8 +2228,8 @@ struct convert<tpcDimensions_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcGas_st> {
-  static Node encode(const tpcGas_st& st) {
+struct convert<tpcGas> {
+  static Node encode(const tpcGas& st) {
     Node node;
     
     node["barometricPressure"] = st.barometricPressure;
@@ -2251,7 +2251,7 @@ struct convert<tpcGas_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcGas_st& st) {
+  static bool decode(const Node& node, tpcGas& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -2280,8 +2280,8 @@ struct convert<tpcGas_st> {
 
 namespace YAML {
 template<>
-struct convert<trgTimeOffset_st> {
-  static Node encode(const trgTimeOffset_st& st) {
+struct convert<trgTimeOffset> {
+  static Node encode(const trgTimeOffset& st) {
     Node node;
     
     node["offset"] = st.offset;
@@ -2290,7 +2290,7 @@ struct convert<trgTimeOffset_st> {
     return node;
   };
 
-  static bool decode(const Node& node, trgTimeOffset_st& st) {
+  static bool decode(const Node& node, trgTimeOffset& st) {
     if(!node.IsMap()) {
       return false;
     }
@@ -2306,8 +2306,8 @@ struct convert<trgTimeOffset_st> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadrowT0_st> {
-  static Node encode(const tpcPadrowT0_st& st) {
+struct convert<tpcPadrowT0> {
+  static Node encode(const tpcPadrowT0& st) {
     Node node;
     
     node["T0"] = reinterpret_cast<const array<float, 100>&>( st.T0 );
@@ -2315,7 +2315,7 @@ struct convert<tpcPadrowT0_st> {
     return node;
   };
 
-  static bool decode(const Node& node, tpcPadrowT0_st& st) {
+  static bool decode(const Node& node, tpcPadrowT0& st) {
     if(!node.IsMap()) {
       return false;
     }

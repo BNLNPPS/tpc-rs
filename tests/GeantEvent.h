@@ -48,6 +48,10 @@ struct DigitizedHit
 };
 
 
+typedef g2t_tpc_hit g2t_tpc_hit_st;
+typedef g2t_track   g2t_track_st;
+typedef g2t_vertex  g2t_vertex_st;
+
 struct GeantEvent
 {
   std::vector<g2t_tpc_hit_st> hits;

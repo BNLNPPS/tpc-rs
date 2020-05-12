@@ -71,7 +71,7 @@ float StTpcDb::DriftVelocity(int sector)
 
 void StTpcDb::SetDriftVelocity()
 {
-  tpcDriftVelocity_st* dv = St_tpcDriftVelocityC::instance()->Struct();
+  tpcDriftVelocity* dv = St_tpcDriftVelocityC::instance()->Struct();
   mDriftVel[0] = dv->laserDriftVelocityWest > 0 ? dv->laserDriftVelocityWest : dv->cathodeDriftVelocityWest;
   mDriftVel[1] = dv->laserDriftVelocityEast > 0 ? dv->laserDriftVelocityEast : dv->cathodeDriftVelocityEast;
 }
