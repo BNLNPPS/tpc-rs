@@ -41,7 +41,7 @@ struct HitPoint_t {
   /// Track length to current point
   double s;
   double sMin, sMax;
-  g2t_tpc_hit_st* tpc_hitC;
+  g2t_tpc_hit* tpc_hitC;
   /// The original coordinates of the hit with applied distortions
   StGlobalCoordinate xyzG;
   StTpcLocalSectorCoordinate coorLS;
@@ -493,7 +493,7 @@ void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::array<TF1
 }
 
 
-inline bool operator< (const g2t_tpc_hit_st& lhs, const g2t_tpc_hit_st& rhs)
+inline bool operator< (const g2t_tpc_hit& lhs, const g2t_tpc_hit& rhs)
 {
   // sectors
   if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
@@ -508,9 +508,9 @@ inline bool operator< (const g2t_tpc_hit_st& lhs, const g2t_tpc_hit_st& rhs)
 }
 
 
-void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
-                        const std::vector<g2t_track_st>& geant_particles,
-                        const std::vector<g2t_vertex_st>& geant_vertices, tpcrs::DigiData& digi_data)
+void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit>& geant_hits,
+                        const std::vector<g2t_track>& geant_particles,
+                        const std::vector<g2t_vertex>& geant_vertices, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -519,7 +519,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-  const g2t_tpc_hit_st* tpc_hit_begin = &geant_hits.front();
+  const g2t_tpc_hit* tpc_hit_begin = &geant_hits.front();
 
   St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
   St_tpcGainCorrectionC::instance()->Struct(1)->min = -500;
@@ -549,7 +549,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
     for (; sortedIndex < n_hits; sortedIndex++) {
       int indx = sorted_index[sortedIndex];
 
-      g2t_tpc_hit_st* tpc_hit = const_cast<g2t_tpc_hit_st*>(tpc_hit_begin + indx);
+      g2t_tpc_hit* tpc_hit = const_cast<g2t_tpc_hit*>(tpc_hit_begin + indx);
       int volId = tpc_hit->volume_id % 10000;
       int iSector = volId / 100;
 
@@ -625,7 +625,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
       memset (rowsdE, 0, sizeof(rowsdE));
 
       for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
-        g2t_tpc_hit_st* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
+        g2t_tpc_hit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->adc = 0;
         int row = TrackSegmentHits[iSegHits].coorLS.row;
         int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
@@ -930,7 +930,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
       } // end do loop over segments for a given particle
 
       for (int iSegHits = 0; iSegHits < nSegHits; iSegHits++) {
-        g2t_tpc_hit_st* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
+        g2t_tpc_hit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
 
         if (tpc_hitC->volume_id > 10000) continue;
 
@@ -964,7 +964,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
 
 
 void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-  const g2t_tpc_hit_st* tpc_hit_begin, const g2t_vertex_st& geant_vertex,
+  const g2t_tpc_hit* tpc_hit_begin, const g2t_vertex& geant_vertex,
   HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex)
 {
   int n_hits = sorted_index.size();
@@ -977,7 +977,7 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
   for (nSegHits = 0, sIndex = sortedIndex; sIndex < n_hits && nSegHits < 100; sIndex++)
   {
     int indx = sorted_index[sIndex];
-    g2t_tpc_hit_st* tpc_hitC = const_cast<g2t_tpc_hit_st*>(tpc_hit_begin + indx);
+    g2t_tpc_hit* tpc_hitC = const_cast<g2t_tpc_hit*>(tpc_hit_begin + indx);
 
     if ((tpc_hitC->volume_id % 10000) / 100 != sector) break;
 
@@ -1437,7 +1437,7 @@ double StTpcRSMaker::Ec(double* x, double* p)
 }
 
 
-void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
+void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit* tpc_hitC, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
 {
   int volId = tpc_hitC->volume_id % 10000;
   int sector = volId / 100;

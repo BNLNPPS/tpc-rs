@@ -23,9 +23,9 @@ class StTpcRSMaker
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   ~StTpcRSMaker();
 
-  void Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
-            const std::vector<g2t_track_st>& geant_particles,
-            const std::vector<g2t_vertex_st>& geant_vertices, tpcrs::DigiData& digi_data);
+  void Make(const std::vector<g2t_tpc_hit>& geant_hits,
+            const std::vector<g2t_track>& geant_particles,
+            const std::vector<g2t_vertex>& geant_vertices, tpcrs::DigiData& digi_data);
 
  private:
 
@@ -63,10 +63,10 @@ class StTpcRSMaker
   int    AsicThresholds(short* ADCs);
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-    const g2t_tpc_hit_st* tpc_hit_begin, const g2t_vertex_st& geant_vertex,
+    const g2t_tpc_hit* tpc_hit_begin, const g2t_vertex& geant_vertex,
     HitPoint_t TrackSegmentHits[100], double& smin, double& smax, int& nSegHits, int& sIndex);
 
-  void TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_vertex_st& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
+  void TrackSegment2Propagate(g2t_tpc_hit* tpc_hitC, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
 
   double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,

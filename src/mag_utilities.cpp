@@ -365,10 +365,10 @@ void StMagUtilities::GetTPCVoltages (int mode)
 
 bool StMagUtilities::UpdateTPCHighVoltages ()
 {
-  static tpcHighVoltages_st* voltagesTable = 0;
+  static tpcHighVoltages* voltagesTable = 0;
 
   St_tpcHighVoltagesC* voltagesChair = St_tpcHighVoltagesC::instance();
-  tpcHighVoltages_st* new_voltagesTable = voltagesChair->Struct();
+  tpcHighVoltages* new_voltagesTable = voltagesChair->Struct();
   bool update = (new_voltagesTable != voltagesTable) || DoOnce;
 
   // using mode = kPadrow40 means only update high voltages, not anode voltages
@@ -379,11 +379,11 @@ bool StMagUtilities::UpdateTPCHighVoltages ()
 
 void StMagUtilities::GetSpaceCharge ()
 {
-  static spaceChargeCor_st* spaceTable = 0;
+  static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
 
   St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(St_spaceChargeCorR1C::instance());
-  spaceChargeCor_st* new_spaceTable = spaceChair->Struct();
+  spaceChargeCor* new_spaceTable = spaceChair->Struct();
   St_trigDetSumsC* new_scalers = St_trigDetSumsC::instance();
 
   if (new_spaceTable == spaceTable && new_scalers == scalers) return;
@@ -397,11 +397,11 @@ void StMagUtilities::GetSpaceCharge ()
 
 void StMagUtilities::GetSpaceChargeR2 ()
 {
-  static spaceChargeCor_st* spaceTable = 0;
+  static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
 
   St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(St_spaceChargeCorR2C::instance());
-  spaceChargeCor_st* new_spaceTable = spaceChair->Struct();
+  spaceChargeCor* new_spaceTable = spaceChair->Struct();
   St_trigDetSumsC* new_scalers = St_trigDetSumsC::instance();
 
   if (new_spaceTable == spaceTable && new_scalers == scalers) return;
@@ -433,10 +433,10 @@ void StMagUtilities::GetShortedRing ()
 
 bool StMagUtilities::UpdateShortedRing ()
 {
-  static tpcFieldCageShort_st* shortsTable = 0;
+  static tpcFieldCageShort* shortsTable = 0;
 
   St_tpcFieldCageShortC* shortedRingsChair = St_tpcFieldCageShortC::instance();
-  tpcFieldCageShort_st* new_shortsTable = shortedRingsChair->Struct();
+  tpcFieldCageShort* new_shortsTable = shortedRingsChair->Struct();
   bool update = (new_shortsTable != shortsTable) || DoOnce;
 
   if (update) { GetShortedRing(); shortsTable = new_shortsTable; }
@@ -484,7 +484,7 @@ void StMagUtilities::GetHVPlanes ()
 {
   // GetTPCVoltages() must be called first!
   fHVPlanes = St_tpcHVPlanesC::instance() ;
-  tpcHVPlanes_st* HVplanes = fHVPlanes -> Struct();
+  tpcHVPlanes* HVplanes = fHVPlanes -> Struct();
   float deltaVGGCathode = GG - GGideal;
   deltaVGGEast = (  HVplanes -> GGE_shift_z * StarMagE) + deltaVGGCathode;
   deltaVGGWest = (- HVplanes -> GGW_shift_z * StarMagE) + deltaVGGCathode;

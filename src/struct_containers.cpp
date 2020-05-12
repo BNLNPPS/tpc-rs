@@ -9,16 +9,16 @@
 
 
 #define MakeChairInstance(STRUCT,PATH) \
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT ## _st>::name(# PATH);
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT>::name(# PATH);
 
 #define MakeChairInstance2(STRUCT,CLASS,PATH) \
-template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT ## _st>::name(# PATH);
+template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::name(# PATH);
 
 #define MakeChairAltInstance(STRUCT,PATHA,PATHB,AorB)	\
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C, STRUCT ## _st>::name(AorB==0 ? # PATHA : # PATHB);
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C, STRUCT>::name(AorB==0 ? # PATHA : # PATHB);
 
 #define MakeChairAltInstance2(STRUCT,CLASS,PATHA,PATHB,AorB)	\
-template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT ## _st>::name(AorB==0 ? # PATHA : # PATHB);
+template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::name(AorB==0 ? # PATHA : # PATHB);
 
 static int _debug = 0;
 //__________________Calibrations/tpc______________________________________________________________
@@ -35,12 +35,12 @@ MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
 
 
 double St_tpcCorrectionC::CalcCorrection(int i, double x, double z, int NparMax) {
-  tpcCorrection_st *cor =  Struct(i);
+  tpcCorrection *cor =  Struct(i);
   return SumSeries(cor, x, z, NparMax);
 }
 
 
-double St_tpcCorrectionC::SumSeries(tpcCorrection_st *cor,  double x, double z, int NparMax) {
+double St_tpcCorrectionC::SumSeries(tpcCorrection *cor,  double x, double z, int NparMax) {
   double Sum = 0;
   if (! cor) return Sum;
   int N = std::abs(cor->npar)%100;
@@ -683,9 +683,9 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   return v_eff;
 }
 
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0_st>::name("Calibrations/tpc/tpcPadGainT0");
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0_st>::name("Calibrations/tpc/tpcPadGainT0");
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0_st>::name("Calibrations/tpc/itpcPadGainT0");
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0>::name("Calibrations/tpc/tpcPadGainT0");
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0>::name("Calibrations/tpc/tpcPadGainT0");
+template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0>::name("Calibrations/tpc/itpcPadGainT0");
 
 float 	St_tpcPadGainT0BC::Gain(int sector, int row, int pad) const {
   float gain = 0;

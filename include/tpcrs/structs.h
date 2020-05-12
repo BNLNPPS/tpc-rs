@@ -1,14 +1,14 @@
 #ifndef tpcrs_structs_h
 #define tpcrs_structs_h
 
-struct asic_thresholds_st {
+struct asic_thresholds {
   int thresh_lo;
   int thresh_hi;
   int n_seq_lo;
   int n_seq_hi;
 };
 
-struct g2t_tpc_hit_st {
+struct g2t_tpc_hit {
   int id; /* primary key */
   int next_tr_hit_p; /* Id of next hit on same track */
   int track_p; /* Id of parent track */
@@ -26,7 +26,7 @@ struct g2t_tpc_hit_st {
   int np; /* no. of primary electrons */
 };
 
-struct g2t_track_st {
+struct g2t_track {
   int eg_label; /* generator track label (0 if GEANT track) */
   int eg_pid; /* event generator particle id */
   int ge_pid; /* GEANT particle id */
@@ -104,7 +104,7 @@ struct g2t_track_st {
   float rapidity; /* Rapidity */
 };
 
-struct g2t_vertex_st {
+struct g2t_vertex {
   char ge_volume[4]; /* GEANT volume name */
   int daughter_p; /* Id of first daughter in linked list */
   int eg_label; /* generator label (or 0 if GEANT vertex) */
@@ -125,14 +125,14 @@ struct g2t_vertex_st {
   float ge_x[3]; /* GEANT vertex coordinate (Cartesian) */
 };
 
-struct itpcPadGainT0_st {
+struct itpcPadGainT0 {
   int run; /* pulser run number used */
   float Gain[24][40][120]; /* Gains per pad*/
   float T0[24][40][120]; /* T0 per pad*/
 };
 
 /** Survey data */
-struct iTPCSurvey_st {
+struct iTPCSurvey {
 	int Id; 
 	float Angle; 
 	float dx; 
@@ -142,7 +142,7 @@ struct iTPCSurvey_st {
 	char comment[32]; 
 };
 
-struct MagFactor_st {
+struct MagFactor {
 	float ScaleFactor; 
 };
 
@@ -153,7 +153,7 @@ struct MagFactor_st {
  == 2 for now.
   p_ij = Power[i * NVariables + j];
  */
-struct MDFCorrection_st {
+struct MDFCorrection {
 	unsigned char idx; 
 	unsigned char nrows; 
 	unsigned char PolyType; 
@@ -167,7 +167,7 @@ struct MDFCorrection_st {
 	double CoefficientsRMS[50]; 
 };
 
-struct richvoltages_st {
+struct richvoltages {
   unsigned int runNumber; /*   */
   unsigned int startStatusTime; /*   */
   unsigned int endStatusTime; /*   */
@@ -175,7 +175,7 @@ struct richvoltages_st {
 };
 
 /** Table for Space Charge Corrections */
-struct spaceChargeCor_st {
+struct spaceChargeCor {
 	double fullFieldB; /* Negative Full Field Correction  */
 	double halfFieldB; /* Negative Half Field Correction  */
 	double zeroField; /*  Zero Field " "  */
@@ -188,13 +188,13 @@ struct spaceChargeCor_st {
 	float ewratio; /* Ratio of charge east/west */
 };
 
-struct starClockOnl_st {
+struct starClockOnl {
   unsigned int runNumber; /*   run number  */
   unsigned int time; /*   unix time of entry  */
   double frequency; /*   frequency in Hz  */
 };
 
-struct starMagOnl_st {
+struct starMagOnl {
 	unsigned int runNumber; /*   run number  */
 	unsigned int time; /*   unix time of entry  */
 	double current; /*   magnet current (- means B polarity)  */
@@ -219,7 +219,7 @@ struct starMagOnl_st {
  Id = 100*sector + ladder              SsdLaddersOnSectors
  Id = 7000 + 100*wafer + ladder        SsdWafersOnLadders
  */
-struct Survey_st {
+struct Survey {
 	int Id; 
 	double r00; 
 	double r01; /* -gamma */
@@ -257,7 +257,7 @@ struct Survey_st {
   L2 coefficient of the TCF
   L3 coefficient of the TCF
  */
-struct tpcAltroParams_st {
+struct tpcAltroParams {
   int N; /*  = no. of Altro parameters */
   int Altro_thr;
   int Altro_seq;
@@ -270,7 +270,7 @@ struct tpcAltroParams_st {
 };
 
 /** average voltages over stable periods of time, */
-struct tpcAnodeHVavg_st {
+struct tpcAnodeHVavg {
   unsigned short sector; /*  sector 1-24 */
   unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
   float voltage; /*  average voltage  */
@@ -279,13 +279,13 @@ struct tpcAnodeHVavg_st {
   int numoutliers; /*  number of encountered outliers */
 };
 
-struct tpcAnodeHV_st {
+struct tpcAnodeHV {
   unsigned short sector; /*  sector 1-24 */
   unsigned short socket; /*  MWC socket/card (ISOR=17,OSIR=18,OSOR=19)  */
   float voltage; /*   HV setting  */
 };
 
-struct TpcAvgCurrent_st {
+struct TpcAvgCurrent {
   int run; /* run no. used for averaging  */
   int start_time; /* begin unix time of averaging interval */
   int stop_time; /* end   unix time of averaging interval */
@@ -293,7 +293,7 @@ struct TpcAvgCurrent_st {
   float AcCharge[192]; /* accumulated charge per sector(24) and channel(8) [C]*/
 };
 
-struct TpcAvgPowerSupply_st {
+struct TpcAvgPowerSupply {
   int run; /* run no. used for averaging  */
   int start_time; /* begin unix time of averaging interval */
   int stop_time; /* end   unix time of averaging interval */
@@ -303,7 +303,7 @@ struct TpcAvgPowerSupply_st {
 };
 
 /** Table for Resolutions of TPC Calibrations */
-struct tpcCalibResolutions_st {
+struct tpcCalibResolutions {
 	float SpaceCharge; /* SpaceCharge correction */
 	float GridLeak; /* GridLeak correction */
 	char comment[255]; /* comments */
@@ -315,7 +315,7 @@ struct tpcCalibResolutions_st {
                     (eventBunchCrossingsHigh[0] << 32)  eventBunchCrossingsLow[0]
                     with appropriate 32to64 conversion before bitshifting
  */
-struct tpcChargeEvent_st {
+struct tpcChargeEvent {
 	int nChargeEvents; /* number of charge events in this record */
 	unsigned int eventBunchCrossingsLow[4096]; /* number of bunches into the run when charge event occurred (32 low bits) */
 	unsigned int eventBunchCrossingsHigh[4096]; /* number of bunches into the run when charge event occurred (32 high bits) */
@@ -344,7 +344,7 @@ struct tpcChargeEvent_st {
  type = 2000 + 300; expo(0)+pol3(2)
  row index
 COMMENTS TRUNCATED */
-struct tpcCorrection_st {
+struct tpcCorrection {
   int type;
   int idx;
   int nrows;
@@ -355,7 +355,7 @@ struct tpcCorrection_st {
   double a[10];
 };
 
-struct tpcDimensions_st {
+struct tpcDimensions {
   int numberOfSectors; /*   */
   double tpcInnerRadius; /*   */
   double tpcOuterRadius; /*   */
@@ -427,7 +427,7 @@ struct tpcDimensions_st {
   double outerDZExtraAl[5]; /*   z thickness  */
 };
 
-struct tpcDriftVelocity_st {
+struct tpcDriftVelocity {
 	float laserDriftVelocityEast; /*   cm/us : from laser beam analysis  */
 	float laserDriftVelocityWest; /*   cm/us : from laser beam analysis  */
 	float cathodeDriftVelocityEast; /*   cm/us : from cathode emission  */
@@ -435,12 +435,12 @@ struct tpcDriftVelocity_st {
 };
 
 /** Effective height of pad row */
-struct TpcEffectivedX_st {
+struct TpcEffectivedX {
 	float scaleInner; /* scale factor for inner dX */
 	float scaleOuter; /*       -"-        outer dX  */
 };
 
-struct tpcEffectiveGeom_st {
+struct tpcEffectiveGeom {
   double drift_length_correction; /*  cm: Diff between actual drift length and  */
   double z_inner_offset; /*  cm: Effective distance between  */
   double z_outer_offset; /*  cm: Effective distance between  */
@@ -448,7 +448,7 @@ struct tpcEffectiveGeom_st {
   double z_outer_offset_West; /*  cm: Effective distance West  -"-                 */
 };
 
-struct tpcElectronics_st {
+struct tpcElectronics {
   int numberOfTimeBins; /*   */
   double nominalGain; /*   mV/fC  */
   double samplingFrequency; /* MHz, not used,  overwritten by starClockOnl*/
@@ -460,14 +460,14 @@ struct tpcElectronics_st {
   double tau; /*   ns  */
 };
 
-struct tpcFieldCage_st {
+struct tpcFieldCage {
   float innerFieldCageShift; /* cm : z shift of inner field cage w.r.t outer field cage */
   float eastClockError; /* radians :  Phi rotation of East end of TPC in radians */
   float westClockError; /* radians :  Phi rotation of West end of TPC in radians */
 };
 
 /** provide info on shorted rings in the field cages */
-struct tpcFieldCageShort_st {
+struct tpcFieldCageShort {
 	float side; /* 0 = east, 1 = west */
 	float cage; /* 0 = inner, 1 = outer */
 	float ring; /* ring location of the short (e.g. 169.5) */
@@ -496,7 +496,7 @@ struct tpcFieldCageShort_st {
  scf/hr     : TPC-O2_M5
  liters/min : TPC-FI_7
  */
-struct tpcGas_st {
+struct tpcGas {
   float barometricPressure;
   float inputTPCGasPressure;
   float nitrogenPressure;
@@ -515,7 +515,7 @@ struct tpcGas_st {
   float flowRateRecirculation;
 };
 
-struct tpcGlobalPosition_st {
+struct tpcGlobalPosition {
   float LocalxShift; /* cm : x position of TPC center in magnet frame  */
   float LocalyShift; /* cm : y position of TPC center in magnet frame  */
   float LocalzShift; /* cm : z position of TPC center in magnet frame  */
@@ -534,7 +534,7 @@ struct tpcGlobalPosition_st {
 };
 
 /** Table for TPC GridLeaks */
-struct tpcGridLeak_st {
+struct tpcGridLeak {
 	double InnerGLRadius; /* Radius of GL around inner sectors           */
 	double MiddlGLRadius; /* Radius of GL between inner/outer sectors    */
 	double OuterGLRadius; /* Radius of GL around outer sectors           */
@@ -547,7 +547,7 @@ struct tpcGridLeak_st {
 };
 
 /** Cathode and gating grid voltage for ExB distortions  Cathode and gating grid voltage for ExB distortions */
-struct tpcHighVoltages_st {
+struct tpcHighVoltages {
 	float cathode; /*   kVolts  */
 	float gatedGridRef; /*   Volts - nominal TPC value but is set by 48 sub-sectors  */
 	float gridLeakWallTip[24]; /*   Volts - iTPC GridLeak wall tip voltage for 24 sectors  */
@@ -559,7 +559,7 @@ struct tpcHighVoltages_st {
                     east gated grid
                     west gated grid
  */
-struct tpcHVPlanes_st {
+struct tpcHVPlanes {
 	float CM_shift_z; /* physical z shift of the CM plane                      */
 	float CM_tilt_x; /* x component of the CM plane's normal unit vector      */
 	float CM_tilt_y; /* y component of the CM plane's normal unit vector      */
@@ -572,7 +572,7 @@ struct tpcHVPlanes_st {
 };
 
 /** Table for TPC OmegaTau */
-struct tpcOmegaTau_st {
+struct tpcOmegaTau {
 	float tensorV1; /* tensor for OmegaTau           */
 	float tensorV2; /* tensor for OmegaTau    */
 	unsigned short distortionCorrectionsMode; /* modes for field distortion and non-uniformity corrections  */
@@ -582,17 +582,17 @@ struct tpcOmegaTau_st {
 TPC padrow configurations (tpcitpc) for 24 sectors
  sector status 0 => tpc, 1 => itpc
  */
-struct tpcPadConfig_st {
+struct tpcPadConfig {
   unsigned char itpc[24];
 };
 
-struct tpcPadGainT0_st {
+struct tpcPadGainT0 {
   int run; /* pulser run number used */
   float Gain[24][45][182]; /* Gains per pad*/
   float T0[24][45][182]; /* T9 per pad*/
 };
 
-struct tpcPadPlanes_st {
+struct tpcPadPlanes {
   int padRows; /*   */
   int innerPadRows; /*   */
   int innerPadRows48; /*   */
@@ -627,7 +627,7 @@ struct tpcPadPlanes_st {
 };
 
 /** trs parameters for pad response functions  trs parameters for pad response functions */
-struct tpcPadResponse_st {
+struct tpcPadResponse {
   float innerGasGainFluctuation; /*   unitless  */
   float outerGasGainFluctuation; /*   unitless  */
   float innerPadResponseSigma; /*   cm  */
@@ -647,7 +647,7 @@ struct tpcPadResponse_st {
 };
 
 /** T0s by padrow, applied after clusterfinding */
-struct tpcPadrowT0_st {
+struct tpcPadrowT0 {
 	float T0[100]; /*  T0s per padrow */
 };
 
@@ -656,7 +656,7 @@ Map tpc row, pad range [padMin, padMax] to rdo number
  row index
  total no. of real rows in the table; For Db interface (where nrows = 50)
  */
-struct tpcRDOMap_st {
+struct tpcRDOMap {
 	int idx; 
 	int nrows; 
 	unsigned char row; 
@@ -665,13 +665,13 @@ struct tpcRDOMap_st {
 	unsigned char rdo; 
 };
 
-struct tpcRDOMasks_st {
+struct tpcRDOMasks {
   unsigned int runNumber; /*       run number  */
   unsigned int sector; /*   sector  */
   unsigned int mask; /*   enable mask  */
 };
 
-struct tpcRDOT0offset_st {
+struct tpcRDOT0offset {
 	unsigned char isShifted[24]; /* flag if there is any RDO off set to tsector */
 	float t0[24][10]; /* RDO t0 offset per sector: [0-23], rdo [0-5] Tpx, [6-9] iTpc  (time bins) */
 };
@@ -683,7 +683,7 @@ Tpc Response Simulator parameters  Tpc Response Simulator parameters
   1.8, effective reduction of OmegaTau near
 				  Outer sector anode wire
  */
-struct TpcResponseSimulator_st {
+struct TpcResponseSimulator {
   float I0; /* = 13.1 eV, CH4 */
   float Cluster; /* = 3.2, average no. of electrons per primary  */
   float W; /* = 26.2 eV */
@@ -739,7 +739,7 @@ Table for SpaceCharge and GridLeak Correction parameters
           plus radius and width of the charge sheet
        scaler and mode definitions in StDetectorDbMakerSt_tpcSCGLC.h
  */
-struct tpcSCGL_st {
+struct tpcSCGL {
 	float SC[8]; /* Scale factor relating luminosity scaler to SpaceCharge */
 	float SCoffset[8]; /* Offset to define luminosity for SpaceCharge */
 	float SCexponent[8]; /* Luminosity exponential factor for SpaceCharge */
@@ -753,16 +753,16 @@ struct tpcSCGL_st {
 };
 
 /** Tpc gain correction for sector  row */
-struct TpcSecRowCor_st {
+struct TpcSecRowCor {
 	float GainScale[100]; /*  Gains for sector & row */
 	float GainRms[100]; /*  RMS  - " -  */
 };
 
-struct tpcSectorT0offset_st {
+struct tpcSectorT0offset {
 	float t0[48]; /* Sector t0 offset per sector: [0-23] Tpx, [24-47] iTpc  (time bins)*/
 };
 
-struct tpcWirePlanes_st {
+struct tpcWirePlanes {
   double anodeWireRadius; /*   */
   double frischGridWireRadius; /*   */
   double gatingGridWireRadius; /*   */
@@ -792,13 +792,13 @@ struct tpcWirePlanes_st {
 };
 
 /** trigger offset common to all detector-level clock modules  trigger offset common to all detector-level clock modules */
-struct trgTimeOffset_st {
+struct trgTimeOffset {
   float offset; /*   standard trigger offset in micro-seconds  */
   float laserOffset; /*   laser trigger offset in micro-seconds  */
   float laserOffsetW; /*   laser extra trigger offset for West laser */
 };
 
-struct trigDetSums_st {
+struct trigDetSums {
   unsigned int runNumber; /*       run number  */
   unsigned int timeOffset; /*       run begin time  */
   double ctbWest; /*   ctb West  */
@@ -821,7 +821,7 @@ struct trigDetSums_st {
 };
 
 /** Table containg parameters for slow simulator running.  */
-struct tss_tsspar_st {
+struct tss_tsspar {
   char fileout[80]; /* output file for pixel data (none->table) */
   int dynam; /* adc dynamic range (adc counts; usu 1023) */
   int format; /* pixel data format */

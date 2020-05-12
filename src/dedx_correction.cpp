@@ -77,8 +77,8 @@ void StTpcdEdxCorrection::ReSetCorrections()
   m_Corrections[kTpcdEdxCor            ] = dEdxCorrection_t("TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"			, St_TpcdEdxCorC::instance());
   const St_tpcCorrectionC* chair = 0;
   const St_MDFCorrectionC* chairMDF = 0;
-  const tpcCorrection_st* cor = 0;
-  const MDFCorrection_st* corMDF = 0;
+  const tpcCorrection* cor = 0;
+  const MDFCorrection* corMDF = 0;
   int N = 0;
   int npar = 0;
   int nrows = 0;
@@ -236,7 +236,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
   //  double gainAVcorr = gasGain/gainNominal;
   mAdc2GeV = tsspar->ave_ion_pot() * tsspar->scale() / gainNominal;
   double Adc2GeVReal = tsspar->ave_ion_pot() * tsspar->scale() / gasGain;
-  tpcGas_st* gas = m_tpcGas->Struct();
+  tpcGas* gas = m_tpcGas->Struct();
   double ZdriftDistanceO2 = ZdriftDistance * gas->ppmOxygenIn;
   double ZdriftDistanceO2W = ZdriftDistanceO2 * gas->ppmWaterOut;
   CdEdx.ZdriftDistanceO2 = ZdriftDistanceO2;
@@ -271,8 +271,8 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
   for (int k = kUncorrected; k <= kTpcLast; k++) {
     int l = 0;
-    tpcCorrection_st* cor = 0;
-    tpcCorrection_st* corl = 0;
+    tpcCorrection* cor = 0;
+    tpcCorrection* corl = 0;
 
     if (CdEdx.lSimulated) {
       if (k == kAdcCorrection) dE *= 2.116;//  1.75; // 1.25 is in Trs already <<<< !!!!!!
@@ -289,7 +289,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
       if (! chair) goto ENDL;
 
-      const TpcSecRowCor_st* gain = chair->Struct(sector - 1);
+      const TpcSecRowCor* gain = chair->Struct(sector - 1);
       gc =  gain->GainScale[row - 1];
 
       if (gc <= 0.0) return 1;
