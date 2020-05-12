@@ -13,8 +13,6 @@
 #include "dedx_correction.h"
 #include "tpc_db.h"
 
-class HitPoint_t;
-class SignalSum_t;
 
 class StTpcRSMaker
 {
@@ -28,6 +26,25 @@ class StTpcRSMaker
             const std::vector<g2t_vertex>& geant_vertices, tpcrs::DigiData& digi_data);
 
  private:
+
+  struct HitPoint_t {
+    int TrackId;
+    /// Track length to current point
+    double s;
+    double sMin, sMax;
+    g2t_tpc_hit* tpc_hitC;
+    /// The original coordinates of the hit with applied distortions
+    StGlobalCoordinate xyzG;
+    StTpcLocalSectorCoordinate coorLS;
+    StTpcLocalSectorDirection  dirLS;
+    StTpcLocalSectorDirection  BLS;
+    StTpcPadCoordinate Pad;
+  };
+
+  struct SignalSum_t {
+    float      Sum;
+    short  TrackId;
+  };
 
   const double min_signal_;           //!
   const double electron_range_;       //!

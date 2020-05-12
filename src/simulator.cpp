@@ -26,7 +26,6 @@
 #include "tpcrs/configurator.h"
 #include "altro.h"
 #include "bichsel.h"
-#include "coords.h"
 #include "dedx_correction.h"
 #include "logger.h"
 #include "mag_utilities.h"
@@ -34,25 +33,6 @@
 #include "struct_containers.h"
 #include "track_helix.h"
 
-
-struct HitPoint_t {
-  int TrackId;
-  /// Track length to current point
-  double s;
-  double sMin, sMax;
-  g2t_tpc_hit* tpc_hitC;
-  /// The original coordinates of the hit with applied distortions
-  StGlobalCoordinate xyzG;
-  StTpcLocalSectorCoordinate coorLS;
-  StTpcLocalSectorDirection  dirLS;
-  StTpcLocalSectorDirection  BLS;
-  StTpcPadCoordinate Pad;
-};
-
-struct SignalSum_t {
-  float      Sum;
-  short  TrackId;
-};
 
 #define __STOPPED_ELECTRONS__
 #define __DEBUG__
