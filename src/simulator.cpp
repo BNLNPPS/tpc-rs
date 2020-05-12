@@ -371,21 +371,6 @@ void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::vector<TF
 }
 
 
-inline bool operator< (const g2t_tpc_hit& lhs, const g2t_tpc_hit& rhs)
-{
-  // sectors
-  if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
-    return (lhs.volume_id % 100000) / 100 < (rhs.volume_id % 100000) / 100;
-
-  // track id
-  if (lhs.track_p != rhs.track_p)
-    return lhs.track_p < rhs.track_p;
-
-  // track length
-  return lhs.length < rhs.length;
-}
-
-
 void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
                         const std::vector<g2t_track>& geant_particles,
                         const std::vector<g2t_vertex>& geant_vertices, tpcrs::DigiData& digi_data)
