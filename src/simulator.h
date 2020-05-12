@@ -123,4 +123,20 @@ class StTpcRSMaker
   double xOnWire, yOnWire, zOnWire; //!
   double rowsdE[kRowMax];           //!
 };
+
+
+inline bool operator< (const g2t_tpc_hit& lhs, const g2t_tpc_hit& rhs)
+{
+  // sectors
+  if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
+    return (lhs.volume_id % 100000) / 100 < (rhs.volume_id % 100000) / 100;
+
+  // track id
+  if (lhs.track_p != rhs.track_p)
+    return lhs.track_p < rhs.track_p;
+
+  // track length
+  return lhs.length < rhs.length;
+}
+
 #endif
