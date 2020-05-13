@@ -14,7 +14,7 @@
 #include <numeric>
 #include <vector>
 
-#include "tpcrs.h"
+#include "simulator.h"
 // SCL
 #include "particles/StThreeVector.hh"
 #include "particles/StPhysicalHelix.hh"

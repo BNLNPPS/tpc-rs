@@ -19,7 +19,6 @@
 
 #include "tpcrs/logger.h"
 #include "altro.h"
-#include "tpcrs.h"
 
 /**	@brief Consturctor of Altro Class
 	*
