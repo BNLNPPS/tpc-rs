@@ -6,7 +6,7 @@ const double TrackHelix::NoSolution = 3.e+33;
 
 static const double c_light = 2.99792458e+10; // meter/second;
 
-TrackHelix::TrackHelix(double c, double d, double phase, const StThreeVector<double> &o, int h)
+TrackHelix::TrackHelix(double c, double d, double phase, const Coords &o, int h)
 {
   setParameters(c, d, phase, o, h);
 }
@@ -18,7 +18,7 @@ TrackHelix::TrackHelix(double c, double d, double phase, const StThreeVector<dou
  * Magnetic field value B must be in kilogausses.
  * Charge of particle in positron charges (e.g. -1 for electron)
  */
-TrackHelix::TrackHelix(const StThreeVector<double> &p, const StThreeVector<double> &o, double B, double q)
+TrackHelix::TrackHelix(const Coords &p, const Coords &o, double B, double q)
 {
   h_ = (q * B <= 0) ? 1 : -1;
 
@@ -36,22 +36,22 @@ TrackHelix::TrackHelix(const StThreeVector<double> &p, const StThreeVector<doubl
 }
 
 
-StThreeVector<double> TrackHelix::momentum(double B) const
+Coords TrackHelix::momentum(double B) const
 {
   if (singularity_)
-    return (StThreeVector<double>{0, 0, 0});
+    return (Coords{0, 0, 0});
   else {
     {
       double pt = std::abs(c_light * B / curvature_);
 
-      return (StThreeVector<double>{pt * std::cos(phase_ + h_* M_PI_2), // pos part pos field
-                                    pt * std::sin(phase_ + h_* M_PI_2),
-                                    pt * std::tan(dip_angle_)});
+      return (Coords{pt * std::cos(phase_ + h_* M_PI_2), // pos part pos field
+                     pt * std::sin(phase_ + h_* M_PI_2),
+                     pt * std::tan(dip_angle_)});
     }
   }
 }
 
-StThreeVector<double> TrackHelix::momentumAt(double S, double B) const
+Coords TrackHelix::momentumAt(double S, double B) const
 {
   // Obtain phase-shifted momentum from phase-shift of origin
   TrackHelix tmp(*this);
@@ -64,11 +64,11 @@ double TrackHelix::geometricSignedDistance(double x, double y)
 {
   // Geometric signed distance
   double thePath = this->pathLength(x, y);
-  StThreeVector<double> DCA2dPosition = this->at(thePath);
+  Coords DCA2dPosition = this->at(thePath);
   DCA2dPosition.z = 0;
-  StThreeVector<double> position{x, y, 0};
-  StThreeVector<double> DCAVec = (DCA2dPosition - position);
-  StThreeVector<double> momVec;
+  Coords position{x, y, 0};
+  Coords DCAVec = (DCA2dPosition - position);
+  Coords momVec;
 
   // Deal with straight tracks
   if (this->singularity_) {
@@ -97,14 +97,14 @@ double TrackHelix::curvatureSignedDistance(double x, double y)
 
 }
 
-double TrackHelix::geometricSignedDistance(const StThreeVector<double> &pos)
+double TrackHelix::geometricSignedDistance(const Coords &pos)
 {
   double sdca2d = this->geometricSignedDistance(pos.x, pos.y);
   double theSign = (sdca2d >= 0) ? 1. : -1.;
   return (this->distance(pos)) * theSign;
 }
 
-double TrackHelix::curvatureSignedDistance(const StThreeVector<double> &pos)
+double TrackHelix::curvatureSignedDistance(const Coords &pos)
 {
   double sdca2d = this->curvatureSignedDistance(pos.x, pos.y);
   double theSign = (sdca2d >= 0) ? 1. : -1.;
@@ -112,7 +112,7 @@ double TrackHelix::curvatureSignedDistance(const StThreeVector<double> &pos)
 }
 
 void TrackHelix::setParameters(double c, double dip, double phase,
-                            const StThreeVector<double> &o, int h)
+                            const Coords &o, int h)
 {
   //
   //  The order in which the parameters are set is important
@@ -177,7 +177,7 @@ void TrackHelix::setDipAngle(double val)
 }
 
 
-double TrackHelix::fudgePathLength(const StThreeVector<double> &p) const
+double TrackHelix::fudgePathLength(const Coords &p) const
 {
   double s;
   double dx = p.x - origin_.x;
@@ -195,12 +195,12 @@ double TrackHelix::fudgePathLength(const StThreeVector<double> &p) const
   return s;
 }
 
-double TrackHelix::distance(const StThreeVector<double> &p, bool scanPeriods) const
+double TrackHelix::distance(const Coords &p, bool scanPeriods) const
 {
   return (this->at(pathLength(p, scanPeriods)) - p).mag();
 }
 
-double TrackHelix::pathLength(const StThreeVector<double> &p, bool scanPeriods) const
+double TrackHelix::pathLength(const Coords &p, bool scanPeriods) const
 {
   //
   //  Returns the path length at the distance of closest
@@ -391,8 +391,8 @@ std::pair<double, double> TrackHelix::pathLength(double r, double x, double y)
   return result;
 }
 
-double TrackHelix::pathLength(const StThreeVector<double> &r,
-                           const StThreeVector<double> &n) const
+double TrackHelix::pathLength(const Coords &r,
+                           const Coords &n) const
 {
   //
   // Vector 'r' defines the position of the center and
@@ -492,11 +492,11 @@ TrackHelix::pathLengths(const TrackHelix &h, double minStepSize, double minRange
     //
     //  Analytic solution
     //
-    StThreeVector<double> dv = h.origin_ - origin_;
-    StThreeVector<double> a{-cos_dip_angle_ * sin_phase_,
+    Coords dv = h.origin_ - origin_;
+    Coords a{-cos_dip_angle_ * sin_phase_,
                             cos_dip_angle_ * cos_phase_,
                             sin_dip_angle_};
-    StThreeVector<double> b{-h.cos_dip_angle_ * h.sin_phase_,
+    Coords b{-h.cos_dip_angle_ * h.sin_phase_,
                             h.cos_dip_angle_ * h.cos_phase_,
                             h.sin_dip_angle_};
     double ab = a * b;
@@ -598,7 +598,7 @@ void TrackHelix::moveOrigin(double s)
   if (singularity_)
     origin_	= at(s);
   else {
-    StThreeVector<double> newOrigin = at(s);
+    Coords newOrigin = at(s);
     double newPhase = std::atan2(newOrigin.y - ycenter(),
                             newOrigin.x - xcenter());
     origin_ = newOrigin;
