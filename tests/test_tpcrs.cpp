@@ -13,7 +13,7 @@
 #include "tpcrs/config_yaml.h"
 #include "tpcrs/digi_data.h"
 #include "tpcrs/structs.h"
-#include "tpcrs.h"
+#include "simulator.h"
 #include "tpc_db.h"
 
 

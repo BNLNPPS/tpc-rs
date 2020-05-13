@@ -134,7 +134,7 @@ set(source_files
     mag_utilities.cpp
     dedx_correction.cpp
     dedx_parameterization.cpp
-    tpcrs.cpp
+    simulator.cpp
     altro.cpp
     TF1F.cpp
     struct_containers.cpp
