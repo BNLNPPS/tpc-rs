@@ -629,7 +629,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         memset (rowsdEH, 0, sizeof(rowsdEH));
         g2t_tpc_hit_st* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->adc = 0;
-        volId = tpc_hitC->volume_id % 100000;
         int row = TrackSegmentHits[iSegHits].coorLS.row;
         int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
         // switch between Inner / Outer Sector paramters
