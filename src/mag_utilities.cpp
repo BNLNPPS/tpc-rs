@@ -107,7 +107,7 @@ To do:  <br>
 #include "TF1.h"
 #include "TRandom.h"
 
-#include "coords/StTpcCoordinateTransform.hh"
+#include "coords.h"
 #include "logger.h"
 #include "mag_utilities.h"
 #include "math_funcs.h"
@@ -5839,34 +5839,34 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
         double iOffsetFirst, iOffsetLast, oOffsetFirst, oOffsetLast;
 
           double local[3] = {0, 0, 0};
-          static StTpcCoordinateTransform tran;
+          static CoordTransform tran;
           static StTpcLocalCoordinate locP;
-          double* master = locP.position().xyz();
+          double* master = locP.position.xyz();
           // For the alignment, 'local' is the ideal position of the point
           // on the endcap, and 'master' is the real position of that point.
           // For this distortion, we will only worry about z displacements.
 
           local[0] = m * INNERGGFirst * tanSecPhi;
           local[1] = INNERGGFirst;
-          StTpcLocalSectorCoordinate lSec(local[0], local[1], local[2], Seclist[k]);
+          StTpcLocalSectorCoordinate lSec{local[0], local[1], local[2], Seclist[k]};
           tran(lSec, locP);
           iOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * INNERGGLast  * tanSecPhi;
           local[1] = INNERGGLast;
-          lSec = StTpcLocalSectorCoordinate(local[0], local[1], local[2], Seclist[k]);
+          lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
           tran(lSec, locP);
           iOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGFirst * tanSecPhi;
           local[1] = OUTERGGFirst;
-          lSec = StTpcLocalSectorCoordinate(local[0], local[1], local[2], Seclist[k]);
+          lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
           tran(lSec, locP);
           oOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGLast  * tanSecPhi;
           local[1] = OUTERGGLast;
-          lSec = StTpcLocalSectorCoordinate(local[0], local[1], local[2], Seclist[k]);
+          lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
           tran(lSec, locP);
           oOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 

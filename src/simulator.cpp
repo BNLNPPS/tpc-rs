@@ -22,13 +22,12 @@
 #include "TProfile2D.h"
 #include "tcl.h"
 
-#include "coords/StCoordinates.hh"
-#include "coords/StTpcCoordinateTransform.hh"
 #include "particles/StParticleTable.hh"
 #include "particles/StParticleDefinition.hh"
 #include "tpcrs/configurator.h"
 #include "altro.h"
 #include "bichsel.h"
+#include "coords.h"
 #include "dedx_correction.h"
 #include "logger.h"
 #include "mag_utilities.h"
@@ -728,7 +727,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         TrackSegment2Propagate(tpc_hitC, &geant_vertex[id3 - 1], TrackSegmentHits[nSegHits], smin, smax);
 
-        if (TrackSegmentHits[nSegHits].Pad.timeBucket() < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket() > max_timebins_) continue;
+        if (TrackSegmentHits[nSegHits].Pad.timeBucket < 0 || TrackSegmentHits[nSegHits].Pad.timeBucket > max_timebins_) continue;
 
         nSegHits++;
       }
@@ -756,7 +755,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         g2t_tpc_hit_st* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->adc = 0;
         volId = tpc_hitC->volume_id % 100000;
-        int row = TrackSegmentHits[iSegHits].coorLS.fromRow();
+        int row = TrackSegmentHits[iSegHits].coorLS.row;
         int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
         // switch between Inner / Outer Sector paramters
         // Extra correction for simulation with respect to data
@@ -781,7 +780,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         double Gain = St_tss_tssparC::instance()->gain(sector, row);
 
         if (ClusterProfile) {
-          checkList[io][2]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Gain);
+          checkList[io][2]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Gain);
         }
 
         double GainXCorrectionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
@@ -791,7 +790,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         if (GainXSigma > 0) Gain *= std::exp(gRandom->Gaus(0., GainXSigma));
 
         if (ClusterProfile) {
-          checkList[io][3]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Gain);
+          checkList[io][3]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Gain);
         }
 
         // dE/dx correction
@@ -799,25 +798,25 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         if (dEdxCor <= 0.) continue;
 
         if (ClusterProfile) {
-          checkList[io][4]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), dEdxCor);
-          hist[4][0]->Fill(TrackSegmentHits[iSegHits].Pad.sector(), TrackSegmentHits[iSegHits].Pad.row(), dEdxCor);
+          checkList[io][4]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, dEdxCor);
+          hist[4][0]->Fill(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row, dEdxCor);
         }
 
-        dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket());
+        dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket);
 
         if (dEdxCor < min_signal_) continue;
 
         // Initialize propagation
-        float BField[3] = {(float ) TrackSegmentHits[iSegHits].BLS.position().x(),
-                             (float ) TrackSegmentHits[iSegHits].BLS.position().y(),
-                             (float ) TrackSegmentHits[iSegHits].BLS.position().z()
+        float BField[3] = {(float ) TrackSegmentHits[iSegHits].BLS.position.x,
+                             (float ) TrackSegmentHits[iSegHits].BLS.position.y,
+                             (float ) TrackSegmentHits[iSegHits].BLS.position.z
                             };
         // Magnetic field BField must be in kilogauss
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-        TrackHelix track(TrackSegmentHits[iSegHits].dirLS.position(),
-                              TrackSegmentHits[iSegHits].coorLS.position(),
+        TrackHelix track(TrackSegmentHits[iSegHits].dirLS.position,
+                              TrackSegmentHits[iSegHits].coorLS.position,
                               BField[2]* 1e-14 * charge, 1);
-        StThreeVector<double> unit = TrackSegmentHits[iSegHits].dirLS.position().unit();
+        Coords unit = TrackSegmentHits[iSegHits].dirLS.position.unit();
         double* cxyz = unit.xyz();
         double L2L[9] = {
                      cxyz[2], - cxyz[0]*cxyz[2], cxyz[0],
@@ -830,16 +829,16 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         double s_low   = -dStep / 2;
         double s_upper = s_low + dStep;
         double newPosition = s_low;
-        static StThreeVector<double> normal(0, 1, 0);
-        static StTpcCoordinateTransform transform;
-        StThreeVector<double> rowPlane(0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector(), TrackSegmentHits[iSegHits].Pad.row()), 0);
+        static Coords normal{0, 1, 0};
+        static CoordTransform transform;
+        Coords rowPlane{0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row), 0};
         double sR = track.pathLength(rowPlane, normal);
 
         if (sR < 1e10) {
           PrPP(Maker, sR);
           PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
-          StThreeVector<double> xyzP = track.at(sR);
-          TrackSegmentHits[iSegHits].coorLS.setPosition(xyzP);
+          Coords xyzP = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
+          TrackSegmentHits[iSegHits].coorLS.position = xyzP;
           PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
           // don't useT0, don't useTau
           PrPP(Make, TrackSegmentHits[iSegHits].Pad);
@@ -855,12 +854,12 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         double lgam = tpc_hitC->lgam;
 
         if (ClusterProfile) {
-          checkList[io][5]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), lgam);
+          checkList[io][5]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, lgam);
         }
 
         double gamma = std::pow(10., lgam) + 1;
         double betaGamma = std::sqrt(gamma * gamma - 1.);
-        StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
+        Coords       pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
         double bg = 0;
         static const double m_e = .51099907e-3;
         static const double eV = 1e-9; // electronvolt in GeV
@@ -906,22 +905,22 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
         if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
 
-        double padH = TrackSegmentHits[iSegHits].Pad.pad();
-        double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket();
+        double padH = TrackSegmentHits[iSegHits].Pad.pad;
+        double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket;
         tpc_hitC->pad = padH;
         tpc_hitC->timebucket = tbkH;
         pad0 = tpcrs::irint(padH + xmin[0]);
         tbk0 = tpcrs::irint(tbkH + xmin[1]);
         double OmegaTau = St_TpcResponseSimulatorC::instance()->OmegaTau() *
-                            TrackSegmentHits[iSegHits].BLS.position().z() / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
+                            TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
         double NP = std::abs(tpc_hitC->de) / (St_TpcResponseSimulatorC::instance()->W() * eV *
                       St_TpcResponseSimulatorC::instance()->Cluster()); // from GEANT
 
         if (ClusterProfile) {
-          checkList[io][6]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), NP);
+          checkList[io][6]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, NP);
         }
 
-        double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position().z());
+        double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position.z);
         double D = 1. + OmegaTau * OmegaTau;
         double SigmaT = St_TpcResponseSimulatorC::instance()->transverseDiffusion() *  std::sqrt(   driftLength / D);
 
@@ -960,7 +959,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         }
 
         if (ClusterProfile) {
-          checkList[io][7]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), NP);
+          checkList[io][7]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, NP);
         }
 
         int nP = 0;
@@ -1055,11 +1054,11 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           if (!Nt) continue;
 
           if (ClusterProfile) {
-            checkList[io][8]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Nt);
-            checkList[io][11]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), Nt);
+            checkList[io][8]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Nt);
+            checkList[io][11]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, Nt);
           }
 
-          StThreeVector<double> xyzC = track.at(newPosition);
+          Coords xyzC = track.at(newPosition);
           double phiXY = 2 * M_PI * gRandom->Rndm();
           double rX = std::cos(phiXY);
           double rY = std::sin(phiXY);
@@ -1073,9 +1072,9 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             double gain_gas = mPolya[io]->GetRandom();
             // transport to wire
             gRandom->Rannor(rX, rY);
-            StTpcLocalSectorCoordinate xyzE(xyzC.x() + rX * sigmaT,
-                                            xyzC.y() + rY * sigmaT,
-                                            xyzC.z() + gRandom->Gaus(0, sigmaL), sector, row);
+            StTpcLocalSectorCoordinate xyzE{xyzC.x + rX * sigmaT,
+                                            xyzC.y + rY * sigmaT,
+                                            xyzC.z + gRandom->Gaus(0, sigmaL), sector, row};
 
             if (xRange > 0) {
               double xR = rs[ie] * xRange;
@@ -1091,10 +1090,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                 LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << '\n';
               }
 #endif
-              for (int i=0; i<3; i++) xyzE.position().xyz()[i] += xyzR[i];
+              for (int i=0; i<3; i++) xyzE.position[i] += xyzR[i];
             }
 
-            double y = xyzE.position().y();
+            double y = xyzE.position.y;
             double alphaVariation = InnerAlphaVariation[sector - 1];
 
             // Transport to wire
@@ -1122,8 +1121,8 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             }
 
             double distanceToWire = y - yOnWire; // Calculated effective distance to wire affected by Lorentz shift
-            xOnWire = xyzE.position().x();
-            zOnWire = xyzE.position().z();
+            xOnWire = xyzE.position.x;
+            zOnWire = xyzE.position.z;
             // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
             int iGridWire = (int ) std::abs(10.*distanceToWire);
             double dist2Grid = std::copysign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
@@ -1142,7 +1141,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             else                gain_gas *= std::exp(-alphaVariation);
 
             if (ClusterProfile) {
-              checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), gain_gas);
+              checkList[io][9]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, gain_gas);
             }
 
             double dY    = mChargeFraction[io][sector - 1]->GetXmax();
@@ -1188,18 +1187,18 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
             if (total_signal > 0) {
               if (hist[ioH][0]) {
                 for (int p = 0; p < kPadMax; p++)
-                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position().z(), padsdE[p] / total_signal);
+                  hist[ioH][0]->Fill((p + pad0) - padH, TrackSegmentHits[iSegHits].xyzG.position.z, padsdE[p] / total_signal);
               }
 
               if (hist[ioH][1]) {
                 for (int t = 0; t < kTimeBacketMax; t++)
-                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position().z(), tbksdE[t] / total_signal);
+                  hist[ioH][1]->Fill((t + tbk0 + 0.5) - tbkH, TrackSegmentHits[iSegHits].xyzG.position.z, tbksdE[t] / total_signal);
               }
             }
 
-            checkList[io][15]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), tpc_hitC->de);
-            checkList[io][16]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), tpc_hitC->ds);
-            checkList[io][18]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), nTotal);
+            checkList[io][15]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->de);
+            checkList[io][16]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->ds);
+            checkList[io][18]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, nTotal);
 
             if (nP > 0 && nTotal > 0)
               checkList[io][20]->Fill(std::log(nP), std::log(nTotal) - std::log(nP));
@@ -1219,7 +1218,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
 
         if (checkList[io][17])
-          checkList[io][17]->Fill(TrackSegmentHits[iSegHits].xyzG.position().z(), tpc_hitC->adc);
+          checkList[io][17]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->adc);
       }
     }  // hits in the sector
 
@@ -1715,15 +1714,14 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   int volId = tpc_hitC->volume_id % 10000;
   int sector = volId / 100;
   static StGlobalCoordinate coorG;    // ideal
-  TrackSegmentHits.xyzG =
-    StGlobalCoordinate(tpc_hitC->x[0], tpc_hitC->x[1], tpc_hitC->x[2]);  PrPP(Make, TrackSegmentHits.xyzG);
+  TrackSegmentHits.xyzG = {tpc_hitC->x[0], tpc_hitC->x[1], tpc_hitC->x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
   coorG = TrackSegmentHits.xyzG;
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
-  static StTpcCoordinateTransform transform;
+  static CoordTransform transform;
   // GlobalCoord -> LocalSectorCoord
   transform(coorG, coorS, sector, 0); PrPP(Make, coorS);
-  int row = coorS.fromRow();
+  int row = coorS.row;
   transform(coorG, coorLT, sector, row); PrPP(Make, coorLT);
 
   TrackSegmentHits.TrackId  = tpc_hitC->track_p;
@@ -1747,20 +1745,21 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   StarMagField::Instance().BField(tpc_hitC->x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
-  StThreeVector<double>       pxyzG(tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]);
-  StGlobalDirection     dirG(pxyzG.unit());                                   PrPP(Make, dirG);
-  StGlobalDirection     BG(BFieldG[0], BFieldG[1], BFieldG[2]);               PrPP(Make, BG);
+  Coords       pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
+  Coords pxyzGunit = pxyzG.unit();
+  StGlobalDirection     dirG{pxyzGunit[0], pxyzGunit[1], pxyzGunit[2]};       PrPP(Make, dirG);
+  StGlobalDirection     BG{BFieldG[0], BFieldG[1], BFieldG[2]};               PrPP(Make, BG);
   static StTpcLocalDirection  dirLT, BLT;
   transform( dirG,  dirLT, sector, row);                                      PrPP(Make, dirLT);
   transform(   BG,    BLT, sector, row);                                      PrPP(Make, BLT);
 
   // Distortions
   if (TESTBIT(options_, kDistortion) && StMagUtilities::Instance()) {
-    float pos[3] = {(float ) coorLT.position().x(), (float ) coorLT.position().y(), (float ) coorLT.position().z()};
+    float pos[3] = {(float ) coorLT.position.x, (float ) coorLT.position.y, (float ) coorLT.position.z};
     float posMoved[3];
     StMagUtilities::Instance()->DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
-    StThreeVector<double> position(posMoved[0], posMoved[1], posMoved[2]);
-    coorLT.setPosition(position);        // after do distortions
+    Coords position{posMoved[0], posMoved[1], posMoved[2]};
+    coorLT.position = position;        // after do distortions
     transform(coorLT, TrackSegmentHits.xyzG);                PrPP(Make, coorLT);
   }
 
@@ -1772,7 +1771,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   double tof = geant_vertex->ge_tof;
   //	if (! TESTBIT(options_, kNoToflight))
   tof += tpc_hitC->tof;
-  double driftLength = TrackSegmentHits.coorLS.position().z() + tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
+  double driftLength = TrackSegmentHits.coorLS.position.z + tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
 
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > -St_tpcWirePlanesC::instance()->outerSectorAnodeWirePadPlaneSeparation()) ||
@@ -1780,7 +1779,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
       driftLength = std::abs(driftLength);
   }
 
-  TrackSegmentHits.coorLS.position().setZ(driftLength); PrPP(Make, TrackSegmentHits.coorLS);
+  TrackSegmentHits.coorLS.position.z = driftLength; PrPP(Make, TrackSegmentHits.coorLS);
   transform(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, TrackSegmentHits.Pad);
 }
@@ -1789,7 +1788,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
   double sigmaJitterX, TF1F* shaper, std::vector<SignalSum_t>& SignalSum, double& total_signal_in_cluster, double gain_local, double gain_gas)
 {
-  static StTpcCoordinateTransform transform;
+  static CoordTransform transform;
 
   for (int row = rowMin; row <= rowMax; row++) {
     if (St_tpcPadConfigC::instance()->numberOfRows(sector) == 45) { // ! iTpx
@@ -1799,10 +1798,10 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
     }
 
     int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
-    StTpcLocalSectorCoordinate xyzW(xOnWire, yOnWire, zOnWire, sector, row);
+    StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
     static StTpcPadCoordinate Pad;
     transform(xyzW, Pad, false, false); // don't use T0, don't use Tau
-    float bin = Pad.timeBucket();//L  - 1; // K
+    float bin = Pad.timeBucket;//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 
     if (binT < 0 || binT >= max_timebins_) continue;
@@ -1814,16 +1813,16 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
 
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT); // #1
 
-    double dely      = {transform.yFromRow(sector, row) - yOnWire};
+    double dely      = transform.yFromRow(sector, row) - yOnWire;
     double localYDirectionCoupling = mChargeFraction[io][sector - 1]->GetSaveL(&dely);
 
     if (ClusterProfile) {
-      checkList[io][10]->Fill(TrackSegmentHits.xyzG.position().z(), localYDirectionCoupling);
+      checkList[io][10]->Fill(TrackSegmentHits.xyzG.position.z, localYDirectionCoupling);
     }
 
     if (localYDirectionCoupling < min_signal_) continue;
 
-    float padX = Pad.pad();
+    float padX = Pad.pad;
     int CentralPad = tpcrs::irint(padX);
 
     if (CentralPad < 1) continue;
@@ -1856,7 +1855,7 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       }
 
       if (ClusterProfile) {
-        checkList[io][12]->Fill(TrackSegmentHits.xyzG.position().z(), gain);
+        checkList[io][12]->Fill(TrackSegmentHits.xyzG.position.z, gain);
         hist[4][1]->Fill(sector, row, gain);
       }
 
@@ -1866,13 +1865,13 @@ void StTpcRSMaker::GenerateSignal(HitPoint_t &TrackSegmentHits, int sector, int 
       if (localXDirectionCoupling < min_signal_) continue;
 
       if (ClusterProfile) {
-        checkList[io][13]->Fill(TrackSegmentHits.xyzG.position().z(), localXDirectionCoupling);
+        checkList[io][13]->Fill(TrackSegmentHits.xyzG.position.z, localXDirectionCoupling);
       }
 
       double XYcoupling = localYDirectionCoupling * localXDirectionCoupling;
 
       if (ClusterProfile) {
-        checkList[io][14]->Fill(TrackSegmentHits.xyzG.position().z(), XYcoupling);
+        checkList[io][14]->Fill(TrackSegmentHits.xyzG.position.z, XYcoupling);
       }
 
       if (XYcoupling < min_signal_)  continue;
@@ -1943,9 +1942,9 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
     CdEdx.QRatio = -2;
     CdEdx.QRatioA = -2.;
     CdEdx.QSumA = 0;
-    CdEdx.sector = TrackSegmentHits.Pad.sector();
-    CdEdx.row    = TrackSegmentHits.Pad.row();
-    CdEdx.pad    = tpcrs::irint(TrackSegmentHits.Pad.pad());
+    CdEdx.sector = TrackSegmentHits.Pad.sector;
+    CdEdx.row    = TrackSegmentHits.Pad.row;
+    CdEdx.pad    = tpcrs::irint(TrackSegmentHits.Pad.pad);
     CdEdx.edge   = CdEdx.pad;
 
     if (CdEdx.edge > 0.5 * St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
@@ -1953,24 +1952,24 @@ double StTpcRSMaker::dEdxCorrection(HitPoint_t &TrackSegmentHits)
 
     CdEdx.F.dE     = 1;
     CdEdx.F.dx     = dStep;
-    CdEdx.xyz[0] = TrackSegmentHits.coorLS.position().x();
-    CdEdx.xyz[1] = TrackSegmentHits.coorLS.position().y();
-    CdEdx.xyz[2] = TrackSegmentHits.coorLS.position().z();
+    CdEdx.xyz[0] = TrackSegmentHits.coorLS.position.x;
+    CdEdx.xyz[1] = TrackSegmentHits.coorLS.position.y;
+    CdEdx.xyz[2] = TrackSegmentHits.coorLS.position.z;
     double probablePad = St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
     double pitch = (CdEdx.row <= St_tpcPadConfigC::instance()->numberOfInnerRows(CdEdx.sector)) ?
                      St_tpcPadConfigC::instance()->innerSectorPadPitch(CdEdx.sector) :
                      St_tpcPadConfigC::instance()->outerSectorPadPitch(CdEdx.sector);
     double PhiMax = std::atan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
     CdEdx.PhiR   = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
-    CdEdx.xyzD[0] = TrackSegmentHits.dirLS.position().x();
-    CdEdx.xyzD[1] = TrackSegmentHits.dirLS.position().y();
-    CdEdx.xyzD[2] = TrackSegmentHits.dirLS.position().z();
+    CdEdx.xyzD[0] = TrackSegmentHits.dirLS.position.x;
+    CdEdx.xyzD[1] = TrackSegmentHits.dirLS.position.y;
+    CdEdx.xyzD[2] = TrackSegmentHits.dirLS.position.z;
     CdEdx.ZdriftDistance = CdEdx.xyzD[2];
     CdEdx.zG      = CdEdx.xyz[2];
 
     if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
 
-    CdEdx.ZdriftDistance = TrackSegmentHits.coorLS.position().z(); // drift length
+    CdEdx.ZdriftDistance = TrackSegmentHits.coorLS.position.z; // drift length
     St_tpcGasC* tpcGas = m_TpcdEdxCorrection->tpcGas();
 
     if (tpcGas)

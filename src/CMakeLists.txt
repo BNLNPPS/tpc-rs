@@ -121,11 +121,7 @@ set(source_files
     particles/StXicPlus.cc
     particles/StXicZero.cc
     particles/StZZeroBoson.cc
-    coords/StGlobalCoordinate.cc
-    coords/StGlobalDirection.cc
-    coords/StTpcPadCoordinate.cc
-    coords/StTpcCoordinate.cxx
-    coords/StTpcCoordinateTransform.cc
+    coords.cpp
     mag_field.cpp
     mag_utilities.cpp
     dedx_correction.cpp

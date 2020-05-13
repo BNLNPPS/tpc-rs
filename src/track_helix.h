@@ -6,7 +6,7 @@
 #include <utility>
 #include <algorithm>
 
-#include "particles/StThreeVector.hh"
+#include "coords.h"
 
 
 class TrackHelix
@@ -16,14 +16,14 @@ class TrackHelix
   TrackHelix() = default;
 
   /// curvature, dip angle, phase, origin, h
-  TrackHelix(double c, double dip, double phase, const StThreeVector<double> &o, int h = -1);
+  TrackHelix(double c, double dip, double phase, const Coords &o, int h = -1);
 
   /// B: Signed magnetic field in kilogausses
   /// q: Charge of particle (+/- 1)
-  TrackHelix(const StThreeVector<double> &p, const StThreeVector<double> &o, double B, double q);
+  TrackHelix(const Coords &p, const Coords &o, double B, double q);
 
-  StThreeVector<double> momentum(double) const;     // returns the momentum at origin
-  StThreeVector<double> momentumAt(double, double) const; // returns momemtum at S
+  Coords momentum(double) const;     // returns the momentum at origin
+  Coords momentumAt(double, double) const; // returns momemtum at S
 
   /// Returns charge of particle
   int charge(double B) const { return (B > 0 ? -h_ : h_); }
@@ -33,9 +33,9 @@ class TrackHelix
   // 2d DCA to x,y point signed relative to rotation
   double geometricSignedDistance(double x, double y) ;
   // 3d DCA to 3d point signed relative to curvature
-  double curvatureSignedDistance(const StThreeVector<double> &) ;
+  double curvatureSignedDistance(const Coords &) ;
   // 3d DCA to 3d point signed relative to rotation
-  double geometricSignedDistance(const StThreeVector<double> &) ;
+  double geometricSignedDistance(const Coords &) ;
 
   double dipAngle() const { return dip_angle_; }
 
@@ -55,9 +55,9 @@ class TrackHelix
   int h() const { return h_; }
 
   /// Starting point
-  const StThreeVector<double> &origin() const { return origin_; }
+  const Coords &origin() const { return origin_; }
 
-  void setParameters(double c, double dip, double phase, const StThreeVector<double> &o, int h);
+  void setParameters(double c, double dip, double phase, const Coords &o, int h);
 
   /// coordinates of helix at point s
   double x(double s) const
@@ -76,7 +76,7 @@ class TrackHelix
 
   double z(double s) const { return origin_.z + s * sin_dip_angle_; }
 
-  StThreeVector<double> at(double s) const { return StThreeVector<double>{x(s), y(s), z(s)}; }
+  Coords at(double s) const { return Coords{x(s), y(s), z(s)}; }
 
   /// pointing vector of helix at point s
   double cx(double s) const
@@ -95,7 +95,7 @@ class TrackHelix
 
   double cz() const { return sin_dip_angle_; }
 
-  StThreeVector<double> cat(double s) const { return StThreeVector<double>{cx(s), cy(s), cz()}; }
+  Coords cat(double s) const { return Coords{cx(s), cy(s), cz()}; }
 
   /// returns period length of helix
   double period() const
@@ -112,13 +112,13 @@ class TrackHelix
   std::pair<double, double> pathLength(double r, double x, double y);
 
   /// path length at distance of closest approach to a given point
-  double pathLength(const StThreeVector<double> &p, bool scanPeriods = true) const;
+  double pathLength(const Coords &p, bool scanPeriods = true) const;
 
   /// path length at intersection with plane
-  double pathLength(const StThreeVector<double> &r, const StThreeVector<double> &n) const;
+  double pathLength(const Coords &r, const Coords &n) const;
 
   /// path length at distance of closest approach in the xy-plane to a given point
-  double pathLength(double x, double y) const { return fudgePathLength(StThreeVector<double>{x, y, 0}); }
+  double pathLength(double x, double y) const { return fudgePathLength(Coords{x, y, 0}); }
 
   /// path lengths in centimeters at dca between two helices
   std::pair<double, double> pathLengths(const TrackHelix &,
@@ -126,7 +126,7 @@ class TrackHelix
                                         double minRange = 10) const;
 
   /// minimal distance between point and helix
-  double       distance(const StThreeVector<double> &p, bool scanPeriods = true) const;
+  double       distance(const Coords &p, bool scanPeriods = true) const;
 
   /// move the origin along the helix to s which becomes then s=0
   void moveOrigin(double s);
@@ -140,12 +140,12 @@ class TrackHelix
   void setDipAngle(double);
 
   /// value of S where distance in x-y plane is minimal
-  double fudgePathLength(const StThreeVector<double> &) const;
+  double fudgePathLength(const Coords &) const;
 
   /// A flag indicating degenerate case of a straight line (B=0)
   bool singularity_;
   /// Track origin in cm
-  StThreeVector<double> origin_;
+  Coords origin_;
   double dip_angle_;
   /// Track curvature measured in 1/cm
   double curvature_;
