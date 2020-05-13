@@ -38,12 +38,15 @@
 
 struct HitPoint_t {
   int TrackId;
-  double s; // track length to current point
+  /// Track length to current point
+  double s;
   double sMin, sMax;
   g2t_tpc_hit_st* tpc_hitC;
-  StGlobalCoordinate   xyzG;
+  /// The original coordinates of the hit with applied distortions
+  StGlobalCoordinate xyzG;
   StTpcLocalSectorCoordinate coorLS;
-  StTpcLocalSectorDirection dirLS, BLS;
+  StTpcLocalSectorDirection  dirLS;
+  StTpcLocalSectorDirection  BLS;
   StTpcPadCoordinate Pad;
 };
 
@@ -60,14 +63,12 @@ struct SignalSum_t {
 #define PrPP(A,B)
 #endif
 static bool ClusterProfile = true;
-#define Laserino 170
-#define Chasrino 171
+#define LASERINO 170
+#define CHASRINO 171
 
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
-static const double tauC[2]   = {999.655e-9, 919.183e-9};
 static const int nx[2] = {200, 500};
-static const double xmin[2] =  {-10., -6};
 static const double xmax[2] =  { 10., 44};
 static const int nz = 42;
 static const double zmin = -210;
@@ -502,16 +503,14 @@ inline bool operator< (const g2t_tpc_hit_st& lhs, const g2t_tpc_hit_st& rhs)
   if (lhs.track_p != rhs.track_p)
     return lhs.track_p < rhs.track_p;
 
-  // pad rows
-  //  if (lhs.volume_id%100 != rhs.volume_id%100) return lhs.volume_id%100 - rhs.volume_id%100;
   // track length
   return lhs.length < rhs.length;
 }
 
 
-void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
-                        const std::vector<g2t_track_st>& g2t_track,
-                        const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data)
+void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
+                        const std::vector<g2t_track_st>& geant_particles,
+                        const std::vector<g2t_vertex_st>& geant_vertices, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -520,7 +519,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
   double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
-  const g2t_tpc_hit_st* tpc_hit_begin = &g2t_tpc_hit.front();
+  const g2t_tpc_hit_st* tpc_hit_begin = &geant_hits.front();
 
   St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
   St_tpcGainCorrectionC::instance()->Struct(1)->min = -500;
@@ -535,10 +534,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
   // sort
   // initialize original index locations
-  int n_hits = g2t_tpc_hit.size();
+  int n_hits = geant_hits.size();
   std::vector<size_t> sorted_index(n_hits);
   std::iota(sorted_index.begin(), sorted_index.end(), 0);
-  std::stable_sort(sorted_index.begin(), sorted_index.end(), [&g2t_tpc_hit](size_t i1, size_t i2) {return g2t_tpc_hit[i1] < g2t_tpc_hit[i2];}); 
+  std::stable_sort(sorted_index.begin(), sorted_index.end(), [&geant_hits](size_t i1, size_t i2) {return geant_hits[i1] < geant_hits[i2];});
 
   int sortedIndex = 0;
 
@@ -556,7 +555,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
 
       if (iSector != sector) {
         if (iSector < sector) {
-          LOG_ERROR << "StTpcRSMaker::Make: g2t_tpc_hit table has not been ordered by sector no. " << sector << '\n';
+          LOG_ERROR << "StTpcRSMaker::Make: geant_hits table has not been ordered by sector no. " << sector << '\n';
           assert( iSector > sector );
         }
 
@@ -568,10 +567,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       int parent_track_idx  = tpc_hit->track_p;
       double mass = 0;
 
-      int id3        = g2t_track[parent_track_idx - 1].start_vertex_p;
-      assert(id3 > 0 && id3 <= g2t_vertex.size());
-      int ipart      = g2t_track[parent_track_idx - 1].ge_pid;
-      int charge     = (int) g2t_track[parent_track_idx - 1].charge;
+      int id3        = geant_particles[parent_track_idx - 1].start_vertex_p;
+      assert(id3 > 0 && id3 <= geant_vertices.size());
+      int ipart      = geant_particles[parent_track_idx - 1].ge_pid;
+      int charge     = int(geant_particles[parent_track_idx - 1].charge);
       StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
 
       if (particle) {
@@ -579,7 +578,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         charge = particle->charge();
       }
 
-      if (ipart == Laserino || ipart == Chasrino) {
+      if (ipart == LASERINO || ipart == CHASRINO) {
         charge = 0;
       }
       else {
@@ -604,7 +603,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       int nSegHits = 0;
       int sIndex = sortedIndex;
 
-      BuildTrackSegments(sector, sorted_index, sortedIndex, tpc_hit_begin, g2t_vertex[id3 - 1], TrackSegmentHits, smin, smax, nSegHits, sIndex);
+      BuildTrackSegments(sector, sorted_index, sortedIndex, tpc_hit_begin, geant_vertices[id3 - 1], TrackSegmentHits, smin, smax, nSegHits, sIndex);
 
       if (!nSegHits) continue;
 
@@ -626,7 +625,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
       memset (rowsdE, 0, sizeof(rowsdE));
 
       for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
-        memset (rowsdEH, 0, sizeof(rowsdEH));
         g2t_tpc_hit_st* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->adc = 0;
         int row = TrackSegmentHits[iSegHits].coorLS.row;
@@ -691,10 +689,10 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         double s_low   = -dStep / 2;
         double s_upper = s_low + dStep;
         double newPosition = s_low;
-        static Coords normal{0, 1, 0};
+        // Propagate track to the pad row plane defined by the normal in this sector coordinate system
         static CoordTransform transform;
         Coords rowPlane{0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row), 0};
-        double sR = track.pathLength(rowPlane, normal);
+        double sR = track.pathLength(rowPlane, {0, 1, 0});
 
         if (sR < 1e10) {
           PrPP(Maker, sR);
@@ -728,7 +726,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           // special case stopped electrons
           if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
             int Id    = tpc_hitC->track_p;
-            int ipart = g2t_track[Id - 1].ge_pid;
+            int ipart = geant_particles[Id - 1].ge_pid;
 
             if (ipart == 3) {
               eKin = -tpc_hitC->de;
@@ -760,8 +758,6 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
         double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket;
         tpc_hitC->pad = padH;
         tpc_hitC->timebucket = tbkH;
-        pad0 = tpcrs::irint(padH + xmin[0]);
-        tbk0 = tpcrs::irint(tbkH + xmin[1]);
         double OmegaTau = St_TpcResponseSimulatorC::instance()->OmegaTau() *
                             TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
 
@@ -843,7 +839,7 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
                                  gRandom->Poisson(St_TpcResponseSimulatorC::instance()->Cluster());
             }
             else { // charge == 0 geantino
-              // for Laserino assume dE/dx = 25 keV/cm;
+              // for LASERINO assume dE/dx = 25 keV/cm;
               dE = 10; // eV
               dS = dE * eV / (std::abs(tpc_hitC->de / tpc_hitC->ds));
             }
@@ -1171,7 +1167,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
       static std::vector<short> IDTs(max_timebins_, 0);
       std::fill(ADCs.begin(), ADCs.end(), 0);
       std::fill(IDTs.begin(), IDTs.end(), 0);
-      int NoTB = 0;
+      int num_time_bins = 0;
       int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
 
       for (int bin = 0; bin < max_timebins_; bin++, index++) {
@@ -1181,7 +1177,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         if (adc > 1023) adc = 1023;
         if (adc < 1) continue;
 
-        NoTB++;
+        num_time_bins++;
         ADCs[bin] = adc;
         IDTs[bin] = binned_charge[index].TrackId;
 #ifdef __DEBUG__
@@ -1193,15 +1189,15 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
 #endif
       }
 
-      if (!NoTB) continue;
+      if (!num_time_bins) continue;
 
       if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) {
-        Altro mAltro(max_timebins_, ADCs.data());
+        Altro altro_sim(max_timebins_, ADCs.data());
 
         if (St_tpcAltroParamsC::instance()->N(sector - 1) > 0) {
           //      ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
-          mAltro.ConfigAltro(                    0,                  1,                     0,          1,                 1);
-          mAltro.ConfigTailCancellationFilter(St_tpcAltroParamsC::instance()->K1(),
+          altro_sim.ConfigAltro(                    0,                  1,                     0,          1,                 1);
+          altro_sim.ConfigTailCancellationFilter(St_tpcAltroParamsC::instance()->K1(),
                                               St_tpcAltroParamsC::instance()->K2(),
                                               St_tpcAltroParamsC::instance()->K3(), // K1-3
                                               St_tpcAltroParamsC::instance()->L1(),
@@ -1209,20 +1205,20 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
                                               St_tpcAltroParamsC::instance()->L3());// L1-3
         }
         else {
-          mAltro.ConfigAltro(0, 0, 0, 1, 1);
+          altro_sim.ConfigAltro(0, 0, 0, 1, 1);
         }
 
-        mAltro.ConfigZerosuppression(St_tpcAltroParamsC::instance()->Threshold(),
+        altro_sim.ConfigZerosuppression(St_tpcAltroParamsC::instance()->Threshold(),
                                      St_tpcAltroParamsC::instance()->MinSamplesaboveThreshold(),
                                      0, 0);
-        mAltro.RunEmulation();
-        NoTB = 0;
+        altro_sim.RunEmulation();
+        num_time_bins = 0;
 
         for (int i = 0; i < max_timebins_; i++) {
-          if (ADCs[i] && !mAltro.ADCkeep[i]) {ADCs[i] = 0;}
+          if (ADCs[i] && !altro_sim.ADCkeep[i]) {ADCs[i] = 0;}
 
           if (ADCs[i]) {
-            NoTB++;
+            num_time_bins++;
 #ifdef __DEBUG__
             if (ADCs[i] > 3 * pedRMS) AdcSumAfterAltro += ADCs[i];
             if (Debug() > 12) {
@@ -1235,10 +1231,10 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
         }
       }
       else {
-        if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) NoTB = AsicThresholds(ADCs.data());
+        if (St_tpcAltroParamsC::instance()->N(sector - 1) < 0) num_time_bins = AsicThresholds(ADCs.data());
       }
 
-      if (NoTB > 0) {
+      if (num_time_bins > 0) {
         digi_data.Add(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_);
       }
     } // pads
@@ -1338,46 +1334,41 @@ double StTpcRSMaker::fei(double t, double t0, double T)
   double t01 = xmaxD, t11 = xmaxD;
 
   if (T > 0) {t11 = (t + t0) / T;}
-
   if (t11 > xmaxD) t11 = xmaxD;
-
   if (T > 0) {t01 = t0 / T;}
-
   if (t01 > xmaxD) t01  = xmaxD;
 
   return std::exp(-t11) * (ROOT::Math::expint(t11) - ROOT::Math::expint(t01));
 }
 
 
-double StTpcRSMaker::shapeEI(double* x, double* par)  // does not work. It is needed to 1/s
+double StTpcRSMaker::shapeEI(double* x, double* par)
 {
   double t  = x[0];
-  double value = 0;
 
-  if (t <= 0) return value;
+  if (t <= 0) return 0;
 
   double t0    = par[0];
-  double T1 = par[1]; // tau_I
-  double T2 = par[3]; // tau_C
+  double tau_I = par[1];
+  double tau_C = par[3];
 
-  if (std::abs((T1 - T2) / (T1 + T2)) < 1e-7) {
-    return std::max(0., (t + t0) / T1 * fei(t, t0, T1) + std::exp(-t / T1) - 1);
+  if (std::abs((tau_I - tau_C) / (tau_I + tau_C)) < 1e-7) {
+    return std::max(0., (t + t0) / tau_I * fei(t, t0, tau_I) + std::exp(-t / tau_I) - 1);
   }
 
-  if (T2 <= 0) return fei(t, t0, T1);
+  if (tau_C <= 0) return fei(t, t0, tau_I);
+  if (tau_I <= 0) return 0;
 
-  if (T1 <= 0) return 0;
-
-  return T1 / (T1 - T2) * (fei(t, t0, T1) - fei(t, t0, T2));
+  return tau_I / (tau_I - tau_C) * (fei(t, t0, tau_I) - fei(t, t0, tau_C));
 }
 
 
-double StTpcRSMaker::shapeEI3(double* x, double* par)  // does not work. It is needed to 1/s
+double StTpcRSMaker::shapeEI3(double* x, double* par)
 {
   double t  = x[0];
   double value = 0;
 
-  if (t <= 0) return value;
+  if (t <= 0) return 0;
 
   double t0    = par[0];
   double tau_F = par[1];
@@ -1763,7 +1754,6 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
         }
 
         rowsdE[row - 1]  += signal;
-        rowsdEH[row - 1] += signal;
 
         if ( TrackSegmentHits.TrackId ) {
           if ( !binned_charge[index].TrackId )
@@ -1831,10 +1821,10 @@ double StTpcRSMaker::dEdxCorrection(const HitPoint_t &path_segment)
   if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
 
   CdEdx.ZdriftDistance = path_segment.coorLS.position.z; // drift length
-  St_tpcGasC* tpcGas = m_TpcdEdxCorrection.tpcGas();
+  St_tpcGasC* tpc_gas = m_TpcdEdxCorrection.TpcGas();
 
-  if (tpcGas)
-    CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * tpcGas->Struct()->ppmOxygenIn;
+  if (tpc_gas)
+    CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * tpc_gas->Struct()->ppmOxygenIn;
 
   if (! m_TpcdEdxCorrection.dEdxCorrection(CdEdx)) {
     dEdxCor = CdEdx.F.dE;

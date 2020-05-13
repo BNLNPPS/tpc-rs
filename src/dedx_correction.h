@@ -110,7 +110,7 @@ class StTpcdEdxCorrection
   void SettpcGas               (St_tpcGasC*          m = 0) {m_tpcGas = m;}
 
   void ReSetCorrections();
-  St_tpcGasC*         tpcGas()              {return m_tpcGas;}
+  St_tpcGasC*         TpcGas()              {return m_tpcGas;}
   //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
 
   float           Adc2GeV()              {return mAdc2GeV;}

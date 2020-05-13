@@ -253,7 +253,9 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 
   double tb = (time - t0) / mTimeBinWidth - St_tpcSectorT0offsetC::instance()->t0offset(l);
 
-  if (St_tpcRDOT0offsetC::instance()->IsShfited(sector)) tb -= St_tpcRDOT0offsetC::instance()->T0(sector, row, pad);
+  if (St_tpcRDOT0offsetC::instance()->IsShfited(sector)) {
+    tb -= St_tpcRDOT0offsetC::instance()->T0(sector, row, pad);
+  }
 
   return tb;
 }

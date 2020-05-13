@@ -23,9 +23,9 @@ class StTpcRSMaker
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   ~StTpcRSMaker();
 
-  void Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
-            const std::vector<g2t_track_st>& g2t_track,
-            const std::vector<g2t_vertex_st>& g2t_vertex, tpcrs::DigiData& digi_data);
+  void Make(const std::vector<g2t_tpc_hit_st>& geant_hits,
+            const std::vector<g2t_track_st>& geant_particles,
+            const std::vector<g2t_vertex_st>& geant_vertices, tpcrs::DigiData& digi_data);
 
  private:
 
@@ -111,13 +111,9 @@ class StTpcRSMaker
   double anodeWireRadius;           //!
   double innerSectorAnodeVoltage[24];//!
   double outerSectorAnodeVoltage[24];//!
-  double    mLocalYDirectionCoupling[2][24][7]; //!
   double xOnWire, yOnWire, zOnWire; //!
-  int pad0;                         //!
-  int tbk0;                         //!
   double padsdE[kPadMax];           //!
   double tbksdE[kTimeBacketMax];    //!
-  double rowsdEH[kRowMax];          //!
   double rowsdE[kRowMax];           //!
   const double min_signal_;           //!
   const double electron_range_;       //!
