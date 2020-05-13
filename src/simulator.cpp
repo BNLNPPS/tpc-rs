@@ -706,24 +706,20 @@ void StTpcRSMaker::Make(const std::vector<g2t_tpc_hit_st>& g2t_tpc_hit,
           PrPP(Make, TrackSegmentHits[iSegHits].Pad);
         }
 
-        int ioH = io;
-
-        if (St_tpcAltroParamsC::instance()->N(sector - 1) >= 0) ioH += 2;
-
-        double total_signal = 0;
-        double lgam = tpc_hitC->lgam;
+        int ioH = St_tpcAltroParamsC::instance()->N(sector - 1) >= 0 ? io + 2 : io;
 
         if (ClusterProfile) {
-          checkList[io][5]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, lgam);
+          checkList[io][5]->Fill(TrackSegmentHits[iSegHits].xyzG.position.z, tpc_hitC->lgam);
         }
 
-        double gamma = std::pow(10., lgam) + 1;
-        double betaGamma = std::sqrt(gamma * gamma - 1.);
-        Coords pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
-        double bg = 0;
         static const double m_e = .51099907e-3;
         static const double eV = 1e-9; // electronvolt in GeV
+        double total_signal = 0;
+        double gamma = std::pow(10., tpc_hitC->lgam) + 1;
+        double betaGamma = std::sqrt(gamma * gamma - 1.);
+        double bg = 0;
         double eKin = -1;
+        Coords pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
 
 #ifdef __STOPPED_ELECTRONS__
         if (mass > 0) {
@@ -1459,19 +1455,23 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
 {
   int volId = tpc_hitC->volume_id % 10000;
   int sector = volId / 100;
-  static StGlobalCoordinate coorG;    // ideal
+
   TrackSegmentHits.xyzG = {tpc_hitC->x[0], tpc_hitC->x[1], tpc_hitC->x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
-  coorG = TrackSegmentHits.xyzG;
+  TrackSegmentHits.TrackId  = tpc_hitC->track_p;
+  TrackSegmentHits.tpc_hitC = tpc_hitC;
+  TrackSegmentHits.sMin = TrackSegmentHits.s - TrackSegmentHits.tpc_hitC->ds;
+  TrackSegmentHits.sMax = TrackSegmentHits.s;
+
+  if (TrackSegmentHits.sMin < smin) smin = TrackSegmentHits.sMin;
+  if (TrackSegmentHits.sMax > smax) smax = TrackSegmentHits.sMax;
+
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
   static CoordTransform transform;
   // GlobalCoord -> LocalSectorCoord
-  transform(coorG, coorS, sector, 0); PrPP(Make, coorS);
+  transform(TrackSegmentHits.xyzG, coorS, sector, 0); PrPP(Make, coorS);
   int row = coorS.row;
-  transform(coorG, coorLT, sector, row); PrPP(Make, coorLT);
-
-  TrackSegmentHits.TrackId  = tpc_hitC->track_p;
-  TrackSegmentHits.tpc_hitC = tpc_hitC;
+  transform(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
 
   if (ClusterProfile) {
     int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) ? 0 : 1);
@@ -1479,24 +1479,16 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
     checkList[io][1]->Fill(TrackSegmentHits.tpc_hitC->x[2],          TrackSegmentHits.tpc_hitC->ds );
   }
 
-  TrackSegmentHits.sMin = TrackSegmentHits.s - TrackSegmentHits.tpc_hitC->ds;
-  TrackSegmentHits.sMax = TrackSegmentHits.s;
-
-  if (TrackSegmentHits.sMin < smin) smin = TrackSegmentHits.sMin;
-  if (TrackSegmentHits.sMax > smax) smax = TrackSegmentHits.sMax;
-
   // move up, calculate field at center of TPC
   static float BFieldG[3];
   StarMagField::Instance().BField(tpc_hitC->x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
-  Coords pxyzGunit = pxyzG.unit();
-  StGlobalDirection     dirG{pxyzGunit[0], pxyzGunit[1], pxyzGunit[2]};       PrPP(Make, dirG);
+  StGlobalDirection     dirG{pxyzG.unit()};                                   PrPP(Make, dirG);
   StGlobalDirection     BG{BFieldG[0], BFieldG[1], BFieldG[2]};               PrPP(Make, BG);
-  static StTpcLocalDirection  dirLT, BLT;
-  transform( dirG,  dirLT, sector, row);                                      PrPP(Make, dirLT);
-  transform(   BG,    BLT, sector, row);                                      PrPP(Make, BLT);
+  transform( dirG, TrackSegmentHits.dirLS, sector, row);  PrPP(Make, TrackSegmentHits.dirLS);
+  transform(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
 
   // Distortions
   if (TESTBIT(options_, kDistortion) && StMagUtilities::Instance()) {
@@ -1508,8 +1500,6 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit_st* tpc_hitC, const g2t_ve
   }
 
   transform(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
-  transform( dirLT, TrackSegmentHits.dirLS);  PrPP(Make, TrackSegmentHits.dirLS);
-  transform(   BLT, TrackSegmentHits.BLS);    PrPP(Make, TrackSegmentHits.BLS);
 
   double tof = geant_vertex.ge_tof;
   tof += tpc_hitC->tof;
@@ -1708,12 +1698,9 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 
     float padX = Pad.pad;
     int CentralPad = tpcrs::irint(padX);
-
-    if (CentralPad < 1) continue;
-
     int PadsAtRow = St_tpcPadConfigC::instance()->numberOfPadsAtRow(sector, row);
 
-    if (CentralPad > PadsAtRow) continue;
+    if (CentralPad < 1 || CentralPad > PadsAtRow) continue;
 
     int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1].GetXmax()) + 1;
     int padMin   = std::max(CentralPad - DeltaPad, 1);
