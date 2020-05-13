@@ -35,14 +35,14 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :
 
 void StTpcdEdxCorrection::ReSetCorrections()
 {
-  St_tpcGasC* tpcGas = (St_tpcGasC*) St_tpcGasC::instance();  //
+  St_tpcGasC* tpc_gas = (St_tpcGasC*) St_tpcGasC::instance();  //
 
-  if (!tpcGas || ! tpcGas->GetNRows()) {
-    LOG_ERROR << "=== tpcGas is missing ===\n";
-    assert(tpcGas);
+  if (!tpc_gas || ! tpc_gas->GetNRows()) {
+    LOG_ERROR << "=== tpc_gas is missing ===\n";
+    assert(tpc_gas);
   }
 
-  SettpcGas(tpcGas);
+  SettpcGas(tpc_gas);
   memset (m_Corrections, 0, sizeof(m_Corrections));
   m_Corrections[kUncorrected           ] = dEdxCorrection_t("UnCorrected",            ""								, 0);
   m_Corrections[kAdcCorrection         ] = dEdxCorrection_t("TpcAdcCorrectionB",      "ADC/Clustering nonlinearity correction"				, St_TpcAdcCorrectionBC::instance());
