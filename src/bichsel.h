@@ -19,7 +19,7 @@ class Bichsel
   static Bichsel*       fgBichsel; //! last instance
  public:
   Bichsel(const char* tag = "P10", int keep3D = 0);
-  virtual ~Bichsel() {fgBichsel = 0;};
+  ~Bichsel() {fgBichsel = 0;};
   static Bichsel* Instance(const char* tag = "P10", int keep3D = 0);
   static void Clean();
   double    GetMostProbableZ(double log10bg, double log2dx = 1.)
@@ -67,7 +67,7 @@ class Bichsel
     return m_dEdxParameterization->GetProbability(log10bg, log2dx, z);
   }
   const dEdxParameterization* Parameterization() const {return m_dEdxParameterization;}
-  virtual void Print();
+  void Print();
   const char*      Tag() const {return    m_dEdxParameterization->Tag();}
   const TProfile2D*  P()   const {return     m_dEdxParameterization->P();}
   const TProfile2D*  A()   const {return     m_dEdxParameterization->A();}
