@@ -96,8 +96,8 @@ class StTpcRSMaker
   void InitShaperFuncs(int io, int sector, std::array<std::array<TF1F*, 24>, 2>& funcs,
     double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);
 
-  static TF1F*     fgTimeShape3[2];  //!
-  static TF1F*     fgTimeShape0[2];   //!
+  static TF1F     fgTimeShape3[2];  //!
+  static TF1F     fgTimeShape0[2];   //!
   int    options_;
   TH1D*    mdNdx;                     //!
   TH1D*    mdNdxL10;                  //!
