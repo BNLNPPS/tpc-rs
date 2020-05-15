@@ -14,12 +14,12 @@
 #include "tpc_db.h"
 
 
-class StTpcRSMaker
+class Simulator
 {
  public:
 
-  StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
-  ~StTpcRSMaker();
+  Simulator(double eCutOff = 1e-3, const char* name = "TpcRS");
+  ~Simulator();
 
   void Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
 

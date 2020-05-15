@@ -37,7 +37,7 @@
 #define __STOPPED_ELECTRONS__
 #define __DEBUG__
 #if defined(__DEBUG__)
-#define PrPP(A,B) if (Debug()%10 > 2) {LOG_INFO << "StTpcRSMaker::" << (#A) << "\t" << (#B) << " = \t" << (B) << '\n';}
+#define PrPP(A,B) if (Debug()%10 > 2) {LOG_INFO << "Simulator::" << (#A) << "\t" << (#B) << " = \t" << (B) << '\n';}
 #else
 #define PrPP(A,B)
 #endif
@@ -47,20 +47,20 @@
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
 
-TF1F StTpcRSMaker::fgTimeShape3[2] = {
-  TF1F("TimeShape3Inner;Time [s];Signal", StTpcRSMaker::shapeEI3, 0, 1, 7),
-  TF1F("TimeShape3Outer;Time [s];Signal", StTpcRSMaker::shapeEI3, 0, 1, 7)
+TF1F Simulator::fgTimeShape3[2] = {
+  TF1F("TimeShape3Inner;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7),
+  TF1F("TimeShape3Outer;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7)
 };
 
-TF1F StTpcRSMaker::fgTimeShape0[2] = {
-  TF1F("TimeShape0Inner;Time [s];Signal", StTpcRSMaker::shapeEI, 0, 1, 7),
-  TF1F("TimeShape0Outer;Time [s];Signal", StTpcRSMaker::shapeEI, 0, 1, 7)
+TF1F Simulator::fgTimeShape0[2] = {
+  TF1F("TimeShape0Inner;Time [s];Signal", Simulator::shapeEI, 0, 1, 7),
+  TF1F("TimeShape0Outer;Time [s];Signal", Simulator::shapeEI, 0, 1, 7)
 };
 
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
 using tpcrs::Cfg;
 
-StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
+Simulator::Simulator(double e_cutoff, const char* name):
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
@@ -74,22 +74,22 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   mdNdxL10(nullptr),
   mdNdEL10(nullptr),
   mShaperResponses{
-    std::vector<TF1F>(max_sectors_, TF1F("ShaperFuncInner;Time [bin];Signal", StTpcRSMaker::shapeEI_I, 0, 1, 7)),
-    std::vector<TF1F>(max_sectors_, TF1F("ShaperFuncOuter;Time [bin];Signal", StTpcRSMaker::shapeEI_I, 0, 1, 7))
+    std::vector<TF1F>(max_sectors_, TF1F("ShaperFuncInner;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7)),
+    std::vector<TF1F>(max_sectors_, TF1F("ShaperFuncOuter;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7))
   },
   mChargeFraction{
-    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6)),
-    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6))
+    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
+    std::vector<TF1F>(max_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6))
   },
   mPadResponseFunction{
-    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionInner;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6)),
-    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", StTpcRSMaker::PadResponseFunc, 0, 1, 6))
+    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionInner;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
+    std::vector<TF1F>(max_sectors_, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6))
   },
   mPolya{
     TF1F("PolyaInner;x = G/G_0;signal", polya, 0, 10, 3),
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
-  mHeed("Ec", StTpcRSMaker::Ec, 0, 3.064 * Cfg<TpcResponseSimulator>().W, 1),
+  mHeed("Ec", Simulator::Ec, 0, 3.064 * Cfg<TpcResponseSimulator>().W, 1),
   m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
 {
   //  SETBIT(options_,kHEED);
@@ -98,7 +98,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
   SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
-    LOG_INFO << "StTpcRSMaker:: use H.Bichsel model for dE/dx simulation\n";
+    LOG_INFO << "Simulator:: use H.Bichsel model for dE/dx simulation\n";
 
     TFile inner(tpcrs::Configurator::Locate("dNdE_Bichsel.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
@@ -109,7 +109,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     mdNdx->SetDirectory(0);
   }
   else if (TESTBIT(options_, kHEED)) {
-    LOG_INFO << "StTpcRSMaker:: use Heed model for dE/dx simulation\n";
+    LOG_INFO << "Simulator:: use Heed model for dE/dx simulation\n";
 
     TFile inner(tpcrs::Configurator::Locate("dNdx_Heed.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
@@ -119,10 +119,10 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     mdNdxL10 = (TH1D*) outer.Get("dNdxL10"); assert(mdNdxL10);
     mdNdxL10->SetDirectory(0);
   }
-  else {LOG_INFO << "StTpcRSMaker:: use GEANT321 model for dE/dx simulation\n";}
+  else {LOG_INFO << "Simulator:: use GEANT321 model for dE/dx simulation\n";}
 
   if (TESTBIT(options_, kDistortion)) {
-    LOG_INFO << "StTpcRSMaker:: use Tpc distortion correction\n";
+    LOG_INFO << "Simulator:: use Tpc distortion correction\n";
   }
 
   double TimeBinWidth = 1. / Cfg<starClockOnl>().frequency;
@@ -295,9 +295,9 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
       // Trs uses x**1.5/exp(x)
       // tss used x**0.5/exp(1.5*x)
       if (Cfg<tpcAltroParams>(sector - 1).N < 0) { // old TPC
-        InitShaperFuncs(io, sector, mShaperResponses, StTpcRSMaker::shapeEI3_I, params3, timeBinMin, timeBinMax);
+        InitShaperFuncs(io, sector, mShaperResponses, Simulator::shapeEI3_I, params3, timeBinMin, timeBinMax);
       } else {//Altro
-        InitShaperFuncs(io, sector, mShaperResponses, StTpcRSMaker::shapeEI_I,  params0, timeBinMin, timeBinMax);
+        InitShaperFuncs(io, sector, mShaperResponses, Simulator::shapeEI_I,  params0, timeBinMin, timeBinMax);
       }
     }
   }
@@ -318,7 +318,7 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
 }
 
 
-StTpcRSMaker::~StTpcRSMaker()
+Simulator::~Simulator()
 {
   delete mdNdx;
   delete mdNdxL10;
@@ -326,7 +326,7 @@ StTpcRSMaker::~StTpcRSMaker()
 }
 
 
-void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
+void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
   double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax)
 {
   funcs[io][sector - 1].SetFunction(shape);
@@ -351,7 +351,7 @@ void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::vector<TF
 }
 
 
-void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data)
+void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -395,7 +395,7 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
 
       if (iSector != sector) {
         if (iSector < sector) {
-          LOG_ERROR << "StTpcRSMaker::Make: geant_hits table has not been ordered by sector no. " << sector << '\n';
+          LOG_ERROR << "Simulator::Make: geant_hits table has not been ordered by sector no. " << sector << '\n';
           assert( iSector > sector );
         }
 
@@ -725,7 +725,7 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
     if (nHitsInTheSector) {
       DigitizeSector(sector, digi_data, binned_charge);
 
-      if (Debug()) LOG_INFO << "StTpcRSMaker: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
+      if (Debug()) LOG_INFO << "Simulator: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
     }
   } // sector
 
@@ -742,7 +742,7 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
 }
 
 
-void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
+void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
   std::vector<tpcrs::GeantHit>& geant_hits,
   std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex)
 {
@@ -802,7 +802,7 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
 }
 
 
-double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
+double Simulator::GetNoPrimaryClusters(double betaGamma, int charge)
 {
   double beta = betaGamma / std::sqrt(1.0 + betaGamma * betaGamma);
   double dNdx = 0;
@@ -824,7 +824,7 @@ double StTpcRSMaker::GetNoPrimaryClusters(double betaGamma, int charge)
 }
 
 
-double StTpcRSMaker::PadResponseFunc(double* x, double* par)
+double Simulator::PadResponseFunc(double* x, double* par)
 {
   double cross_talk = 0;
   double pad_response = 0;
@@ -844,7 +844,7 @@ double StTpcRSMaker::PadResponseFunc(double* x, double* par)
 }
 
 
-double StTpcRSMaker::Gatti(double* x, double* par)
+double Simulator::Gatti(double* x, double* par)
 {
   /************************************************************************
    *  Function    : generates the cathode signal using                    *
@@ -883,7 +883,7 @@ double StTpcRSMaker::Gatti(double* x, double* par)
 }
 
 
-void  StTpcRSMaker::Print(Option_t* /* option */) const
+void  Simulator::Print(Option_t* /* option */) const
 {
   PrPP(Print, max_sectors_);
   PrPP(Print, St_tpcPadConfigC::instance()->numberOfRows(1));
@@ -927,7 +927,7 @@ void  StTpcRSMaker::Print(Option_t* /* option */) const
 }
 
 
-void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& binned_charge)
+void Simulator::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& binned_charge)
 {
   for (int row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
     int nPadsPerRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
@@ -1032,7 +1032,7 @@ void StTpcRSMaker::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::v
 }
 
 
-int StTpcRSMaker::AsicThresholds(short* ADCs)
+int Simulator::AsicThresholds(short* ADCs)
 {
   int t1 = 0;
   int nSeqLo = 0;
@@ -1063,7 +1063,7 @@ int StTpcRSMaker::AsicThresholds(short* ADCs)
 }
 
 
-double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, double &t0)
+double Simulator::InducedCharge(double s, double h, double ra, double Va, double &t0)
 {
   // Calculate variation of induced charge due to different arrived angles
   // alpha = -26 and -70 degrees
@@ -1111,7 +1111,7 @@ double StTpcRSMaker::InducedCharge(double s, double h, double ra, double Va, dou
 }
 
 
-double StTpcRSMaker::fei(double t, double t0, double T)
+double Simulator::fei(double t, double t0, double T)
 {
   static const double xmaxt = 708.39641853226408;
   static const double xmaxD  = xmaxt - std::log(xmaxt);
@@ -1126,7 +1126,7 @@ double StTpcRSMaker::fei(double t, double t0, double T)
 }
 
 
-double StTpcRSMaker::shapeEI(double* x, double* par)
+double Simulator::shapeEI(double* x, double* par)
 {
   double t  = x[0];
 
@@ -1147,7 +1147,7 @@ double StTpcRSMaker::shapeEI(double* x, double* par)
 }
 
 
-double StTpcRSMaker::shapeEI3(double* x, double* par)
+double Simulator::shapeEI3(double* x, double* par)
 {
   double t  = x[0];
   double value = 0;
@@ -1180,7 +1180,7 @@ double StTpcRSMaker::shapeEI3(double* x, double* par)
 }
 
 
-double StTpcRSMaker::shapeEI_I(double* x, double* par)   //Integral of shape over time bin
+double Simulator::shapeEI_I(double* x, double* par)   //Integral of shape over time bin
 {
   static double sqrt2 = std::sqrt(2.);
   double TimeBinWidth = par[4];
@@ -1193,7 +1193,7 @@ double StTpcRSMaker::shapeEI_I(double* x, double* par)   //Integral of shape ove
 }
 
 
-double StTpcRSMaker::shapeEI3_I(double* x, double* par)   //Integral of shape over time bin
+double Simulator::shapeEI3_I(double* x, double* par)   //Integral of shape over time bin
 {
   static double sqrt2 = std::sqrt(2.);
   double TimeBinWidth = par[4];
@@ -1206,13 +1206,13 @@ double StTpcRSMaker::shapeEI3_I(double* x, double* par)   //Integral of shape ov
 }
 
 
-double StTpcRSMaker::polya(double* x, double* par)
+double Simulator::polya(double* x, double* par)
 {
   return tpcrs::GammaDist(x[0], par[0], par[1], par[2]);
 }
 
 
-double StTpcRSMaker::Ec(double* x, double* p)
+double Simulator::Ec(double* x, double* p)
 {
   if (x[0] < p[0] / 2 || x[0] > 3.064 * p[0]) return 0;
   if (x[0] < p[0]) return 1;
@@ -1221,7 +1221,7 @@ double StTpcRSMaker::Ec(double* x, double* p)
 }
 
 
-void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
+void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
 {
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
@@ -1279,7 +1279,7 @@ void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t
 }
 
 
-std::vector<float> StTpcRSMaker::NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr)
+std::vector<float> Simulator::NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr)
 {
   std::vector<float> rs;
 
@@ -1296,7 +1296,7 @@ std::vector<float> StTpcRSMaker::NumberOfElectronsInCluster(const TF1& heed, flo
 }
 
 
-double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
   int sector, int row,
   double xRange, Coords xyzC, double gain_local,
   double SigmaT, double SigmaL, double OmegaTau)
@@ -1412,7 +1412,7 @@ double StTpcRSMaker::LoopOverElectronsInCluster(std::vector<float> rs, const Hit
 }
 
 
-void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double& total_signal_in_cluster, double gain_local, double gain_gas)
 {
   static CoordTransform transform;
@@ -1524,7 +1524,7 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
 }
 
 
-double StTpcRSMaker::dEdxCorrection(const HitPoint_t &path_segment)
+double Simulator::dEdxCorrection(const HitPoint_t &path_segment)
 {
   double dEdxCor = 1;
   double dStep =  std::abs(path_segment.tpc_hitC->ds);
