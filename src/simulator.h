@@ -21,9 +21,7 @@ class StTpcRSMaker
   StTpcRSMaker(double eCutOff = 1e-3, const char* name = "TpcRS");
   ~StTpcRSMaker();
 
-  void Make(std::vector<g2t_tpc_hit>& geant_hits,
-            const std::vector<g2t_track>& geant_particles,
-            const std::vector<g2t_vertex>& geant_vertices, tpcrs::DigiData& digi_data);
+  void Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
 
  private:
 
@@ -32,7 +30,7 @@ class StTpcRSMaker
     /// Track length to current point
     double s;
     double sMin, sMax;
-    g2t_tpc_hit* tpc_hitC;
+    tpcrs::GeantHit* tpc_hitC;
     /// The original coordinates of the hit with applied distortions
     StGlobalCoordinate xyzG;
     StTpcLocalSectorCoordinate coorLS;
@@ -89,10 +87,10 @@ class StTpcRSMaker
   int    AsicThresholds(short* ADCs);
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-    std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
+    std::vector<tpcrs::GeantHit>& geant_hits,
     std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex);
 
-  void TrackSegment2Propagate(g2t_tpc_hit& geant_hit, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
+  void TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
 
   double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,
@@ -142,18 +140,18 @@ class StTpcRSMaker
 };
 
 
-inline bool operator< (const g2t_tpc_hit& lhs, const g2t_tpc_hit& rhs)
+inline bool operator< (const tpcrs::GeantHit& lhs, const tpcrs::GeantHit& rhs)
 {
   // sectors
   if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
     return (lhs.volume_id % 100000) / 100 < (rhs.volume_id % 100000) / 100;
 
   // track id
-  if (lhs.track_p != rhs.track_p)
-    return lhs.track_p < rhs.track_p;
+  if (lhs.track_id != rhs.track_id)
+    return lhs.track_id < rhs.track_id;
 
   // track length
-  return lhs.length < rhs.length;
+  return lhs.len < rhs.len;
 }
 
 #endif
