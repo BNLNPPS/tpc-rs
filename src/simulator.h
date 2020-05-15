@@ -92,6 +92,9 @@ class Simulator
 
   void TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
 
+  double CalcBaseGain(int sector, int row);
+  double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
+
   double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,
     double xRange, Coords xyzC, double gain_local,
