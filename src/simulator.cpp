@@ -450,26 +450,8 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         tpcrs::GeantHit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->digi.adc = 0;
         int row = TrackSegmentHits[iSegHits].coorLS.row;
-        InOut io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? kInner : kOuter;
-        // switch between Inner / Outer Sector paramters
-        // Extra correction for simulation with respect to data
-        int iowe = 0;
-        if (sector > 12)  iowe += 4;
-        if (io == kOuter) iowe += 2;
 
-        const float* AdditionalMcCorrection = Cfg<TpcResponseSimulator>().SecRowCorIW;
-        const float* AddSigmaMcCorrection   = Cfg<TpcResponseSimulator>().SecRowSigIW;
-
-        double sigmaJitterX = (io == kInner ? Cfg<TpcResponseSimulator>().SigmaJitterXI : Cfg<TpcResponseSimulator>().SigmaJitterXO);
-
-        // Generate signal
-        double Gain = GainCorrection(sector, row);
-
-        double GainXCorrectionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
-        Gain *= std::exp(-GainXCorrectionL);
-        double GainXSigma = AddSigmaMcCorrection[iowe] + row * AddSigmaMcCorrection[iowe + 1];
-
-        if (GainXSigma > 0) Gain *= std::exp(gRandom->Gaus(0., GainXSigma));
+        double gain_base = CalcBaseGain(sector, row);
 
         // dE/dx correction
         double dEdxCor = dEdxCorrection(TrackSegmentHits[iSegHits]);
@@ -560,30 +542,14 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         double SigmaT = Cfg<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
 
         //	double SigmaL = Cfg<TpcResponseSimulator>().longitudinalDiffusion*std::sqrt(2*driftLength  );
+        double sigmaJitterX = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) ? Cfg<TpcResponseSimulator>().SigmaJitterXI : Cfg<TpcResponseSimulator>().SigmaJitterXO);
         if (sigmaJitterX > 0) {SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);}
 
         double SigmaL     = Cfg<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
-        double NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdc;
 
-        if (NoElPerAdc <= 0) {
-          if (St_tpcPadConfigC::instance()->iTPC(sector) && St_tpcPadConfigC::instance()->IsRowInner(sector, row)) {
-            NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdcX; // iTPC
-          }
-          else if (St_tpcPadConfigC::instance()->IsRowInner(sector, row)) {
-            NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdcI; // inner TPX
-          }
-          else {
-            NoElPerAdc = Cfg<TpcResponseSimulator>().NoElPerAdcO; // outer TPX
-          }
-        }
+        double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
 
-#ifndef __NO_1STROWCORRECTION__
-        if (row == 1) dEdxCor *= std::exp(Cfg<TpcResponseSimulator>().FirstRowC);
-#endif
-        double gain_local = Gain / dEdxCor / NoElPerAdc; // Account dE/dx calibration
-        // end of dE/dx correction
         // generate electrons: No. of primary clusters per cm
-
         double NP;
         if (mdNdx || mdNdxL10) {
           NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
@@ -1271,6 +1237,55 @@ std::vector<float> Simulator::NumberOfElectronsInCluster(const TF1& heed, float 
   }
 
   return rs;
+}
+
+
+double Simulator::CalcBaseGain(int sector, int row)
+{
+  // switch between Inner / Outer Sector paramters
+  InOut io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? kInner : kOuter;
+  int iowe = 0;
+  if (sector > 12)  iowe += 4;
+  if (io == kOuter) iowe += 2;
+
+  // Extra correction for simulation with respect to data
+  const float* AdditionalMcCorrection = Cfg<TpcResponseSimulator>().SecRowCorIW;
+  const float* AddSigmaMcCorrection   = Cfg<TpcResponseSimulator>().SecRowSigIW;
+
+  double gain = GainCorrection(sector, row);
+
+  double gain_x_correctionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
+  double gain_x_sigma = AddSigmaMcCorrection[iowe] + row * AddSigmaMcCorrection[iowe + 1];
+
+  gain *= std::exp(-gain_x_correctionL);
+
+  if (gain_x_sigma > 0) gain *= std::exp(gRandom->Gaus(0., gain_x_sigma));
+
+  return gain;
+}
+
+
+double Simulator::CalcLocalGain(int sector, int row, double gain_base, double dedx_corr)
+{
+  double num_electrons_per_adc = Cfg<TpcResponseSimulator>().NoElPerAdc;
+
+  if (num_electrons_per_adc <= 0) {
+    if (St_tpcPadConfigC::instance()->iTPC(sector) && St_tpcPadConfigC::instance()->IsRowInner(sector, row)) {
+      num_electrons_per_adc = Cfg<TpcResponseSimulator>().NoElPerAdcX; // iTPC
+    }
+    else if (St_tpcPadConfigC::instance()->IsRowInner(sector, row)) {
+      num_electrons_per_adc = Cfg<TpcResponseSimulator>().NoElPerAdcI; // inner TPX
+    }
+    else {
+      num_electrons_per_adc = Cfg<TpcResponseSimulator>().NoElPerAdcO; // outer TPX
+    }
+  }
+
+#ifndef __NO_1STROWCORRECTION__
+  if (row == 1) dedx_corr *= std::exp(Cfg<TpcResponseSimulator>().FirstRowC);
+#endif
+
+  return gain_base / dedx_corr / num_electrons_per_adc;
 }
 
 
