@@ -351,9 +351,7 @@ void StTpcRSMaker::InitShaperFuncs(int io, int sector, std::array<std::vector<TF
 }
 
 
-void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
-                        const std::vector<g2t_track>& geant_particles,
-                        const std::vector<g2t_vertex>& geant_vertices, tpcrs::DigiData& digi_data)
+void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -391,7 +389,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
     for (; sortedIndex < n_hits; sortedIndex++) {
       int indx = sorted_index[sortedIndex];
 
-      g2t_tpc_hit& geant_hit = geant_hits[indx];
+      tpcrs::GeantHit& geant_hit = geant_hits[indx];
       int volId = geant_hit.volume_id % 10000;
       int iSector = volId / 100;
 
@@ -406,13 +404,12 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
 
       if (geant_hit.volume_id <= 0 || geant_hit.volume_id > 1000000) continue;
 
-      int parent_track_idx  = geant_hit.track_p;
+      int parent_track_idx  = geant_hit.track_id;
       double mass = 0;
 
-      int id3        = geant_particles[parent_track_idx - 1].start_vertex_p;
-      assert(id3 > 0 && id3 <= geant_vertices.size());
-      int ipart      = geant_particles[parent_track_idx - 1].ge_pid;
-      int charge     = int(geant_particles[parent_track_idx - 1].charge);
+      int ipart      = geant_hit.particle_id;
+      int charge     = 0;
+
       StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
 
       if (particle) {
@@ -443,7 +440,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
       int sIndex = sortedIndex;
 
       std::vector<HitPoint_t> TrackSegmentHits;
-      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, geant_vertices[id3 - 1], TrackSegmentHits, smin, smax, sIndex);
+      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, smin, smax, sIndex);
       int nSegHits = TrackSegmentHits.size();
 
       if (!nSegHits) continue;
@@ -454,8 +451,8 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
         for (int s = 0; s < nSegHits; s++) {
           LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << TrackSegmentHits[s].TrackId << "\ts = " << TrackSegmentHits[s].s
                << "\tvolumeID :" <<  Form("%6i", TrackSegmentHits[s].tpc_hitC->volume_id) << "\t" << TrackSegmentHits[s].Pad
-               << "\ts1/s2 = " << TrackSegmentHits[s].tpc_hitC->length - TrackSegmentHits[s].tpc_hitC->ds / 2
-               << "\t" << TrackSegmentHits[s].tpc_hitC->length + TrackSegmentHits[s].tpc_hitC->ds / 2 << "\tds = " << TrackSegmentHits[s].tpc_hitC->ds
+               << "\ts1/s2 = " << TrackSegmentHits[s].tpc_hitC->len - TrackSegmentHits[s].tpc_hitC->ds / 2
+               << "\t" << TrackSegmentHits[s].tpc_hitC->len + TrackSegmentHits[s].tpc_hitC->ds / 2 << "\tds = " << TrackSegmentHits[s].tpc_hitC->ds
                << '\n';
         }
       }
@@ -466,7 +463,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
       memset (rowsdE, 0, sizeof(rowsdE));
 
       for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
-        g2t_tpc_hit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
+        tpcrs::GeantHit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
         tpc_hitC->adc = 0;
         int row = TrackSegmentHits[iSegHits].coorLS.row;
         int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
@@ -547,8 +544,8 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
 
           // special case stopped electrons
           if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
-            int Id    = tpc_hitC->track_p;
-            int ipart = geant_particles[Id - 1].ge_pid;
+            int Id    = tpc_hitC->track_id;
+            int ipart = tpc_hitC->particle_id;
 
             if (ipart == 3) {
               eKin = -tpc_hitC->de;
@@ -579,7 +576,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
         double padH = TrackSegmentHits[iSegHits].Pad.pad;
         double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket;
         tpc_hitC->pad = padH;
-        tpc_hitC->timebucket = tbkH;
+        tpc_hitC->timebin = tbkH;
         double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
                             TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
 
@@ -720,7 +717,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
       } // end do loop over segments for a given particle
 
       for (int iSegHits = 0; iSegHits < nSegHits; iSegHits++) {
-        g2t_tpc_hit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
+        tpcrs::GeantHit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
 
         if (tpc_hitC->volume_id > 10000) continue;
 
@@ -750,7 +747,7 @@ void StTpcRSMaker::Make(std::vector<g2t_tpc_hit>& geant_hits,
 
 
 void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-  std::vector<g2t_tpc_hit>& geant_hits, const g2t_vertex& geant_vertex,
+  std::vector<tpcrs::GeantHit>& geant_hits,
   std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex)
 {
   int n_hits = sorted_index.size();
@@ -766,13 +763,13 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
   for (sIndex = sortedIndex; sIndex < n_hits && num_segments < 100; sIndex++)
   {
     int indx = sorted_index[sIndex];
-    g2t_tpc_hit& geant_hit = geant_hits[indx];
+    tpcrs::GeantHit& geant_hit = geant_hits[indx];
 
     if ((geant_hit.volume_id % 10000) / 100 != sector) break;
 
-    if (parent_track_idx > 0 && parent_track_idx != geant_hit.track_p) break;
+    if (parent_track_idx > 0 && parent_track_idx != geant_hit.track_id) break;
 
-    parent_track_idx = geant_hit.track_p;
+    parent_track_idx = geant_hit.track_id;
 
     if (num_segments == 1) { // No Loopers !
       if (prev_segment.tpc_hitC->volume_id % 100 <= geant_hit.volume_id % 100) {
@@ -791,13 +788,13 @@ void StTpcRSMaker::BuildTrackSegments(int sector, const std::vector<size_t>& sor
     if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << &geant_hit << '\n';
 
     HitPoint_t curr_segment;
-    curr_segment.s = geant_hit.length;
+    curr_segment.s = geant_hit.len;
 
-    if (geant_hit.length == 0 && num_segments > 1) {
+    if (geant_hit.len == 0 && num_segments > 1) {
       curr_segment.s = prev_segment.s + curr_segment.tpc_hitC->ds;
     }
 
-    TrackSegment2Propagate(geant_hit, geant_vertex, curr_segment, smin, smax);
+    TrackSegment2Propagate(geant_hit, curr_segment, smin, smax);
 
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
 
@@ -1228,13 +1225,13 @@ double StTpcRSMaker::Ec(double* x, double* p)
 }
 
 
-void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit& geant_hit, const g2t_vertex& geant_vertex, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
+void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
 {
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
 
   TrackSegmentHits.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
-  TrackSegmentHits.TrackId  = geant_hit.track_p;
+  TrackSegmentHits.TrackId  = geant_hit.track_id;
   TrackSegmentHits.tpc_hitC = &geant_hit;
   TrackSegmentHits.sMin = TrackSegmentHits.s - TrackSegmentHits.tpc_hitC->ds;
   TrackSegmentHits.sMax = TrackSegmentHits.s;
@@ -1272,9 +1269,7 @@ void StTpcRSMaker::TrackSegment2Propagate(g2t_tpc_hit& geant_hit, const g2t_vert
 
   transform(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
 
-  double tof = geant_vertex.ge_tof;
-  tof += geant_hit.tof;
-  double driftLength = TrackSegmentHits.coorLS.position.z + tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
+  double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
 
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((row >  St_tpcPadConfigC::instance()->numberOfInnerRows(sector) && driftLength > - Cfg<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
@@ -1582,4 +1577,5 @@ double StTpcRSMaker::dEdxCorrection(const HitPoint_t &path_segment)
 
   return dEdxCor;
 }
+
 #undef PrPP
