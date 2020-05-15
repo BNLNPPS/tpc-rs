@@ -536,16 +536,16 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
                             TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
 
-
         double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position.z);
         double D = 1. + OmegaTau * OmegaTau;
+        double SigmaL = Cfg<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
         double SigmaT = Cfg<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
-
-        //	double SigmaL = Cfg<TpcResponseSimulator>().longitudinalDiffusion*std::sqrt(2*driftLength  );
-        double sigmaJitterX = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) ? Cfg<TpcResponseSimulator>().SigmaJitterXI : Cfg<TpcResponseSimulator>().SigmaJitterXO);
-        if (sigmaJitterX > 0) {SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);}
-
-        double SigmaL     = Cfg<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
+        double sigmaJitterX = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector) ?
+                               Cfg<TpcResponseSimulator>().SigmaJitterXI :
+                               Cfg<TpcResponseSimulator>().SigmaJitterXO);
+        if (sigmaJitterX > 0) {
+          SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);
+        }
 
         double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
 
