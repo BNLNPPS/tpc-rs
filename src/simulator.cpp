@@ -66,8 +66,16 @@ struct SignalSum_t {
 
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
-TF1F*     StTpcRSMaker::fgTimeShape3[2]    = {0, 0};
-TF1F*     StTpcRSMaker::fgTimeShape0[2]    = {0, 0};
+
+TF1F StTpcRSMaker::fgTimeShape3[2] = {
+  TF1F("TimeShape3Inner;Time [s];Signal", StTpcRSMaker::shapeEI3, 0, 1, 7),
+  TF1F("TimeShape3Outer;Time [s];Signal", StTpcRSMaker::shapeEI3, 0, 1, 7)
+};
+
+TF1F StTpcRSMaker::fgTimeShape0[2] = {
+  TF1F("TimeShape0Inner;Time [s];Signal", StTpcRSMaker::shapeEI, 0, 1, 7),
+  TF1F("TimeShape0Outer;Time [s];Signal", StTpcRSMaker::shapeEI, 0, 1, 7)
+};
 
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
 using tpcrs::Cfg;
@@ -238,27 +246,21 @@ StTpcRSMaker::StTpcRSMaker(double e_cutoff, const char* name):
     };
 
     // old electronics, intergation + shaper alltogether
-    fgTimeShape3[io] = new TF1F(Form("TimeShape3%s", Names[io]), shapeEI3, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 7);
     for (int i = 0; i != params3.size(); ++i) {
-      fgTimeShape3[io]->SetParName(i, params3[i].first.c_str());
-      fgTimeShape3[io]->SetParameter(i, params3[i].second);
+      fgTimeShape3[io].SetParName(i, params3[i].first.c_str());
+      fgTimeShape3[io].SetParameter(i, params3[i].second);
     }
-    params3[5].second = fgTimeShape3[io]->Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
-    fgTimeShape3[io]->SetTitle(fgTimeShape3[io]->GetName());
-    fgTimeShape3[io]->GetXaxis()->SetTitle("time (secs)");
-    fgTimeShape3[io]->GetYaxis()->SetTitle("signal");
+    fgTimeShape3[io].SetRange(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
+    params3[5].second = fgTimeShape3[io].Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
 
     // new electronics only integration
-    fgTimeShape0[io] = new TF1F(Form("TimeShape%s", Names[io]), shapeEI, timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth, 7);
     params0[5].second = io ? Cfg<TpcResponseSimulator>().tauCO : Cfg<TpcResponseSimulator>().tauCI;
     for (int i = 0; i != params0.size(); ++i) {
-      fgTimeShape0[io]->SetParName(i, params0[i].first.c_str());
-      fgTimeShape0[io]->SetParameter(i, params0[i].second);
+      fgTimeShape0[io].SetParName(i, params0[i].first.c_str());
+      fgTimeShape0[io].SetParameter(i, params0[i].second);
     }
-    params0[5].second = fgTimeShape0[io]->Integral(0, timeBinMax * TimeBinWidth);
-    fgTimeShape0[io]->SetTitle(fgTimeShape0[io]->GetName());
-    fgTimeShape0[io]->GetXaxis()->SetTitle("time (secs)");
-    fgTimeShape0[io]->GetYaxis()->SetTitle("signal");
+    fgTimeShape0[io].SetRange(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
+    params0[5].second = fgTimeShape0[io].Integral(0, timeBinMax * TimeBinWidth);
 
     for (int sector = 1; sector <= max_sectors_; sector++) {
       //                            w       h        s       a       l  i
@@ -1230,7 +1232,7 @@ double StTpcRSMaker::shapeEI_I(double* x, double* par)   //Integral of shape ove
   double t2 = t1 + TimeBinWidth;
   int io = (int) par[6];
   assert(io >= 0 && io <= 1);
-  return sqrt2 * fgTimeShape0[io]->Integral(t1, t2) / norm;
+  return sqrt2 * fgTimeShape0[io].Integral(t1, t2) / norm;
 }
 
 
@@ -1243,7 +1245,7 @@ double StTpcRSMaker::shapeEI3_I(double* x, double* par)   //Integral of shape ov
   double t2 = t1 + TimeBinWidth;
   int io = (int) par[6];
   assert(io >= 0 && io <= 1);
-  return sqrt2 * fgTimeShape3[io]->Integral(t1, t2) / norm;
+  return sqrt2 * fgTimeShape3[io].Integral(t1, t2) / norm;
 }
 
 
