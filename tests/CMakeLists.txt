@@ -61,7 +61,7 @@ function(ADD_TESTS tests)
         set(_cmd "${_cmd} | wc -l | (read N; ((\"$N\" == ${_diff_lines})))")
 
         add_test(NAME "${_test_name}" COMMAND bash -c "${_cmd}")
-        set_tests_properties("${_test_name}" PROPERTIES LABELS "${_label}" TIMEOUT 3600)
+        set_tests_properties("${_test_name}" PROPERTIES LABELS "${_label}" TIMEOUT 5400)
         set_tests_properties("${_test_name}" PROPERTIES DEPENDS test-data)
     endforeach()
 endfunction()
