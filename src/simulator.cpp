@@ -525,7 +525,7 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
           TrackSegmentHits[iSegHits].coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
           PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
           PrPP(Make, TrackSegmentHits[iSegHits].Pad);
-          transform(TrackSegmentHits[iSegHits].coorLS, TrackSegmentHits[iSegHits].Pad, false, false); // don't use T0, don't use Tau
+          transform.local_sector_to_hardware(TrackSegmentHits[iSegHits].coorLS, TrackSegmentHits[iSegHits].Pad, false, false); // don't use T0, don't use Tau
           PrPP(Make, TrackSegmentHits[iSegHits].Pad);
         }
 
@@ -1243,9 +1243,9 @@ void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t
   static StTpcLocalSectorCoordinate coorS;
   static CoordTransform transform;
   // GlobalCoord -> LocalSectorCoord
-  transform(TrackSegmentHits.xyzG, coorS, sector, 0); PrPP(Make, coorS);
+  transform.global_to_local_sector(TrackSegmentHits.xyzG, coorS, sector, 0); PrPP(Make, coorS);
   int row = coorS.row;
-  transform(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
+  transform.global_to_local(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -1255,8 +1255,8 @@ void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t
   Coords pxyzG{geant_hit.p[0], geant_hit.p[1], geant_hit.p[2]};
   StGlobalDirection     dirG{pxyzG.unit()};                                   PrPP(Make, dirG);
   StGlobalDirection     BG{BFieldG[0], BFieldG[1], BFieldG[2]};               PrPP(Make, BG);
-  transform( dirG, TrackSegmentHits.dirLS, sector, row);  PrPP(Make, TrackSegmentHits.dirLS);
-  transform(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
+  transform.global_to_local_sector_dir( dirG, TrackSegmentHits.dirLS, sector, row);  PrPP(Make, TrackSegmentHits.dirLS);
+  transform.global_to_local_sector_dir(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
 
   // Distortions
   if (TESTBIT(options_, kDistortion) && StMagUtilities::Instance()) {
@@ -1264,10 +1264,10 @@ void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t
     float posMoved[3];
     StMagUtilities::Instance()->DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};        // after do distortions
-    transform(coorLT, TrackSegmentHits.xyzG);                PrPP(Make, coorLT);
+    transform.local_to_global(coorLT, TrackSegmentHits.xyzG);                PrPP(Make, coorLT);
   }
 
-  transform(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
+  transform.local_to_local_sector(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
 
   double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
 
@@ -1278,7 +1278,7 @@ void StTpcRSMaker::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t
   }
 
   TrackSegmentHits.coorLS.position.z = driftLength; PrPP(Make, TrackSegmentHits.coorLS);
-  transform(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
+  transform.local_sector_to_hardware(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, TrackSegmentHits.Pad);
 }
 
@@ -1430,7 +1430,7 @@ void StTpcRSMaker::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector
     int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
     StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
     static StTpcPadCoordinate Pad;
-    transform(xyzW, Pad, false, false); // don't use T0, don't use Tau
+    transform.local_sector_to_hardware(xyzW, Pad, false, false); // don't use T0, don't use Tau
     float bin = Pad.timeBucket;//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 

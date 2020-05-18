@@ -100,7 +100,7 @@ CoordTransform::CoordTransform()
 
 
 //      Local Sector Coordnate    <->  Tpc Raw Pad Coordinate
-void CoordTransform::operator()(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0, bool useTau)
+void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0, bool useTau)
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and  = false for MC
   int sector = a.sector;
@@ -123,7 +123,7 @@ void CoordTransform::operator()(const StTpcLocalSectorCoordinate &a, StTpcPadCoo
 }
 
 
-void CoordTransform::operator()(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0, bool useTau)
+void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0, bool useTau)
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and = false for MC
   Coords  tmp{xFromPad(a.sector, a.row, a.pad), yFromRow(a.sector, a.row), 0};
@@ -301,7 +301,7 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
 }
 
 
-void  CoordTransform::operator()(const StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b)
+void  CoordTransform::local_sector_to_local(const StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b)
 {
   int row    = a.row;
   int sector = a.sector;
@@ -319,7 +319,7 @@ void  CoordTransform::operator()(const StTpcLocalSectorCoordinate &a, StTpcLocal
 }
 
 
-void  CoordTransform::operator()(const StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b)
+void  CoordTransform::local_to_local_sector(const StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b)
 {
   int row    = a.row;
   int sector = a.sector;

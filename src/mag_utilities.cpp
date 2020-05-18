@@ -5771,25 +5771,25 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
           local[0] = m * INNERGGFirst * tanSecPhi;
           local[1] = INNERGGFirst;
           StTpcLocalSectorCoordinate lSec{local[0], local[1], local[2], Seclist[k]};
-          tran(lSec, locP);
+          tran.local_sector_to_local(lSec, locP);
           iOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * INNERGGLast  * tanSecPhi;
           local[1] = INNERGGLast;
           lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
-          tran(lSec, locP);
+          tran.local_sector_to_local(lSec, locP);
           iOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGFirst * tanSecPhi;
           local[1] = OUTERGGFirst;
           lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
-          tran(lSec, locP);
+          tran.local_sector_to_local(lSec, locP);
           oOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGLast  * tanSecPhi;
           local[1] = OUTERGGLast;
           lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
-          tran(lSec, locP);
+          tran.local_sector_to_local(lSec, locP);
           oOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
 
