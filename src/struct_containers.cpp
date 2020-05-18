@@ -340,14 +340,10 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
   }
   return r;
 }
-MakeChairAltInstance(tpcEffectiveGeom,Calibrations/tpc/tpcEffectiveGeom,Calibrations/tpc/tpcEffectiveGeomB,gEnv->GetValue("NewTpcAlignment",0));
-MakeChairAltInstance(tpcElectronics,Calibrations/tpc/tpcElectronics,Calibrations/tpc/tpcElectronicsB,gEnv->GetValue("NewTpcAlignment",0));
 MakeChairInstance(tpcPadResponse,Calibrations/tpc/tpcPadResponse);
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 MakeChairAltInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0,Calibrations/tpc/tpcPadrowT0B,gEnv->GetValue("NewTpcAlignment",0));
 MakeChairInstance(tpcSectorT0offset,Calibrations/tpc/tpcSectorT0offset);
-MakeChairInstance(tpcAltroParams,Calibrations/tpc/tpcAltroParams);
-MakeChairInstance(asic_thresholds,Calibrations/tpc/asic_thresholds);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 unsigned char          St_tpcPadConfigC::iTpc(int sector)                     {unsigned char iTPC = Struct()->itpc[sector-1];  return iTPC;}
 int 	         St_tpcPadConfigC::padRows(int sector) 	          {return St_tpcPadPlanesC::instance()->padRows()               ;}
@@ -728,7 +724,6 @@ bool    St_tpcPadGainT0BC::livePadrow(int sector, int row) const {
 }
 
 
-MakeChairInstance(TpcResponseSimulator,Calibrations/tpc/TpcResponseSimulator);
 MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainCorrection);
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 
@@ -850,32 +845,6 @@ float St_tpcRDOT0offsetC::T0(int sector, int padrow, int pad) const {
 }
 
 MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
-//___________________tpc_____________________________________________________________
-MakeChairInstance(tss_tsspar,tpc/tsspars/tsspar);
-
-
-float St_tss_tssparC::gain(int sector, int row) {
-  int l = 0;
-  double V_nominal = 1390;
-  float V = 0;
-  float gain = 0;
-  if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) {l = 1; V_nominal = 1170;}
-  St_tpcGainCorrectionC *gC = St_tpcGainCorrectionC::instance();
-  int NRows = gC->GetNRows();
-  if (l >= NRows) return gain;
-  V = St_tpcAnodeHVavgC::instance()->voltagePadrow(sector,row);
-  if (V > 0) {
-    double v = V - V_nominal;
-    if (v < gC->min(l) || v > gC->max(l)) return gain;
-    if (gC->min(l) < -450) {
-      // if range was expanded below 150 V then use only the linear approximation
-      gain  = std::exp(gC->CalcCorrection(l,v, 0., 2));
-    } else {
-      gain  = std::exp(gC->CalcCorrection(l,v));
-    }
-  }
-  return gain;
-}
 
 
 float GainCorrection(int sector, int row)
@@ -910,7 +879,6 @@ MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceCh
 //_________________RunLog_____________________________________________________________
 MakeChairInstance(MagFactor,RunLog/MagFactor);
 //_________________RunLog/onl_______________________________________________________________
-MakeChairInstance(starClockOnl,RunLog/onl/starClockOnl);
 
 MakeChairInstance(starMagOnl,RunLog/onl/starMagOnl);
 
@@ -938,8 +906,6 @@ unsigned int       St_tpcRDOMasksC::getSectorMask(unsigned int sector) {
 //___________________Conditions/trg_____________________________________________________________
 MakeChairAltInstance(trgTimeOffset,Conditions/trg/trgTimeOffset,Conditions/trg/trgTimeOffsetB,gEnv->GetValue("NewTpcAlignment",0));
 //___________________Geometry/tpc_____________________________________________________________
-MakeChairInstance(tpcDimensions,Geometry/tpc/tpcDimensions);
-MakeChairInstance(tpcWirePlanes,Geometry/tpc/tpcWirePlanes);
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
 MakeChairInstance(tpcPadConfig,Geometry/tpc/tpcPadConfig);
