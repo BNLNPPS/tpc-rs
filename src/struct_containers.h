@@ -13,14 +13,6 @@
 #include "config_structs.h"
 
 
-struct St_asic_thresholdsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_asic_thresholdsC, asic_thresholds>
-{
-  int 	thresh_lo(int i = 0) 	{return Struct(i)->thresh_lo;}
-  int 	thresh_hi(int i = 0) 	{return Struct(i)->thresh_hi;}
-  int 	n_seq_lo(int i = 0) 	{return Struct(i)->n_seq_lo;}
-  int 	n_seq_hi(int i = 0) 	{return Struct(i)->n_seq_hi;}
-};
-
 struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0>
 {
   int 	run(int i = 0) 	const {return Struct(i)->run;}
@@ -202,20 +194,6 @@ struct St_spaceChargeCorR1C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceCh
 
 struct St_spaceChargeCorR2C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR2C, spaceChargeCor> {};
 
-struct St_starClockOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starClockOnlC, starClockOnl>
-{
-  unsigned int    RunNumber(int i = 0)           {return Struct(i)->runNumber;}
-  double  CurrentFrequency(int i = 0)    {return Struct(i)->frequency;}
-  unsigned int    Time(int i = 0)                {return Struct(i)->time;}
-  double  Frequency(int i = 0)           {return CurrentFrequency(i);}
-  // depreciated
-  unsigned int    getRunNumber(int i = 0)        {return RunNumber(i);}
-  double  getCurrentFrequency(int i = 0) {return CurrentFrequency(i);}
-  unsigned int    getTime(int i = 0)             {return Time(i);}
-  double  getFrequency(int i = 0)        {return Frequency(i);}
-  double  samplingFrequency(int i = 0)   {return 1e-6 * CurrentFrequency(i);}
-};
-
 struct St_SurveyC : tpcrs::IConfigStruct {
   virtual Survey* Struct(int i = 0) const = 0;
 
@@ -273,19 +251,6 @@ struct St_SurveyC : tpcrs::IConfigStruct {
 };
 
 struct St_TpcAdcCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcAdcCorrectionMDF, MDFCorrection> {};
-
-struct St_tpcAltroParamsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAltroParamsC, tpcAltroParams>
-{
-  int 	N(int i = 0) 	{return Struct(i)->N;}
-  int  	Threshold(int i = 0) 	{return Struct(i)->Altro_thr;}
-  int  	MinSamplesaboveThreshold(int i = 0) 	{return Struct(i)->Altro_seq;}
-  int  	K1(int i = 0) 	{return Struct(i)->Altro_K1;}
-  int  	K2(int i = 0) 	{return Struct(i)->Altro_K2;}
-  int  	K3(int i = 0) 	{return Struct(i)->Altro_K3;}
-  int  	L1(int i = 0) 	{return Struct(i)->Altro_L1;}
-  int  	L2(int i = 0) 	{return Struct(i)->Altro_L2;}
-  int  	L3(int i = 0) 	{return Struct(i)->Altro_L3;}
-};
 
 struct St_tpcAnodeHVavgC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVavgC, tpcAnodeHVavg>
 {
@@ -502,149 +467,6 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };
 
-struct St_tpcWirePlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcWirePlanesC, tpcWirePlanes>
-{
-  double 	anodeWireRadius(int i = 0) 	            {return Struct(i)->anodeWireRadius;}
-  double 	frischGridWireRadius(int i = 0) 	    {return Struct(i)->frischGridWireRadius;}
-  double 	gatingGridWireRadius(int i = 0) 	    {return Struct(i)->gatingGridWireRadius;}
-  double 	anodeWirePitch(int i = 0) 	            {return Struct(i)->anodeWirePitch;}
-  double 	frischGridWirePitch(int i = 0) 	    {return Struct(i)->frischGridWirePitch;}
-  double 	gatingGridWirePitch(int i = 0) 	    {return Struct(i)->gatingGridWirePitch;}
-  double 	innerSectorAnodeWirePadSep(int i = 0)     {return Struct(i)->innerSectorAnodeWirePadSep;}
-  double 	innerSectorFrischGridPadSep(int i = 0)    {return Struct(i)->innerSectorFrischGridPadSep;}
-  double 	innerSectorGatingGridPadSep(int i = 0)    {return Struct(i)->innerSectorGatingGridPadSep;}
-  double 	outerSectorAnodeWirePadSep(int i = 0)     {return Struct(i)->outerSectorAnodeWirePadSep;}
-  double 	outerSectorFrischGridPadSep(int i = 0)    {return Struct(i)->outerSectorFrischGridPadSep;}
-  double 	outerSectorGatingGridPadSep(int i = 0)    {return Struct(i)->outerSectorGatingGridPadSep;}
-  int 	numInnerSectorAnodeWires(int i = 0) 	    {return Struct(i)->numInnerSectorAnodeWires;}
-  int 	numInnerSectorFrischGridWires(int i = 0)  {return Struct(i)->numInnerSectorFrischGridWires;}
-  int 	numInnerSectorGatingGridWires(int i = 0)  {return Struct(i)->numInnerSectorGatingGridWires;}
-  double 	firstInnerSectorAnodeWire(int i = 0) 	    {return Struct(i)->firstInnerSectorAnodeWire;}
-  double 	firstInnerSectorFrischGridWire(int i = 0) {return Struct(i)->firstInnerSectorFrischGridWire;}
-  double 	firstInnerSectorGatingGridWire(int i = 0) {return Struct(i)->firstInnerSectorGatingGridWire;}
-  double 	lastInnerSectorAnodeWire(int i = 0) 	    {return Struct(i)->lastInnerSectorAnodeWire;}
-  int 	numOuterSectorAnodeWires(int i = 0) 	    {return Struct(i)->numOuterSectorAnodeWires;}
-  int 	numOuterSectorFrischGridWires(int i = 0)  {return Struct(i)->numOuterSectorFrischGridWires;}
-  int 	numOuterSectorGatingGridWires(int i = 0)  {return Struct(i)->numOuterSectorGatingGridWires;}
-  double 	firstOuterSectorAnodeWire(int i = 0) 	    {return Struct(i)->firstOuterSectorAnodeWire;}
-  double 	firstOuterSectorFrischGridWire(int i = 0) {return Struct(i)->firstOuterSectorFrischGridWire;}
-  double 	firstOuterSectorGatingGridWire(int i = 0) {return Struct(i)->firstOuterSectorGatingGridWire;}
-  double 	lastOuterSectorAnodeWire(int i = 0) 	    {return Struct(i)->lastOuterSectorAnodeWire;}
-
-  double      gateWireRadius(int i = 0)  {return gatingGridWireRadius(i);}
-  double  	frischGridPitch(int i = 0) {return frischGridWirePitch(i);}
-  double  	gatePitch(int i = 0)       {return gatingGridWirePitch(i);}
-
-  double  	innerSectorAnodeWirePadPlaneSeparation(int i = 0)  {return innerSectorAnodeWirePadSep(i);}
-  double  	innerSectorFrischGridPadPlaneSeparation(int i = 0) {return innerSectorFrischGridPadSep(i);}
-  double  	innerSectorGatingGridPadPlaneSeparation(int i = 0) {return innerSectorGatingGridPadSep(i);}
-  double  	outerSectorAnodeWirePadPlaneSeparation(int i = 0)  {return outerSectorAnodeWirePadSep(i);}
-  double  	outerSectorFrischGridPadPlaneSeparation(int i = 0) {return outerSectorFrischGridPadSep(i);}
-  double  	outerSectorGatingGridPadPlaneSeparation(int i = 0) {return outerSectorGatingGridPadSep(i);}
-
-  int         numberOfInnerSectorAnodeWires(int i = 0)      {return numInnerSectorAnodeWires(i);}
-  int   	numberOfInnerSectorFrischGridWires(int i = 0) {return numInnerSectorFrischGridWires(i);}
-  int   	numberOfInnerSectorGatingGridWires(int i = 0) {return numInnerSectorGatingGridWires(i);}
-  int   	numberOfOuterSectorAnodeWires(int i = 0)      {return numOuterSectorAnodeWires(i);}
-  int   	numberOfOuterSectorFrischGridWires(int i = 0) {return numOuterSectorFrischGridWires(i);}
-  int   	numberOfOuterSectorGatingGridWires(int i = 0) {return numOuterSectorGatingGridWires(i);}
-};
-
-struct St_tpcEffectiveGeomC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcEffectiveGeomC, tpcEffectiveGeom>
-{
-  double 	drift_length_correction(int i = 0) {return Struct(i)->drift_length_correction;}
-  double 	z_inner_offset(int i = 0) 	  {return Struct(i)->z_inner_offset;}
-  double 	z_outer_offset(int i = 0) 	  {return Struct(i)->z_outer_offset;}
-  double 	z_inner_offset_West(int i = 0)  {return Struct(i)->z_inner_offset_West;}
-  double 	z_outer_offset_West(int i = 0)  {return Struct(i)->z_outer_offset_West;}
-  /*  double 	scale(int i = 0)                {return Struct(i)->scale;} */
-};
-
-struct St_tpcDimensionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDimensionsC, tpcDimensions>
-{
-  int 	numberOfSectors(int i = 0) 	{return Struct(i)->numberOfSectors;}
-  double 	tpcInnerRadius(int i = 0) 	{return Struct(i)->tpcInnerRadius;}
-  double 	tpcOuterRadius(int i = 0) 	{return Struct(i)->tpcOuterRadius;}
-  double 	tpcTotalLength(int i = 0) 	{return Struct(i)->tpcTotalLength;}
-  double 	wheelInnerRadius(int i = 0) 	{return Struct(i)->wheelInnerRadius;}
-  double 	wheelOuterRadius(int i = 0) 	{return Struct(i)->wheelOuterRadius;}
-  double 	wheelThickness(int i = 0) 	{return Struct(i)->wheelThickness;}
-  double 	senseGasOuterRadius(int i = 0) {return Struct(i)->senseGasOuterRadius;}
-  double 	tpeaThickness(int i = 0) 	{return Struct(i)->tpeaThickness;}
-  double 	cathodeInnerRadius(int i = 0) {return Struct(i)->cathodeInnerRadius;}
-  double 	cathodeOuterRadius(int i = 0) {return Struct(i)->cathodeOuterRadius;}
-  double 	cathodeThickness(int i = 0) 	{return Struct(i)->cathodeThickness;}
-  double 	outerCuThickness(int i = 0) 	{return Struct(i)->outerCuThickness;}
-  double 	outerKaptonThickness(int i = 0) {return Struct(i)->outerKaptonThickness;}
-  double 	outerNomexThickness(int i = 0) {return Struct(i)->outerNomexThickness;}
-  double 	outerGlueThickness(int i = 0) {return Struct(i)->outerGlueThickness;}
-  double 	outerInsGasThickness(int i = 0) {return Struct(i)->outerInsGasThickness;}
-  double 	outerAlThickness(int i = 0) 	{return Struct(i)->outerAlThickness;}
-  double 	outerAlHoneycombThickness(int i = 0) 	{return Struct(i)->outerAlHoneycombThickness;}
-  double 	innerGlueThickness(int i = 0) {return Struct(i)->innerGlueThickness;}
-  double 	innerNomexThickness(int i = 0) {return Struct(i)->innerNomexThickness;}
-  double 	innerKaptonThickness(int i = 0) {return Struct(i)->innerKaptonThickness;}
-  double 	innerAlThickness(int i = 0) 	{return Struct(i)->innerAlThickness;}
-  double 	innerGapWidI(int i = 0) 	{return Struct(i)->innerGapWidI;}
-  double 	innerGapWidO(int i = 0) 	{return Struct(i)->innerGapWidO;}
-  double 	innerGapHeit(int i = 0) 	{return Struct(i)->innerGapHeit;}
-  double 	innerGapRad(int i = 0) 	{return Struct(i)->innerGapRad;}
-  double 	innerInWidth(int i = 0) 	{return Struct(i)->innerInWidth;}
-  double 	innerOutWidth(int i = 0) 	{return Struct(i)->innerOutWidth;}
-  double 	innerHeight(int i = 0) 	{return Struct(i)->innerHeight;}
-  double 	innerPPDepth(int i = 0) 	{return Struct(i)->innerPPDepth;}
-  double 	innerAlDepth(int i = 0) 	{return Struct(i)->innerAlDepth;}
-  double 	innerMWCDepth(int i = 0) 	{return Struct(i)->innerMWCDepth;}
-  double 	innerBoundary(int i = 0) 	{return Struct(i)->innerBoundary;}
-  double 	innerRCenter(int i = 0) 	{return Struct(i)->innerRCenter;}
-  double 	innerMWCInn(int i = 0) 	{return Struct(i)->innerMWCInn;}
-  double 	innerMWCOut(int i = 0) 	{return Struct(i)->innerMWCOut;}
-  double 	innerMVCHei(int i = 0) 	{return Struct(i)->innerMVCHei;}
-  int 	innerAirGaps(int i = 0) 	{return Struct(i)->innerAirGaps;}
-  int 	innerExtraAl(int i = 0) 	{return Struct(i)->innerExtraAl;}
-  double* 	innerZGaps(int i = 0) 	{return Struct(i)->innerZGaps;}
-  double* 	innerZGapsSize(int i = 0) 	{return Struct(i)->innerZGapsSize;}
-  double* 	innerXExtraAl(int i = 0) 	{return Struct(i)->innerXExtraAl;}
-  double* 	innerZExtraAl(int i = 0) 	{return Struct(i)->innerZExtraAl;}
-  double* 	innerDXExtraAl(int i = 0) 	{return Struct(i)->innerDXExtraAl;}
-  double* 	innerDZExtraAl(int i = 0) 	{return Struct(i)->innerDZExtraAl;}
-  double 	outerGapWidI(int i = 0) 	{return Struct(i)->outerGapWidI;}
-  double 	outerGapWidO(int i = 0) 	{return Struct(i)->outerGapWidO;}
-  double 	outerGapHeit(int i = 0) 	{return Struct(i)->outerGapHeit;}
-  double 	outerGapRad(int i = 0) 	{return Struct(i)->outerGapRad;}
-  double 	outerInWidth(int i = 0) 	{return Struct(i)->outerInWidth;}
-  double 	outerOutWidth(int i = 0) 	{return Struct(i)->outerOutWidth;}
-  double 	outerHeight(int i = 0) 	{return Struct(i)->outerHeight;}
-  double 	outerPPDepth(int i = 0) 	{return Struct(i)->outerPPDepth;}
-  double 	outerAlDepth(int i = 0) 	{return Struct(i)->outerAlDepth;}
-  double 	outerMWCDepth(int i = 0) 	{return Struct(i)->outerMWCDepth;}
-  double 	outerBoundary(int i = 0) 	{return Struct(i)->outerBoundary;}
-  double 	outerRCenter(int i = 0) 	{return Struct(i)->outerRCenter;}
-  double 	outerMWCInn(int i = 0) 	{return Struct(i)->outerMWCInn;}
-  double 	outerMWCOut(int i = 0) 	{return Struct(i)->outerMWCOut;}
-  double 	outerMVCHei(int i = 0) 	{return Struct(i)->outerMVCHei;}
-  int 	outerAirGaps(int i = 0) 	{return Struct(i)->outerAirGaps;}
-  int 	outerExtraAl(int i = 0) 	{return Struct(i)->outerExtraAl;}
-  double* 	outerZGaps(int i = 0) 	{return Struct(i)->outerZGaps;}
-  double* 	outerZGapsSize(int i = 0) 	{return Struct(i)->outerZGapsSize;}
-  double* 	outerXExtraAl(int i = 0) 	{return Struct(i)->outerXExtraAl;}
-  double* 	outerZExtraAl(int i = 0) 	{return Struct(i)->outerZExtraAl;}
-  double* 	outerDXExtraAl(int i = 0) 	{return Struct(i)->outerDXExtraAl;}
-  double* 	outerDZExtraAl(int i = 0) 	{return Struct(i)->outerDZExtraAl;}
-  double      gatingGridZ(int sector = 20)
-  {
-    return St_tpcPadConfigC::instance()->outerSectorPadPlaneZ(sector)
-           - tpcrs::Cfg<tpcWirePlanes>().outerSectorGatingGridPadSep;
-  }
-  double      zInnerOffset()                  {return St_tpcEffectiveGeomC::instance()->z_inner_offset();}
-  double      zOuterOffset()                  {return St_tpcEffectiveGeomC::instance()->z_outer_offset();}
-  double      zInnerOffset_West()             {return St_tpcEffectiveGeomC::instance()->z_inner_offset_West();}
-  double      zOuterOffset_West()             {return St_tpcEffectiveGeomC::instance()->z_outer_offset_West();}
-  //TPC field cage parameters:
-  double ifcRadius() {return tpcInnerRadius();}
-  double ofcRadius() {return tpcOuterRadius();}
-};
-
 struct St_TpcDriftDistOxygenC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcDriftDistOxygenC, tpcCorrection> {};
 
 struct St_tpcDriftVelocityC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDriftVelocityC, tpcDriftVelocity> {
@@ -661,20 +483,6 @@ struct St_TpcEdgeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcEdgeC, tpcCorr
 struct St_TpcEffectivedXC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcEffectivedXC, TpcEffectivedX> {
   float 	scaleInner(int i = 0) 	const {return Struct(i)->scaleInner;}
   float 	scaleOuter(int i = 0) 	const {return Struct(i)->scaleOuter;}
-};
-
-struct St_tpcElectronicsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcElectronicsC, tpcElectronics>
-{
-  int 	numberOfTimeBins(int i = 0) 	{return Struct(i)->numberOfTimeBins;}
-  double 	nominalGain(int i = 0) 	{return Struct(i)->nominalGain;}
-  //  double 	samplingFrequency(int i = 0) 	{return Struct(i)->samplingFrequency;}  obsolete
-  double      samplingFrequency(int i = 0) {return 1e-6 * tpcrs::Cfg<starClockOnl>(i).frequency;}
-  double 	tZero(int i = 0) 	        {return Struct(i)->tZero;}
-  double 	adcCharge(int i = 0) 	        {return Struct(i)->adcCharge;}
-  double 	adcConversion(int i = 0) 	{return Struct(i)->adcConversion;}
-  double 	averagePedestal(int i = 0) 	{return Struct(i)->averagePedestal;}
-  double 	shapingTime(int i = 0) 	{return Struct(i)->shapingTime;}
-  double 	tau(int i = 0) 	        {return Struct(i)->tau;}
 };
 
 struct St_tpcFieldCageC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcFieldCageC, tpcFieldCage>
@@ -1062,61 +870,6 @@ struct St_tpcRDOT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOT
   float       T0(int sector, int padrow, int pad) const;
 };
 
-struct St_TpcResponseSimulatorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcResponseSimulatorC, TpcResponseSimulator>
-{
-  float 	I0(int i = 0) 	const {return Struct(i)->I0;}
-  float 	Cluster(int i = 0) 	const {return Struct(i)->Cluster;}
-  float 	W(int i = 0) 	const {return Struct(i)->W;}
-  float 	OmegaTau(int i = 0) 	const {return Struct(i)->OmegaTau;}
-  float 	K3IP(int i = 0) 	const {return Struct(i)->K3IP;}
-  float 	K3IR(int i = 0) 	const {return Struct(i)->K3IR;}
-  float 	K3OP(int i = 0) 	const {return Struct(i)->K3OP;}
-  float 	K3OR(int i = 0) 	const {return Struct(i)->K3OR;}
-  float 	FanoFactor(int i = 0) 	const {return Struct(i)->FanoFactor;}
-  float 	AveragePedestal(int i = 0) 	const {return Struct(i)->AveragePedestal;}
-  float 	AveragePedestalRMS(int i = 0) 	const {return Struct(i)->AveragePedestalRMS;}
-  float 	AveragePedestalRMSX(int i = 0) 	const {return Struct(i)->AveragePedestalRMSX;}
-  float 	tauIntegration(int i = 0) 	const {return Struct(i)->tauIntegration;}
-  float 	tauF(int i = 0) 	const {return Struct(i)->tauF;}
-  float 	tauP(int i = 0) 	const {return Struct(i)->tauP;}
-  float*      tauX(int i = 0) 	const {return &Struct(i)->tauXI;}
-  float 	tauXI(int i = 0) 	const {return Struct(i)->tauXI;}
-  float 	tauXO(int i = 0) 	const {return Struct(i)->tauXO;}
-  float*      tauC(int i = 0) 	const {return &Struct(i)->tauCI;}
-  float 	tauCI(int i = 0) 	const {return Struct(i)->tauCI;}
-  float 	tauCO(int i = 0) 	const {return Struct(i)->tauCO;}
-  float 	SigmaJitterTI(int i = 0) 	const {return Struct(i)->SigmaJitterTI;}
-  float 	SigmaJitterTO(int i = 0) 	const {return Struct(i)->SigmaJitterTO;}
-  float 	SigmaJitterXI(int i = 0) 	const {return Struct(i)->SigmaJitterXI;}
-  float 	SigmaJitterXO(int i = 0) 	const {return Struct(i)->SigmaJitterXO;}
-  float 	longitudinalDiffusion(int i = 0) 	const {return Struct(i)->longitudinalDiffusion;}
-  float 	transverseDiffusion(int i = 0) 	const {return Struct(i)->transverseDiffusion;}
-  float       NoElPerAdc(int i = 0)  const {return Struct(i)->NoElPerAdc;}
-  float       NoElPerAdcI(int i = 0) const {return Struct(i)->NoElPerAdcI;}
-  float       NoElPerAdcO(int i = 0) const {return Struct(i)->NoElPerAdcO;}
-  float       NoElPerAdcX(int i = 0) const {return Struct(i)->NoElPerAdcX;}
-  float       OmegaTauScaleI(int i = 0) const {return Struct(i)->OmegaTauScaleI;}
-  float       OmegaTauScaleO(int i = 0) const {return Struct(i)->OmegaTauScaleO;}
-  float*      SecRowCor(int i = 0)      const {return &Struct(i)->SecRowCorIW[0];}
-  float*      SecRowCorIW(int i = 0)    const {return &Struct(i)->SecRowCorIW[0];}
-  float*      SecRowCorOW(int i = 0)    const {return &Struct(i)->SecRowCorOW[0];}
-  float*      SecRowCorIE(int i = 0)    const {return &Struct(i)->SecRowCorIE[0];}
-  float*      SecRowCorOE(int i = 0)    const {return &Struct(i)->SecRowCorOE[0];}
-
-  float*      SecRowSig(int i = 0)      const {return &Struct(i)->SecRowSigIW[0];}
-  float*      SecRowSigIW(int i = 0)    const {return &Struct(i)->SecRowSigIW[0];}
-  float*      SecRowSigOW(int i = 0)    const {return &Struct(i)->SecRowSigOW[0];}
-  float*      SecRowSigIE(int i = 0)    const {return &Struct(i)->SecRowSigIE[0];}
-  float*      SecRowSigOE(int i = 0)    const {return &Struct(i)->SecRowSigOE[0];}
-
-  float       PolyaInner(int i = 0)     const {return  Struct(i)->PolyaInner;}
-  float       PolyaOuter(int i = 0)     const {return  Struct(i)->PolyaOuter;}
-  float       T0offset(int i = 0)       const {return  Struct(i)->T0offset;}
-  float       T0offsetI(int i = 0)      const {return  Struct(i)->T0offsetI;}
-  float       T0offsetO(int i = 0)      const {return  Struct(i)->T0offsetO;}
-  float       FirstRowC(int i = 0)      const {return  Struct(i)->FirstRowC;}
-};
-
 struct St_TpcRowQC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcRowQC, tpcCorrection> {};
 
 struct St_tpcSCGLC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSCGLC, tpcSCGL> {
@@ -1251,54 +1004,6 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   }
  private:
   double	fMargin;
-};
-
-struct St_tss_tssparC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tss_tssparC, tss_tsspar>
-{
-  char* 	fileout(int i = 0) 	{return Struct(i)->fileout;}
-  int 	dynam(int i = 0) 	{return Struct(i)->dynam;}
-  int 	format(int i = 0) 	{return Struct(i)->format;}
-  int 	max_itime(int i = 0) 	{return Struct(i)->max_itime;}
-  int 	max_pads(int i = 0) 	{return Struct(i)->max_pads;}
-  int 	max_row(int i = 0) 	{return Struct(i)->max_row;}
-  int 	max_sect(int i = 0) 	{return Struct(i)->max_sect;}
-  int 	min_itime(int i = 0) 	{return Struct(i)->min_itime;}
-  int 	min_pads(int i = 0) 	{return Struct(i)->min_pads;}
-  int 	min_row(int i = 0) 	{return Struct(i)->min_row;}
-  int 	min_sect(int i = 0) 	{return Struct(i)->min_sect;}
-  int 	mode(int i = 0) 	{return Struct(i)->mode;}
-  int 	nele_laser(int i = 0) {return Struct(i)->nele_laser;}
-  int 	ngain(int i = 0) 	{return Struct(i)->ngain;}
-  int 	nseg(int i = 0) 	{return Struct(i)->nseg;}
-  int 	ntime(int i = 0) 	{return Struct(i)->ntime;}
-  int 	printout(int i = 0) 	{return Struct(i)->printout;}
-  int 	tpc_half(int i = 0) 	{return Struct(i)->tpc_half;}
-  int 	reset(int i = 0) 	{return Struct(i)->reset;}
-  float 	ave_ion_pot(int i = 0) {return Struct(i)->ave_ion_pot;}
-  float 	bfield(int i = 0) 	{return Struct(i)->bfield;}
-  float 	c_test(int i = 0) 	{return Struct(i)->c_test;}
-  float 	diff_long(int i = 0) 	{return Struct(i)->diff_long;}
-  float 	diff_trans(int i = 0) {return Struct(i)->diff_trans;}
-  float 	gain_in(int i = 0)    {return Struct(i)->gain_in;}
-  float 	gain_in(int sec, int row) {return gain(sec, row);}
-  float 	gain_out(int i = 0)   {return Struct(i)->gain_out;}
-  float 	gain_out(int sec, int row)  {return gain(sec, row);}
-  float 	gain(int sec, int row);
-  float 	prf_in(int i = 0) 	{return Struct(i)->prf_in;}
-  float 	prf_out(int i = 0) 	{return Struct(i)->prf_out;}
-  float 	sca_rms(int i = 0) 	{return Struct(i)->sca_rms;}
-  float 	scale(int i = 0) 	{return Struct(i)->scale;}
-  float 	step_size(int i = 0) 	{return Struct(i)->step_size;}
-  float 	tau(int i = 0) 	{return Struct(i)->tau;}
-  float 	threshold(int i = 0) 	{return Struct(i)->threshold;}
-  float 	time_offset(int i = 0) {return Struct(i)->time_offset;}
-  float 	v_test(int i = 0) 	{return Struct(i)->v_test;}
-  float 	white_rms(int i = 0) 	{return Struct(i)->white_rms;}
-  float 	wire_coupling_in(int i = 0) 	{return Struct(i)->wire_coupling_in;}
-  float 	wire_coupling_out(int i = 0) 	{return Struct(i)->wire_coupling_out;}
-  float 	x_laser(int i = 0) 	{return Struct(i)->x_laser;}
-  float 	y_laser(int i = 0) 	{return Struct(i)->y_laser;}
-  float 	z_laser(int i = 0) 	{return Struct(i)->z_laser;}
 };
 
 float GainCorrection(int sector, int row);
