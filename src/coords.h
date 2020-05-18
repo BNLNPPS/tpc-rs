@@ -247,63 +247,63 @@ struct CoordTransform
   CoordTransform();
 
   // Raw Data <--> Tpc Local Sector Coordinates
-  void operator()(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true);
-  void operator()(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0 = false, bool useTau = true);
+  void local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true);
+  void hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0 = false, bool useTau = true);
 
   // Raw Data <--> Tpc Local Coordinates
-  void operator()(const StTpcLocalCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true)
+  void local_to_hardware(const StTpcLocalCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true)
   {
     StTpcLocalSectorCoordinate c;
-    operator()(a, c);
-    operator()(c, b, useT0, useTau);
+    local_to_local_sector(a, c);
+    local_sector_to_hardware(c, b, useT0, useTau);
   }
 
-  void operator()(const StTpcPadCoordinate &a, StTpcLocalCoordinate &b, bool useT0 = false, bool useTau = true)
+  void hardware_to_local(const StTpcPadCoordinate &a, StTpcLocalCoordinate &b, bool useT0 = false, bool useTau = true)
   {
     StTpcLocalSectorCoordinate c;
-    operator()(a, c, useT0, useTau);
-    operator()(c, b);
+    hardware_to_local_sector(a, c, useT0, useTau);
+    local_sector_to_local(c, b);
   }
 
   // Tpc Local Sector <--> TPC Local
-  void operator()(const StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b);
+  void local_sector_to_local(const StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b);
 
-  void operator()(const StTpcLocalSectorDirection &a, StTpcLocalDirection &b)
+  void local_sector_to_local_dir(const StTpcLocalSectorDirection &a, StTpcLocalDirection &b)
   {
     StTpcDb::instance().Pad2Tpc(a.sector, a.row).LocalToMasterVect(a.position.xyz(), b.position.xyz());
     b.sector = a.sector;
     b.row = a.row;
   }
 
-  void operator()(const StTpcLocalSectorCoordinate &a, StGlobalCoordinate &b)
+  void local_sector_to_global(const StTpcLocalSectorCoordinate &a, StGlobalCoordinate &b)
   {
     StTpcLocalCoordinate c;
-    operator()(a, c);
-    operator()(c, b);
+    local_sector_to_local(a, c);
+    local_to_global(c, b);
   }
 
-  void operator()(const StTpcLocalSectorDirection &a, StGlobalDirection &b)
+  void local_sector_to_global_dir(const StTpcLocalSectorDirection &a, StGlobalDirection &b)
   {
     StTpcDb::instance().Pad2Glob(a.sector, a.row).LocalToMasterVect(a.position.xyz(), b.position.xyz());
   }
 
-  void operator()(const StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b);
+  void local_to_local_sector(const StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b);
 
-  void operator()(const StTpcLocalDirection &a, StTpcLocalSectorDirection &b)
+  void local_to_local_sector_dir(const StTpcLocalDirection &a, StTpcLocalSectorDirection &b)
   {
     StTpcDb::instance().Pad2Tpc(a.sector, a.row).MasterToLocalVect(a.position.xyz(), b.position.xyz());
     b.sector = a.sector;
     b.row = a.row;
   }
 
-  void operator()(const StGlobalCoordinate &a, StTpcLocalSectorCoordinate &b, int sector, int row)
+  void global_to_local_sector(const StGlobalCoordinate &a, StTpcLocalSectorCoordinate &b, int sector, int row)
   {
     StTpcLocalCoordinate c;
-    operator()(a, c, sector, row);
-    operator()(c, b);
+    global_to_local(a, c, sector, row);
+    local_to_local_sector(c, b);
   }
 
-  void operator()(const  StGlobalDirection &a, StTpcLocalSectorDirection &b, int sector, int row)
+  void global_to_local_sector_dir(const  StGlobalDirection &a, StTpcLocalSectorDirection &b, int sector, int row)
   {
     StTpcDb::instance().Pad2Glob(sector, row).MasterToLocalVect(a.position.xyz(), b.position.xyz());
     b.sector = sector;
@@ -311,24 +311,24 @@ struct CoordTransform
   }
 
   // Internal TpcCoordinate <-->  Global Coordinate
-  void operator()(const StTpcLocalCoordinate &a, StGlobalCoordinate &b)
+  void local_to_global(const StTpcLocalCoordinate &a, StGlobalCoordinate &b)
   {
     StTpcDb::instance().Tpc2GlobalMatrix().LocalToMaster(a.position.xyz(), b.position.xyz());
   }
 
-  void operator()(const StGlobalCoordinate &a, StTpcLocalCoordinate &b, int sector, int row)
+  void global_to_local(const StGlobalCoordinate &a, StTpcLocalCoordinate &b, int sector, int row)
   {
     StTpcDb::instance().Tpc2GlobalMatrix().MasterToLocal(a.position.xyz(), b.position.xyz());
     b.sector = sector;
     b.row = row;
   }
 
-  void operator()(const StTpcLocalDirection &a, StGlobalDirection &b)
+  void local_to_global_dir(const StTpcLocalDirection &a, StGlobalDirection &b)
   {
     StTpcDb::instance().Tpc2GlobalMatrix().LocalToMasterVect(a.position.xyz(), b.position.xyz());
   }
 
-  void operator()(const StGlobalDirection &a, StTpcLocalDirection &b, int sector, int row)
+  void global_to_local_dir(const StGlobalDirection &a, StTpcLocalDirection &b, int sector, int row)
   {
     StTpcDb::instance().Tpc2GlobalMatrix().MasterToLocalVect(a.position.xyz(), b.position.xyz());
     b.sector = sector;
@@ -336,18 +336,18 @@ struct CoordTransform
   }
 
   // Raw Data <-->  Global Coordinate
-  void operator()(const StTpcPadCoordinate &a, StGlobalCoordinate &b, bool useT0 = false, bool useTau = true)
+  void hardware_to_global(const StTpcPadCoordinate &a, StGlobalCoordinate &b, bool useT0 = false, bool useTau = true)
   {
     StTpcLocalCoordinate c;
-    operator()(a, c, useT0, useTau);
-    operator()(c, b);
+    hardware_to_local(a, c, useT0, useTau);
+    local_to_global(c, b);
   }
 
-  void operator()(const StGlobalCoordinate &a, StTpcPadCoordinate &b, int sector, int row, bool useT0 = false, bool useTau = true)
+  void global_to_hardware(const StGlobalCoordinate &a, StTpcPadCoordinate &b, int sector, int row, bool useT0 = false, bool useTau = true)
   {
     StTpcLocalCoordinate c;
-    operator()(a, c, sector, row);
-    operator()(c, b, useT0, useTau);
+    global_to_local(a, c, sector, row);
+    local_to_hardware(c, b, useT0, useTau);
   }
 
   double  tBFromZ(double z, int sector, int row, int pad = 0) const;
