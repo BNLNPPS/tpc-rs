@@ -38,6 +38,7 @@ class Simulator
     StTpcLocalSectorCoordinate coorLS;
     StTpcLocalSectorDirection  dirLS;
     StTpcLocalSectorDirection  BLS;
+    /// Hardware coordinates corresponding to the local to the sector `coorLS`
     StTpcPadCoordinate Pad;
   };
 
@@ -103,9 +104,10 @@ class Simulator
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
 
-  void CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
-  int sector, int row, double gain_local,
-  TrackHelix track, tpcrs::GeantHit* tpc_hitC, int charge, double betaGamma, double& s_low, double& s_upper, double& newPosition, double& Tmax, double& bg, double& gamma, double& eKin, int& nP, double& dESum, double& dSSum);
+  void CalcSignalInClusters(
+    int sector, int row, double gain_local,
+    const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+    TrackHelix track, int charge, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum);
 
   void LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,
@@ -136,7 +138,7 @@ class Simulator
   std::array<std::vector<TF1F>, 2>  mPadResponseFunction; //!
   TF1F   mPolya[2];                   //!
   TF1    mHeed;                       //!
-  StTpcdEdxCorrection m_TpcdEdxCorrection; // !
+  StTpcdEdxCorrection dEdx_correction_; // !
   double InnerAlphaVariation[24];   //!
   double OuterAlphaVariation[24];   //!
   int    numberOfInnerSectorAnodeWires; //!
