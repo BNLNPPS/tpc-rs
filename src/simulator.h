@@ -97,7 +97,7 @@ class Simulator
     std::vector<tpcrs::GeantHit>& geant_hits,
     std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex);
 
-  void TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax);
+  void TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits);
 
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);

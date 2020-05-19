@@ -730,7 +730,11 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
       curr_segment.s = prev_segment.s + curr_segment.tpc_hitC->ds;
     }
 
-    TrackSegment2Propagate(geant_hit, curr_segment, smin, smax);
+    TrackSegment2Propagate(geant_hit, curr_segment);
+
+    // Update smin and smax for this collection of segments
+    if (curr_segment.sMin < smin) smin = curr_segment.sMin;
+    if (curr_segment.sMax > smax) smax = curr_segment.sMax;
 
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
 
@@ -1161,7 +1165,7 @@ double Simulator::Ec(double* x, double* p)
 }
 
 
-void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits, double& smin, double& smax)
+void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits)
 {
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
@@ -1171,9 +1175,6 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
   TrackSegmentHits.tpc_hitC = &geant_hit;
   TrackSegmentHits.sMin = TrackSegmentHits.s - TrackSegmentHits.tpc_hitC->ds;
   TrackSegmentHits.sMax = TrackSegmentHits.s;
-
-  if (TrackSegmentHits.sMin < smin) smin = TrackSegmentHits.sMin;
-  if (TrackSegmentHits.sMax > smax) smax = TrackSegmentHits.sMax;
 
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
