@@ -90,7 +90,7 @@ Simulator::Simulator(double e_cutoff):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * Cfg<TpcResponseSimulator>().W, 1),
-  m_TpcdEdxCorrection(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
+  dEdx_correction_(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
 {
   //  SETBIT(options_,kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
@@ -388,7 +388,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
       if (geant_hit.volume_id <= 0 || geant_hit.volume_id > 1000000) continue;
 
-      int parent_track_idx = geant_hit.track_id;
       double mass = 0;
 
       int ipart  = geant_hit.particle_id;
@@ -458,6 +457,8 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket);
         if (dEdxCor < min_signal_) continue;
 
+        double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
+
         // Initialize propagation
         // Magnetic field BField must be in kilogauss
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
@@ -467,10 +468,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 #ifdef __DEBUG__
         if (Debug() > 11) PrPP(Make, track);
 #endif
-        double dStep =  std::abs(tpc_hitC->ds);
-        double s_low   = -dStep / 2;
-        double s_upper = s_low + dStep;
-        double newPosition = s_low;
         // Propagate track to the pad row plane defined by the normal in this sector coordinate system
         static CoordTransform transform;
         Coords rowPlane{0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row), 0};
@@ -500,7 +497,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
           // special case stopped electrons
           if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
-            int Id    = tpc_hitC->track_id;
             int ipart = tpc_hitC->particle_id;
 
             if (ipart == 3) {
@@ -529,14 +525,13 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
 
-        double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
         int nP = 0;
         double dESum = 0;
         double dSSum = 0;
 
-        CalcSignalInClusters(TrackSegmentHits[iSegHits], binned_charge,
-          sector, row, gain_local,
-          track, tpc_hitC, charge, betaGamma, s_low, s_upper, newPosition, Tmax, bg, gamma, eKin, nP, dESum, dSSum);
+        CalcSignalInClusters(sector, row, gain_local,
+          TrackSegmentHits[iSegHits], binned_charge,
+          track, charge, betaGamma, Tmax, eKin, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
         if (Debug() > 12) {
@@ -1101,13 +1096,13 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
     float pos[3] = {(float ) coorLT.position.x, (float ) coorLT.position.y, (float ) coorLT.position.z};
     float posMoved[3];
     StMagUtilities::Instance()->DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
-    coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};        // after do distortions
-    transform.local_to_global(coorLT, TrackSegmentHits.xyzG);                PrPP(Make, coorLT);
+    coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
+    transform.local_to_global(coorLT, TrackSegmentHits.xyzG);        PrPP(Make, coorLT);
   }
 
   transform.local_to_local_sector(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
 
-  double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * StTpcDb::instance().DriftVelocity(sector); // ,row);
+  double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * StTpcDb::instance().DriftVelocity(sector);
 
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((!IsInner(row, sector) && driftLength > - Cfg<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
@@ -1185,13 +1180,16 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 }
 
 
-void Simulator::CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
-  int sector, int row, double gain_local,
-  TrackHelix track, tpcrs::GeantHit* tpc_hitC, int charge, double betaGamma, double& s_low, double& s_upper, double& newPosition, double& Tmax, double& bg, double& gamma, double& eKin, int& nP, double& dESum, double& dSSum)
+void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
+  const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+  TrackHelix track, int charge, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
   float dEr = 0;
+  double s_low   = -std::abs(TrackSegmentHit.tpc_hitC->ds) / 2;
+  double s_upper =  std::abs(TrackSegmentHit.tpc_hitC->ds) / 2;
+  double newPosition = s_low;
 
   // generate electrons: No. of primary clusters per cm
   double NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
@@ -1204,8 +1202,8 @@ void Simulator::CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vec
     if (eKin >= 0.0) {
       if (eKin == 0.0) break;
 
-      gamma = eKin / m_e + 1;
-      bg = std::sqrt(gamma * gamma - 1.);
+      double gamma = eKin / m_e + 1;
+      double bg = std::sqrt(gamma * gamma - 1.);
       Tmax = 0.5 * m_e * (gamma - 1);
 
       if (Tmax <= Cfg<TpcResponseSimulator>().W / 2 * eV) break;
@@ -1224,7 +1222,7 @@ void Simulator::CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vec
       else { // charge == 0 geantino
         // for LASERINO assume dE/dx = 25 keV/cm;
         dE = 10; // eV
-        dS = dE * eV / (std::abs(tpc_hitC->de / tpc_hitC->ds));
+        dS = dE * eV / (std::abs(TrackSegmentHit.tpc_hitC->de / TrackSegmentHit.tpc_hitC->ds));
       }
     }
 
@@ -1286,8 +1284,7 @@ void Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint
   }
 
   double phiXY = 2 * M_PI * gRandom->Rndm();
-  double rX = std::cos(phiXY);
-  double rY = std::sin(phiXY);
+  double rX, rY;
   int WireIndex = 0;
 
   InOut io = IsInner(row, sector) ? kInner : kOuter;
@@ -1502,8 +1499,6 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
 
 double Simulator::dEdxCorrection(const HitPoint_t &path_segment)
 {
-  double dEdxCor = 1;
-  double dStep =  std::abs(path_segment.tpc_hitC->ds);
   dEdxY2_t CdEdx;
   memset (&CdEdx, 0, sizeof(dEdxY2_t));
   CdEdx.DeltaZ = 5.2;
@@ -1519,7 +1514,7 @@ double Simulator::dEdxCorrection(const HitPoint_t &path_segment)
     CdEdx.edge += 1 - St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
 
   CdEdx.F.dE     = 1;
-  CdEdx.F.dx     = dStep;
+  CdEdx.F.dx     = std::abs(path_segment.tpc_hitC->ds);
   CdEdx.xyz[0] = path_segment.coorLS.position.x;
   CdEdx.xyz[1] = path_segment.coorLS.position.y;
   CdEdx.xyz[2] = path_segment.coorLS.position.z;
@@ -1527,26 +1522,21 @@ double Simulator::dEdxCorrection(const HitPoint_t &path_segment)
   double pitch = IsInner(CdEdx.row, CdEdx.sector) ? St_tpcPadConfigC::instance()->innerSectorPadPitch(CdEdx.sector) :
                                                     St_tpcPadConfigC::instance()->outerSectorPadPitch(CdEdx.sector);
   double PhiMax = std::atan2(probablePad * pitch, St_tpcPadConfigC::instance()->radialDistanceAtRow(CdEdx.sector, CdEdx.row));
-  CdEdx.PhiR   = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
+  CdEdx.PhiR    = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
   CdEdx.xyzD[0] = path_segment.dirLS.position.x;
   CdEdx.xyzD[1] = path_segment.dirLS.position.y;
   CdEdx.xyzD[2] = path_segment.dirLS.position.z;
-  CdEdx.ZdriftDistance = CdEdx.xyzD[2];
   CdEdx.zG      = CdEdx.xyz[2];
 
   if (St_trigDetSumsC::instance())	CdEdx.Zdc     = St_trigDetSumsC::instance()->zdcX();
 
   CdEdx.ZdriftDistance = path_segment.coorLS.position.z; // drift length
-  St_tpcGasC* tpc_gas = m_TpcdEdxCorrection.TpcGas();
+  St_tpcGasC* tpc_gas = dEdx_correction_.TpcGas();
 
   if (tpc_gas)
     CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * tpc_gas->Struct()->ppmOxygenIn;
 
-  if (! m_TpcdEdxCorrection.dEdxCorrection(CdEdx)) {
-    dEdxCor = CdEdx.F.dE;
-  }
-
-  return dEdxCor;
+  return dEdx_correction_.dEdxCorrection(CdEdx) ? 1 : CdEdx.F.dE;
 }
 
 #undef PrPP
