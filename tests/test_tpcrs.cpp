@@ -96,7 +96,7 @@ tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g
     hit.de,
     hit.ds,
     hit.length,
-    hit.tof + vertex.ge_tof,
+    double(hit.tof) + double(vertex.ge_tof),
     hit.lgam,
     0,         // OUTPUT: adc
     0,         // OUTPUT: pad

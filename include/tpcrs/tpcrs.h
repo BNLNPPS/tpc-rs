@@ -15,7 +15,7 @@ struct GeantHit
   float de;      /* energy deposited at hit */
   float ds;      /* path length within pad row */
   float len;     /* track length up to this hit */
-  float tof;     /// Time of flight including the GEANT vertex production time
+  double tof;     /// Time of flight including the GEANT vertex production time
   float lgam;    /* ALOG10(GEKin/AMass) */
   float adc;     /* OUTPUT signal in ADC  after digitization */
   float pad;     /* OUTPUT hit pad position used in digitization */
