@@ -11,7 +11,7 @@
 
 #include "Rtypes.h"
 
-#include "tpcrs/digi_data.h"
+#include "tpcrs/tpcrs.h"
 #include "tpcrs/structs.h"
 
 #define __MaxNumberOfTimeBins__ 512
