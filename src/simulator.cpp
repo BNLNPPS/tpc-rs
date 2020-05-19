@@ -60,7 +60,7 @@ TF1F Simulator::fgTimeShape0[2] = {
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
 using tpcrs::Cfg;
 
-Simulator::Simulator(double e_cutoff, const char* name):
+Simulator::Simulator(double e_cutoff):
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
@@ -388,11 +388,11 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
       if (geant_hit.volume_id <= 0 || geant_hit.volume_id > 1000000) continue;
 
-      int parent_track_idx  = geant_hit.track_id;
+      int parent_track_idx = geant_hit.track_id;
       double mass = 0;
 
-      int ipart      = geant_hit.particle_id;
-      int charge     = 0;
+      int ipart  = geant_hit.particle_id;
+      int charge = 0;
 
       StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
 
@@ -1425,7 +1425,7 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
           Cfg<TpcResponseSimulator>().T0offsetI :
           Cfg<TpcResponseSimulator>().T0offsetO;
 
-    if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT); // #1
+    if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT);
 
     double dely = transform.yFromRow(sector, row) - yOnWire;
     double localYDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(&dely);

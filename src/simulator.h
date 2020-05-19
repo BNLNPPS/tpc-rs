@@ -18,7 +18,7 @@ class Simulator
 {
  public:
 
-  Simulator(double eCutOff = 1e-3, const char* name = "TpcRS");
+  Simulator(double eCutOff = 1e-3);
   ~Simulator();
 
   void Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
@@ -43,6 +43,17 @@ class Simulator
     float      Sum;
     short  TrackId;
   };
+
+  enum InOut {kInner = 0, kOuter = 1};
+  enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
+              kBICHSEL     = 1,// switch to Bichsel from GEANT
+              kHEED        = 6,// switch to HEED
+              kGAINOAtALL  = 2,// do not use GAIN at all
+              kdEdxCorr    = 3,// do use TpcdEdxCorrection
+              kDistortion  = 4,// include distortions
+              kNoToflight  = 5 // don't account for particle time of flight
+             };
+  enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
 
   const double min_signal_;           //!
   const double electron_range_;       //!
@@ -70,21 +81,11 @@ class Simulator
     return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
   };
 
-  enum InOut {kInner, kOuter};
-  enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
-              kBICHSEL     = 1,// switch to Bichsel from GEANT
-              kHEED        = 6,// switch to HEED
-              kGAINOAtALL  = 2,// do not use GAIN at all
-              kdEdxCorr    = 3,// do use TpcdEdxCorrection
-              kDistortion  = 4,// include distortions
-              kNoToflight  = 5 // don't account for particle time of flight
-             };
-  enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
-  int         Debug() const {return 1;}
+  int Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
   void DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& binned_charge);
-  int    AsicThresholds(short* ADCs);
+  int AsicThresholds(short* ADCs);
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
     std::vector<tpcrs::GeantHit>& geant_hits,
