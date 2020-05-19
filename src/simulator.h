@@ -107,7 +107,7 @@ class Simulator
     double xRange, Coords xyzC, double gain_local,
     double SigmaT, double SigmaL, double OmegaTau);
 
-  void GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+  void GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, int row,
                       TF1F* shaper, std::vector<SignalSum_t>& binned_charge,
                       double& total_signal_in_cluster, double gain_local, double gain_gas);
 

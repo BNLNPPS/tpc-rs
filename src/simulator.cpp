@@ -1298,7 +1298,6 @@ double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoi
   int WireIndex = 0;
 
   InOut io = IsInner(row, sector) ? kInner : kOuter;
-  double sigmaJitterT = (io == kInner ? Cfg<TpcResponseSimulator>().SigmaJitterTI : Cfg<TpcResponseSimulator>().SigmaJitterTO);
 
   Coords unit = TrackSegmentHits.dirLS.position.unit();
   double L2L[9] = {unit.z,                  - unit.x*unit.z, unit.x,
@@ -1389,7 +1388,7 @@ double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoi
       continue;
     }
 
-    GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, sigmaJitterT,
+    GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, row,
                    &mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
   }  // electrons in Cluster
 
@@ -1397,10 +1396,13 @@ double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoi
 }
 
 
-void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, double sigmaJitterT,
+void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, int row,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double& total_signal_in_cluster, double gain_local, double gain_gas)
 {
   static CoordTransform transform;
+
+  double sigmaJitterT = (IsInner(row, sector) ? Cfg<TpcResponseSimulator>().SigmaJitterTI :
+                                                Cfg<TpcResponseSimulator>().SigmaJitterTO);
 
   for (int row = rowMin; row <= rowMax; row++) {
     if (St_tpcPadConfigC::instance()->numberOfRows(sector) == 45) { // ! iTpx
