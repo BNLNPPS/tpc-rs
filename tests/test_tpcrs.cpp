@@ -6,8 +6,7 @@
 
 #include "tests/GeantEvent.h"
 #include "tpcrs/configurator.h"
-#include "tpcrs/digi_data.h"
-#include "tpcrs/structs.h"
+#include "tpcrs/tpcrs.h"
 #include "simulator.h"
 
 

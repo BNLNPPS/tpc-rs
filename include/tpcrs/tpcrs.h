@@ -1,8 +1,7 @@
-#ifndef tpcrs_DigiData_h
-#define tpcrs_DigiData_h
+#ifndef TPCRS_TPCRS_H_
+#define TPCRS_TPCRS_H_
 
 #include <vector>
-
 
 namespace tpcrs {
 
@@ -12,7 +11,7 @@ namespace tpcrs {
  *                sector   row    pad   timebin
  * projected max      24    72    182       512
  * bits                5 +   7 +   10 +      10 = 32 = 4 bytes = unsigned int
- * max value          32   128   1024      1024 
+ * max value          32   128   1024      1024
  */
 struct DigiChannel
 {

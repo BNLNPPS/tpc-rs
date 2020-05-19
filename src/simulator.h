@@ -7,8 +7,8 @@
 #include "TF1F.h"
 #include "TH1.h"
 
-#include "tpcrs/digi_data.h"
 #include "tpcrs/structs.h"
+#include "tpcrs/tpcrs.h"
 #include "coords.h"
 #include "dedx_correction.h"
 #include "tpc_db.h"
