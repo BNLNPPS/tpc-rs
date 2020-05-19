@@ -464,7 +464,7 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
 
       for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
         tpcrs::GeantHit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
-        tpc_hitC->adc = 0;
+        tpc_hitC->digi.adc = 0;
         int row = TrackSegmentHits[iSegHits].coorLS.row;
         int io = (row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector)) ? 0 : 1;
         // switch between Inner / Outer Sector paramters
@@ -573,10 +573,6 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
 
         if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
 
-        double padH = TrackSegmentHits[iSegHits].Pad.pad;
-        double tbkH = TrackSegmentHits[iSegHits].Pad.timeBucket;
-        tpc_hitC->pad = padH;
-        tpc_hitC->timebin = tbkH;
         double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
                             TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
 
@@ -701,17 +697,17 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
         }
         while (true);   // Clusters
 
-        if (dESum > 0 && dSSum) {
 #ifdef __DEBUG__
-          if (Debug() > 12) {
-            LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
-                     << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t total_signal " << total_signal << '\n';
-          }
-#endif
-          tpc_hitC->de = dESum * eV;
-          tpc_hitC->ds = dSSum;
-          tpc_hitC->np = nP;
+        if (Debug() > 12) {
+          LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
+                   << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t total_signal " << total_signal << '\n';
         }
+#endif
+        tpc_hitC->digi.de = dESum * eV;
+        tpc_hitC->digi.ds = dSSum;
+        tpc_hitC->digi.np = nP;
+        tpc_hitC->digi.pad = TrackSegmentHits[iSegHits].Pad.pad;
+        tpc_hitC->digi.timebin = TrackSegmentHits[iSegHits].Pad.timeBucket;
 
         nHitsInTheSector++;
       } // end do loop over segments for a given particle
@@ -722,7 +718,7 @@ void StTpcRSMaker::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiDat
         if (tpc_hitC->volume_id > 10000) continue;
 
         int row = tpc_hitC->volume_id % 100;
-        tpc_hitC->adc += rowsdE[row - 1];
+        tpc_hitC->digi.adc += rowsdE[row - 1];
       }
     }  // hits in the sector
 

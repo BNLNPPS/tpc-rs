@@ -98,10 +98,7 @@ tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g
     hit.length,
     double(hit.tof) + double(vertex.ge_tof),
     hit.lgam,
-    0,         // OUTPUT: adc
-    0,         // OUTPUT: pad
-    0,         // OUTPUT: timebin
-    0          // OUTPUT: np
+    {0, 0, 0, 0, 0, 0}
   };
 }
 
