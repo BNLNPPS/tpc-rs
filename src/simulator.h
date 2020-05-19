@@ -11,6 +11,7 @@
 #include "tpcrs/tpcrs.h"
 #include "coords.h"
 #include "dedx_correction.h"
+#include "struct_containers.h"
 #include "tpc_db.h"
 
 
@@ -79,6 +80,11 @@ class Simulator
   {
     if (x <= x_min || x >= x_max) return 1;
     return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
+  };
+
+  static bool IsInner(int row, int sector=1)
+  {
+    return row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector);
   };
 
   int Debug() const {return 1;}
