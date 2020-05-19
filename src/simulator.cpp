@@ -455,10 +455,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         // dE/dx correction
         double dEdxCor = dEdxCorrection(TrackSegmentHits[iSegHits]);
-        if (dEdxCor <= 0.) continue;
-
         dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket);
-
         if (dEdxCor < min_signal_) continue;
 
         // Initialize propagation
