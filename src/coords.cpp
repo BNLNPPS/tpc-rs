@@ -99,27 +99,26 @@ CoordTransform::CoordTransform()
 }
 
 
-//      Local Sector Coordnate    <->  Tpc Raw Pad Coordinate
+// Local Sector Coordnate <-> Tpc Raw Pad Coordinate
 void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0, bool useTau)
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and  = false for MC
-  int sector = a.sector;
-  int row    = a.row;
+  int row = a.row;
 
-  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(sector))
+  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(a.sector))
     row = rowFromLocalY(a.position.y, a.sector);
 
   double probablePad = padFromX(a.position.x, a.sector, a.row);
-  double                  zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  double t0offset = (useT0 && sector >= 1 && sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(sector, row, tpcrs::irint(probablePad)) : 0;
+  double zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(a.sector, row, tpcrs::irint(probablePad)) : 0;
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
     t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
 
-  double t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(sector) * 1e-6;
-  double tb = tBFromZ(a.position.z + zoffset - t0zoffset, sector, row, probablePad);
-  b = StTpcPadCoordinate{sector, row, probablePad, tb};
+  double t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(a.sector) * 1e-6;
+  double tb = tBFromZ(a.position.z + zoffset - t0zoffset, a.sector, row, probablePad);
+  b = StTpcPadCoordinate{a.sector, row, probablePad, tb};
 }
 
 
@@ -291,6 +290,8 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
     }
   }
 
+  // Based on the row position (i.e. "radius") perform a binary search for the
+  // row corresponding to the value of y
   double* r_ptr = std::lower_bound(Radii, Radii + Nrows + 1, y);
   int row = (r_ptr != Radii + Nrows + 1) && (*r_ptr == y) ? r_ptr - Radii + 1: r_ptr - Radii;
 
@@ -303,38 +304,38 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
 
 void  CoordTransform::local_sector_to_local(const StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b)
 {
-  int row    = a.row;
-  int sector = a.sector;
+  int row = a.row;
 
-  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(sector))
+  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(a.sector))
     row = rowFromLocalY(a.position.y, a.sector);
 
   Coords xGG;
   StTpcDb::instance().Pad2Tpc(a.sector, row).LocalToMasterVect(a.position.xyz(), xGG.xyz());
-  const double* trans = StTpcDb::instance().Pad2Tpc(sector, row).GetTranslation(); // 4
+  const double* trans = StTpcDb::instance().Pad2Tpc(a.sector, row).GetTranslation();
   TGeoTranslation GG2TPC(trans[0], trans[1], trans[2]);
   GG2TPC.LocalToMaster(xGG.xyz(), b.position.xyz());
-  b.sector = a.sector;
+
   b.row = row;
+  b.sector = a.sector;
 }
 
 
 void  CoordTransform::local_to_local_sector(const StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b)
 {
-  int row    = a.row;
-  int sector = a.sector;
+  int row = a.row;
 
-  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(sector)) {
+  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(a.sector)) {
     Coords xyzS;
-    StTpcDb::instance().SupS2Tpc(sector).MasterToLocalVect(a.position.xyz(), xyzS.xyz());
-    row = rowFromLocalY(xyzS.x, sector);
+    StTpcDb::instance().SupS2Tpc(a.sector).MasterToLocalVect(a.position.xyz(), xyzS.xyz());
+    row = rowFromLocalY(xyzS.x, a.sector);
   }
 
-  const double* trans = StTpcDb::instance().Pad2Tpc(a.sector, row).GetTranslation(); // 4
+  const double* trans = StTpcDb::instance().Pad2Tpc(a.sector, row).GetTranslation();
   TGeoTranslation GG2TPC(trans[0], trans[1], trans[2]);
   Coords xGG;
   GG2TPC.MasterToLocal(a.position.xyz(), xGG.xyz());
   StTpcDb::instance().Pad2Tpc(a.sector, row).MasterToLocalVect(xGG.xyz(), b.position.xyz());
-  b.sector = a.sector;
+
   b.row = row;
+  b.sector = a.sector;
 }
