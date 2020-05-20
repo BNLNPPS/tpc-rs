@@ -1369,13 +1369,13 @@ void Simulator::LoopOverElectronsInCluster(int sector, int row,
     }
 
     GenerateSignal(sector, row, TrackSegmentHits, rowMin, rowMax,
-                   &mShaperResponses[io][sector - 1], binned_charge, gain_local, gain_gas);
+                   &mShaperResponses[io][sector - 1], binned_charge, gain_local * gain_gas);
   }  // electrons in Cluster
 }
 
 
 void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
-  TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local, double gain_gas)
+  TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas)
 {
   static CoordTransform transform;
 
@@ -1425,7 +1425,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
     mPadResponseFunction[io][sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
     for (int pad = padMin; pad <= padMax; pad++) {
-      double gain = gain_gas * gain_local;
+      double gain = gain_local_gas;
       double dt = dT;
 
       if (! TESTBIT(options_, kGAINOAtALL)) {

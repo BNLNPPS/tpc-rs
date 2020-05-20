@@ -114,8 +114,7 @@ class Simulator
     double xRange, Coords xyzC, double gain_local);
 
   void GenerateSignal(int sector, int row, const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
-                      TF1F* shaper, std::vector<SignalSum_t>& binned_charge,
-                      double gain_local, double gain_gas);
+                      TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas);
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
 
