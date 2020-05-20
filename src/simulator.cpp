@@ -447,18 +447,17 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
       for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
         HitPoint_t& seg = TrackSegmentHits[iSegHits];
-        tpcrs::GeantHit* tpc_hitC = seg.tpc_hitC;
-        tpc_hitC->digi.adc = 0;
+        seg.tpc_hitC->digi.adc = 0;
         int row = seg.coorLS.row;
 
-        double gain_base = CalcBaseGain(sector, row);
+        double gain_base = CalcBaseGain(seg.Pad.sector, seg.Pad.row);
 
         // dE/dx correction
         double dEdxCor = dEdxCorrection(seg);
         dEdxCor *= GatingGridTransparency(seg.Pad.timeBucket);
         if (dEdxCor < min_signal_) continue;
 
-        double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
+        double gain_local = CalcLocalGain(seg.Pad.sector, seg.Pad.row, gain_base, dEdxCor);
 
         // Initialize propagation
         // Magnetic field BField must be in kilogauss
@@ -487,15 +486,15 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         static const double m_e = .51099907e-3;
         static const double eV = 1e-9; // electronvolt in GeV
-        double gamma = std::pow(10., tpc_hitC->lgam) + 1;
+        double gamma = std::pow(10., seg.tpc_hitC->lgam) + 1;
         double betaGamma = std::sqrt(gamma * gamma - 1.);
         double eKin = -1;
-        Coords pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
+        Coords pxyzG{seg.tpc_hitC->p[0], seg.tpc_hitC->p[1], seg.tpc_hitC->p[2]};
         double bg = mass > 0 ? pxyzG.mag() / mass : 0;
 
         // special case of stopped electrons
-        if (tpc_hitC->particle_id == 3 && tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
-          eKin = -tpc_hitC->de;
+        if (seg.tpc_hitC->particle_id == 3 && seg.tpc_hitC->ds < 0.0050 && seg.tpc_hitC->de < 0) {
+          eKin = -seg.tpc_hitC->de;
           gamma = eKin / m_e + 1;
           bg = std::sqrt(gamma * gamma - 1.);
         }
@@ -520,7 +519,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         double dESum = 0;
         double dSSum = 0;
 
-        CalcSignalInClusters(sector, row, gain_local,
+        CalcSignalInClusters(seg.Pad.sector, seg.Pad.row, gain_local,
           seg, binned_charge,
           track, charge, betaGamma, Tmax, eKin, nP, dESum, dSSum);
 
@@ -530,23 +529,22 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
                    << " dESum = " << dESum << " /\tdSSum " << dSSum << '\n';
         }
 #endif
-        tpc_hitC->digi.de = dESum * eV;
-        tpc_hitC->digi.ds = dSSum;
-        tpc_hitC->digi.np = nP;
-        tpc_hitC->digi.pad = TrackSegmentHits[iSegHits].Pad.pad;
-        tpc_hitC->digi.timebin = TrackSegmentHits[iSegHits].Pad.timeBucket;
+        seg.tpc_hitC->digi.de = dESum * eV;
+        seg.tpc_hitC->digi.ds = dSSum;
+        seg.tpc_hitC->digi.np = nP;
+        seg.tpc_hitC->digi.pad = seg.Pad.pad;
+        seg.tpc_hitC->digi.timebin = seg.Pad.timeBucket;
 
         nHitsInTheSector++;
       } // end do loop over segments for a given particle
 
       for (int iSegHits = 0; iSegHits < nSegHits; iSegHits++) {
         HitPoint_t& seg = TrackSegmentHits[iSegHits];
-        tpcrs::GeantHit* tpc_hitC = seg.tpc_hitC;
 
-        if (tpc_hitC->volume_id > 10000) continue;
+        if (seg.tpc_hitC->volume_id > 10000) continue;
 
-        int row = tpc_hitC->volume_id % 100;
-        tpc_hitC->digi.adc += rowsdE[row - 1];
+        int row = seg.tpc_hitC->volume_id % 100;
+        seg.tpc_hitC->digi.adc += rowsdE[row - 1];
       }
     }  // hits in the sector
 
