@@ -46,7 +46,7 @@ class TF1F : public TF1
 #endif /* ROOT 6 */
   virtual ~TF1F() {}
   virtual void Save(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax);
-  double GetSaveL(double* xx);
+  double GetSaveL(double x);
   double GetSaveL(int N, double x, double* y);
  protected:
   double fXmin;

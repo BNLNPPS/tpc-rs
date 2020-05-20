@@ -1405,7 +1405,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
     InOut io = IsInner(row, sector) ? kInner : kOuter;
 
     double delta_y = transform.yFromRow(sector, row) - yOnWire;
-    double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(&delta_y);
+    double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(delta_y);
 
     if (YDirectionCoupling < min_signal_) continue;
 
