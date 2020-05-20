@@ -13,12 +13,12 @@ void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin,
 }
 
 
-double TF1F::GetSaveL(double* x)
+/// Get value corresponding to X in array of fSave values
+double TF1F::GetSaveL(double x)
 {
-  // Get value corresponding to X in array of fSave values
-  if (x[0] < fXmin || x[0]  > fXmax || fdX <= 0) return 0.;
+  if (x < fXmin || x  > fXmax || fdX <= 0) return 0.;
 
-  int bin     = tpcrs::irint((x[0] - fXmin) / fdX);
+  int bin = tpcrs::irint((x - fXmin) / fdX);
   return fSave[bin];
 }
 
