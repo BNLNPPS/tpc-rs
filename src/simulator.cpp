@@ -66,6 +66,7 @@ Simulator::Simulator(double e_cutoff):
   electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
   max_electron_energy_(e_cutoff),
   num_sectors_(Cfg<tpcDimensions>().numberOfSectors),
+  max_rows_(72),
   max_pads_(182),
   max_timebins_(512),
   options_(0),
@@ -366,7 +367,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
   for (int sector = 1; sector <= num_sectors_; sector++) {
     int nHitsInTheSector = 0;
-    std::vector<SignalSum_t> binned_charge(St_tpcPadConfigC::instance()->numberOfRows(sector) * max_pads_ * max_timebins_);
+    std::vector<SignalSum_t> binned_charge(max_rows_ * max_pads_ * max_timebins_);
 
     // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
     for (; sortedIndex < n_hits; sortedIndex++) {
