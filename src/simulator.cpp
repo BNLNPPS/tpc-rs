@@ -531,98 +531,13 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
 
         double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
-
-        // generate electrons: No. of primary clusters per cm
-        double NP;
-        if (mdNdx || mdNdxL10) {
-          NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
-#ifdef __DEBUG__
-          if (NP <= 0.0) {
-            continue;
-          }
-#endif
-        }
-
         int nP = 0;
         double dESum = 0;
         double dSSum = 0;
-        int   nTotal = 0;
-        float dEr = 0;
 
-        do {// Clusters
-          float dS = 0;
-          float dE = 0;
-          static double cLog10 = std::log(10.);
-
-          if (eKin >= 0.0) {
-            if (eKin == 0.0) break;
-
-            gamma = eKin / m_e + 1;
-            bg = std::sqrt(gamma * gamma - 1.);
-            Tmax = 0.5 * m_e * (gamma - 1);
-
-            if (Tmax <= Cfg<TpcResponseSimulator>().W / 2 * eV) break;
-
-            NP = GetNoPrimaryClusters(betaGamma, charge);
-            dE = std::exp(cLog10 * mdNdEL10->GetRandom());
-          }
-          else {
-            if (charge) {
-              dS = - std::log(gRandom->Rndm()) / NP;
-
-              if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
-              else          dE = Cfg<TpcResponseSimulator>().W *
-                                 gRandom->Poisson(Cfg<TpcResponseSimulator>().Cluster);
-            }
-            else { // charge == 0 geantino
-              // for LASERINO assume dE/dx = 25 keV/cm;
-              dE = 10; // eV
-              dS = dE * eV / (std::abs(tpc_hitC->de / tpc_hitC->ds));
-            }
-          }
-
-#ifdef __DEBUG__
-          if (Debug() > 12) {
-            LOG_INFO << "s_low/s_upper/dSD\t" << s_low << "/\t" << s_upper << "\t" << dS <<  '\n';
-          }
-#endif
-          double E = dE * eV;
-          newPosition += dS;
-
-          if (newPosition > s_upper) break;
-
-          if (dE < Cfg<TpcResponseSimulator>().W / 2 || E > Tmax) continue;
-
-          if (eKin > 0) {
-            if (eKin >= E) {eKin -= E;}
-            else {E = eKin; eKin = 0; dE = E / eV;}
-          }
-
-          dESum += dE;
-          dSSum += dS;
-          nP++;
-#ifdef __DEBUG__
-          if (Debug() > 12) {
-            LOG_INFO << "dESum = " << dESum << " /\tdSSum " << dSSum << " /\t newPosition " << newPosition << '\n';
-          }
-#endif
-          double xRange = 0;
-          if (dE > electron_range_energy_)
-            xRange = electron_range_ * std::pow((dE + dEr) / electron_range_energy_, electron_range_power_);
-
-          std::vector<float> rs = NumberOfElectronsInCluster(mHeed, dE, dEr);
-
-          if (!rs.size()) continue;
-
-          Coords xyzC = track.at(newPosition);
-
-          double total_signal_in_cluster =
-            LoopOverElectronsInCluster(rs, TrackSegmentHits[iSegHits], binned_charge, sector, row, xRange, xyzC, gain_local, SigmaT, SigmaL, OmegaTau);
-          nTotal = rs.size();
-
-          total_signal += total_signal_in_cluster;
-        }
-        while (true);   // Clusters
+        CalcSignalInClusters(TrackSegmentHits[iSegHits], binned_charge,
+          sector, row, gain_local,
+          total_signal, track, tpc_hitC, charge, betaGamma, s_low, s_upper, newPosition, Tmax, bg, gamma, eKin, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
         if (Debug() > 12) {
@@ -1268,6 +1183,93 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 #endif
 
   return gain_base / dedx_corr / num_electrons_per_adc;
+}
+
+
+void Simulator::CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+  int sector, int row, double gain_local,
+  double& total_signal, TrackHelix track, tpcrs::GeantHit* tpc_hitC, int charge, double betaGamma, double& s_low, double& s_upper, double& newPosition, double& Tmax, double& bg, double& gamma, double& eKin, int& nP, double& dESum, double& dSSum)
+{
+  static const double m_e = .51099907e-3;
+  static const double eV = 1e-9; // electronvolt in GeV
+  float dEr = 0;
+
+  // generate electrons: No. of primary clusters per cm
+  double NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
+
+  do {// Clusters
+    float dS = 0;
+    float dE = 0;
+    static double cLog10 = std::log(10.); // XXX move up
+
+    if (eKin >= 0.0) {
+      if (eKin == 0.0) break;
+
+      gamma = eKin / m_e + 1;
+      bg = std::sqrt(gamma * gamma - 1.);
+      Tmax = 0.5 * m_e * (gamma - 1);
+
+      if (Tmax <= Cfg<TpcResponseSimulator>().W / 2 * eV) break;
+
+      NP = GetNoPrimaryClusters(betaGamma, charge);
+      dE = std::exp(cLog10 * mdNdEL10->GetRandom());
+    }
+    else {
+      if (charge) {
+        dS = - std::log(gRandom->Rndm()) / NP;
+
+        if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
+        else          dE = Cfg<TpcResponseSimulator>().W *
+                           gRandom->Poisson(Cfg<TpcResponseSimulator>().Cluster);
+      }
+      else { // charge == 0 geantino
+        // for LASERINO assume dE/dx = 25 keV/cm;
+        dE = 10; // eV
+        dS = dE * eV / (std::abs(tpc_hitC->de / tpc_hitC->ds));
+      }
+    }
+
+#ifdef __DEBUG__
+    if (Debug() > 12) {
+      LOG_INFO << "s_low/s_upper/dSD\t" << s_low << "/\t" << s_upper << "\t" << dS <<  '\n';
+    }
+#endif
+    double E = dE * eV;
+    newPosition += dS;
+
+    if (newPosition > s_upper) break;
+
+    if (dE < Cfg<TpcResponseSimulator>().W / 2 || E > Tmax) continue;
+
+    if (eKin > 0) {
+      if (eKin >= E) {eKin -= E;}
+      else {E = eKin; eKin = 0; dE = E / eV;}
+    }
+
+    dESum += dE;
+    dSSum += dS;
+    nP++;
+#ifdef __DEBUG__
+    if (Debug() > 12) {
+      LOG_INFO << "dESum = " << dESum << " /\tdSSum " << dSSum << " /\t newPosition " << newPosition << '\n';
+    }
+#endif
+    double xRange = 0;
+    if (dE > electron_range_energy_)
+      xRange = electron_range_ * std::pow((dE + dEr) / electron_range_energy_, electron_range_power_);
+
+    std::vector<float> rs = NumberOfElectronsInCluster(mHeed, dE, dEr);
+
+    if (!rs.size()) continue;
+
+    Coords xyzC = track.at(newPosition);
+
+    double total_signal_in_cluster =
+      LoopOverElectronsInCluster(rs, TrackSegmentHit, binned_charge, sector, row, xRange, xyzC, gain_local);
+
+    total_signal += total_signal_in_cluster;
+  }
+  while (true);   // Clusters
 }
 
 
