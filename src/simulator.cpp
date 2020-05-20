@@ -530,19 +530,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
 
-        double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
-                            TrackSegmentHits[iSegHits].BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
-
-        double driftLength = std::abs(TrackSegmentHits[iSegHits].coorLS.position.z);
-        double D = 1. + OmegaTau * OmegaTau;
-        double SigmaL = Cfg<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
-        double SigmaT = Cfg<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
-        double sigmaJitterX = IsInner(row, sector) ?  Cfg<TpcResponseSimulator>().SigmaJitterXI :
-                                                      Cfg<TpcResponseSimulator>().SigmaJitterXO;
-        if (sigmaJitterX > 0) {
-          SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);
-        }
-
         double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
 
         // generate electrons: No. of primary clusters per cm
@@ -1286,9 +1273,20 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 
 double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
   int sector, int row,
-  double xRange, Coords xyzC, double gain_local,
-  double SigmaT, double SigmaL, double OmegaTau)
+  double xRange, Coords xyzC, double gain_local)
 {
+  double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
+                      TrackSegmentHits.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
+  double driftLength = std::abs(TrackSegmentHits.coorLS.position.z);
+  double D = 1. + OmegaTau * OmegaTau;
+  double SigmaL = Cfg<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
+  double SigmaT = Cfg<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
+  double sigmaJitterX = IsInner(row, sector) ?  Cfg<TpcResponseSimulator>().SigmaJitterXI :
+                                                Cfg<TpcResponseSimulator>().SigmaJitterXO;
+  if (sigmaJitterX > 0) {
+    SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);
+  }
+
   double phiXY = 2 * M_PI * gRandom->Rndm();
   double rX = std::cos(phiXY);
   double rY = std::sin(phiXY);
