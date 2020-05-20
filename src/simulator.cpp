@@ -446,15 +446,16 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
       memset (rowsdE, 0, sizeof(rowsdE));
 
       for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
-        tpcrs::GeantHit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
+        HitPoint_t& seg = TrackSegmentHits[iSegHits];
+        tpcrs::GeantHit* tpc_hitC = seg.tpc_hitC;
         tpc_hitC->digi.adc = 0;
-        int row = TrackSegmentHits[iSegHits].coorLS.row;
+        int row = seg.coorLS.row;
 
         double gain_base = CalcBaseGain(sector, row);
 
         // dE/dx correction
-        double dEdxCor = dEdxCorrection(TrackSegmentHits[iSegHits]);
-        dEdxCor *= GatingGridTransparency(TrackSegmentHits[iSegHits].Pad.timeBucket);
+        double dEdxCor = dEdxCorrection(seg);
+        dEdxCor *= GatingGridTransparency(seg.Pad.timeBucket);
         if (dEdxCor < min_signal_) continue;
 
         double gain_local = CalcLocalGain(sector, row, gain_base, dEdxCor);
@@ -462,26 +463,26 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         // Initialize propagation
         // Magnetic field BField must be in kilogauss
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-        TrackHelix track(TrackSegmentHits[iSegHits].dirLS.position,
-                         TrackSegmentHits[iSegHits].coorLS.position,
-                         TrackSegmentHits[iSegHits].BLS.position.z * 1e-14 * charge, 1);
+        TrackHelix track(seg.dirLS.position,
+                         seg.coorLS.position,
+                         seg.BLS.position.z * 1e-14 * charge, 1);
 #ifdef __DEBUG__
         if (Debug() > 11) PrPP(Make, track);
 #endif
         // Propagate track to the pad row plane defined by the normal in this sector coordinate system
         static CoordTransform transform;
-        Coords rowPlane{0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row), 0};
+        Coords rowPlane{0, transform.yFromRow(seg.Pad.sector, seg.Pad.row), 0};
         double sR = track.pathLength(rowPlane, {0, 1, 0});
 
         // The segment parameters (hit position) are updated!
         if (sR < 1e10) {
           PrPP(Maker, sR);
-          PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
-          TrackSegmentHits[iSegHits].coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-          PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
-          PrPP(Make, TrackSegmentHits[iSegHits].Pad);
-          transform.local_sector_to_hardware(TrackSegmentHits[iSegHits].coorLS, TrackSegmentHits[iSegHits].Pad, false, false); // don't use T0, don't use Tau
-          PrPP(Make, TrackSegmentHits[iSegHits].Pad);
+          PrPP(Make, seg.coorLS);
+          seg.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
+          PrPP(Make, seg.coorLS);
+          PrPP(Make, seg.Pad);
+          transform.local_sector_to_hardware(seg.coorLS, seg.Pad, false, false); // don't use T0, don't use Tau
+          PrPP(Make, seg.Pad);
         }
 
         static const double m_e = .51099907e-3;
@@ -520,7 +521,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         double dSSum = 0;
 
         CalcSignalInClusters(sector, row, gain_local,
-          TrackSegmentHits[iSegHits], binned_charge,
+          seg, binned_charge,
           track, charge, betaGamma, Tmax, eKin, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
@@ -539,7 +540,8 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
       } // end do loop over segments for a given particle
 
       for (int iSegHits = 0; iSegHits < nSegHits; iSegHits++) {
-        tpcrs::GeantHit* tpc_hitC = TrackSegmentHits[iSegHits].tpc_hitC;
+        HitPoint_t& seg = TrackSegmentHits[iSegHits];
+        tpcrs::GeantHit* tpc_hitC = seg.tpc_hitC;
 
         if (tpc_hitC->volume_id > 10000) continue;
 
