@@ -34,7 +34,6 @@
 #include "track_helix.h"
 
 
-#define __STOPPED_ELECTRONS__
 #define __DEBUG__
 #if defined(__DEBUG__)
 #define PrPP(A,B) if (Debug()%10 > 2) {LOG_INFO << "Simulator::" << (#A) << "\t" << (#B) << " = \t" << (B) << '\n';}
@@ -487,28 +486,17 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         static const double eV = 1e-9; // electronvolt in GeV
         double gamma = std::pow(10., tpc_hitC->lgam) + 1;
         double betaGamma = std::sqrt(gamma * gamma - 1.);
-        double bg = 0;
         double eKin = -1;
         Coords pxyzG{tpc_hitC->p[0], tpc_hitC->p[1], tpc_hitC->p[2]};
+        double bg = mass > 0 ? pxyzG.mag() / mass : 0;
 
-#ifdef __STOPPED_ELECTRONS__
-        if (mass > 0) {
-          bg = pxyzG.mag() / mass;
-
-          // special case stopped electrons
-          if (tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
-            int ipart = tpc_hitC->particle_id;
-
-            if (ipart == 3) {
-              eKin = -tpc_hitC->de;
-              gamma = eKin / m_e + 1;
-              bg = std::sqrt(gamma * gamma - 1.);
-            }
-          }
+        // special case of stopped electrons
+        if (tpc_hitC->particle_id == 3 && tpc_hitC->ds < 0.0050 && tpc_hitC->de < 0) {
+          eKin = -tpc_hitC->de;
+          gamma = eKin / m_e + 1;
+          bg = std::sqrt(gamma * gamma - 1.);
         }
-#else
-        if (mass > 0) bg = pxyzG.mag() / mass;
-#endif
+
         if (bg > betaGamma) betaGamma = bg;
 
         gamma = std::sqrt(betaGamma * betaGamma + 1.);
