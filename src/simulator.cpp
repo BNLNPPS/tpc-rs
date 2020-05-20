@@ -363,11 +363,14 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
   std::iota(sorted_index.begin(), sorted_index.end(), 0);
   std::stable_sort(sorted_index.begin(), sorted_index.end(), [&geant_hits](size_t i1, size_t i2) {return geant_hits[i1] < geant_hits[i2];});
 
+  using SegmentedTrack = std::vector<HitPoint_t>;
+  std::vector< std::vector<HitPoint_t> > segments_by_sector;
+
   int sortedIndex = 0;
 
   for (int sector = 1; sector <= num_sectors_; sector++) {
-    int nHitsInTheSector = 0;
-    std::vector<SignalSum_t> binned_charge(max_rows_ * max_pads_ * max_timebins_);
+
+    std::vector<HitPoint_t> segments_in_sector;
 
     // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
     for (; sortedIndex < n_hits; sortedIndex++) {
@@ -423,10 +426,12 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
       int sIndex = sortedIndex;
 
       std::vector<HitPoint_t> TrackSegmentHits;
-      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, smin, smax, sIndex);
+      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, smin, smax, sIndex, charge, mass);
       int nSegHits = TrackSegmentHits.size();
 
       if (!nSegHits) continue;
+
+      segments_in_sector.insert(segments_in_sector.end(), TrackSegmentHits.begin(), TrackSegmentHits.end());
 
       if (Debug() >= 10) {
         PrPP(Make, nSegHits);
@@ -442,12 +447,19 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
       // This essentially jumps to the next track/particle
       sortedIndex = sIndex - 1; // Irakli 05/06/19, reduce extra step in for loop
+    }
 
-      double s = smin;
+    segments_by_sector.push_back(segments_in_sector);
+  }
+
+  int sector = 1;
+  for (auto segments_in_sector : segments_by_sector) {
+    int nHitsInTheSector = 0;
+    std::vector<SignalSum_t> binned_charge(max_rows_ * max_pads_ * max_timebins_);
+
       memset (rowsdE, 0, sizeof(rowsdE));
 
-      for (int iSegHits = 0; iSegHits < nSegHits && s < smax; iSegHits++) {
-        HitPoint_t& seg = TrackSegmentHits[iSegHits];
+      for (HitPoint_t& seg : segments_in_sector) {
         seg.tpc_hitC->digi.adc = 0;
         int row = seg.coorLS.row;
 
@@ -465,7 +477,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
         TrackHelix track(seg.dirLS.position,
                          seg.coorLS.position,
-                         seg.BLS.position.z * 1e-14 * charge, 1);
+                         seg.BLS.position.z * 1e-14 * seg.charge, 1);
 #ifdef __DEBUG__
         if (Debug() > 11) PrPP(Make, track);
 #endif
@@ -491,7 +503,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         double betaGamma = std::sqrt(gamma * gamma - 1.);
         double eKin = -1;
         Coords pxyzG{seg.tpc_hitC->p[0], seg.tpc_hitC->p[1], seg.tpc_hitC->p[2]};
-        double bg = mass > 0 ? pxyzG.mag() / mass : 0;
+        double bg = seg.mass > 0 ? pxyzG.mag() / seg.mass : 0;
 
         // special case of stopped electrons
         if (seg.tpc_hitC->particle_id == 3 && seg.tpc_hitC->ds < 0.0050 && seg.tpc_hitC->de < 0) {
@@ -505,12 +517,12 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         gamma = std::sqrt(betaGamma * betaGamma + 1.);
         double Tmax;
 
-        if (mass < 2 * m_e) {
-          if (charge > 0) Tmax =       m_e * (gamma - 1);
+        if (seg.mass < 2 * m_e) {
+          if (seg.charge > 0) Tmax =       m_e * (gamma - 1);
           else            Tmax = 0.5 * m_e * (gamma - 1);
         }
         else {
-          double r = m_e / mass;
+          double r = m_e / seg.mass;
           Tmax = 2 * m_e * betaGamma * betaGamma / (1 + 2 * gamma * r + r * r);
         }
 
@@ -522,11 +534,11 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         CalcSignalInClusters(seg.Pad.sector, seg.Pad.row, gain_local,
           seg, binned_charge,
-          track, charge, betaGamma, Tmax, eKin, nP, dESum, dSSum);
+          track, seg.charge, betaGamma, Tmax, eKin, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
         if (Debug() > 12) {
-          LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
+          LOG_INFO << "sIndex = " << "N/A" << " volId = " << "N/A"
                    << " dESum = " << dESum << " /\tdSSum " << dSSum << '\n';
         }
 #endif
@@ -539,21 +551,19 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         nHitsInTheSector++;
       } // end do loop over segments for a given particle
 
-      for (int iSegHits = 0; iSegHits < nSegHits; iSegHits++) {
-        HitPoint_t& seg = TrackSegmentHits[iSegHits];
-
+      for (HitPoint_t& seg : segments_in_sector) {
         if (seg.tpc_hitC->volume_id > 10000) continue;
 
         int row = seg.tpc_hitC->volume_id % 100;
         seg.tpc_hitC->digi.adc += rowsdE[row - 1];
       }
-    }  // hits in the sector
 
     if (nHitsInTheSector) {
       DigitizeSector(sector, digi_data, binned_charge);
 
       if (Debug()) LOG_INFO << "Simulator: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
     }
+    sector++;
   } // sector
 
   St_tpcGainCorrectionC::instance()->Struct(1)->min = vminI;
@@ -571,7 +581,8 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
 void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
   std::vector<tpcrs::GeantHit>& geant_hits,
-  std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex)
+  std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex,
+  int charge, double mass)
 {
   int n_hits = sorted_index.size();
 
@@ -612,6 +623,8 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
 
     HitPoint_t curr_segment;
     curr_segment.s = geant_hit.len;
+    curr_segment.charge = charge;
+    curr_segment.mass = mass;
 
     if (geant_hit.len == 0 && num_segments > 1) {
       curr_segment.s = prev_segment.s + curr_segment.tpc_hitC->ds;

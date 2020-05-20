@@ -29,6 +29,8 @@ class Simulator
 
   struct HitPoint_t {
     int TrackId;
+    int charge;
+    double mass;
     /// Track length to current point
     double s;
     double sMin, sMax;
@@ -98,7 +100,8 @@ class Simulator
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
     std::vector<tpcrs::GeantHit>& geant_hits,
-    std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex);
+    std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex,
+    int charge, double mass);
 
   void TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits);
 
