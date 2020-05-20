@@ -109,11 +109,11 @@ class Simulator
     const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
     TrackHelix track, int charge, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum);
 
-  void LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
-    int sector, int row,
+  void LoopOverElectronsInCluster(int sector, int row,
+    std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     double xRange, Coords xyzC, double gain_local);
 
-  void GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, int row,
+  void GenerateSignal(int sector, int row, const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
                       TF1F* shaper, std::vector<SignalSum_t>& binned_charge,
                       double gain_local, double gain_gas);
 
