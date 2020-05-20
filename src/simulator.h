@@ -13,6 +13,7 @@
 #include "dedx_correction.h"
 #include "struct_containers.h"
 #include "tpc_db.h"
+#include "track_helix.h"
 
 
 class Simulator
@@ -101,6 +102,10 @@ class Simulator
 
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
+
+  void CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+  int sector, int row, double gain_local,
+  double& total_signal, TrackHelix track, tpcrs::GeantHit* tpc_hitC, int charge, double betaGamma, double& s_low, double& s_upper, double& newPosition, double& Tmax, double& bg, double& gamma, double& eKin, int& nP, double& dESum, double& dSSum);
 
   double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,
