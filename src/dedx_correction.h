@@ -1,8 +1,6 @@
 #ifndef TPCRS_DEDX_CORRECTION_H_
 #define TPCRS_DEDX_CORRECTION_H_
 
-#include "TF1.h"
-
 #include "config_structs.h"
 #include "struct_containers.h"
 

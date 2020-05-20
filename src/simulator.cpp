@@ -439,6 +439,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         }
       }
 
+      // This essentially jumps to the next track/particle
       sortedIndex = sIndex - 1; // Irakli 05/06/19, reduce extra step in for loop
 
       double s = smin;
@@ -472,6 +473,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         Coords rowPlane{0, transform.yFromRow(TrackSegmentHits[iSegHits].Pad.sector, TrackSegmentHits[iSegHits].Pad.row), 0};
         double sR = track.pathLength(rowPlane, {0, 1, 0});
 
+        // The segment parameters (hit position) are updated!
         if (sR < 1e10) {
           PrPP(Maker, sR);
           PrPP(Make, TrackSegmentHits[iSegHits].coorLS);
@@ -1174,6 +1176,7 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
+  static const double cLog10 = std::log(10.);
   float dEr = 0;
   double s_low   = -std::abs(TrackSegmentHit.tpc_hitC->ds) / 2;
   double s_upper =  std::abs(TrackSegmentHit.tpc_hitC->ds) / 2;
@@ -1185,7 +1188,6 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
   do {// Clusters
     float dS = 0;
     float dE = 0;
-    static double cLog10 = std::log(10.); // XXX move up
 
     if (eKin >= 0.0) {
       if (eKin == 0.0) break;
@@ -1249,14 +1251,14 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
 
     Coords xyzC = track.at(newPosition);
 
-    LoopOverElectronsInCluster(rs, TrackSegmentHit, binned_charge, sector, row, xRange, xyzC, gain_local);
+    LoopOverElectronsInCluster(sector, row, rs, TrackSegmentHit, binned_charge, xRange, xyzC, gain_local);
   }
   while (true);   // Clusters
 }
 
 
-void Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
-  int sector, int row,
+void Simulator::LoopOverElectronsInCluster(int sector, int row,
+  std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
   double xRange, Coords xyzC, double gain_local)
 {
   double OmegaTau = Cfg<TpcResponseSimulator>().OmegaTau *
@@ -1366,13 +1368,13 @@ void Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint
       continue;
     }
 
-    GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, row,
+    GenerateSignal(sector, row, TrackSegmentHits, rowMin, rowMax,
                    &mShaperResponses[io][sector - 1], binned_charge, gain_local, gain_gas);
   }  // electrons in Cluster
 }
 
 
-void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, int row,
+void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local, double gain_gas)
 {
   static CoordTransform transform;
@@ -1401,10 +1403,11 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT);
 
     InOut io = IsInner(row, sector) ? kInner : kOuter;
-    double dely = transform.yFromRow(sector, row) - yOnWire;
-    double localYDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(&dely);
 
-    if (localYDirectionCoupling < min_signal_) continue;
+    double delta_y = transform.yFromRow(sector, row) - yOnWire;
+    double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(&delta_y);
+
+    if (YDirectionCoupling < min_signal_) continue;
 
     float padX = Pad.pad;
     int CentralPad = tpcrs::irint(padX);
@@ -1417,8 +1420,8 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
     int padMax   = std::min(CentralPad + DeltaPad, PadsAtRow);
     int Npads    = std::min(padMax - padMin + 1, static_cast<int>(kPadMax));
     double xPadMin = padMin - padX;
+
     static double XDirectionCouplings[kPadMax];
-    static double TimeCouplings[kTimeBacketMax];
     mPadResponseFunction[io][sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
     for (int pad = padMin; pad <= padMax; pad++) {
@@ -1433,23 +1436,21 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
         dt -= St_tpcPadGainT0BC::instance()->T0(sector, row, pad);
       }
 
-      double localXDirectionCoupling = gain * XDirectionCouplings[pad - padMin];
+      double XYcoupling = gain * XDirectionCouplings[pad - padMin] * YDirectionCoupling;
 
-      if (localXDirectionCoupling < min_signal_) continue;
+      if (XYcoupling < min_signal_) continue;
 
-      double XYcoupling = localYDirectionCoupling * localXDirectionCoupling;
+      int tbin_first = std::max(0, binT + tpcrs::irint(dt + shaper->GetXmin() - 0.5));
+      int tbin_last  = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper->GetXmax() + 0.5));
+      int num_tbins  = std::min(tbin_last - tbin_first + 1, static_cast<int>(kTimeBacketMax));
 
-      if (XYcoupling < min_signal_)  continue;
+      static double TimeCouplings[kTimeBacketMax];
+      shaper->GetSaveL(num_tbins, tbin_first - binT - dt, TimeCouplings);
 
-      int bin_low  = std::max(0, binT + tpcrs::irint(dt + shaper->GetXmin() - 0.5));
-      int bin_high = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper->GetXmax() + 0.5));
-      int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1) + bin_low;
-      int Ntbks = std::min(bin_high - bin_low + 1, static_cast<int>(kTimeBacketMax));
-      double tt = -dt + (bin_low - binT);
-      shaper->GetSaveL(Ntbks, tt, TimeCouplings);
+      int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1) + tbin_first;
 
-      for (int itbin = bin_low; itbin <= bin_high; itbin++, index++) {
-        double signal = XYcoupling * TimeCouplings[itbin - bin_low];
+      for (int itbin = tbin_first; itbin <= tbin_last; itbin++, index++) {
+        double signal = XYcoupling * TimeCouplings[itbin - tbin_first];
 
         if (signal < min_signal_)  continue;
 
@@ -1457,6 +1458,7 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
 
         rowsdE[row - 1]  += signal;
 
+        // Record truth ID of the MC particle produced this signal
         if ( TrackSegmentHits.TrackId ) {
           if ( !binned_charge[index].TrackId )
             binned_charge[index].TrackId = TrackSegmentHits.TrackId;
@@ -1488,21 +1490,21 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
 double Simulator::dEdxCorrection(const HitPoint_t &path_segment)
 {
   dEdxY2_t CdEdx;
-  memset (&CdEdx, 0, sizeof(dEdxY2_t));
-  CdEdx.DeltaZ = 5.2;
-  CdEdx.QRatio = -2;
+  memset(&CdEdx, 0, sizeof(dEdxY2_t));
+  CdEdx.DeltaZ  = 5.2;
+  CdEdx.QRatio  = -2;
   CdEdx.QRatioA = -2.;
-  CdEdx.QSumA = 0;
-  CdEdx.sector = path_segment.Pad.sector;
-  CdEdx.row    = path_segment.Pad.row;
-  CdEdx.pad    = tpcrs::irint(path_segment.Pad.pad);
-  CdEdx.edge   = CdEdx.pad;
+  CdEdx.QSumA   = 0;
+  CdEdx.sector  = path_segment.Pad.sector;
+  CdEdx.row     = path_segment.Pad.row;
+  CdEdx.pad     = tpcrs::irint(path_segment.Pad.pad);
+  CdEdx.edge    = CdEdx.pad;
 
   if (CdEdx.edge > 0.5 * St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
     CdEdx.edge += 1 - St_tpcPadConfigC::instance()->numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
 
-  CdEdx.F.dE     = 1;
-  CdEdx.F.dx     = std::abs(path_segment.tpc_hitC->ds);
+  CdEdx.F.dE   = 1;
+  CdEdx.F.dx   = std::abs(path_segment.tpc_hitC->ds);
   CdEdx.xyz[0] = path_segment.coorLS.position.x;
   CdEdx.xyz[1] = path_segment.coorLS.position.y;
   CdEdx.xyz[2] = path_segment.coorLS.position.z;

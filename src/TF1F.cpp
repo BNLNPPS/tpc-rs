@@ -4,7 +4,11 @@
 
 void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)
 {
-  fXmin = xmin; fXmax = xmax; fStep = 20, fdX = 1. / fStep; fNpx = tpcrs::irint((fXmax - fXmin) / fdX);
+  fXmin = xmin;
+  fXmax = xmax;
+  fStep = 20;
+  fdX = 1. / fStep;
+  fNpx = tpcrs::irint((fXmax - fXmin) / fdX);
   TF1::Save(xmin, xmax, ymin, ymax, zmin, zmax);
 }
 

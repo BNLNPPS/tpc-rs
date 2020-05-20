@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "TString.h"
+
 #include "bichsel.h"
 #include "dedx_correction.h"
 #include "logger.h"
