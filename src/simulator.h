@@ -64,6 +64,7 @@ class Simulator
   const double electron_range_power_;  //!
   const double max_electron_energy_;                 //! cut for delta electrons
   const int num_sectors_;            //!
+  const int max_rows_;               //!
   const int max_pads_;               //!
   const int max_timebins_;
 
