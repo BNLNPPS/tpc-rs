@@ -488,7 +488,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         static const double m_e = .51099907e-3;
         static const double eV = 1e-9; // electronvolt in GeV
-        double total_signal = 0;
         double gamma = std::pow(10., tpc_hitC->lgam) + 1;
         double betaGamma = std::sqrt(gamma * gamma - 1.);
         double bg = 0;
@@ -537,12 +536,12 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         CalcSignalInClusters(TrackSegmentHits[iSegHits], binned_charge,
           sector, row, gain_local,
-          total_signal, track, tpc_hitC, charge, betaGamma, s_low, s_upper, newPosition, Tmax, bg, gamma, eKin, nP, dESum, dSSum);
+          track, tpc_hitC, charge, betaGamma, s_low, s_upper, newPosition, Tmax, bg, gamma, eKin, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
         if (Debug() > 12) {
           LOG_INFO << "sIndex = " << sIndex << " volId = " << volId
-                   << " dESum = " << dESum << " /\tdSSum " << dSSum << " /\t total_signal " << total_signal << '\n';
+                   << " dESum = " << dESum << " /\tdSSum " << dSSum << '\n';
         }
 #endif
         tpc_hitC->digi.de = dESum * eV;
@@ -1188,7 +1187,7 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 
 void Simulator::CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
   int sector, int row, double gain_local,
-  double& total_signal, TrackHelix track, tpcrs::GeantHit* tpc_hitC, int charge, double betaGamma, double& s_low, double& s_upper, double& newPosition, double& Tmax, double& bg, double& gamma, double& eKin, int& nP, double& dESum, double& dSSum)
+  TrackHelix track, tpcrs::GeantHit* tpc_hitC, int charge, double betaGamma, double& s_low, double& s_upper, double& newPosition, double& Tmax, double& bg, double& gamma, double& eKin, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
@@ -1264,16 +1263,13 @@ void Simulator::CalcSignalInClusters(const HitPoint_t& TrackSegmentHit, std::vec
 
     Coords xyzC = track.at(newPosition);
 
-    double total_signal_in_cluster =
-      LoopOverElectronsInCluster(rs, TrackSegmentHit, binned_charge, sector, row, xRange, xyzC, gain_local);
-
-    total_signal += total_signal_in_cluster;
+    LoopOverElectronsInCluster(rs, TrackSegmentHit, binned_charge, sector, row, xRange, xyzC, gain_local);
   }
   while (true);   // Clusters
 }
 
 
-double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+void Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
   int sector, int row,
   double xRange, Coords xyzC, double gain_local)
 {
@@ -1292,7 +1288,6 @@ double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoi
   double phiXY = 2 * M_PI * gRandom->Rndm();
   double rX = std::cos(phiXY);
   double rY = std::sin(phiXY);
-  double total_signal_in_cluster = 0;
   int WireIndex = 0;
 
   InOut io = IsInner(row, sector) ? kInner : kOuter;
@@ -1387,15 +1382,13 @@ double Simulator::LoopOverElectronsInCluster(std::vector<float> rs, const HitPoi
     }
 
     GenerateSignal(TrackSegmentHits, sector, rowMin, rowMax, row,
-                   &mShaperResponses[io][sector - 1], binned_charge, total_signal_in_cluster, gain_local, gain_gas);
+                   &mShaperResponses[io][sector - 1], binned_charge, gain_local, gain_gas);
   }  // electrons in Cluster
-
-  return total_signal_in_cluster;
 }
 
 
 void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, int row,
-  TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double& total_signal_in_cluster, double gain_local, double gain_gas)
+  TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local, double gain_gas)
 {
   static CoordTransform transform;
 
@@ -1475,7 +1468,6 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, i
 
         if (signal < min_signal_)  continue;
 
-        total_signal_in_cluster += signal;
         binned_charge[index].Sum += signal;
 
         rowsdE[row - 1]  += signal;
