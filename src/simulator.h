@@ -104,8 +104,7 @@ class Simulator
 
   double LoopOverElectronsInCluster(std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     int sector, int row,
-    double xRange, Coords xyzC, double gain_local,
-    double SigmaT, double SigmaL, double OmegaTau);
+    double xRange, Coords xyzC, double gain_local);
 
   void GenerateSignal(const HitPoint_t &TrackSegmentHits, int sector, int rowMin, int rowMax, int row,
                       TF1F* shaper, std::vector<SignalSum_t>& binned_charge,
