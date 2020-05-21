@@ -458,8 +458,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
     int nHitsInTheSector = 0;
     std::vector<SignalSum_t> binned_charge(max_rows_ * max_pads_ * max_timebins_);
 
-      memset (rowsdE, 0, sizeof(rowsdE));
-
       for (HitPoint_t& seg : segments_in_sector) {
         seg.tpc_hitC->digi.adc = 0;
         int row = seg.coorLS.row;
@@ -551,13 +549,6 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
         nHitsInTheSector++;
       } // end do loop over segments for a given particle
-
-      for (HitPoint_t& seg : segments_in_sector) {
-        if (seg.tpc_hitC->volume_id > 10000) continue;
-
-        int row = seg.tpc_hitC->volume_id % 100;
-        seg.tpc_hitC->digi.adc += rowsdE[row - 1];
-      }
 
     if (nHitsInTheSector) {
       DigitizeSector(sector, digi_data, binned_charge);
@@ -1470,8 +1461,6 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
         if (signal < min_signal_)  continue;
 
         binned_charge[index].Sum += signal;
-
-        rowsdE[row - 1]  += signal;
 
         // Record truth ID of the MC particle produced this signal
         if ( TrackSegmentHits.TrackId ) {
