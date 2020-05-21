@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
   tpcrs::Configurator::Instance().Configure(testName);
 
-  Simulator tpcrs(eCutOff);
+  Simulator tpcrs(tpcrs::Configurator::Instance(), eCutOff);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile( tpcrs::Configurator::Instance().Locate(testName + ".root").c_str() );
