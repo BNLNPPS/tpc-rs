@@ -771,7 +771,7 @@ void  Simulator::Print(Option_t* /* option */) const
 }
 
 
-void Simulator::DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& binned_charge)
+void Simulator::DigitizeSector(int sector, tpcrs::DigiData& digi_data, const std::vector<SignalSum_t>& binned_charge)
 {
   for (int row = 1;  row <= St_tpcPadConfigC::instance()->numberOfRows(sector); row++) {
     int nPadsPerRow = St_tpcPadConfigC::instance()->padsPerRow(sector, row);
