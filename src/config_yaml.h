@@ -900,64 +900,6 @@ struct convert<tpcSectorT0offset> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadResponse> {
-  static Node encode(const tpcPadResponse& st) {
-    Node node;
-    
-    node["innerGasGainFluctuation"] = st.innerGasGainFluctuation;
-    node["outerGasGainFluctuation"] = st.outerGasGainFluctuation;
-    node["innerPadResponseSigma"] = st.innerPadResponseSigma;
-    node["outerPadResponseSigma"] = st.outerPadResponseSigma;
-    node["innerWirePadCoupling"] = st.innerWirePadCoupling;
-    node["outerWirePadCoupling"] = st.outerWirePadCoupling;
-    node["innerRowNormalization"] = st.innerRowNormalization;
-    node["outerRowNormalization"] = st.outerRowNormalization;
-    node["BoundaryOfStepFunctions"] = reinterpret_cast<const array<float, 6>&>( st.BoundaryOfStepFunctions );
-    node["BoundaryOfStepFunctions"].SetStyle(YAML::EmitterStyle::Flow);
-    node["innerChargeFractionConstants"] = reinterpret_cast<const array<float, 6>&>( st.innerChargeFractionConstants );
-    node["innerChargeFractionConstants"].SetStyle(YAML::EmitterStyle::Flow);
-    node["outerChargeFractionConstants"] = reinterpret_cast<const array<float, 6>&>( st.outerChargeFractionConstants );
-    node["outerChargeFractionConstants"].SetStyle(YAML::EmitterStyle::Flow);
-    node["errorFunctionRange"] = st.errorFunctionRange;
-    node["errorFunctionEntry"] = st.errorFunctionEntry;
-    node["longitudinalDiffusionConstant"] = st.longitudinalDiffusionConstant;
-    node["transverseDiffusionConstant"] = st.transverseDiffusionConstant;
-    node["InnerOuterFactor"] = st.InnerOuterFactor;
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcPadResponse& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.innerGasGainFluctuation = node["innerGasGainFluctuation"].as<float>();
-    st.outerGasGainFluctuation = node["outerGasGainFluctuation"].as<float>();
-    st.innerPadResponseSigma = node["innerPadResponseSigma"].as<float>();
-    st.outerPadResponseSigma = node["outerPadResponseSigma"].as<float>();
-    st.innerWirePadCoupling = node["innerWirePadCoupling"].as<float>();
-    st.outerWirePadCoupling = node["outerWirePadCoupling"].as<float>();
-    st.innerRowNormalization = node["innerRowNormalization"].as<float>();
-    st.outerRowNormalization = node["outerRowNormalization"].as<float>();
-    auto BoundaryOfStepFunctions = node["BoundaryOfStepFunctions"].as<array<float, 6>>();
-    copy(begin(BoundaryOfStepFunctions), end(BoundaryOfStepFunctions), reinterpret_cast<float*>(st.BoundaryOfStepFunctions));
-    auto innerChargeFractionConstants = node["innerChargeFractionConstants"].as<array<float, 6>>();
-    copy(begin(innerChargeFractionConstants), end(innerChargeFractionConstants), reinterpret_cast<float*>(st.innerChargeFractionConstants));
-    auto outerChargeFractionConstants = node["outerChargeFractionConstants"].as<array<float, 6>>();
-    copy(begin(outerChargeFractionConstants), end(outerChargeFractionConstants), reinterpret_cast<float*>(st.outerChargeFractionConstants));
-    st.errorFunctionRange = node["errorFunctionRange"].as<float>();
-    st.errorFunctionEntry = node["errorFunctionEntry"].as<int>();
-    st.longitudinalDiffusionConstant = node["longitudinalDiffusionConstant"].as<float>();
-    st.transverseDiffusionConstant = node["transverseDiffusionConstant"].as<float>();
-    st.InnerOuterFactor = node["InnerOuterFactor"].as<float>();
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
 struct convert<tpcHighVoltages> {
   static Node encode(const tpcHighVoltages& st) {
     Node node;
