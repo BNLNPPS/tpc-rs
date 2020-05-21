@@ -95,7 +95,7 @@ class Simulator
   int Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
-  void DigitizeSector(int sector, tpcrs::DigiData& digi_data, std::vector<SignalSum_t>& binned_charge);
+  void DigitizeSector(int sector, tpcrs::DigiData& digi_data, const std::vector<SignalSum_t>& binned_charge);
   int AsicThresholds(short* ADCs);
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
