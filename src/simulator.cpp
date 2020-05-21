@@ -145,11 +145,11 @@ Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
     for (int row = 1; row <= cfg_.C<St_tpcPadConfigC>().numberOfRows(sector); row++) {
       if (cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) {
         nAliveInner++;
-        innerSectorAnodeVoltage[sector - 1] += St_tpcAnodeHVavgC::instance()->voltagePadrow(sector, row);
+        innerSectorAnodeVoltage[sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
       }
       else {
         nAliveOuter++;
-        outerSectorAnodeVoltage[sector - 1] += St_tpcAnodeHVavgC::instance()->voltagePadrow(sector, row);
+        outerSectorAnodeVoltage[sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
       }
     }
 
@@ -341,19 +341,19 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-  double vminI = St_tpcGainCorrectionC::instance()->Struct(1)->min;
-  double vminO = St_tpcGainCorrectionC::instance()->Struct(0)->min;
+  double vminI = cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min;
+  double vminO = cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min;
 
   // TODO: Confirm proper handling of empty input containers
 
-  St_tpcGainCorrectionC::instance()->Struct(0)->min = -500;
-  St_tpcGainCorrectionC::instance()->Struct(1)->min = -500;
+  cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = -500;
+  cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = -500;
 
   if (Debug()) {
     LOG_INFO << "Reset min for gain Correction to I/O\t"
-             << St_tpcGainCorrectionC::instance()->Struct(1)->min
+             << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
              << "\t"
-             << St_tpcGainCorrectionC::instance()->Struct(0)->min
+             << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
              << " (V)\n";
   }
 
@@ -558,14 +558,14 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
     sector++;
   } // sector
 
-  St_tpcGainCorrectionC::instance()->Struct(1)->min = vminI;
-  St_tpcGainCorrectionC::instance()->Struct(0)->min = vminO;
+  cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = vminI;
+  cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = vminO;
 
   if (Debug()) {
     LOG_INFO << "Reset min for gain Correction to I/O\t"
-             << St_tpcGainCorrectionC::instance()->Struct(1)->min
+             << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
              << "\t"
-             << St_tpcGainCorrectionC::instance()->Struct(0)->min
+             << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
              << " (V)\n";
   }
 }
@@ -780,7 +780,7 @@ void Simulator::DigitizeSector(int sector, tpcrs::DigiData& digi_data, const std
 #endif
 
     for (int pad = 1; pad <= nPadsPerRow; pad++) {
-      double gain = St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
+      double gain = cfg_.C<St_tpcPadGainT0BC>().Gain(sector, row, pad);
 
       if (gain <= 0.0) continue;
 
@@ -1390,8 +1390,8 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
 
   for (int row = rowMin; row <= rowMax; row++) {
     if (cfg_.C<St_tpcPadConfigC>().numberOfRows(sector) == 45) { // ! iTpx
-      if ( !St_tpcRDOMasksC::instance()->isRowOn(sector, row) ) continue;
-      if ( !St_tpcAnodeHVavgC::instance()->livePadrow(sector, row) )  continue;
+      if ( !cfg_.C<St_tpcRDOMasksC>().isRowOn(sector, row) ) continue;
+      if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
     }
 
     StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
@@ -1435,11 +1435,11 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
       double dt = dT;
 
       if (! TESTBIT(options_, kGAINOAtALL)) {
-        gain *= St_tpcPadGainT0BC::instance()->Gain(sector, row, pad);
+        gain *= cfg_.C<St_tpcPadGainT0BC>().Gain(sector, row, pad);
 
         if (gain <= 0.0) continue;
 
-        dt -= St_tpcPadGainT0BC::instance()->T0(sector, row, pad);
+        dt -= cfg_.C<St_tpcPadGainT0BC>().T0(sector, row, pad);
       }
 
       double XYcoupling = gain * XDirectionCouplings[pad - padMin] * YDirectionCoupling;
