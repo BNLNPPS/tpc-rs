@@ -17,7 +17,7 @@
 
 
 StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :
-  m_Mask(option), m_tpcGas(0),
+  m_Mask(option),
   m_Debug(debug)
 {
   if (!m_Mask) m_Mask = -1;
@@ -37,14 +37,6 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :
 
 void StTpcdEdxCorrection::ReSetCorrections()
 {
-  St_tpcGasC* tpc_gas = (St_tpcGasC*) St_tpcGasC::instance();  //
-
-  if (!tpc_gas || ! tpc_gas->GetNRows()) {
-    LOG_ERROR << "=== tpc_gas is missing ===\n";
-    assert(tpc_gas);
-  }
-
-  SettpcGas(tpc_gas);
   memset (m_Corrections, 0, sizeof(m_Corrections));
   m_Corrections[kUncorrected           ] = dEdxCorrection_t("UnCorrected",            ""								, 0);
   m_Corrections[kAdcCorrection         ] = dEdxCorrection_t("TpcAdcCorrectionB",      "ADC/Clustering nonlinearity correction"				, St_TpcAdcCorrectionBC::instance());
@@ -238,9 +230,9 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
   //  double gainAVcorr = gasGain/gainNominal;
   mAdc2GeV = tsspar.ave_ion_pot * tsspar.scale / gainNominal;
   double Adc2GeVReal = tsspar.ave_ion_pot * tsspar.scale / gasGain;
-  tpcGas* gas = m_tpcGas->Struct();
-  double ZdriftDistanceO2 = ZdriftDistance * gas->ppmOxygenIn;
-  double ZdriftDistanceO2W = ZdriftDistanceO2 * gas->ppmWaterOut;
+  const tpcGas& tpc_gas = tpcrs::Cfg<tpcGas>();
+  double ZdriftDistanceO2 = ZdriftDistance * tpc_gas.ppmOxygenIn;
+  double ZdriftDistanceO2W = ZdriftDistanceO2 * tpc_gas.ppmWaterOut;
   CdEdx.ZdriftDistanceO2 = ZdriftDistanceO2;
   CdEdx.ZdriftDistanceO2W = ZdriftDistanceO2W;
   double gc, ADC, xL2, dXCorr;
@@ -253,13 +245,13 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
   VarXs[kTpcrCharge]           = CdEdx.rCharge;
   VarXs[kTpcRowQ]              = CdEdx.Qcm;
   VarXs[kTpcPadTBins]          = CdEdx.Npads * CdEdx.Ntbins;
-  VarXs[ktpcPressure]          = std::log(gas->barometricPressure);
+  VarXs[ktpcPressure]          = std::log(tpc_gas.barometricPressure);
   VarXs[kDrift]                = ZdriftDistanceO2;      // Blair correction
   VarXs[kMultiplicity]         = CdEdx.QRatio;
   VarXs[kzCorrection]          = ZdriftDistance;
-  VarXs[ktpcMethaneIn]         = gas->percentMethaneIn * 1000. / gas->barometricPressure;
-  VarXs[ktpcGasTemperature]    = gas->outputGasTemperature;
-  VarXs[ktpcWaterOut]          = gas->ppmWaterOut;
+  VarXs[ktpcMethaneIn]         = tpc_gas.percentMethaneIn * 1000. / tpc_gas.barometricPressure;
+  VarXs[ktpcGasTemperature]    = tpc_gas.outputGasTemperature;
+  VarXs[ktpcWaterOut]          = tpc_gas.ppmWaterOut;
   VarXs[kEdge]                 = CdEdx.PhiR;
 
   if (VarXs[kEdge] < -1) VarXs[kEdge] = -1;

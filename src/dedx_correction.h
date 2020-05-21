@@ -105,17 +105,14 @@ class StTpcdEdxCorrection
   StTpcdEdxCorrection(int Option = 0, int debug = 0);
   ~StTpcdEdxCorrection();
   int dEdxCorrection(dEdxY2_t &dEdx, bool doIT = true);
-  void SettpcGas               (St_tpcGasC*          m = 0) {m_tpcGas = m;}
 
   void ReSetCorrections();
-  St_tpcGasC*         TpcGas()              {return m_tpcGas;}
   //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
 
   float           Adc2GeV()              {return mAdc2GeV;}
   void Print(Option_t* opt = "") const;
  private:
   int                m_Mask;                  //!
-  St_tpcGasC*          m_tpcGas;                //!
   dEdxY2_t*            mdEdx;
   float              mAdc2GeV;                //! Outer/Inner conversion factors from ADC -> GeV
   dEdxCorrection_t     m_Corrections[kTpcAllCorrections];//!
