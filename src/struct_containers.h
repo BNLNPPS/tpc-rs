@@ -107,8 +107,6 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
   double      getScaleFactor(unsigned int time = 0) {return currentToScaleFactor(getMagnetCurrent(time));}
   double      getMagnetCurrent(unsigned int time = 0)
   {
-    if (! instance()) return 0;
-
     if (GetNRows() == 1 || time == 0) return current();
 
     double tempCurrent = -9999;
@@ -123,8 +121,6 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
   StMagnetPolarity           getMagneticField(unsigned int time = 0)
   {
     StMagnetPolarity value = eUnknownMField;
-
-    if (! instance()) return value;
 
     double scaleFactor = getScaleFactor(time);
 
@@ -146,8 +142,6 @@ struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC
   static double  currentToScaleFactor(double current)
   {
     double value = -9999;
-
-    if (! instance()) return value;
 
     if     (current < -4450 && current > -4550)	value = -1.0;
     else if (current < -2200 && current > -2300)	value = -0.5;
