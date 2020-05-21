@@ -10,6 +10,25 @@
 
 namespace tpcrs {
 
+template<typename Struct> std::string ConfigNodeName() { return "undefined"; };
+
+template<> std::string ConfigNodeName<trigDetSums>();
+template<> std::string ConfigNodeName<asic_thresholds>();
+template<> std::string ConfigNodeName<tpcAltroParams>();
+template<> std::string ConfigNodeName<tpcDriftVelocity>();
+template<> std::string ConfigNodeName<tpcEffectiveGeom>();
+template<> std::string ConfigNodeName<tpcElectronics>();
+template<> std::string ConfigNodeName<tpcGas>();
+template<> std::string ConfigNodeName<tpcPadrowT0>();
+template<> std::string ConfigNodeName<TpcResponseSimulator>();
+template<> std::string ConfigNodeName<tpcDimensions>();
+template<> std::string ConfigNodeName<tpcPadPlanes>();
+template<> std::string ConfigNodeName<tpcWirePlanes>();
+template<> std::string ConfigNodeName<MagFactor>();
+template<> std::string ConfigNodeName<starClockOnl>();
+template<> std::string ConfigNodeName<tss_tsspar>();
+template<> std::string ConfigNodeName<iTPCSurvey>();
+
 /**
  * A singleton class 
  */
@@ -31,6 +50,29 @@ class Configurator
 
   static YAML::Node YAML(std::string taxon) { return Instance().yaml[taxon]; }
 
+  template<typename Chair>
+  Chair& C() const { return *Chair::instance(); }
+
+  template<typename Struct>
+  const Struct& S(int i = 0) const
+  {
+    static std::vector<Struct> rows;
+    static std::string name{ConfigNodeName<Struct>()};
+  
+    if (rows.size()) {
+      return rows[i];
+    }
+    else {
+      try {
+        rows.push_back( YAML(name).as<Struct>() );
+      } catch (std::exception& e) {
+        rows = YAML(name).as< std::vector<Struct> >();
+      }
+    }
+  
+    return rows[i];
+  }
+
  private:
 
   /**
@@ -49,21 +91,6 @@ class Configurator
 
   YAML::Node yaml;
 };
-
-template<typename Struct_t> std::string ConfigNodeName() { return "undefined"; };
-
-template<> std::string ConfigNodeName<asic_thresholds>();
-template<> std::string ConfigNodeName<starClockOnl>();
-template<> std::string ConfigNodeName<TpcResponseSimulator>();
-template<> std::string ConfigNodeName<tpcAltroParams>();
-template<> std::string ConfigNodeName<tpcEffectiveGeom>();
-template<> std::string ConfigNodeName<tpcDimensions>();
-template<> std::string ConfigNodeName<tpcPadPlanes>();
-template<> std::string ConfigNodeName<tpcElectronics>();
-template<> std::string ConfigNodeName<tpcPadrowT0>();
-template<> std::string ConfigNodeName<tpcWirePlanes>();
-template<> std::string ConfigNodeName<tss_tsspar>();
-
 
 template<typename Struct_t>
 const Struct_t& Cfg(int i = 0)
