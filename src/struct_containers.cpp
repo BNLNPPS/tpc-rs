@@ -1135,6 +1135,8 @@ float GainCorrection(int sector, int row, const tpcrs::Configurator& cfg)
 
 float DriftVelocity(int sector, const Configurator& cfg)
 {
+  using tpcrs::TPC;
+
   TPC::Half half = (sector <= 12 ? TPC::Half::first : TPC::Half::second);
 
   const tpcDriftVelocity& dv = cfg.S<tpcDriftVelocity>();

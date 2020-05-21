@@ -7,9 +7,8 @@
 #include "TMath.h"
 #include "TF1.h"
 
-#include "tpcrs/configurator.h"
 #include "tpcrs/structs.h"
-#include "enums.h"
+#include "tpcrs/tpcrs.h"
 #include "config_structs.h"
 
 
@@ -957,10 +956,10 @@ struct StTpcSuperSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcSuperSect
 // Extra rotation for half of Tpc  to Tpc
 struct StTpcHalfPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey> {
   StTpcHalfPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey>(cfg) {}
-  const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(TPC::Half::first);}
-  const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(TPC::Half::second);}
-  const TGeoHMatrix  &GetEastMatrixR() {return  GetMatrixR(TPC::Half::first);}
-  const TGeoHMatrix  &GetWestMatrixR() {return  GetMatrixR(TPC::Half::second);}
+  const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(tpcrs::TPC::Half::first);}
+  const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(tpcrs::TPC::Half::second);}
+  const TGeoHMatrix  &GetEastMatrixR() {return  GetMatrixR(tpcrs::TPC::Half::first);}
+  const TGeoHMatrix  &GetWestMatrixR() {return  GetMatrixR(tpcrs::TPC::Half::second);}
   static void Normalize(TGeoHMatrix &R) {}
 };
 

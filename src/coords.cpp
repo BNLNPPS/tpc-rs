@@ -465,15 +465,15 @@ void CoordTransform::SetTpcRotations()
         }
         else {
           rotA = cfg_.C<StTpcPosition>().GetMatrix();
-          *mHalf[TPC::Half::first]  = cfg_.C<StTpcHalfPosition>().GetEastMatrix();
-          *mHalf[TPC::Half::second] = cfg_.C<StTpcHalfPosition>().GetWestMatrix();
+          *mHalf[tpcrs::TPC::Half::first]  = cfg_.C<StTpcHalfPosition>().GetEastMatrix();
+          *mHalf[tpcrs::TPC::Half::second] = cfg_.C<StTpcHalfPosition>().GetWestMatrix();
         }
       }
       else {
         Id = 10 * sector + k;
-        TPC::Half part = TPC::Half::first;
+        tpcrs::TPC::Half part = tpcrs::TPC::Half::first;
 
-        if (sector <= 12) part = TPC::Half::second;
+        if (sector <= 12) part = tpcrs::TPC::Half::second;
 
         switch (k) {
         case kSupS2Tpc: // SupS => Tpc

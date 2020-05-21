@@ -51,6 +51,12 @@ struct GeantHit
 };
 
 
+struct TPC
+{
+  enum Half { first, second };
+};
+
+
 class DigiData
 {
  public:
