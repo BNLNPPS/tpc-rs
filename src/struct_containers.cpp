@@ -332,7 +332,6 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
   }
   return r;
 }
-MakeChairInstance(tpcPadResponse,Calibrations/tpc/tpcPadResponse);
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 MakeChairInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0);
 MakeChairInstance(tpcSectorT0offset,Calibrations/tpc/tpcSectorT0offset);
