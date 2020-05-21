@@ -11,7 +11,9 @@
 
 #include "Rtypes.h"
 
+#ifndef __CINT__
 #include "tpcrs/tpcrs.h"
+#endif
 #include "tpcrs/structs.h"
 
 #define __MaxNumberOfTimeBins__ 512
@@ -82,6 +84,7 @@ struct GeantEvent
       vertices.push_back(*vertex);
   }
 
+#ifndef __CINT__
   void Fill(tpcrs::DigiData& digi_data)
   {
     digiHits.clear();
@@ -106,6 +109,7 @@ struct GeantEvent
       }
     }
   }
+#endif
 
   void Print(std::ostream &os)
   {
