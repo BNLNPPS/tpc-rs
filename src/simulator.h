@@ -156,7 +156,6 @@ class Simulator
   double innerSectorAnodeVoltage[24];//!
   double outerSectorAnodeVoltage[24];//!
   double xOnWire, yOnWire, zOnWire; //!
-  double rowsdE[kRowMax];           //!
 };
 
 
