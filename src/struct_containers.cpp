@@ -16,7 +16,6 @@ template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::
 
 static int _debug = 0;
 //__________________Calibrations/tpc______________________________________________________________
-MakeChairInstance(tpcGas,Calibrations/tpc/tpcGas);
 MakeChairInstance(TpcEffectivedX,Calibrations/tpc/TpcEffectivedX);
 MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
 MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
