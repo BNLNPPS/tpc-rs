@@ -61,6 +61,7 @@ using tpcrs::Cfg;
 
 Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   cfg_(cfg),
+  transform_(cfg),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
@@ -481,8 +482,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
         if (Debug() > 11) PrPP(Make, track);
 #endif
         // Propagate track to the pad row plane defined by the normal in this sector coordinate system
-        static CoordTransform transform;
-        Coords rowPlane{0, transform.yFromRow(seg.Pad.sector, seg.Pad.row), 0};
+        Coords rowPlane{0, transform_.yFromRow(seg.Pad.sector, seg.Pad.row), 0};
         double sR = track.pathLength(rowPlane, {0, 1, 0});
 
         // The segment parameters (hit position) are updated!
@@ -492,7 +492,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
           seg.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
           PrPP(Make, seg.coorLS);
           PrPP(Make, seg.Pad);
-          transform.local_sector_to_hardware(seg.coorLS, seg.Pad, false, false); // don't use T0, don't use Tau
+          transform_.local_sector_to_hardware(seg.coorLS, seg.Pad, false, false); // don't use T0, don't use Tau
           PrPP(Make, seg.Pad);
         }
 
@@ -1070,11 +1070,10 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
 
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
-  static CoordTransform transform;
   // GlobalCoord -> LocalSectorCoord
-  transform.global_to_local_sector(TrackSegmentHits.xyzG, coorS, sector, 0); PrPP(Make, coorS);
+  transform_.global_to_local_sector(TrackSegmentHits.xyzG, coorS, sector, 0); PrPP(Make, coorS);
   int row = coorS.row;
-  transform.global_to_local(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
+  transform_.global_to_local(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -1084,8 +1083,8 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
   Coords pxyzG{geant_hit.p[0], geant_hit.p[1], geant_hit.p[2]};
   StGlobalDirection     dirG{pxyzG.unit()};                                   PrPP(Make, dirG);
   StGlobalDirection     BG{BFieldG[0], BFieldG[1], BFieldG[2]};               PrPP(Make, BG);
-  transform.global_to_local_sector_dir( dirG, TrackSegmentHits.dirLS, sector, row);  PrPP(Make, TrackSegmentHits.dirLS);
-  transform.global_to_local_sector_dir(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
+  transform_.global_to_local_sector_dir( dirG, TrackSegmentHits.dirLS, sector, row);  PrPP(Make, TrackSegmentHits.dirLS);
+  transform_.global_to_local_sector_dir(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
 
   // Distortions
   if (TESTBIT(options_, kDistortion) && StMagUtilities::Instance()) {
@@ -1093,10 +1092,10 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
     float posMoved[3];
     StMagUtilities::Instance()->DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
-    transform.local_to_global(coorLT, TrackSegmentHits.xyzG);        PrPP(Make, coorLT);
+    transform_.local_to_global(coorLT, TrackSegmentHits.xyzG);        PrPP(Make, coorLT);
   }
 
-  transform.local_to_local_sector(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
+  transform_.local_to_local_sector(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
 
   double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
@@ -1107,7 +1106,7 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
   }
 
   TrackSegmentHits.coorLS.position.z = driftLength; PrPP(Make, TrackSegmentHits.coorLS);
-  transform.local_sector_to_hardware(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
+  transform_.local_sector_to_hardware(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, TrackSegmentHits.Pad);
 }
 
@@ -1364,11 +1363,10 @@ void Simulator::LoopOverElectronsInCluster(int sector, int row,
     double yLmin  = yOnWire - dY;
     double yLmax  = yOnWire + dY;
 
-    static CoordTransform transform;
-    int    rowMin = transform.rowFromLocalY(yLmin, sector);
-    int    rowMax = transform.rowFromLocalY(yLmax, sector);
-    double yRmin  = transform.yFromRow(sector, rowMin) - cfg_.C<St_tpcPadConfigC>().PadLengthAtRow(sector, rowMin) / 2;
-    double yRmax  = transform.yFromRow(sector, rowMax) + cfg_.C<St_tpcPadConfigC>().PadLengthAtRow(sector, rowMax) / 2;
+    int    rowMin = transform_.rowFromLocalY(yLmin, sector);
+    int    rowMax = transform_.rowFromLocalY(yLmax, sector);
+    double yRmin  = transform_.yFromRow(sector, rowMin) - cfg_.C<St_tpcPadConfigC>().PadLengthAtRow(sector, rowMin) / 2;
+    double yRmax  = transform_.yFromRow(sector, rowMax) + cfg_.C<St_tpcPadConfigC>().PadLengthAtRow(sector, rowMax) / 2;
 
     if (yRmin > yLmax || yRmax < yLmin) {
       continue;
@@ -1383,8 +1381,6 @@ void Simulator::LoopOverElectronsInCluster(int sector, int row,
 void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas)
 {
-  static CoordTransform transform;
-
   double sigmaJitterT = (IsInner(row, sector) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
@@ -1396,7 +1392,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
 
     StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
     static StTpcPadCoordinate Pad;
-    transform.local_sector_to_hardware(xyzW, Pad, false, false); // don't use T0, don't use Tau
+    transform_.local_sector_to_hardware(xyzW, Pad, false, false); // don't use T0, don't use Tau
     float bin = Pad.timeBucket;//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 
@@ -1410,7 +1406,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
 
     InOut io = IsInner(row, sector) ? kInner : kOuter;
 
-    double delta_y = transform.yFromRow(sector, row) - yOnWire;
+    double delta_y = transform_.yFromRow(sector, row) - yOnWire;
     double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(delta_y);
 
     if (YDirectionCoupling < min_signal_) continue;

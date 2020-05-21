@@ -61,6 +61,7 @@ class Simulator
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
 
   const tpcrs::Configurator& cfg_;
+  const CoordTransform transform_;
   const double min_signal_;           //!
   const double electron_range_;       //!
   const double electron_range_energy_; //!
