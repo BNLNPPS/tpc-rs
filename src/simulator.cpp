@@ -93,7 +93,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
+  dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
 {
   //  SETBIT(options_,kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel

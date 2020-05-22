@@ -15,7 +15,8 @@
 #include "struct_containers.h"
 
 
-StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :
+StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int option, int debug) :
+  cfg_(cfg),
   m_Mask(option),
   m_Debug(debug)
 {
@@ -38,36 +39,36 @@ void StTpcdEdxCorrection::ReSetCorrections()
 {
   memset (m_Corrections, 0, sizeof(m_Corrections));
   m_Corrections[kUncorrected           ] = dEdxCorrection_t("UnCorrected",            ""								, 0);
-  m_Corrections[kAdcCorrection         ] = dEdxCorrection_t("TpcAdcCorrectionB",      "ADC/Clustering nonlinearity correction"				, St_TpcAdcCorrectionBC::instance());
-  m_Corrections[kEdge                  ] = dEdxCorrection_t("TpcEdge",                "Gain on distance from Chamber edge"				, St_TpcEdgeC::instance());
-  m_Corrections[kAdcCorrectionMDF      ] = dEdxCorrection_t("TpcAdcCorrectionMDF",    "ADC/Clustering nonlinearity correction MDF"			, St_TpcAdcCorrectionMDF::instance());
-  m_Corrections[kTpcdCharge            ] = dEdxCorrection_t("TpcdCharge",             "ADC/Clustering undershoot correction"				, St_TpcdChargeC::instance());
-  m_Corrections[kTpcrCharge            ] = dEdxCorrection_t("TpcrCharge",             "ADC/Clustering rounding correction"				, St_TpcrChargeC::instance());
-  m_Corrections[kTpcCurrentCorrection  ] = dEdxCorrection_t("TpcCurrentCorrection",   "Correction due to sagg of Voltage due to anode current"		, St_TpcCurrentCorrectionC::instance());
-  m_Corrections[kTpcRowQ               ] = dEdxCorrection_t("TpcRowQ",                "Gas gain correction for row versus accumulated charge,"		, St_TpcRowQC::instance());
-  m_Corrections[kTpcSecRowB            ] = dEdxCorrection_t("TpcSecRowB",             "Gas gain correction for sector/row"				, St_TpcSecRowBC::instance());
-  m_Corrections[kTpcSecRowC            ] = dEdxCorrection_t("TpcSecRowC",             "Additional Gas gain correction for sector/row"			, St_TpcSecRowCC::instance());
-  m_Corrections[ktpcPressure           ] = dEdxCorrection_t("tpcPressureB",           "Gain on Gas Density due to Pressure"				, St_tpcPressureBC::instance());
-  m_Corrections[ktpcTime               ] = dEdxCorrection_t("tpcTime"       ,         "Unregognized time dependce"					, St_tpcTimeDependenceC::instance());
-  m_Corrections[kDrift                 ] = dEdxCorrection_t("TpcDriftDistOxygen",     "Correction for Electron Attachment due to O2"			, St_TpcDriftDistOxygenC::instance());
-  m_Corrections[kMultiplicity          ] = dEdxCorrection_t("TpcMultiplicity",        "Global track multiplicity dependence"				, St_TpcMultiplicityC::instance());
-  m_Corrections[kzCorrection           ] = dEdxCorrection_t("TpcZCorrectionB",        "Variation on drift distance"					, St_TpcZCorrectionBC::instance());
-  m_Corrections[ktpcMethaneIn          ] = dEdxCorrection_t("tpcMethaneIn",           "Gain on Methane content"						, St_tpcMethaneInC::instance());
-  m_Corrections[ktpcGasTemperature     ] = dEdxCorrection_t("tpcGasTemperature",      "Gain on Gas Dens. due to Temperature"				, St_tpcGasTemperatureC::instance());
-  m_Corrections[ktpcWaterOut           ] = dEdxCorrection_t("tpcWaterOut",            "Gain on Water content"						, St_tpcWaterOutC::instance());
-  m_Corrections[kSpaceCharge           ] = dEdxCorrection_t("TpcSpaceCharge",         "Gain on space charge near the wire"				, St_TpcSpaceChargeC::instance());
-  m_Corrections[kPhiDirection          ] = dEdxCorrection_t("TpcPhiDirection",        "Gain on interception angle"					, St_TpcPhiDirectionC::instance());
-  m_Corrections[kTanL                  ] = dEdxCorrection_t("TpcTanL",                "Gain on Tan(lambda)"						, St_TpcTanLC::instance());
-  m_Corrections[kdXCorrection          ] = dEdxCorrection_t("TpcdXCorrectionB",       "dX correction"							, St_TpcdXCorrectionBC::instance());
-  m_Corrections[kTpcEffectivedX        ] = dEdxCorrection_t("TpcEffectivedX",         "dEdx correction wrt Bichsel parameterization"			, St_TpcEffectivedXC::instance());
+  m_Corrections[kAdcCorrection         ] = dEdxCorrection_t("TpcAdcCorrectionB",      "ADC/Clustering nonlinearity correction"				, &cfg_.C<St_TpcAdcCorrectionBC>());
+  m_Corrections[kEdge                  ] = dEdxCorrection_t("TpcEdge",                "Gain on distance from Chamber edge"				, &cfg_.C<St_TpcEdgeC>());
+  m_Corrections[kAdcCorrectionMDF      ] = dEdxCorrection_t("TpcAdcCorrectionMDF",    "ADC/Clustering nonlinearity correction MDF"			, &cfg_.C<St_TpcAdcCorrectionMDF>());
+  m_Corrections[kTpcdCharge            ] = dEdxCorrection_t("TpcdCharge",             "ADC/Clustering undershoot correction"				, &cfg_.C<St_TpcdChargeC>());
+  m_Corrections[kTpcrCharge            ] = dEdxCorrection_t("TpcrCharge",             "ADC/Clustering rounding correction"				, &cfg_.C<St_TpcrChargeC>());
+  m_Corrections[kTpcCurrentCorrection  ] = dEdxCorrection_t("TpcCurrentCorrection",   "Correction due to sagg of Voltage due to anode current"		, &cfg_.C<St_TpcCurrentCorrectionC>());
+  m_Corrections[kTpcRowQ               ] = dEdxCorrection_t("TpcRowQ",                "Gas gain correction for row versus accumulated charge,"		, &cfg_.C<St_TpcRowQC>());
+  m_Corrections[kTpcSecRowB            ] = dEdxCorrection_t("TpcSecRowB",             "Gas gain correction for sector/row"				, &cfg_.C<St_TpcSecRowBC>());
+  m_Corrections[kTpcSecRowC            ] = dEdxCorrection_t("TpcSecRowC",             "Additional Gas gain correction for sector/row"			, &cfg_.C<St_TpcSecRowCC>());
+  m_Corrections[ktpcPressure           ] = dEdxCorrection_t("tpcPressureB",           "Gain on Gas Density due to Pressure"				, &cfg_.C<St_tpcPressureBC>());
+  m_Corrections[ktpcTime               ] = dEdxCorrection_t("tpcTime"       ,         "Unregognized time dependce"					, &cfg_.C<St_tpcTimeDependenceC>());
+  m_Corrections[kDrift                 ] = dEdxCorrection_t("TpcDriftDistOxygen",     "Correction for Electron Attachment due to O2"			, &cfg_.C<St_TpcDriftDistOxygenC>());
+  m_Corrections[kMultiplicity          ] = dEdxCorrection_t("TpcMultiplicity",        "Global track multiplicity dependence"				, &cfg_.C<St_TpcMultiplicityC>());
+  m_Corrections[kzCorrection           ] = dEdxCorrection_t("TpcZCorrectionB",        "Variation on drift distance"					, &cfg_.C<St_TpcZCorrectionBC>());
+  m_Corrections[ktpcMethaneIn          ] = dEdxCorrection_t("tpcMethaneIn",           "Gain on Methane content"						, &cfg_.C<St_tpcMethaneInC>());
+  m_Corrections[ktpcGasTemperature     ] = dEdxCorrection_t("tpcGasTemperature",      "Gain on Gas Dens. due to Temperature"				, &cfg_.C<St_tpcGasTemperatureC>());
+  m_Corrections[ktpcWaterOut           ] = dEdxCorrection_t("tpcWaterOut",            "Gain on Water content"						, &cfg_.C<St_tpcWaterOutC>());
+  m_Corrections[kSpaceCharge           ] = dEdxCorrection_t("TpcSpaceCharge",         "Gain on space charge near the wire"				, &cfg_.C<St_TpcSpaceChargeC>());
+  m_Corrections[kPhiDirection          ] = dEdxCorrection_t("TpcPhiDirection",        "Gain on interception angle"					, &cfg_.C<St_TpcPhiDirectionC>());
+  m_Corrections[kTanL                  ] = dEdxCorrection_t("TpcTanL",                "Gain on Tan(lambda)"						, &cfg_.C<St_TpcTanLC>());
+  m_Corrections[kdXCorrection          ] = dEdxCorrection_t("TpcdXCorrectionB",       "dX correction"							, &cfg_.C<St_TpcdXCorrectionBC>());
+  m_Corrections[kTpcEffectivedX        ] = dEdxCorrection_t("TpcEffectivedX",         "dEdx correction wrt Bichsel parameterization"			, &cfg_.C<St_TpcEffectivedXC>());
   m_Corrections[kTpcPadTBins           ] = dEdxCorrection_t("TpcPadTBins",            "Variation on cluster size"					, 0);
-  m_Corrections[kTpcZDC                ] = dEdxCorrection_t("TpcZDC"        ,         "Gain on Zdc CoincidenceRate"					, St_TpcZDCC::instance());
-  m_Corrections[kTpcPadMDF             ] = dEdxCorrection_t("TpcPadCorrectionMDF",    "Gain Variation along the anode wire"				, St_TpcPadCorrectionMDF::instance());
+  m_Corrections[kTpcZDC                ] = dEdxCorrection_t("TpcZDC"        ,         "Gain on Zdc CoincidenceRate"					, &cfg_.C<St_TpcZDCC>());
+  m_Corrections[kTpcPadMDF             ] = dEdxCorrection_t("TpcPadCorrectionMDF",    "Gain Variation along the anode wire"				, &cfg_.C<St_TpcPadCorrectionMDF>());
   m_Corrections[kTpcLast               ] = dEdxCorrection_t("Final"        ,          ""								, 0);
-  m_Corrections[kTpcLengthCorrection   ] = dEdxCorrection_t("TpcLengthCorrectionB",   "Variation vs Track length and relative error in Ionization"	, St_TpcLengthCorrectionBC::instance());
-  m_Corrections[kTpcLengthCorrectionMDF] = dEdxCorrection_t("TpcLengthCorrectionMDF", "Variation vs Track length and <log2(dX)> and rel. error in dE/dx", St_TpcLengthCorrectionMDF::instance());
+  m_Corrections[kTpcLengthCorrection   ] = dEdxCorrection_t("TpcLengthCorrectionB",   "Variation vs Track length and relative error in Ionization"	, &cfg_.C<St_TpcLengthCorrectionBC>());
+  m_Corrections[kTpcLengthCorrectionMDF] = dEdxCorrection_t("TpcLengthCorrectionMDF", "Variation vs Track length and <log2(dX)> and rel. error in dE/dx", &cfg_.C<St_TpcLengthCorrectionMDF>());
   m_Corrections[kTpcNoAnodeVGainC      ] = dEdxCorrection_t("TpcNoAnodeVGainC",       "Remove tpc Anode Voltage gain correction"			, 0);
-  m_Corrections[kTpcdEdxCor            ] = dEdxCorrection_t("TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"			, St_TpcdEdxCorC::instance());
+  m_Corrections[kTpcdEdxCor            ] = dEdxCorrection_t("TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"			, &cfg_.C<St_TpcdEdxCorC>());
   const St_tpcCorrectionC* chair = 0;
   const St_MDFCorrectionC* chairMDF = 0;
   const tpcCorrection* cor = 0;
@@ -193,29 +194,29 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
   if (dx <= 0 || (dEU <= 0 && adcCF <= 0)) return 3;
 
-  int channel = St_TpcAvgPowerSupplyC::instance()->ChannelFromRow(sector, row);
+  int channel = cfg_.C<St_TpcAvgPowerSupplyC>().ChannelFromRow(sector, row);
   CdEdx.channel = channel;
 
-  CdEdx.Voltage = St_tpcAnodeHVavgC::instance()->voltagePadrow(sector, row);
-  CdEdx.Crow    = St_TpcAvgCurrentC::instance()->AvCurrRow(sector, row);
-  double    Qcm      = St_TpcAvgCurrentC::instance()->AcChargeRowL(sector, row); // C/cm
+  CdEdx.Voltage = cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
+  CdEdx.Crow    = cfg_.C<St_TpcAvgCurrentC>().AvCurrRow(sector, row);
+  double    Qcm      = cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // C/cm
   CdEdx.Qcm     = 1e6 * Qcm; // uC/cm
 
   double ZdriftDistance = CdEdx.ZdriftDistance;
   ESector kTpcOutIn = kTpcOuter;
 
-  if (! St_tpcPadConfigC::instance()->iTpc(sector)) {
-    if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) kTpcOutIn = kTpcInner;
+  if (! cfg_.C<St_tpcPadConfigC>().iTpc(sector)) {
+    if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) kTpcOutIn = kTpcInner;
   }
   else {
-    if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) kTpcOutIn = kiTpc;
+    if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) kTpcOutIn = kiTpc;
   }
 
-  const tss_tsspar& tsspar = tpcrs::Cfg<tss_tsspar>();
+  const tss_tsspar& tsspar = cfg_.S<tss_tsspar>();
   float gasGain = 1;
   float gainNominal = 0;
 
-  if (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) {
+  if (row > cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) {
     gainNominal = tsspar.gain_out * tsspar.wire_coupling_out;
     gasGain = tpcrs::GainCorrection(sector, row) * tsspar.wire_coupling_out;
   }
@@ -229,7 +230,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
   //  double gainAVcorr = gasGain/gainNominal;
   mAdc2GeV = tsspar.ave_ion_pot * tsspar.scale / gainNominal;
   double Adc2GeVReal = tsspar.ave_ion_pot * tsspar.scale / gasGain;
-  const tpcGas& tpc_gas = tpcrs::Cfg<tpcGas>();
+  const tpcGas& tpc_gas = cfg_.S<tpcGas>();
   double ZdriftDistanceO2 = ZdriftDistance * tpc_gas.ppmOxygenIn;
   double ZdriftDistanceO2W = ZdriftDistanceO2 * tpc_gas.ppmWaterOut;
   CdEdx.ZdriftDistanceO2 = ZdriftDistanceO2;
@@ -305,7 +306,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
     if (k == kTpcPadMDF) {
       l = 2 * (sector - 1);
 
-      if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) l += kTpcInner; // for both tpc and iTPC inner sectors
+      if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) l += kTpcInner; // for both tpc and iTPC inner sectors
 
       dE *= std::exp(-((St_TpcPadCorrectionMDF*)m_Corrections[k].Chair)->Eval(l, CdEdx.yrow, CdEdx.xpad));
       goto ENDL;
@@ -335,7 +336,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
     if (nrows <= 3)
       l = std::min(nrows - 1, static_cast<int>(kTpcOutIn));
     else {
-      if (nrows == St_tpcPadConfigC::instance()->numberOfRows(sector)) l = row - 1;
+      if (nrows == cfg_.C<St_tpcPadConfigC>().numberOfRows(sector)) l = row - 1;
       else if (nrows == 192) {l = 8 * (sector - 1) + channel - 1; assert(l == (cor + l)->idx - 1);}
       else if (nrows ==  48) {l = 2 * (sector - 1) + kTpcOutIn;}
       else if (nrows ==   6) {l =            kTpcOutIn;     if (sector > 12) l += 3;}
