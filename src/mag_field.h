@@ -16,8 +16,21 @@
 class StarMagField
 {
  public:
+
   enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
   enum   ESmFSizes {nZ = 57, nR = 28, nPhi = 37, nZSteel = 16, nRSteel = 115, nPhiSteel = 25};
+
+  StarMagField ( EBField map     = kMapped, float Factor  =      1,
+                 bool  Lock    =  false, float Rescale =      1,
+                 float Bdipole =  -42.67, float Rmaxdip =  15.34,
+                 float Zmindip =   980.0, float Zmaxdip = 1350.0) ;
+
+  ~StarMagField ()
+  {
+    SafeDelete(fBzdZCorrection);
+    SafeDelete(fBrdZCorrection);
+  }
+
   static  void    Search ( int N, const float Xarray[], float x, int &low ) ;
   float Interpolate ( const float Xarray[], const float Yarray[],
                                 const int ORDER, const float x ) ;
@@ -55,28 +68,9 @@ class StarMagField
   float  R3DSteel[nRSteel], Z3DSteel[nZSteel], Phi3DSteel[nPhiSteel] ;
   float  Bz3DSteel[nPhiSteel][nZSteel][nRSteel];
   float  Bx3DSteel[nPhiSteel][nZSteel][nRSteel], By3DSteel[nPhiSteel][nZSteel][nRSteel] ;
-  static bool     mConstBz;
+  bool   mConstBz;
 
   float  Br3DSteel[nPhiSteel][nZSteel][nRSteel], Bphi3DSteel[nPhiSteel][nZSteel][nRSteel] ;
-
- private:
-
-  StarMagField ( EBField map     = kMapped, float Factor  =      1,
-                 bool  Lock    =  false, float Rescale =      1,
-                 float Bdipole =  -42.67, float Rmaxdip =  15.34,
-                 float Zmindip =   980.0, float Zmaxdip = 1350.0) ;
-  ~StarMagField ()
-  {
-    SafeDelete(fBzdZCorrection);
-    SafeDelete(fBrdZCorrection);
-  }
- public:
-
-  static StarMagField& Instance()
-  {
-    static StarMagField instance;
-    return instance;
-  }
 
   void    BField   ( const float x[], float B[] ) ;
   void    BField   ( const double x[], double B[] ) ;

@@ -1078,7 +1078,7 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
-  StarMagField::Instance().BField(geant_hit.x, BFieldG);
+  mag_field_utils_.BFieldTpc(geant_hit.x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{geant_hit.p[0], geant_hit.p[1], geant_hit.p[2]};

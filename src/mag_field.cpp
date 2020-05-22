@@ -338,14 +338,11 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
 };
 
 
-bool StarMagField::mConstBz = false;
-
-
-
 StarMagField::StarMagField ( EBField map, float factor,
                              bool lock, float rescale,
                              float BDipole, float RmaxDip,
                              float ZminDip, float ZmaxDip) :
+  mConstBz(false),
   fBzdZCorrection(0),
   fBrdZCorrection(0),
   fMap(map),

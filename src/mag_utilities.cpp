@@ -165,7 +165,8 @@ void StMagUtilities::SetUnDoDistortionT(TFile* f)
 
 /// StMagUtilities constructor using the DataBase
 StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
-  transform_(trans)
+  transform_(trans),
+  mag_field_()
 {
   GetDistoSmearing(mode);    // Get distortion smearing from the DB
   GetMagFactor()        ;    // Get the magnetic field scale factor from the DB
@@ -184,7 +185,8 @@ StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
 
 /// StMagUtilities constructor not using the DataBase
 StMagUtilities::StMagUtilities(const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode) :
-  transform_(trans)
+  transform_(trans),
+  mag_field_()
 {
   GetDistoSmearing(0)   ;        // Do not get distortion smearing out of the DB
   GetMagFactor()        ;        // Get the magnetic field scale factor from the StarMagField
@@ -695,7 +697,7 @@ void StMagUtilities::CommonStart ( int mode )
 
   float  B[3], X[3] = { 0, 0, 0 } ;
   float  OmegaTau ;                       // For an electron, OmegaTau carries the sign opposite of B
-  StarMagField::Instance().BField(X, B) ;                            // Work in kGauss, cm and assume Bz dominates
+  mag_field_.BField(X, B) ;                            // Work in kGauss, cm and assume Bz dominates
 
   // Theoretically, OmegaTau is defined as shown in the next line.
   // OmegaTau   =  -10. * B[2] * StarDriftV / StarMagE ;  // cm/microsec, Volts/cm
@@ -1144,9 +1146,9 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
     }
   }
 
-  StarMagField::Instance().Search( EMap_nPhi, ePhiList, phi, klow ) ;
-  StarMagField::Instance().Search( EMap_nR,   eRList,   r,   ilow ) ;
-  StarMagField::Instance().Search( EMap_nZ,   eZList,   z,   jlow ) ;
+  mag_field_.Search( EMap_nPhi, ePhiList, phi, klow ) ;
+  mag_field_.Search( EMap_nR,   eRList,   r,   ilow ) ;
+  mag_field_.Search( EMap_nZ,   eZList,   z,   jlow ) ;
 
   if ( klow < 0 ) klow = 0 ;
 
@@ -1162,22 +1164,22 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
 
   for ( k = klow ; k < klow + ORDER + 1 ; k++ ) {
     for ( i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-      save_x[i - ilow]  = StarMagField::Instance().Interpolate( &eZList[jlow], &dx3D[k][i][jlow], ORDER, z ) ;
-      save_y[i - ilow]  = StarMagField::Instance().Interpolate( &eZList[jlow], &dy3D[k][i][jlow], ORDER, z ) ;
+      save_x[i - ilow]  = mag_field_.Interpolate( &eZList[jlow], &dx3D[k][i][jlow], ORDER, z ) ;
+      save_y[i - ilow]  = mag_field_.Interpolate( &eZList[jlow], &dy3D[k][i][jlow], ORDER, z ) ;
     }
 
-    saved_x[k - klow]  = StarMagField::Instance().Interpolate( &eRList[ilow], save_x, ORDER, r )   ;
-    saved_y[k - klow]  = StarMagField::Instance().Interpolate( &eRList[ilow], save_y, ORDER, r )   ;
+    saved_x[k - klow]  = mag_field_.Interpolate( &eRList[ilow], save_x, ORDER, r )   ;
+    saved_y[k - klow]  = mag_field_.Interpolate( &eRList[ilow], save_y, ORDER, r )   ;
   }
 
   if (usingCartesian) {
-    Xprime[0] = StarMagField::Instance().Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) + x[0] ;
-    Xprime[1] = StarMagField::Instance().Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) + x[1];
+    Xprime[0] = mag_field_.Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) + x[0] ;
+    Xprime[1] = mag_field_.Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) + x[1];
   }
   else {
     Polar2Cart(x[0], x[1], xx);
-    xx[0] += StarMagField::Instance().Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) ;
-    xx[1] += StarMagField::Instance().Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) ;
+    xx[0] += mag_field_.Interpolate( &ePhiList[klow], saved_x, PHIORDER, phi ) ;
+    xx[1] += mag_field_.Interpolate( &ePhiList[klow], saved_y, PHIORDER, phi ) ;
     Cart2Polar(xx, Xprime[0], Xprime[1]);
   }
 
@@ -1233,8 +1235,8 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
     }
   }
 
-  StarMagField::Instance().Search( EMap_nR, eRList, r, ilow ) ;
-  StarMagField::Instance().Search( EMap_nZ, eZList, z, jlow ) ;
+  mag_field_.Search( EMap_nR, eRList, r, ilow ) ;
+  mag_field_.Search( EMap_nZ, eZList, z, jlow ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -1245,12 +1247,12 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
   if ( jlow + ORDER  >=  EMap_nZ - 1 ) jlow =  EMap_nZ - 1 - ORDER ;
 
   for ( i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    save_dR[i - ilow]    = StarMagField::Instance().Interpolate( &eZList[jlow], &dR[i][jlow], ORDER, z )   ;
-    save_dRPhi[i - ilow] = StarMagField::Instance().Interpolate( &eZList[jlow], &dRPhi[i][jlow], ORDER, z )   ;
+    save_dR[i - ilow]    = mag_field_.Interpolate( &eZList[jlow], &dR[i][jlow], ORDER, z )   ;
+    save_dRPhi[i - ilow] = mag_field_.Interpolate( &eZList[jlow], &dRPhi[i][jlow], ORDER, z )   ;
   }
 
-  saved_dR    = StarMagField::Instance().Interpolate( &eRList[ilow], save_dR,    ORDER, r )   ;
-  saved_dRPhi = StarMagField::Instance().Interpolate( &eRList[ilow], save_dRPhi, ORDER, r )   ;
+  saved_dR    = mag_field_.Interpolate( &eRList[ilow], save_dR,    ORDER, r )   ;
+  saved_dRPhi = mag_field_.Interpolate( &eRList[ilow], save_dRPhi, ORDER, r )   ;
 
 
   if ( r > 0.0 ) {
@@ -1389,8 +1391,8 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   z = LimitZ( Sector, x ) ;                         // Protect against discontinuity at CM
   Zdrift =  TPC_Z0 - std::abs(z) ;
 
-  StarMagField::Instance().Search ( NZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
-  StarMagField::Instance().Search ( NYARRAY, YArray, y, jlow ) ;
+  mag_field_.Search ( NZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
+  mag_field_.Search ( NYARRAY, YArray, y, jlow ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -1401,10 +1403,10 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
   if ( jlow + ORDER  >=    NYARRAY - 1 ) jlow =   NYARRAY - 1 - ORDER ;
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    save_sum[i - ilow]   = StarMagField::Instance().Interpolate( &YArray[jlow], &SumArray[i][jlow], ORDER, y )   ;
+    save_sum[i - ilow]   = mag_field_.Interpolate( &YArray[jlow], &SumArray[i][jlow], ORDER, y )   ;
   }
 
-  sum  = StarMagField::Instance().Interpolate( &ZDriftArray[ilow], save_sum, ORDER, Zdrift )   ;
+  sum  = mag_field_.Interpolate( &ZDriftArray[ilow], save_sum, ORDER, Zdrift )   ;
 
   if ( r > 0.0 ) {
     phi =  phi - ( Const_1 * (-1 * sum) * std::cos(phi0 - phi) + Const_0 * sum * std::sin(phi0 - phi) ) / r ;
@@ -1572,8 +1574,8 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
   z = LimitZ( Sector, x )                 ;             // Protect against discontinuity at CM
   Zdrift =  TPC_Z0 - std::abs(z)        ;
 
-  StarMagField::Instance().Search ( nZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
-  StarMagField::Instance().Search ( nYARRAY, YArray, y, jlow )            ;
+  mag_field_.Search ( nZDRIFT, ZDriftArray,  Zdrift, ilow ) ;
+  mag_field_.Search ( nYARRAY, YArray, y, jlow )            ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -1585,10 +1587,10 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
 
   for ( int MapID = 0 ; MapID < nMAPS ; MapID++ ) {
     for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-      save_sum[MapID][i - ilow]  = StarMagField::Instance().Interpolate( &YArray[jlow], &SumArray[MapID][i][jlow], ORDER, y ) ;
+      save_sum[MapID][i - ilow]  = mag_field_.Interpolate( &YArray[jlow], &SumArray[MapID][i][jlow], ORDER, y ) ;
     }
 
-    MapSum[MapID]  = StarMagField::Instance().Interpolate( &ZDriftArray[ilow], save_sum[MapID], ORDER, Zdrift ) ;
+    MapSum[MapID]  = mag_field_.Interpolate( &ZDriftArray[ilow], save_sum[MapID], ORDER, Zdrift ) ;
   }
 
   if ( Inner_GLW_Voltage[Sector - 1] >= 100.0 ) totalSum = MapSum[0] ;
@@ -2513,8 +2515,8 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
       for ( int j = 0 ; j < EMap_nR ; ++j ) {
         // Linear interpolation
         r = eRList[j] ;
-        StarMagField::Instance().Search( ROWS,   Rlist, r, ilow ) ;  // Note switch - R in rows and Z in columns
-        StarMagField::Instance().Search( COLUMNS, Zedlist, z, jlow ) ;
+        mag_field_.Search( ROWS,   Rlist, r, ilow ) ;  // Note switch - R in rows and Z in columns
+        mag_field_.Search( COLUMNS, Zedlist, z, jlow ) ;
 
         if ( ilow < 0 ) ilow = 0 ;  // artifact of Root's binsearch, returns -1 if out of range
 
@@ -2696,8 +2698,8 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
         for ( int j = 0 ; j < EMap_nR ; ++j ) {
           // Linear interpolation
           r = eRList[j] ;
-          StarMagField::Instance().Search( ROWS,    Rlist, r, ilow ) ;
-          StarMagField::Instance().Search( COLUMNS, Zedlist, z, jlow ) ;
+          mag_field_.Search( ROWS,    Rlist, r, ilow ) ;
+          mag_field_.Search( COLUMNS, Zedlist, z, jlow ) ;
 
           if ( ilow < 0 ) ilow = 0 ;
 
@@ -3103,8 +3105,8 @@ float StMagUtilities::Interpolate2DTable( const int ORDER, const float x, const 
   static  int jlow = 0, klow = 0 ;
   float save_Array[ORDER + 1]  ;
 
-  StarMagField::Instance().Search( nx,  XV,  x,   jlow  ) ;
-  StarMagField::Instance().Search( ny,  YV,  y,   klow  ) ;
+  mag_field_.Search( nx,  XV,  x,   jlow  ) ;
+  mag_field_.Search( ny,  YV,  y,   klow  ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3116,10 +3118,10 @@ float StMagUtilities::Interpolate2DTable( const int ORDER, const float x, const 
 
   for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
     float* ajkl = &((TMatrix &)Array)(j, klow);
-    save_Array[j - jlow]  = StarMagField::Instance().Interpolate( &YV[klow], ajkl, ORDER, y )   ;
+    save_Array[j - jlow]  = mag_field_.Interpolate( &YV[klow], ajkl, ORDER, y )   ;
   }
 
-  return ( StarMagField::Instance().Interpolate( &XV[jlow], save_Array, ORDER, x ) )   ;
+  return ( mag_field_.Interpolate( &XV[jlow], save_Array, ORDER, x ) )   ;
 
 }
 
@@ -3131,8 +3133,8 @@ void StMagUtilities::Interpolate2DEdistortion( const int ORDER, const float r, c
   static  int jlow = 0, klow = 0 ;
   float save_Er[ORDER + 1] ;
 
-  StarMagField::Instance().Search( EMap_nZ,   eZList,  z,   jlow   ) ;
-  StarMagField::Instance().Search( EMap_nR,   eRList,  r,   klow   ) ;
+  mag_field_.Search( EMap_nZ,   eZList,  z,   jlow   ) ;
+  mag_field_.Search( EMap_nR,   eRList,  r,   klow   ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3143,10 +3145,10 @@ void StMagUtilities::Interpolate2DEdistortion( const int ORDER, const float r, c
   if ( klow + ORDER  >=    EMap_nR - 1 ) klow =   EMap_nR - 1 - ORDER ;
 
   for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-    save_Er[j - jlow]     = StarMagField::Instance().Interpolate( &eRList[klow], &Er[j][klow], ORDER, r )   ;
+    save_Er[j - jlow]     = mag_field_.Interpolate( &eRList[klow], &Er[j][klow], ORDER, r )   ;
   }
 
-  Er_value = StarMagField::Instance().Interpolate( &eZList[jlow], save_Er, ORDER, z )   ;
+  Er_value = mag_field_.Interpolate( &eZList[jlow], save_Er, ORDER, z )   ;
 
 }
 
@@ -3160,9 +3162,9 @@ void StMagUtilities::Interpolate3DEdistortion( const int ORDER, const float r, c
   float save_Er[ORDER + 1],   saved_Er[ORDER + 1] ;
   float save_Ephi[ORDER + 1], saved_Ephi[ORDER + 1] ;
 
-  StarMagField::Instance().Search( EMap_nZ,   eZList,   z,   ilow   ) ;
-  StarMagField::Instance().Search( EMap_nPhi, ePhiList, phi, jlow   ) ;
-  StarMagField::Instance().Search( EMap_nR,   eRList,   r,   klow   ) ;
+  mag_field_.Search( EMap_nZ,   eZList,   z,   ilow   ) ;
+  mag_field_.Search( EMap_nPhi, ePhiList, phi, jlow   ) ;
+  mag_field_.Search( EMap_nR,   eRList,   r,   klow   ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3178,16 +3180,16 @@ void StMagUtilities::Interpolate3DEdistortion( const int ORDER, const float r, c
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
     for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-      save_Er[j - jlow]     = StarMagField::Instance().Interpolate( &eRList[klow], &Er[i][j][klow], ORDER, r )   ;
-      save_Ephi[j - jlow]   = StarMagField::Instance().Interpolate( &eRList[klow], &Ephi[i][j][klow], ORDER, r )   ;
+      save_Er[j - jlow]     = mag_field_.Interpolate( &eRList[klow], &Er[i][j][klow], ORDER, r )   ;
+      save_Ephi[j - jlow]   = mag_field_.Interpolate( &eRList[klow], &Ephi[i][j][klow], ORDER, r )   ;
     }
 
-    saved_Er[i - ilow]     = StarMagField::Instance().Interpolate( &ePhiList[jlow], save_Er, ORDER, phi )   ;
-    saved_Ephi[i - ilow]   = StarMagField::Instance().Interpolate( &ePhiList[jlow], save_Ephi, ORDER, phi )   ;
+    saved_Er[i - ilow]     = mag_field_.Interpolate( &ePhiList[jlow], save_Er, ORDER, phi )   ;
+    saved_Ephi[i - ilow]   = mag_field_.Interpolate( &ePhiList[jlow], save_Ephi, ORDER, phi )   ;
   }
 
-  Er_value     = StarMagField::Instance().Interpolate( &eZList[ilow], saved_Er, ORDER, z )    ;
-  Ephi_value   = StarMagField::Instance().Interpolate( &eZList[ilow], saved_Ephi, ORDER, z )  ;
+  Er_value     = mag_field_.Interpolate( &eZList[ilow], saved_Er, ORDER, z )    ;
+  Ephi_value   = mag_field_.Interpolate( &eZList[ilow], saved_Ephi, ORDER, z )  ;
 
 }
 
@@ -3202,9 +3204,9 @@ float StMagUtilities::Interpolate3DTable ( const int ORDER, const float x,    co
   static  int ilow = 0, jlow = 0, klow = 0 ;
   float save_Array[ORDER + 1],  saved_Array[ORDER + 1] ;
 
-  StarMagField::Instance().Search( nx, XV, x, ilow   ) ;
-  StarMagField::Instance().Search( ny, YV, y, jlow   ) ;
-  StarMagField::Instance().Search( nz, ZV, z, klow   ) ;
+  mag_field_.Search( nx, XV, x, ilow   ) ;
+  mag_field_.Search( ny, YV, y, jlow   ) ;
+  mag_field_.Search( nz, ZV, z, klow   ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
 
@@ -3222,13 +3224,13 @@ float StMagUtilities::Interpolate3DTable ( const int ORDER, const float x,    co
     TMatrix &Table = *ArrayofArrays[k] ;
 
     for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-      save_Array[i - ilow] = StarMagField::Instance().Interpolate( &YV[jlow], &Table(i, jlow), ORDER, y )   ;
+      save_Array[i - ilow] = mag_field_.Interpolate( &YV[jlow], &Table(i, jlow), ORDER, y )   ;
     }
 
-    saved_Array[k - klow] = StarMagField::Instance().Interpolate( &XV[ilow], save_Array, ORDER, x )   ;
+    saved_Array[k - klow] = mag_field_.Interpolate( &XV[ilow], save_Array, ORDER, x )   ;
   }
 
-  return ( StarMagField::Instance().Interpolate( &ZV[klow], saved_Array, ORDER, z ) )   ;
+  return ( mag_field_.Interpolate( &ZV[klow], saved_Array, ORDER, z ) )   ;
 
 }
 
@@ -5883,7 +5885,7 @@ int StMagUtilities::IterationFailCount()
 void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
   if (CoordTransform::IsOldScheme()) {
-    StarMagField::Instance().BField( xTpc, BTpc) ;
+    mag_field_.BField( xTpc, BTpc) ;
   }
   else {
     // mag. field in Tpc local coordinate system
@@ -5892,7 +5894,7 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
     transform_.Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
     float xyzG[3] = {(float) coorG[0], (float) coorG[1], (float) coorG[2]};
     float BG[3];
-    StarMagField::Instance().BField( xyzG, BG) ;
+    mag_field_.BField( xyzG, BG) ;
     double    BGD[3] = {BG[0], BG[1], BG[2]};
     double    BTpcL[3];
     transform_.Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
@@ -5906,7 +5908,7 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 void StMagUtilities::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
   if (CoordTransform::IsOldScheme()) {
-    StarMagField::Instance().B3DField( xTpc, BTpc) ;
+    mag_field_.B3DField( xTpc, BTpc) ;
   }
   else {
     BFieldTpc(xTpc, BTpc, Sector);
