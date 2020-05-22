@@ -14,6 +14,7 @@
 #include "struct_containers.h"
 #include "tpc_db.h"
 #include "track_helix.h"
+#include "mag_utilities.h"
 
 
 class Simulator
@@ -62,6 +63,7 @@ class Simulator
 
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
+  StMagUtilities mag_field_utils_;
   const double min_signal_;           //!
   const double electron_range_;       //!
   const double electron_range_energy_; //!
