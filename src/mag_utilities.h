@@ -80,6 +80,7 @@ class StMagUtilities
 
  private:
   const CoordTransform& transform_;
+  StarMagField mag_field_;
   St_spaceChargeCorC*        fSpaceCharge   ;
   St_spaceChargeCorC*        fSpaceChargeR2 ;
   St_tpcHighVoltagesC*       fTpcVolts      ;
