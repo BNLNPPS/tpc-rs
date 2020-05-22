@@ -102,7 +102,7 @@ class StTpcdEdxCorrection
     };
   };
 
-  StTpcdEdxCorrection(int Option = 0, int debug = 0);
+  StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int Option = 0, int debug = 0);
   ~StTpcdEdxCorrection();
   int dEdxCorrection(dEdxY2_t &dEdx, bool doIT = true);
 
@@ -112,6 +112,8 @@ class StTpcdEdxCorrection
   float           Adc2GeV()              {return mAdc2GeV;}
   void Print(Option_t* opt = "") const;
  private:
+
+  const tpcrs::Configurator& cfg_;
   int                m_Mask;                  //!
   dEdxY2_t*            mdEdx;
   float              mAdc2GeV;                //! Outer/Inner conversion factors from ADC -> GeV
