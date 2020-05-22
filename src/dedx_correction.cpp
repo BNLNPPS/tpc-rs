@@ -218,11 +218,11 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
   if (row > St_tpcPadConfigC::instance()->innerPadRows(sector)) {
     gainNominal = tsspar.gain_out * tsspar.wire_coupling_out;
-    gasGain = GainCorrection(sector, row) * tsspar.wire_coupling_out;
+    gasGain = tpcrs::GainCorrection(sector, row) * tsspar.wire_coupling_out;
   }
   else {
     gainNominal = tsspar.gain_in * tsspar.wire_coupling_in;
-    gasGain = GainCorrection(sector, row) * tsspar.wire_coupling_in;
+    gasGain = tpcrs::GainCorrection(sector, row) * tsspar.wire_coupling_in;
   }
 
   if (gasGain <= 0.0) return 4;

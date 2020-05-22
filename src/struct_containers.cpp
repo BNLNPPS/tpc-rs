@@ -27,13 +27,13 @@ MakeChairInstance(tpcChargeEvent,Calibrations/tpc/tpcChargeEvent);
 MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
 
 
-double St_tpcCorrectionC::CalcCorrection(int i, double x, double z, int NparMax) {
+double St_tpcCorrectionC::CalcCorrection(int i, double x, double z, int NparMax) const {
   tpcCorrection *cor =  Struct(i);
   return SumSeries(cor, x, z, NparMax);
 }
 
 
-double St_tpcCorrectionC::SumSeries(tpcCorrection *cor,  double x, double z, int NparMax) {
+double St_tpcCorrectionC::SumSeries(tpcCorrection *cor,  double x, double z, int NparMax) const {
   double Sum = 0;
   if (! cor) return Sum;
   int N = std::abs(cor->npar)%100;
@@ -838,31 +838,6 @@ float St_tpcRDOT0offsetC::T0(int sector, int padrow, int pad) const {
 MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 
 
-float GainCorrection(int sector, int row)
-{
-  int l = 0;
-  double V_nominal = 1390;
-  float V = 0;
-  float gain = 0;
-  if (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) {l = 1; V_nominal = 1170;}
-  St_tpcGainCorrectionC *gC = St_tpcGainCorrectionC::instance();
-  int NRows = gC->GetNRows();
-  if (l >= NRows) return gain;
-  V = St_tpcAnodeHVavgC::instance()->voltagePadrow(sector,row);
-  if (V > 0) {
-    double v = V - V_nominal;
-    if (v < gC->min(l) || v > gC->max(l)) return gain;
-    if (gC->min(l) < -450) {
-      // if range was expanded below 150 V then use only the linear approximation
-      gain  = std::exp(gC->CalcCorrection(l,v, 0., 2));
-    } else {
-      gain  = std::exp(gC->CalcCorrection(l,v));
-    }
-  }
-  return gain;
-}
-
-
 //__________________Calibrations/rich______________________________________________________________
 MakeChairInstance(richvoltages,Calibrations/rich/richvoltages);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
@@ -1134,6 +1109,31 @@ int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, 
 
 
 namespace tpcrs {
+
+float GainCorrection(int sector, int row, const tpcrs::Configurator& cfg)
+{
+  int l = 0;
+  double V_nominal = 1390;
+  float V = 0;
+  float gain = 0;
+  if (row <= cfg.C<St_tpcPadConfigC>().innerPadRows(sector)) {l = 1; V_nominal = 1170;}
+  const St_tpcGainCorrectionC& gC = cfg.C<St_tpcGainCorrectionC>();
+  int NRows = gC.GetNRows();
+  if (l >= NRows) return gain;
+  V = cfg.C<St_tpcAnodeHVavgC>().voltagePadrow(sector,row);
+  if (V > 0) {
+    double v = V - V_nominal;
+    if (v < gC.min(l) || v > gC.max(l)) return gain;
+    if (gC.min(l) < -450) {
+      // if range was expanded below 150 V then use only the linear approximation
+      gain  = std::exp(gC.CalcCorrection(l,v, 0., 2));
+    } else {
+      gain  = std::exp(gC.CalcCorrection(l,v));
+    }
+  }
+  return gain;
+}
+
 
 float DriftVelocity(int sector, const Configurator& cfg)
 {
