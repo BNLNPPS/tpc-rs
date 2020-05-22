@@ -12,7 +12,6 @@
 #include "coords.h"
 #include "dedx_correction.h"
 #include "struct_containers.h"
-#include "tpc_db.h"
 #include "track_helix.h"
 #include "mag_utilities.h"
 

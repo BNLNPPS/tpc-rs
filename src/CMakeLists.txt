@@ -130,7 +130,6 @@ set(source_files
     altro.cpp
     TF1F.cpp
     struct_containers.cpp
-    tpc_db.cpp
     configurator.cpp
     logger.cpp
     math_cephes.cpp
