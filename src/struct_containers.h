@@ -393,8 +393,8 @@ struct St_tpcCorrectionC : tpcrs::IConfigStruct
   double 	min(int i = 0) 	const {return Struct(i)->min;}
   double 	max(int i = 0) 	const {return Struct(i)->max;}
   double* 	a(int i = 0) 	        const {return Struct(i)->a;}
-  double CalcCorrection(int i, double x, double z = 0, int NparMax = -1);
-  double SumSeries(tpcCorrection* cor, double x, double z = 0, int NparMax = -1);
+  double CalcCorrection(int i, double x, double z = 0, int NparMax = -1) const;
+  double SumSeries(tpcCorrection* cor, double x, double z = 0, int NparMax = -1) const;
 };
 
 struct St_TpcAdcCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcAdcCorrectionBC, tpcCorrection> {};
@@ -960,10 +960,10 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   double	fMargin;
 };
 
-float GainCorrection(int sector, int row);
-
 
 namespace tpcrs {
+
+float GainCorrection(int sector, int row, const Configurator& cfg = Configurator::Instance());
 
 float DriftVelocity(int sector = 24, const Configurator& cfg = Configurator::Instance());
 

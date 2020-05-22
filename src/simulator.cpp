@@ -1140,7 +1140,7 @@ double Simulator::CalcBaseGain(int sector, int row)
   const float* AdditionalMcCorrection = cfg_.S<TpcResponseSimulator>().SecRowCorIW;
   const float* AddSigmaMcCorrection   = cfg_.S<TpcResponseSimulator>().SecRowSigIW;
 
-  double gain = GainCorrection(sector, row);
+  double gain = tpcrs::GainCorrection(sector, row, cfg_);
   double gain_x_correctionL = AdditionalMcCorrection[iowe] + row * AdditionalMcCorrection[iowe + 1];
   double gain_x_sigma = AddSigmaMcCorrection[iowe] + row * AddSigmaMcCorrection[iowe + 1];
 
