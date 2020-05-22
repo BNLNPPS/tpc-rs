@@ -7,29 +7,28 @@
 
 namespace tpcrs {
 
-bool Configurator::Configure(std::string configname)
+Configurator::Configurator(std::string configname) :
+  name(configname)
 {
-  name = configname;
-
   std::string paths(TPCRS_CONFIG_SEARCH_PATHS);
 
   size_t last = 0;
   size_t next = 0;
   while ((next = paths.find(':', last)) != std::string::npos)
   {
-    Instance().searchPaths.push_back(paths.substr(last, next-last));
+    searchPaths.push_back(paths.substr(last, next-last));
     last = next + 1;
   }
-  Instance().searchPaths.push_back(paths.substr(last));
+  searchPaths.push_back(paths.substr(last));
 
   yaml = YAML::LoadFile(Configurator::File());
 }
 
 
-std::string Configurator::Locate(std::string filename)
+std::string Configurator::Locate(std::string filename) const
 {
   struct stat buffer;   
-  for (std::string path : Instance().searchPaths)
+  for (std::string path : searchPaths)
   {
     std::string fullname(path + "/" + filename);
     if (stat(fullname.c_str(), &buffer) == 0)

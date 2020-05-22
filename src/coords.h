@@ -245,7 +245,7 @@ std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorDirection &a);
 // TpcPadCoordinate => TpcSectL => TpcSectLAligned => TpcLocal => Global
 struct CoordTransform
 {
-  CoordTransform(const tpcrs::Configurator& cfg = tpcrs::Configurator::Instance());
+  CoordTransform(const tpcrs::Configurator& cfg);
   ~CoordTransform();
 
   // Raw Data <--> Tpc Local Sector Coordinates

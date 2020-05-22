@@ -31,7 +31,7 @@ struct IConfigStruct
 template<typename Base_t, typename Chair_t, typename Struct_t>
 struct ConfigStruct : Base_t
 {
-  static Chair_t* instance()
+  static Chair_t* instance(const Configurator& cfg)
   {
     static Chair_t instance;
     return &instance;
@@ -46,19 +46,19 @@ struct ConfigStruct : Base_t
 
  protected:
 
-  ConfigStruct()
+  ConfigStruct(const Configurator& cfg) : cfg_(cfg)
   {
     // Deal with optionally present structs
-    if (!Configurator::YAML(name)) {
+    if (!cfg_.YAML(name)) {
       rows_.push_back(Struct_t());
       // Still create an object but "Mark" this "table"/"chair" as "bad"
       IConfigStruct::Mark();
     } else {
       try {
-        rows_.push_back( Configurator::YAML(name).as< Struct_t >() );
+        rows_.push_back( cfg_.YAML(name).as< Struct_t >() );
         IConfigStruct::UnMark();
       } catch (std::exception& e) {
-        rows_ = Configurator::YAML(name).as< std::vector<Struct_t> >();
+        rows_ = cfg_.YAML(name).as< std::vector<Struct_t> >();
         IConfigStruct::UnMark();
       }
     }
@@ -75,6 +75,8 @@ struct ConfigStruct : Base_t
   ///@}
 
   std::vector<Struct_t> rows_;
+
+  const Configurator& cfg_;
 };
 
 }

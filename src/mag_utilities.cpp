@@ -164,7 +164,7 @@ void StMagUtilities::SetUnDoDistortionT(TFile* f)
 
 
 /// StMagUtilities constructor using the DataBase
-StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode, const tpcrs::Configurator& cfg) :
+StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode) :
   cfg_(cfg),
   transform_(trans),
   mag_field_(cfg)
@@ -232,7 +232,7 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = 0;
   }
 
-  StarDriftV     =  1e-6 * tpcrs::DriftVelocity();
+  StarDriftV     =  1e-6 * tpcrs::DriftVelocity(24, cfg_);
   TPC_Z0         =  cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
   IFCShift       =  cages->InnerFieldCageShift();
 
@@ -379,7 +379,7 @@ void StMagUtilities::GetSpaceCharge ()
   spaceTable = new_spaceTable;
   scalers = new_scalers;
 
-  SpaceCharge    =  fSpaceCharge->getSpaceChargeCoulombs((double)gFactor) ;
+  SpaceCharge    =  fSpaceCharge->getSpaceChargeCoulombs(cfg_) ;
 }
 
 void StMagUtilities::GetSpaceChargeR2 ()
@@ -397,7 +397,7 @@ void StMagUtilities::GetSpaceChargeR2 ()
   spaceTable = new_spaceTable;
   scalers = new_scalers;
 
-  SpaceChargeR2      = fSpaceChargeR2->getSpaceChargeCoulombs((double)gFactor) ;
+  SpaceChargeR2      = fSpaceChargeR2->getSpaceChargeCoulombs(cfg_) ;
   SmearCoefSC        = (fCalibResolutions ? mRandom->Gaus(1, fCalibResolutions->SpaceCharge()) : 1.0);
   SpaceChargeEWRatio = fSpaceChargeR2->getEWRatio() ;
 }

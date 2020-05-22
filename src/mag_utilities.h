@@ -214,7 +214,7 @@ class StMagUtilities
   static   TNtuple* fgUnDoDistortion;
  public:
 
-  StMagUtilities(const CoordTransform& trans, int mode = 0, const tpcrs::Configurator& cfg = tpcrs::Configurator::Instance());
+  StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
   StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode);
 
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
