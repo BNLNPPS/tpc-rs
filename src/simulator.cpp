@@ -62,7 +62,7 @@ using tpcrs::Cfg;
 Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   cfg_(cfg),
   transform_(cfg),
-  mag_field_utils_(),
+  mag_field_utils_(transform_),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
