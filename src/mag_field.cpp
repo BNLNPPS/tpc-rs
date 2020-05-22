@@ -338,10 +338,11 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
 };
 
 
-StarMagField::StarMagField ( EBField map, float factor,
+StarMagField::StarMagField (const tpcrs::Configurator& cfg, EBField map, float factor,
                              bool lock, float rescale,
                              float BDipole, float RmaxDip,
                              float ZminDip, float ZmaxDip) :
+  cfg_(cfg),
   mConstBz(false),
   fBzdZCorrection(0),
   fBrdZCorrection(0),
@@ -358,7 +359,7 @@ StarMagField::StarMagField ( EBField map, float factor,
     if (fLock) printf("StarMagField is locked, no modification from DB will be accepted\n");
   }
 
-  fFactor = St_MagFactorC::instance()->ScaleFactor();
+  fFactor = cfg_.S<MagFactor>().ScaleFactor;
 
   ReadField() ;                       // Read the Magnetic
   fStarMagFieldRotation = TGeoRotation("StarMagFieldRotation");
@@ -529,7 +530,7 @@ void StarMagField::ReadField( )
   std::string MapLocation ;
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) {
-    TFile pFile(tpcrs::Configurator::Locate("StarFieldZ.root").c_str());
+    TFile pFile(cfg_.Locate("StarFieldZ.root").c_str());
     TH2F* Br0 = (TH2F*) pFile.Get("Br0");
     TH2F* Bz0 = (TH2F*) pFile.Get("Bz0");
 
@@ -587,7 +588,7 @@ void StarMagField::ReadField( )
   printf("StarMagField::ReadField  Reading  Magnetic Field  %s,  Scale factor = %f \n", comment.c_str(), fFactor);
   printf("StarMagField::ReadField  Filename is %s, Adjusted Scale factor = %f \n", filename.c_str(), fFactor * fRescale);
 
-  MapLocation = tpcrs::Configurator::Locate(filename);
+  MapLocation = cfg_.Locate(filename);
   magfile = fopen(MapLocation.c_str(), "r") ;
   printf("StarMagField::ReadField  Reading  2D Magnetic Field file: %s \n", filename.c_str());
 
@@ -623,7 +624,7 @@ void StarMagField::ReadField( )
 
   fclose(magfile) ;
 
-  MapLocation = tpcrs::Configurator::Locate(filename3D);
+  MapLocation = cfg_.Locate(filename3D);
   b3Dfile = fopen(MapLocation.c_str(), "r") ;
   printf("StarMagField::ReadField  Reading 3D Magnetic Field file: %s \n", filename3D.c_str());
 
@@ -677,7 +678,7 @@ void StarMagField::ReadField( )
   }
 
   fclose(b3Dfile) ;
-  MapLocation = tpcrs::Configurator::Locate("steel_magfieldmap.dat");
+  MapLocation = cfg_.Locate("steel_magfieldmap.dat");
   magfile = fopen(MapLocation.c_str(), "r") ;
 
   if (magfile) {
