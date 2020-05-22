@@ -99,7 +99,6 @@ To do:  <br>
 #include "mag_utilities.h"
 #include "math_funcs.h"
 #include "struct_containers.h"
-#include "tpc_db.h"
 
 static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
 static const float  PiOver12 = M_PI / 12. ; // Commonly used constant

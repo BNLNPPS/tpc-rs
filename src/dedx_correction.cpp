@@ -13,7 +13,6 @@
 #include "dedx_correction.h"
 #include "logger.h"
 #include "struct_containers.h"
-#include "tpc_db.h"
 
 
 StTpcdEdxCorrection::StTpcdEdxCorrection(int option, int debug) :
