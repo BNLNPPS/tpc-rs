@@ -167,7 +167,8 @@ void StMagUtilities::SetUnDoDistortionT(TFile* f)
 
 
 /// StMagUtilities constructor using the DataBase
-StMagUtilities::StMagUtilities (int mode )
+StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
+  transform_(trans)
 {
   if (fgInstance) {
     LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";
@@ -191,7 +192,8 @@ StMagUtilities::StMagUtilities (int mode )
 
 
 /// StMagUtilities constructor not using the DataBase
-StMagUtilities::StMagUtilities ( const StarMagField::EBField map, const float factor, int mode )
+StMagUtilities::StMagUtilities(const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode) :
+  transform_(trans)
 {
   if (fgInstance) {
     LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";
@@ -228,7 +230,7 @@ void StMagUtilities::GetTPCParams ()
   St_tpcPadConfigC*      pads = St_tpcPadConfigC::instance();
   St_tpcFieldCageC*     cages = St_tpcFieldCageC::instance();
 
-  if (! StTpcDb::IsOldScheme()) { // new schema
+  if (! CoordTransform::IsOldScheme()) { // new schema
     XTWIST = 0;
     YTWIST = 0;
     EASTCLOCKERROR = 0;
@@ -700,7 +702,7 @@ void StMagUtilities::CommonStart ( int mode )
 
   if ( mDistortionMode & kDistoSmearing ) printf (" + DistoSmearing") ;
 
-  if ( ! StTpcDb::IsOldScheme())          printf (" + New TPC Alignment schema") ;
+  if ( ! CoordTransform::IsOldScheme())          printf (" + New TPC Alignment schema") ;
 
   usingCartesian = true; // default
 
@@ -5761,7 +5763,6 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
         double iOffsetFirst, iOffsetLast, oOffsetFirst, oOffsetLast;
 
           double local[3] = {0, 0, 0};
-          static CoordTransform tran;
           static StTpcLocalCoordinate locP;
           double* master = locP.position.xyz();
           // For the alignment, 'local' is the ideal position of the point
@@ -5771,25 +5772,25 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
           local[0] = m * INNERGGFirst * tanSecPhi;
           local[1] = INNERGGFirst;
           StTpcLocalSectorCoordinate lSec{local[0], local[1], local[2], Seclist[k]};
-          tran.local_sector_to_local(lSec, locP);
+          transform_.local_sector_to_local(lSec, locP);
           iOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * INNERGGLast  * tanSecPhi;
           local[1] = INNERGGLast;
           lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
-          tran.local_sector_to_local(lSec, locP);
+          transform_.local_sector_to_local(lSec, locP);
           iOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGFirst * tanSecPhi;
           local[1] = OUTERGGFirst;
           lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
-          tran.local_sector_to_local(lSec, locP);
+          transform_.local_sector_to_local(lSec, locP);
           oOffsetFirst = (TPC_Z0 + m * master[2]) * StarMagE;
 
           local[0] = m * OUTERGGLast  * tanSecPhi;
           local[1] = OUTERGGLast;
           lSec = StTpcLocalSectorCoordinate{local[0], local[1], local[2], Seclist[k]};
-          tran.local_sector_to_local(lSec, locP);
+          transform_.local_sector_to_local(lSec, locP);
           oOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
 
@@ -5896,20 +5897,20 @@ int StMagUtilities::IterationFailCount()
 
 void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
-  if (StTpcDb::IsOldScheme()) {
+  if (CoordTransform::IsOldScheme()) {
     StarMagField::Instance().BField( xTpc, BTpc) ;
   }
   else {
     // mag. field in Tpc local coordinate system
     double Tpc[3] =  {xTpc[0], xTpc[1], xTpc[2]};
     double coorG[3];
-    StTpcDb::instance().Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
+    transform_.Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
     float xyzG[3] = {(float) coorG[0], (float) coorG[1], (float) coorG[2]};
     float BG[3];
     StarMagField::Instance().BField( xyzG, BG) ;
     double    BGD[3] = {BG[0], BG[1], BG[2]};
     double    BTpcL[3];
-    StTpcDb::instance().Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
+    transform_.Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
     BTpc[0] = BTpcL[0];
     BTpc[1] = BTpcL[1];
     BTpc[2] = BTpcL[2];
@@ -5919,7 +5920,7 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 
 void StMagUtilities::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
-  if (StTpcDb::IsOldScheme()) {
+  if (CoordTransform::IsOldScheme()) {
     StarMagField::Instance().B3DField( xTpc, BTpc) ;
   }
   else {

@@ -80,6 +80,7 @@ class StMagUtilities
 
  private:
   static StMagUtilities* fgInstance;
+  const CoordTransform& transform_;
   St_spaceChargeCorC*        fSpaceCharge   ;
   St_spaceChargeCorC*        fSpaceChargeR2 ;
   St_tpcHighVoltagesC*       fTpcVolts      ;
@@ -212,8 +213,8 @@ class StMagUtilities
   static   TNtuple* fgUnDoDistortion;
  public:
 
-  StMagUtilities (int mode = 0 ) ;
-  StMagUtilities ( const StarMagField::EBField map, const float factor, int mode );
+  StMagUtilities(const CoordTransform& trans, int mode = 0);
+  StMagUtilities(const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode);
   ~StMagUtilities () {fgInstance = 0;}
   static StMagUtilities* Instance();
 
