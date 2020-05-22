@@ -57,7 +57,6 @@ TF1F Simulator::fgTimeShape0[2] = {
 };
 
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
-using tpcrs::Cfg;
 
 Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   cfg_(cfg),
@@ -103,22 +102,22 @@ Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   if (TESTBIT(options_, kBICHSEL)) {
     LOG_INFO << "Simulator:: use H.Bichsel model for dE/dx simulation\n";
 
-    TFile inner(tpcrs::Configurator::Locate("dNdE_Bichsel.root").c_str());
+    TFile inner(cfg_.Locate("dNdE_Bichsel.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
     mdNdEL10->SetDirectory(0);
 
-    TFile outer(tpcrs::Configurator::Locate("dNdx_Bichsel.root").c_str());
+    TFile outer(cfg_.Locate("dNdx_Bichsel.root").c_str());
     mdNdx = (TH1D*) outer.Get("dNdx"); assert(mdNdx);
     mdNdx->SetDirectory(0);
   }
   else if (TESTBIT(options_, kHEED)) {
     LOG_INFO << "Simulator:: use Heed model for dE/dx simulation\n";
 
-    TFile inner(tpcrs::Configurator::Locate("dNdx_Heed.root").c_str());
+    TFile inner(cfg_.Locate("dNdx_Heed.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
     mdNdEL10->SetDirectory(0);
 
-    TFile outer(tpcrs::Configurator::Locate("dNdx_Heed.root").c_str());
+    TFile outer(cfg_.Locate("dNdx_Heed.root").c_str());
     mdNdxL10 = (TH1D*) outer.Get("dNdxL10"); assert(mdNdxL10);
     mdNdxL10->SetDirectory(0);
   }
