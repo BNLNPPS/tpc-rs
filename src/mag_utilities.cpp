@@ -164,12 +164,14 @@ void StMagUtilities::SetUnDoDistortionT(TFile* f)
 
 
 /// StMagUtilities constructor using the DataBase
-StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
+StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode, const tpcrs::Configurator& cfg) :
+  cfg_(cfg),
   transform_(trans),
-  mag_field_()
+  mag_field_(cfg)
 {
   GetDistoSmearing(mode);    // Get distortion smearing from the DB
-  GetMagFactor()        ;    // Get the magnetic field scale factor from the DB
+  // Get the magnetic field scale factor from the DB
+  gFactor = cfg_.S<MagFactor>().ScaleFactor;
   GetTPCParams()        ;    // Get the TPC parameters from the DB
   GetTPCVoltages( mode );    // Get the TPC Voltages from the DB! (after GetTPCParams!)
   GetHVPlanes()         ;    // Get the parameters that describe the HV plane errors (after GetTPCVoltages!)
@@ -184,12 +186,14 @@ StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
 
 
 /// StMagUtilities constructor not using the DataBase
-StMagUtilities::StMagUtilities(const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode) :
+StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode) :
+  cfg_(cfg),
   transform_(trans),
-  mag_field_()
+  mag_field_(cfg)
 {
   GetDistoSmearing(0)   ;        // Do not get distortion smearing out of the DB
-  GetMagFactor()        ;        // Get the magnetic field scale factor from the StarMagField
+  // Get the magnetic field scale factor from the StarMagField
+  gFactor = cfg_.S<MagFactor>().ScaleFactor;
   fTpcVolts      =  0   ;        // Do not get TpcVoltages out of the DB   - use defaults in CommonStart
   fOmegaTau      =  0   ;        // Do not get OmegaTau out of the DB      - use defaults in CommonStart
   fAbortGapCharge =  0   ;       // Do not get AbortGap out of the DB      - use defaults in CommonStart
@@ -202,7 +206,7 @@ StMagUtilities::StMagUtilities(const CoordTransform& trans, const StarMagField::
 
 void StMagUtilities::GetDistoSmearing (int mode)
 {
-  fCalibResolutions = ((mode & kDistoSmearing) > 0 ? St_tpcCalibResolutionsC::instance() : 0);
+  fCalibResolutions = ((mode & kDistoSmearing) > 0 ? &cfg_.C<St_tpcCalibResolutionsC>() : 0);
   mRandom = (fCalibResolutions ? new TRandom(time(NULL)) : 0);
 }
 
@@ -214,8 +218,8 @@ void StMagUtilities::GetMagFactor ()
 
 void StMagUtilities::GetTPCParams ()
 {
-  St_tpcPadConfigC*      pads = St_tpcPadConfigC::instance();
-  St_tpcFieldCageC*     cages = St_tpcFieldCageC::instance();
+  St_tpcPadConfigC*      pads = &cfg_.C<St_tpcPadConfigC>();
+  St_tpcFieldCageC*     cages = &cfg_.C<St_tpcFieldCageC>();
 
   if (! CoordTransform::IsOldScheme()) { // new schema
     XTWIST = 0;
@@ -225,7 +229,7 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = kDisableTwistClock;
   }
   else {   // old schema
-    St_tpcGlobalPositionC* glob = St_tpcGlobalPositionC::instance();
+    St_tpcGlobalPositionC* glob = &cfg_.C<St_tpcGlobalPositionC>();
     XTWIST         =   1e3 * glob->TpcEFieldRotationY() ;
     YTWIST         =  -1e3 * glob->TpcEFieldRotationX() ;
     EASTCLOCKERROR =   1e3 * cages->EastClockError();
@@ -233,10 +237,8 @@ void StMagUtilities::GetTPCParams ()
     mDistortionMode = 0;
   }
 
-  using tpcrs::Cfg;
-
   StarDriftV     =  1e-6 * tpcrs::DriftVelocity();
-  TPC_Z0         =  Cfg<tpcPadPlanes>().outerSectorPadPlaneZ - Cfg<tpcWirePlanes>().outerSectorGatingGridPadSep;
+  TPC_Z0         =  cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
   IFCShift       =  cages->InnerFieldCageShift();
 
   for (int sec = 1; sec <= 24; sec++) {
@@ -248,13 +250,13 @@ void StMagUtilities::GetTPCParams ()
   }
 
   IFCRadius      =    47.90 ;  // Radius of the Inner Field Cage (GVB: not sure where in DB?)
-  OFCRadius      =  Cfg<tpcDimensions>().senseGasOuterRadius;
-  INNERGGFirst   =  Cfg<tpcWirePlanes>().firstInnerSectorGatingGridWire;
-  OUTERGGFirst   =  Cfg<tpcWirePlanes>().firstOuterSectorGatingGridWire;
+  OFCRadius      =  cfg_.S<tpcDimensions>().senseGasOuterRadius;
+  INNERGGFirst   =  cfg_.S<tpcWirePlanes>().firstInnerSectorGatingGridWire;
+  OUTERGGFirst   =  cfg_.S<tpcWirePlanes>().firstOuterSectorGatingGridWire;
   INNERGGLast    =  INNERGGFirst +
-                    Cfg<tpcWirePlanes>().gatingGridWirePitch * (Cfg<tpcWirePlanes>().numInnerSectorGatingGridWires - 1);
+                    cfg_.S<tpcWirePlanes>().gatingGridWirePitch * (cfg_.S<tpcWirePlanes>().numInnerSectorGatingGridWires - 1);
   OUTERGGLast    =  OUTERGGFirst +
-                    Cfg<tpcWirePlanes>().gatingGridWirePitch * (Cfg<tpcWirePlanes>().numOuterSectorGatingGridWires - 1);
+                    cfg_.S<tpcWirePlanes>().gatingGridWirePitch * (cfg_.S<tpcWirePlanes>().numOuterSectorGatingGridWires - 1);
   GAPRADIUS      =  0.5 * (INNERGGLast + OUTERGGFirst);
   // Note (2012-10-25): currently GAPRADIUS from the DB (121.7975) differs very slightly
   //                    (by 25 microns) from non-DB value (121.8000)
@@ -288,7 +290,7 @@ void StMagUtilities::GetE()
 void StMagUtilities::GetTPCVoltages (int mode)
 {
   // GetTPCParams() must be called first!
-  fTpcVolts      =  St_tpcHighVoltagesC::instance() ;  // Initialize the DB for TpcVoltages
+  fTpcVolts      =  &cfg_.C<St_tpcHighVoltagesC>() ;  // Initialize the DB for TpcVoltages
   CathodeV       =  fTpcVolts->getCathodeVoltage() * 1000 ;
   GG             =  fTpcVolts->getGGVoltage() ;
 
@@ -306,7 +308,7 @@ void StMagUtilities::GetTPCVoltages (int mode)
   } // else don't touch GLW voltages
 
   GetE() ;
-  St_tpcAnodeHVavgC* anodeVolts = St_tpcAnodeHVavgC::instance() ;
+  St_tpcAnodeHVavgC* anodeVolts = &cfg_.C<St_tpcAnodeHVavgC>() ;
 
   if (mode & k3DGridLeak) {
     // For now, a bit complicated, but assign 1 to those with most common
@@ -319,7 +321,7 @@ void StMagUtilities::GetTPCVoltages (int mode)
     TH1I outerVs("outerVs", "outerVs", 5, maxOuter - 3.5 * stepsOuter, maxOuter + 1.5 * stepsOuter);
 
     for (int i = 1 ; i < 25; i++ ) {
-      int inner = St_tpcPadConfigC::instance()->innerPadRows(i);
+      int inner = cfg_.C<St_tpcPadConfigC>().innerPadRows(i);
       innerVs.Fill(anodeVolts->voltagePadrow(i, inner));
       outerVs.Fill(anodeVolts->voltagePadrow(i, inner + 1));
     }
@@ -357,7 +359,7 @@ bool StMagUtilities::UpdateTPCHighVoltages ()
 {
   static tpcHighVoltages* voltagesTable = 0;
 
-  St_tpcHighVoltagesC* voltagesChair = St_tpcHighVoltagesC::instance();
+  St_tpcHighVoltagesC* voltagesChair = &cfg_.C<St_tpcHighVoltagesC>();
   tpcHighVoltages* new_voltagesTable = voltagesChair->Struct();
   bool update = (new_voltagesTable != voltagesTable) || DoOnce;
 
@@ -372,9 +374,9 @@ void StMagUtilities::GetSpaceCharge ()
   static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
 
-  St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(St_spaceChargeCorR1C::instance());
+  St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(&cfg_.C<St_spaceChargeCorR1C>());
   spaceChargeCor* new_spaceTable = spaceChair->Struct();
-  St_trigDetSumsC* new_scalers = St_trigDetSumsC::instance();
+  St_trigDetSumsC* new_scalers = &cfg_.C<St_trigDetSumsC>();
 
   if (new_spaceTable == spaceTable && new_scalers == scalers) return;
 
@@ -390,9 +392,9 @@ void StMagUtilities::GetSpaceChargeR2 ()
   static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
 
-  St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(St_spaceChargeCorR2C::instance());
+  St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(&cfg_.C<St_spaceChargeCorR2C>());
   spaceChargeCor* new_spaceTable = spaceChair->Struct();
-  St_trigDetSumsC* new_scalers = St_trigDetSumsC::instance();
+  St_trigDetSumsC* new_scalers = &cfg_.C<St_trigDetSumsC>();
 
   if (new_spaceTable == spaceTable && new_scalers == scalers) return;
 
@@ -407,7 +409,7 @@ void StMagUtilities::GetSpaceChargeR2 ()
 
 void StMagUtilities::GetShortedRing ()
 {
-  St_tpcFieldCageShortC* shortedRingsChair = St_tpcFieldCageShortC::instance();
+  St_tpcFieldCageShortC* shortedRingsChair = &cfg_.C<St_tpcFieldCageShortC>();
   ShortTableRows = (int) shortedRingsChair->GetNRows() ;
 
   for ( int i = 0 ; i < ShortTableRows ; i++) {
@@ -425,7 +427,7 @@ bool StMagUtilities::UpdateShortedRing ()
 {
   static tpcFieldCageShort* shortsTable = 0;
 
-  St_tpcFieldCageShortC* shortedRingsChair = St_tpcFieldCageShortC::instance();
+  St_tpcFieldCageShortC* shortedRingsChair = &cfg_.C<St_tpcFieldCageShortC>();
   tpcFieldCageShort* new_shortsTable = shortedRingsChair->Struct();
   bool update = (new_shortsTable != shortsTable) || DoOnce;
 
@@ -437,7 +439,7 @@ bool StMagUtilities::UpdateShortedRing ()
 
 void StMagUtilities::GetOmegaTau ()
 {
-  fOmegaTau  =  St_tpcOmegaTauC::instance();
+  fOmegaTau  =  &cfg_.C<St_tpcOmegaTauC>();
   TensorV1   =  fOmegaTau->getOmegaTauTensorV1();
   TensorV2   =  fOmegaTau->getOmegaTauTensorV2();
   mCorrectionsMode = fOmegaTau->distortionCorrectionsMode(); // default is 0 (important for old calibs)
@@ -446,7 +448,7 @@ void StMagUtilities::GetOmegaTau ()
 
 void StMagUtilities::GetGridLeak ( int mode )
 {
-  fGridLeak   =  St_tpcGridLeakC::instance()  ;
+  fGridLeak   =  &cfg_.C<St_tpcGridLeakC>()  ;
   InnerGridLeakStrength  =  fGridLeak -> getGridLeakStrength ( kGLinner )  ;  // Relative strength of the Inner grid leak
   InnerGridLeakRadius    =  fGridLeak -> getGridLeakRadius   ( kGLinner )  ;  // Location (in local Y coordinates) of Inner grid leak
   InnerGridLeakWidth     =  fGridLeak -> getGridLeakWidth    ( kGLinner )  ;  // Half-width of the Inner grid leak.
@@ -473,7 +475,7 @@ void StMagUtilities::GetGridLeak ( int mode )
 void StMagUtilities::GetHVPlanes ()
 {
   // GetTPCVoltages() must be called first!
-  fHVPlanes = St_tpcHVPlanesC::instance() ;
+  fHVPlanes = &cfg_.C<St_tpcHVPlanesC>() ;
   tpcHVPlanes* HVplanes = fHVPlanes -> Struct();
   float deltaVGGCathode = GG - GGideal;
   deltaVGGEast = (  HVplanes -> GGE_shift_z * StarMagE) + deltaVGGCathode;
@@ -483,11 +485,11 @@ void StMagUtilities::GetHVPlanes ()
 
 void StMagUtilities::GetAbortGapCharge()
 {
-  fAbortGapCharge = St_tpcChargeEventC::instance() ;
+  fAbortGapCharge = &cfg_.C<St_tpcChargeEventC>() ;
   AbortGapCharges = fAbortGapCharge->getCharges() ;
   AbortGapTimes   = fAbortGapCharge->getTimes() ;
-  AbortGapChargeCoef = (St_tpcSCGLC::instance()->SC())[0] ; // temporary location for these?
-  IonDriftVel        = (St_tpcSCGLC::instance()->SC())[1] ; // temporary location for these?
+  AbortGapChargeCoef = (cfg_.C<St_tpcSCGLC>().SC())[0] ; // temporary location for these?
+  IonDriftVel        = (cfg_.C<St_tpcSCGLC>().SC())[1] ; // temporary location for these?
 }
 
 
