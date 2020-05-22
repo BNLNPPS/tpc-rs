@@ -102,7 +102,6 @@ To do:  <br>
 #include "tpc_db.h"
 
 static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
-StMagUtilities* StMagUtilities::fgInstance = 0 ;
 static const float  PiOver12 = M_PI / 12. ; // Commonly used constant
 static const float  PiOver6 = M_PI / 6. ; // Commonly used constant
 TNtuple* StMagUtilities::fgDoDistortion = 0;
@@ -147,7 +146,6 @@ struct Distortion_t {
 static Distortion_t D;
 static const char* Dnames = {"sector:xL:yL:zL:xLC:yLC:zLC"};
 
-StMagUtilities* StMagUtilities::Instance()  { return fgInstance; }
 
 void StMagUtilities::SetDoDistortionT  (TFile* f)
 {
@@ -170,12 +168,6 @@ void StMagUtilities::SetUnDoDistortionT(TFile* f)
 StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
   transform_(trans)
 {
-  if (fgInstance) {
-    LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";
-    SafeDelete(fgInstance);
-  }
-
-  fgInstance = this;
   GetDistoSmearing(mode);    // Get distortion smearing from the DB
   GetMagFactor()        ;    // Get the magnetic field scale factor from the DB
   GetTPCParams()        ;    // Get the TPC parameters from the DB
@@ -195,12 +187,6 @@ StMagUtilities::StMagUtilities(const CoordTransform& trans, int mode) :
 StMagUtilities::StMagUtilities(const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode) :
   transform_(trans)
 {
-  if (fgInstance) {
-    LOG_INFO << "ReInstate StMagUtilities. Be sure that this is want you want !\n";
-    SafeDelete(fgInstance);
-  }
-
-  fgInstance = this;
   GetDistoSmearing(0)   ;        // Do not get distortion smearing out of the DB
   GetMagFactor()        ;        // Get the magnetic field scale factor from the StarMagField
   fTpcVolts      =  0   ;        // Do not get TpcVoltages out of the DB   - use defaults in CommonStart

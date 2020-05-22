@@ -79,7 +79,6 @@ class StMagUtilities
 
 
  private:
-  static StMagUtilities* fgInstance;
   const CoordTransform& transform_;
   St_spaceChargeCorC*        fSpaceCharge   ;
   St_spaceChargeCorC*        fSpaceChargeR2 ;
@@ -215,8 +214,6 @@ class StMagUtilities
 
   StMagUtilities(const CoordTransform& trans, int mode = 0);
   StMagUtilities(const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode);
-  ~StMagUtilities () {fgInstance = 0;}
-  static StMagUtilities* Instance();
 
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
   void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
