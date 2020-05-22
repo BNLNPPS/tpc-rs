@@ -33,12 +33,12 @@ int main(int argc, char **argv)
             << "maxRecords: " << maxRecords << "\n"
             << "eCutOff:    " << eCutOff << "\n";
 
-  tpcrs::Configurator::Instance().Configure(testName);
+  tpcrs::Configurator cfg(testName);
 
-  Simulator tpcrs(tpcrs::Configurator::Instance(), eCutOff);
+  Simulator tpcrs(cfg, eCutOff);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
-  trsTreeChain.AddFile( tpcrs::Configurator::Instance().Locate(testName + ".root").c_str() );
+  trsTreeChain.AddFile( cfg.Locate(testName + ".root").c_str() );
 
   GeantEvent* geantEvent_inp = new GeantEvent();
   GeantEvent  geantEvent_out;

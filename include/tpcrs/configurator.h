@@ -36,22 +36,16 @@ class Configurator
 {
  public:
 
-  static Configurator& Instance()
-  {
-    static Configurator instance;
-    return instance;
-  }
+  Configurator(std::string cfgname = "");
 
-  bool Configure(std::string cfgname = "");
+  std::string Locate(std::string filename = "") const;
 
-  static std::string Locate(std::string filename = "");
+  std::string File() const { return Locate(name + ".yaml"); }
 
-  static std::string File() { return Locate(Instance().name + ".yaml"); }
-
-  static YAML::Node YAML(std::string taxon) { return Instance().yaml[taxon]; }
+  YAML::Node YAML(std::string taxon) const { return yaml[taxon]; }
 
   template<typename Chair>
-  Chair& C() const { return *Chair::instance(); }
+  Chair& C() const { return *Chair::instance(*this); }
 
   template<typename Struct>
   const Struct& S(int i = 0) const
@@ -75,15 +69,6 @@ class Configurator
 
  private:
 
-  /**
-   * Private deleted constructors prohibit any instantiation of this class.
-   */
-  ///@{ 
-  Configurator() {}
-  Configurator(Configurator const&)   = delete;
-  void operator=(Configurator const&) = delete;
-  ///@}
-
   /// A unique name used in various file names associated with this Configurator.
   std::string name;
 
@@ -91,27 +76,6 @@ class Configurator
 
   YAML::Node yaml;
 };
-
-template<typename Struct_t>
-const Struct_t& Cfg(int i = 0)
-{
-  static std::vector<Struct_t> rows;
-  static std::string name{ConfigNodeName<Struct_t>()};
-
-  if (rows.size()) {
-    return rows[i];
-  }
-  else {
-    try {
-      rows.push_back( Configurator::YAML(name).as<Struct_t>() );
-    } catch (std::exception& e) {
-      rows = Configurator::YAML(name).as< std::vector<Struct_t> >();
-    }
-  }
-
-  return rows[i];
-}
-
 
 }
 

@@ -963,9 +963,9 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
 
 namespace tpcrs {
 
-float GainCorrection(int sector, int row, const Configurator& cfg = Configurator::Instance());
+float GainCorrection(int sector, int row, const Configurator& cfg);
 
-float DriftVelocity(int sector = 24, const Configurator& cfg = Configurator::Instance());
+float DriftVelocity(int sector, const Configurator& cfg);
 
 }
 
