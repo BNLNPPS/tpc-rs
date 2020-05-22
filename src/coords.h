@@ -362,7 +362,7 @@ struct CoordTransform
 
   double yFromRow(int sector, int row) const
   {
-    return St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, row);
+    return cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, row);
   }
 
   double xFromPad(int sector, int row, double pad) const;
@@ -412,7 +412,7 @@ struct CoordTransform
   double              mzGG;           //! Gating Grid z
   static bool         mOldScheme;     //! switch between Old and New alignment scheme
 
-  float                triggerTimeOffset() const    {return St_trgTimeOffsetC::instance()->triggerTimeOffset();}
+  float                triggerTimeOffset() const    {return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset();}
   void SetTpcRotations();
   void SetTpcRotationMatrix(TGeoHMatrix* m, int sector = 0, int k = kSupS2Tpc)
   {
@@ -442,13 +442,13 @@ struct CoordTransform
   const TGeoHMatrix &PadInner2Glob(int sector = 1)  const {return TpcRot(sector, kPadInner2Glob);}
   const TGeoHMatrix &PadOuter2Glob(int sector = 1)  const {return TpcRot(sector, kPadOuter2Glob);}
 
-  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {int k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector, k);}
-  const TGeoHMatrix &SubS2Tpc(int sector = 1, int row = 1)  const {int k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2Tpc  : kSubSOuter2Tpc;  return TpcRot(sector, k);}
-  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {int k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kSubSInner2Glob : kSubSOuter2Glob; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2Tpc(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kSubSInner2Tpc  : kSubSOuter2Tpc;  return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kSubSInner2Glob : kSubSOuter2Glob; return TpcRot(sector, k);}
 
-  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {int k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
-  const TGeoHMatrix &Pad2Tpc(int sector = 1, int row = 1)   const {int k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Tpc  : kPadOuter2Tpc;  return TpcRot(sector, k);}
-  const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {int k = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2Tpc(int sector = 1, int row = 1)   const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2Tpc  : kPadOuter2Tpc;  return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
 };
 
 #endif

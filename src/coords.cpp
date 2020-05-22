@@ -450,24 +450,23 @@ void CoordTransform::SetTpcRotations()
 
       if (!sector) { // TPC Reference System
         if (mOldScheme) { // old scheme
-          St_tpcGlobalPositionC* tpcGlobalPosition = St_tpcGlobalPositionC::instance();
-          assert(tpcGlobalPosition);
+          St_tpcGlobalPositionC& tpcGlobalPosition = cfg_.C<St_tpcGlobalPositionC>();
           Id = 1;
           phi   = 0.0;                                               // -gamma large uncertainty, so set to 0
-          theta = tpcGlobalPosition->PhiXZ_geom() * 180.0 / M_PI; // -beta
-          psi   = tpcGlobalPosition->PhiYZ_geom() * 180.0 / M_PI; // -alpha
+          theta = tpcGlobalPosition.PhiXZ_geom() * 180.0 / M_PI; // -beta
+          psi   = tpcGlobalPosition.PhiYZ_geom() * 180.0 / M_PI; // -alpha
           rotA.RotateX(-psi);
           rotA.RotateY(-theta);
           rotA.RotateZ(-phi);
-          double transTpcRefSys[3] = {tpcGlobalPosition->LocalxShift(),
-                                      tpcGlobalPosition->LocalyShift(),
-                                      tpcGlobalPosition->LocalzShift() };
+          double transTpcRefSys[3] = {tpcGlobalPosition.LocalxShift(),
+                                      tpcGlobalPosition.LocalyShift(),
+                                      tpcGlobalPosition.LocalzShift() };
           rotA.SetTranslation(transTpcRefSys);
         }
         else {
-          rotA = StTpcPosition::instance()->GetMatrix();
-          *mHalf[TPC::Half::first]  = StTpcHalfPosition::instance()->GetEastMatrix();
-          *mHalf[TPC::Half::second] = StTpcHalfPosition::instance()->GetWestMatrix();
+          rotA = cfg_.C<StTpcPosition>().GetMatrix();
+          *mHalf[TPC::Half::first]  = cfg_.C<StTpcHalfPosition>().GetEastMatrix();
+          *mHalf[TPC::Half::second] = cfg_.C<StTpcHalfPosition>().GetWestMatrix();
         }
       }
       else {
@@ -496,7 +495,7 @@ void CoordTransform::SetTpcRotations()
           }
 
           rotA = (*mSwap[part]) * (*mHalf[part]) * (*rotm);
-          rotA *= StTpcSuperSectorPosition::instance()->GetMatrix(sector - 1);
+          rotA *= cfg_.C<StTpcSuperSectorPosition>().GetMatrix(sector - 1);
 
           if (gGeoManager) rotm->RegisterYourself();
           else             SafeDelete(rotm);
@@ -509,23 +508,23 @@ void CoordTransform::SetTpcRotations()
 
         case kSubSInner2SupS:
           if (mOldScheme) rotA = Flip();
-          else            rotA = Flip() * StTpcInnerSectorPosition::instance()->GetMatrix(sector - 1);
+          else            rotA = Flip() * cfg_.C<StTpcInnerSectorPosition>().GetMatrix(sector - 1);
 
           break;
 
         case kSubSOuter2SupS:
           if (mOldScheme)
-            rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
+            rotA = Flip() * cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1);
           else
           {
-            rotA = Flip() * StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1);
+            rotA = Flip() * cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1);
 
-            if (StTpcOuterSectorPosition::instance()->GetNRows() > 24) {
+            if (cfg_.C<StTpcOuterSectorPosition>().GetNRows() > 24) {
               if (gFactor > 0.2) {
-                rotA *= StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1 + 24);
+                rotA *= cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1 + 24);
               }
               else if (gFactor < -0.2) {
-                rotA *= StTpcOuterSectorPosition::instance()->GetMatrix(sector - 1 + 24).Inverse();
+                rotA *= cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1 + 24).Inverse();
               }
             }
           }
