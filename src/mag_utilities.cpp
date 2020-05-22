@@ -211,11 +211,6 @@ void StMagUtilities::GetDistoSmearing (int mode)
 }
 
 
-void StMagUtilities::GetMagFactor ()
-{
-  gFactor = St_MagFactorC::instance()->ScaleFactor();
-}
-
 void StMagUtilities::GetTPCParams ()
 {
   St_tpcPadConfigC*      pads = &cfg_.C<St_tpcPadConfigC>();
