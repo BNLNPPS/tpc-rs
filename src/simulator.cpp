@@ -62,6 +62,7 @@ using tpcrs::Cfg;
 Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   cfg_(cfg),
   transform_(cfg),
+  mag_field_utils_(),
   min_signal_(1e-4),
   electron_range_(0.0055), // Electron Range(.055mm)
   electron_range_energy_(3000), // eV
@@ -97,7 +98,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   //  SETBIT(options_,kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
   SETBIT(options_, kdEdxCorr);
-  SETBIT(options_, kDistortion);
+  //SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
     LOG_INFO << "Simulator:: use H.Bichsel model for dE/dx simulation\n";
@@ -1087,10 +1088,10 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
   transform_.global_to_local_sector_dir(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
 
   // Distortions
-  if (TESTBIT(options_, kDistortion) && StMagUtilities::Instance()) {
+  if (TESTBIT(options_, kDistortion)) {
     float pos[3] = {(float ) coorLT.position.x, (float ) coorLT.position.y, (float ) coorLT.position.z};
     float posMoved[3];
-    StMagUtilities::Instance()->DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
+    mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
     transform_.local_to_global(coorLT, TrackSegmentHits.xyzG);        PrPP(Make, coorLT);
   }
