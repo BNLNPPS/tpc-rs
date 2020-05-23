@@ -1098,7 +1098,7 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
 
   transform.local_to_local_sector(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
 
-  double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * StTpcDb::instance().DriftVelocity(sector);
+  double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((!IsInner(row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||

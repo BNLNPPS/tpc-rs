@@ -962,4 +962,11 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
 
 float GainCorrection(int sector, int row);
 
+
+namespace tpcrs {
+
+float DriftVelocity(int sector = 24, const Configurator& cfg = Configurator::Instance());
+
+}
+
 #endif

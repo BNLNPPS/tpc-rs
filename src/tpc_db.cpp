@@ -44,7 +44,6 @@ StTpcDb::StTpcDb()
   mHalf[0] = new TGeoHMatrix("Default for east part of TPC");
   mHalf[1] = new TGeoHMatrix("Default for west part of TPC");
 
-  SetDriftVelocity();
   SetTpcRotations();
 }
 
@@ -62,19 +61,6 @@ StTpcDb::~StTpcDb()
   SafeDelete(mSwap[1]);
   SafeDelete(mTpc2GlobMatrix);
   SafeDelete(mFlip);
-}
-
-float StTpcDb::DriftVelocity(int sector)
-{
-  TPC::Half half = (sector <= 12 ? TPC::Half::first : TPC::Half::second);
-  return 1e6 * mDriftVel[half];
-}
-
-void StTpcDb::SetDriftVelocity()
-{
-  tpcDriftVelocity* dv = St_tpcDriftVelocityC::instance()->Struct();
-  mDriftVel[0] = dv->laserDriftVelocityWest > 0 ? dv->laserDriftVelocityWest : dv->cathodeDriftVelocityWest;
-  mDriftVel[1] = dv->laserDriftVelocityEast > 0 ? dv->laserDriftVelocityEast : dv->cathodeDriftVelocityEast;
 }
 
 
