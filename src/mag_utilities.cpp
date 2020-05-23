@@ -246,7 +246,7 @@ void StMagUtilities::GetTPCParams ()
 
   using tpcrs::Cfg;
 
-  StarDriftV     =  1e-6 * StTpcDb::instance().DriftVelocity() ;
+  StarDriftV     =  1e-6 * tpcrs::DriftVelocity();
   TPC_Z0         =  Cfg<tpcPadPlanes>().outerSectorPadPlaneZ - Cfg<tpcWirePlanes>().outerSectorGatingGridPadSep;
   IFCShift       =  cages->InnerFieldCageShift();
 

@@ -116,7 +116,7 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
   if (!useT0 && useTau) // for cluster
     t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
 
-  double t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(a.sector) * 1e-6;
+  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector) * 1e-6;
   double tb = tBFromZ(a.position.z + zoffset - t0zoffset, a.sector, row, probablePad);
   b = StTpcPadCoordinate{a.sector, row, probablePad, tb};
 }
@@ -133,7 +133,7 @@ void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpc
   if (!useT0 && useTau) // for cluster
     t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
 
-  double t0zoffset = t0offset * StTpcDb::instance().DriftVelocity(a.sector) * 1e-6;
+  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector) * 1e-6;
   //t0 offset -- DH  27-Mar-00
   double z = zFromTB(a.timeBucket, a.sector, a.row, a.pad) - zoffset + t0zoffset;
   tmp.z = z;
@@ -233,7 +233,7 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
   }
 
   double time = t0 + tbx * mTimeBinWidth;
-  double z = StTpcDb::instance().DriftVelocity(sector) * 1e-6 * time;
+  double z = tpcrs::DriftVelocity(sector) * 1e-6 * time;
   return z;
 }
 
@@ -247,7 +247,7 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
   double elecT0 = Cfg<tpcElectronics>().tZero;    // units are us
   double sectT0 = Cfg<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
-  double time = z / (StTpcDb::instance().DriftVelocity(sector) * 1e-6);
+  double time = z / (tpcrs::DriftVelocity(sector) * 1e-6);
   int l = sector;
 
   if ( St_tpcPadConfigC::instance()->IsRowInner(sector, row)) l += 24;

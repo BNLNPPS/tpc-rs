@@ -54,7 +54,6 @@ class StTpcDb
   TGeoHMatrix*          mTpc2GlobMatrix;//!
   TGeoHMatrix*          mHalf[2];       //!
   TGeoHMatrix*          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
-  float               mDriftVel[2];   //!
   double              mzGG;           //! Gating Grid z
   static bool         mOldScheme;     //! switch between Old and New alignment scheme
  private:
@@ -63,8 +62,6 @@ class StTpcDb
  public:
   float                triggerTimeOffset()     {return St_trgTimeOffsetC::instance()->triggerTimeOffset();}
   static bool          IsOldScheme()    {return mOldScheme;}
-  void    SetDriftVelocity();
-  float DriftVelocity(int sector = 24);
   void SetTpcRotations();
   void SetTpcRotationMatrix(TGeoHMatrix* m, int sector = 0, int k = kSupS2Tpc)
   {
