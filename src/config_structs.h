@@ -42,7 +42,7 @@ struct ConfigStruct : Base_t
 
  protected:
 
-  ConfigStruct(const Configurator& cfg) : cfg_(cfg)
+  ConfigStruct(const Configurator& cfg) : rows_(), cfg_(cfg)
   {
     // Deal with optionally present structs
     if (!cfg_.YAML(name)) {
