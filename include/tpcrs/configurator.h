@@ -45,7 +45,15 @@ class Configurator
   YAML::Node YAML(std::string taxon) const { return yaml[taxon]; }
 
   template<typename Chair>
-  Chair& C() const { return *Chair::instance(*this); }
+  Chair& C() const
+  {
+    static Chair c(*this);
+
+    if (this != &c.cfg_)
+      c = Chair(*this);
+
+    return c;
+  }
 
   template<typename Struct>
   const Struct& S(int i = 0) const
