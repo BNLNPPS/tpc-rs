@@ -38,6 +38,8 @@ struct ConfigStruct : Base_t
 
   static std::string name;
 
+  friend Configurator;
+
  protected:
 
   ConfigStruct(const Configurator& cfg) : cfg_(cfg)
@@ -60,6 +62,11 @@ struct ConfigStruct : Base_t
     Base_t::Initialize();
   }
 
+  void operator=(const ConfigStruct &other)
+  {
+    rows_ = other.rows_;
+    const_cast<Configurator&>(cfg_) = other.cfg_;
+  }
 
   std::vector<Struct_t> rows_;
 
