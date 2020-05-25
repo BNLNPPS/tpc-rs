@@ -31,12 +31,6 @@ struct IConfigStruct
 template<typename Base_t, typename Chair_t, typename Struct_t>
 struct ConfigStruct : Base_t
 {
-  static Chair_t* instance(const Configurator& cfg)
-  {
-    static Chair_t instance;
-    return &instance;
-  }
-
   Struct_t* Struct(int i=0) { return &rows_[i]; }
   Struct_t* Struct(int i=0) const { return const_cast<Struct_t*>(&rows_[i]); }
   virtual std::string GetName() const { return name; }
@@ -66,13 +60,6 @@ struct ConfigStruct : Base_t
     Base_t::Initialize();
   }
 
-  /**
-   * Deleted members prohibit instantiation of this class.
-   */
-  ///@{
-  ConfigStruct(ConfigStruct const&)   = delete;
-  void operator=(ConfigStruct const&) = delete;
-  ///@}
 
   std::vector<Struct_t> rows_;
 
