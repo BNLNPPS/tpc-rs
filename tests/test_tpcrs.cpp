@@ -35,7 +35,6 @@ int main(int argc, char **argv)
 
   tpcrs::Configurator cfg(testName);
 
-  Simulator tpcrs(cfg, eCutOff);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile( cfg.Locate(testName + ".root").c_str() );
@@ -73,7 +72,7 @@ int main(int argc, char **argv)
     std::transform(begin(geantEvent_inp->hits), end(geantEvent_inp->hits), std::back_inserter(hits), convert);
 
     std::vector<tpcrs::DigiChannel>  digi_data;
-    tpcrs.Simulate(hits, digi_data);
+    tpcrs::simulate<Simulator>(std::begin(hits), std::end(hits), back_inserter(digi_data), cfg);
 
     geantEvent_out.Fill(digi_data);
     geantEvent_out.Print(logFile_out);
