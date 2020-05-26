@@ -11,9 +11,6 @@
 
 #include "Rtypes.h"
 
-#ifndef __CINT__
-#include "tpcrs/tpcrs.h"
-#endif
 #include "tpcrs/structs.h"
 
 #define __MaxNumberOfTimeBins__ 512
@@ -84,15 +81,15 @@ struct GeantEvent
       vertices.push_back(*vertex);
   }
 
-#ifndef __CINT__
-  void Fill(std::vector<tpcrs::DigiChannel>& digi_data)
+  template<typename T>
+  void Fill(const std::vector<T>& digi_data)
   {
     digiHits.clear();
 
     static  short ADCs[__MaxNumberOfTimeBins__];
     static unsigned short IDTs[__MaxNumberOfTimeBins__];
 
-    for (auto tc = digi_data.begin(); tc != digi_data.end(); ++tc)
+    for (auto tc = begin(digi_data); tc != end(digi_data); ++tc)
     {
       ADCs[tc->timebin] = tc->adc;
       IDTs[tc->timebin] = tc->idt;
@@ -109,7 +106,6 @@ struct GeantEvent
       }
     }
   }
-#endif
 
   void Print(std::ostream &os)
   {
