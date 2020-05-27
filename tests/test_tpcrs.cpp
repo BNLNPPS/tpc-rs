@@ -73,7 +73,7 @@ int main(int argc, char **argv)
     std::transform(begin(geantEvent_inp->hits), end(geantEvent_inp->hits), std::back_inserter(hits), convert);
 
     tpcrs::DigiData  digidata;
-    tpcrs.Make(hits, digidata);
+    tpcrs.Simulate(hits, digidata);
 
     geantEvent_out.Fill(digidata);
     geantEvent_out.Print(logFile_out);

@@ -334,7 +334,7 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
 }
 
 
-void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data)
+void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -381,7 +381,7 @@ void Simulator::Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& 
 
       if (iSector != sector) {
         if (iSector < sector) {
-          LOG_ERROR << "Simulator::Make: geant_hits table has not been ordered by sector no. " << sector << '\n';
+          LOG_ERROR << "Simulator::Simulate: geant_hits table has not been ordered by sector no. " << sector << '\n';
           assert( iSector > sector );
         }
 

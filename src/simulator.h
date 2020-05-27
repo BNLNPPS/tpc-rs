@@ -23,7 +23,7 @@ class Simulator
   Simulator(const tpcrs::Configurator& cfg, double eCutOff = 1e-3);
   ~Simulator();
 
-  void Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
+  void Simulate(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
 
  private:
 
