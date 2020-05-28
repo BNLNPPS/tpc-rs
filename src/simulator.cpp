@@ -63,9 +63,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   transform_(cfg),
   mag_field_utils_(cfg, transform_),
   min_signal_(1e-4),
-  electron_range_(0.0055), // Electron Range(.055mm)
-  electron_range_energy_(3000), // eV
-  electron_range_power_(1.78), // sigma =  electron_range_*(eEnery/electron_range_energy_)**electron_range_power_
   max_electron_energy_(e_cutoff),
   num_sectors_(cfg_.S<tpcDimensions>().numberOfSectors),
   max_rows_(72),
@@ -1246,9 +1243,7 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
       LOG_INFO << "dESum = " << dESum << " /\tdSSum " << dSSum << " /\t newPosition " << newPosition << '\n';
     }
 #endif
-    double xRange = 0;
-    if (dE > electron_range_energy_)
-      xRange = electron_range_ * std::pow((dE + dEr) / electron_range_energy_, electron_range_power_);
+    double xRange = ElectronRange(dE, dEr);
 
     std::vector<float> rs = NumberOfElectronsInCluster(mHeed, dE, dEr);
 
