@@ -1716,6 +1716,30 @@ struct convert<TpcResponseSimulator> {
 
 namespace YAML {
 template<>
+struct convert<ResponseSimulator> {
+  static Node encode(const ResponseSimulator& st) {
+    Node node;
+
+    node["min_signal"] = st.min_signal;
+    node["electron_cutoff_energy"] = st.electron_cutoff_energy;
+    return node;
+  };
+
+  static bool decode(const Node& node, ResponseSimulator& st) {
+    if(!node.IsMap()) {
+      return false;
+    }
+
+    st.min_signal = node["min_signal"].as<double>();
+    st.electron_cutoff_energy = node["electron_cutoff_energy"].as<double>();
+    return true;
+  }
+};
+}
+
+
+namespace YAML {
+template<>
 struct convert<richvoltages> {
   static Node encode(const richvoltages& st) {
     Node node;

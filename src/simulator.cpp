@@ -62,8 +62,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
   cfg_(cfg),
   transform_(cfg),
   mag_field_utils_(cfg, transform_),
-  min_signal_(1e-4),
-  max_electron_energy_(e_cutoff),
   num_sectors_(cfg_.S<tpcDimensions>().numberOfSectors),
   max_rows_(72),
   max_pads_(182),
@@ -465,7 +463,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
         // dE/dx correction
         double dEdxCor = dEdxCorrection(seg);
         dEdxCor *= GatingGridTransparency(seg.Pad.timeBucket);
-        if (dEdxCor < min_signal_) continue;
+        if (dEdxCor < cfg_.S<ResponseSimulator>().min_signal) continue;
 
         double gain_local = CalcLocalGain(seg.Pad.sector, seg.Pad.row, gain_base, dEdxCor);
 
@@ -522,7 +520,8 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
           Tmax = 2 * m_e * betaGamma * betaGamma / (1 + 2 * gamma * r + r * r);
         }
 
-        if (Tmax > max_electron_energy_) Tmax = max_electron_energy_;
+        if (Tmax > cfg_.S<ResponseSimulator>().electron_cutoff_energy)
+          Tmax = cfg_.S<ResponseSimulator>().electron_cutoff_energy;
 
         int nP = 0;
         double dESum = 0;
@@ -1422,7 +1421,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
     double delta_y = transform_.yFromRow(sector, row) - yOnWire;
     double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(delta_y);
 
-    if (YDirectionCoupling < min_signal_) continue;
+    if (YDirectionCoupling < cfg_.S<ResponseSimulator>().min_signal) continue;
 
     float padX = Pad.pad;
     int CentralPad = tpcrs::irint(padX);
@@ -1453,7 +1452,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
 
       double XYcoupling = gain * XDirectionCouplings[pad - padMin] * YDirectionCoupling;
 
-      if (XYcoupling < min_signal_) continue;
+      if (XYcoupling < cfg_.S<ResponseSimulator>().min_signal) continue;
 
       int tbin_first = std::max(0, binT + tpcrs::irint(dt + shaper->GetXmin() - 0.5));
       int tbin_last  = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper->GetXmax() + 0.5));
@@ -1467,7 +1466,7 @@ void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegme
       for (int itbin = tbin_first; itbin <= tbin_last; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - tbin_first];
 
-        if (signal < min_signal_)  continue;
+        if (signal < cfg_.S<ResponseSimulator>().min_signal)  continue;
 
         binned_charge[index].Sum += signal;
 

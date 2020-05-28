@@ -711,6 +711,12 @@ struct TpcResponseSimulator {
   float FirstRowC; /* = 0.0   extra correction for the first pad row */
 };
 
+
+struct ResponseSimulator {
+  double min_signal;             /* (1e-4), */
+  double electron_cutoff_energy; /* (e_cutoff), */
+};
+
 /**
 Table for SpaceCharge and GridLeak Correction parameters
        SC parameters: 4 array elements for west, plus 4 for east  8,
