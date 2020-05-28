@@ -41,6 +41,7 @@ std::string Configurator::Locate(std::string filename) const
 
 template<> std::string ConfigNodeName<trigDetSums>()          { return "Calibrations/rich/trigDetSums"; };
 template<> std::string ConfigNodeName<asic_thresholds>()      { return "Calibrations/tpc/asic_thresholds"; };
+template<> std::string ConfigNodeName<ResponseSimulator>()    { return "Calibrations/tpc/ResponseSimulator"; };
 template<> std::string ConfigNodeName<tpcAltroParams>()       { return "Calibrations/tpc/tpcAltroParams"; };
 template<> std::string ConfigNodeName<tpcDriftVelocity>()     { return "Calibrations/tpc/tpcDriftVelocity"; };
 template<> std::string ConfigNodeName<tpcEffectiveGeom>()     { return "Calibrations/tpc/tpcEffectiveGeom"; };

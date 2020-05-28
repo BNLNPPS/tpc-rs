@@ -14,6 +14,7 @@ template<typename Struct> std::string ConfigNodeName() { return "undefined"; };
 
 template<> std::string ConfigNodeName<trigDetSums>();
 template<> std::string ConfigNodeName<asic_thresholds>();
+template<> std::string ConfigNodeName<ResponseSimulator>();
 template<> std::string ConfigNodeName<tpcAltroParams>();
 template<> std::string ConfigNodeName<tpcDriftVelocity>();
 template<> std::string ConfigNodeName<tpcEffectiveGeom>();

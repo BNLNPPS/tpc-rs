@@ -63,8 +63,6 @@ class Simulator
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
   StMagUtilities mag_field_utils_;
-  const double min_signal_;           //!
-  const double max_electron_energy_;                 //! cut for delta electrons
   const int num_sectors_;            //!
   const int max_rows_;               //!
   const int max_pads_;               //!
