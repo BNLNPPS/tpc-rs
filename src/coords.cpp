@@ -91,11 +91,12 @@ std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorDirection &a)
 
 using tpcrs::Cfg;
 
-CoordTransform::CoordTransform()
+CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
+  cfg_(cfg)
 {
-  mTimeBinWidth = 1e6 / Cfg<starClockOnl>().frequency;
-  mInnerSectorzOffset = Cfg<tpcEffectiveGeom>().z_inner_offset;
-  mOuterSectorzOffset = Cfg<tpcEffectiveGeom>().z_outer_offset;
+  mTimeBinWidth = 1e6 / cfg_.S<starClockOnl>().frequency;
+  mInnerSectorzOffset = cfg_.S<tpcEffectiveGeom>().z_inner_offset;
+  mOuterSectorzOffset = cfg_.S<tpcEffectiveGeom>().z_outer_offset;
 }
 
 
@@ -105,18 +106,18 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and  = false for MC
   int row = a.row;
 
-  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(a.sector))
+  if (row < 1 || row > cfg_.C<St_tpcPadConfigC>().numberOfRows(a.sector))
     row = rowFromLocalY(a.position.y, a.sector);
 
   double probablePad = padFromX(a.position.x, a.sector, a.row);
-  double zoffset = (row > St_tpcPadConfigC::instance()->innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? St_tpcPadGainT0BC::instance()->T0(a.sector, row, tpcrs::irint(probablePad)) : 0;
+  double zoffset = (row > cfg_.C<St_tpcPadConfigC>().innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? cfg_.C<St_tpcPadGainT0BC>().T0(a.sector, row, tpcrs::irint(probablePad)) : 0;
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
-    t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
+    t0offset -= 3.0 * cfg_.S<tss_tsspar>().tau;   // correct for convolution lagtime
 
-  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector) * 1e-6;
+  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector, cfg_) * 1e-6;
   double tb = tBFromZ(a.position.z + zoffset - t0zoffset, a.sector, row, probablePad);
   b = StTpcPadCoordinate{a.sector, row, probablePad, tb};
 }
@@ -126,14 +127,14 @@ void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpc
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and = false for MC
   Coords  tmp{xFromPad(a.sector, a.row, a.pad), yFromRow(a.sector, a.row), 0};
-  double zoffset =  (a.row > St_tpcPadConfigC::instance()->innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  double t0offset = useT0 ? St_tpcPadGainT0BC::instance()->T0(a.sector, a.row, tpcrs::irint(a.pad)) : 0;
+  double zoffset =  (a.row > cfg_.C<St_tpcPadConfigC>().innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double t0offset = useT0 ? cfg_.C<St_tpcPadGainT0BC>().T0(a.sector, a.row, tpcrs::irint(a.pad)) : 0;
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
-    t0offset -= 3.0 * Cfg<tss_tsspar>().tau;   // correct for convolution lagtime
+    t0offset -= 3.0 * cfg_.S<tss_tsspar>().tau;   // correct for convolution lagtime
 
-  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector) * 1e-6;
+  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector, cfg_) * 1e-6;
   //t0 offset -- DH  27-Mar-00
   double z = zFromTB(a.timeBucket, a.sector, a.row, a.pad) - zoffset + t0zoffset;
   tmp.z = z;
@@ -143,25 +144,25 @@ void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpc
 
 double CoordTransform::padFromX(double x, int sector, int row) const
 {
-  if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
+  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector)) row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
 
-  double pitch = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ?
-                         St_tpcPadConfigC::instance()->innerSectorPadPitch(sector) :
-                         St_tpcPadConfigC::instance()->outerSectorPadPitch(sector);
+  double pitch = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ?
+                         cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(sector) :
+                         cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(sector);
   // x coordinate in sector 12
-  int npads = St_tpcPadConfigC::instance()->numberOfPadsAtRow(sector, row);
+  int npads = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(sector, row);
   double xL = x;
-  int NiRows = St_tpcPadConfigC::instance()->numberOfInnerRows(sector);
+  int NiRows = cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
 
   if (NiRows != 13 && row <= NiRows) {
     // iTPC Survey, see  Jim Thomas comments in CoordTransform::xFromPad
-    double yRef = St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, NiRows) + 0.565;
+    double yRef = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, NiRows) + 0.565;
     double xHit = xL;
-    double yHit = St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, row) - yRef;
-    St_iTPCSurveyC* sur = St_iTPCSurveyC::instance();
-    double dx = sur->dx(sector - 1);
-    double Xscale = sur->ScaleX(sector - 1);
-    double theta  = sur->Angle(sector - 1);
+    double yHit = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, row) - yRef;
+    const iTPCSurvey& sur = cfg_.S<iTPCSurvey>(sector - 1);
+    double dx = sur.dx;
+    double Xscale = sur.ScaleX;
+    double theta  = sur.Angle;
     xL = xHit * (1. - Xscale) - dx + theta * yHit;
   }
 
@@ -178,15 +179,15 @@ double CoordTransform::padFromX(double x, int sector, int row) const
 
 double CoordTransform::xFromPad(int sector, int row, double pad) const      // x coordinate in sector 12
 {
-  if (row > St_tpcPadConfigC::instance()->numberOfRows(sector)) row = St_tpcPadConfigC::instance()->numberOfRows(sector);
+  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector)) row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
 
-  double pitch = (row <= St_tpcPadConfigC::instance()->innerPadRows(sector)) ?
-                   St_tpcPadConfigC::instance()->innerSectorPadPitch(sector) :
-                   St_tpcPadConfigC::instance()->outerSectorPadPitch(sector);
-  int npads = St_tpcPadConfigC::instance()->numberOfPadsAtRow(sector, row);
+  double pitch = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ?
+                   cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(sector) :
+                   cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(sector);
+  int npads = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(sector, row);
   double xPad = -pitch * (pad - (npads + 1.) / 2.);
 
-  int NiRows = St_tpcPadConfigC::instance()->numberOfInnerRows(sector);
+  int NiRows = cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
 
   if (NiRows == 13 || row > NiRows) {
     return xPad;
@@ -195,15 +196,13 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
   // iTPC Survey, Jim Thomas correction 08/21/18
   // The change in the yRef comes about because the origin of the coordinate system is 0.565 mm above the center of PadRow 40.
   // The changes for the X coordinates come about because of the reversal of pad counting by the DAQ guys … as you know.
-  double yRef = St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, NiRows) + 0.565; // Change sign in front of 0.565
+  double yRef = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, NiRows) + 0.565; // Change sign in front of 0.565
   double xL = xPad;  // Eliminate -1 in front of xPad
-  double yL = St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, row) - yRef;
-  St_iTPCSurveyC* sur = St_iTPCSurveyC::instance();
-  double dx = sur->dx(sector - 1);
-  //double dy = sur->dy(sector-1);
-  double Xscale = sur->ScaleX(sector - 1);
-  //double Yscale = sur->ScaleY(sector-1);
-  double theta  = sur->Angle(sector - 1);
+  double yL = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, row) - yRef;
+  const iTPCSurvey& sur = cfg_.S<iTPCSurvey>(sector-1);
+  double dx = sur.dx;
+  double Xscale = sur.ScaleX;
+  double theta  = sur.Angle;
   double xHit = xL * (1. + Xscale) + dx - theta * yL; // Eliminate -1 in front of whole expression and delete ( )
   //double yHit = yL*(1. + Yscale) + dy + theta*xL + yRef;
   return xHit;
@@ -215,47 +214,47 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
 
 double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 {
-  if (row > St_tpcPadConfigC::instance()->numberOfRows(sector))
-    row = St_tpcPadConfigC::instance()->numberOfRows(sector);
+  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector))
+    row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
 
   double trigT0 = StTpcDb::instance().triggerTimeOffset() * 1e6; // units are s
-  double elecT0 = Cfg<tpcElectronics>().tZero;    // units are us
-  double sectT0 = Cfg<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
+  double elecT0 = cfg_.S<tpcElectronics>().tZero;    // units are us
+  double sectT0 = cfg_.S<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
   int l = sector;
 
-  if ( St_tpcPadConfigC::instance()->IsRowInner(sector, row)) l += 24;
+  if ( cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) l += 24;
 
-  double tbx = tb + St_tpcSectorT0offsetC::instance()->t0offset(l);
+  double tbx = tb + cfg_.C<St_tpcSectorT0offsetC>().t0offset(l);
 
-  if (St_tpcRDOT0offsetC::instance()->IsShfited(sector)) {
-    tbx += St_tpcRDOT0offsetC::instance()->T0(sector, row, pad);
+  if (cfg_.C<St_tpcRDOT0offsetC>().IsShfited(sector)) {
+    tbx += cfg_.C<St_tpcRDOT0offsetC>().T0(sector, row, pad);
   }
 
   double time = t0 + tbx * mTimeBinWidth;
-  double z = tpcrs::DriftVelocity(sector) * 1e-6 * time;
+  double z = tpcrs::DriftVelocity(sector, cfg_) * 1e-6 * time;
   return z;
 }
 
 
 double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 {
-  if (row > St_tpcPadConfigC::instance()->numberOfRows(sector))
-    row = St_tpcPadConfigC::instance()->numberOfRows(sector);
+  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector))
+    row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
 
   double trigT0 = StTpcDb::instance().triggerTimeOffset() * 1e6; // units are s
-  double elecT0 = Cfg<tpcElectronics>().tZero;    // units are us
-  double sectT0 = Cfg<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
+  double elecT0 = cfg_.S<tpcElectronics>().tZero;    // units are us
+  double sectT0 = cfg_.S<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
-  double time = z / (tpcrs::DriftVelocity(sector) * 1e-6);
+  double time = z / (tpcrs::DriftVelocity(sector, cfg_) * 1e-6);
   int l = sector;
 
-  if ( St_tpcPadConfigC::instance()->IsRowInner(sector, row)) l += 24;
+  if ( cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) l += 24;
 
-  double tb = (time - t0) / mTimeBinWidth - St_tpcSectorT0offsetC::instance()->t0offset(l);
+  double tb = (time - t0) / mTimeBinWidth - cfg_.C<St_tpcSectorT0offsetC>().t0offset(l);
 
-  if (St_tpcRDOT0offsetC::instance()->IsShfited(sector)) {
-    tb -= St_tpcRDOT0offsetC::instance()->T0(sector, row, pad);
+  if (cfg_.C<St_tpcRDOT0offsetC>().IsShfited(sector)) {
+    tb -= cfg_.C<St_tpcRDOT0offsetC>().T0(sector, row, pad);
   }
 
   return tb;
@@ -267,8 +266,8 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
   static int Nrows = 0;
   static double* Radii = 0;
 
-  if (Nrows != St_tpcPadConfigC::instance()->padRows(sector)) {
-    Nrows = St_tpcPadConfigC::instance()->padRows(sector);
+  if (Nrows != cfg_.C<St_tpcPadConfigC>().padRows(sector)) {
+    Nrows = cfg_.C<St_tpcPadConfigC>().padRows(sector);
 
     if (Radii) delete [] Radii;
 
@@ -276,16 +275,16 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
 
     for (int i = 1; i <= Nrows + 1; i++) {
       if (i == 1) {
-        Radii[i - 1] =  (3 * St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, i)
-                           - St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, i + 1)) / 2;
+        Radii[i - 1] =  (3 * cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i)
+                           - cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i + 1)) / 2;
       }
       else if (i == Nrows + 1) {
-        Radii[i - 1] =  (3 * St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, i - 1)
-                           - St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, i - 2)) / 2;
+        Radii[i - 1] =  (3 * cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i - 1)
+                           - cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i - 2)) / 2;
       }
       else {
-        Radii[i - 1] = (St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, i - 1) +
-                        St_tpcPadConfigC::instance()->radialDistanceAtRow(sector, i)) / 2;
+        Radii[i - 1] = (cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i - 1) +
+                        cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i)) / 2;
       }
     }
   }
@@ -306,7 +305,7 @@ void CoordTransform::local_sector_to_local(const StTpcLocalSectorCoordinate &a, 
 {
   int row = a.row;
 
-  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(a.sector))
+  if (row < 1 || row > cfg_.C<St_tpcPadConfigC>().numberOfRows(a.sector))
     row = rowFromLocalY(a.position.y, a.sector);
 
   Coords xGG;
@@ -324,7 +323,7 @@ void CoordTransform::local_to_local_sector(const StTpcLocalCoordinate &a, StTpcL
 {
   int row = a.row;
 
-  if (row < 1 || row > St_tpcPadConfigC::instance()->numberOfRows(a.sector)) {
+  if (row < 1 || row > cfg_.C<St_tpcPadConfigC>().numberOfRows(a.sector)) {
     Coords xyzS;
     StTpcDb::instance().SupS2Tpc(a.sector).MasterToLocalVect(a.position.xyz(), xyzS.xyz());
     row = rowFromLocalY(xyzS.x, a.sector);
