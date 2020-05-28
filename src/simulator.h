@@ -64,9 +64,6 @@ class Simulator
   const CoordTransform transform_;
   StMagUtilities mag_field_utils_;
   const double min_signal_;           //!
-  const double electron_range_;       //!
-  const double electron_range_energy_; //!
-  const double electron_range_power_;  //!
   const double max_electron_energy_;                 //! cut for delta electrons
   const int num_sectors_;            //!
   const int max_rows_;               //!
@@ -83,6 +80,18 @@ class Simulator
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
+
+  /**
+   * sigma = electron_range*(eEnery/electron_range_energy)^electron_range_power
+   *
+   * electron_range = 0.0055 cm
+   * electron_range_energy = 3000 eV
+   * electron_range_power = 1.78
+   */
+  static double ElectronRange(float dE, float dEr)
+  {
+    return dE > 3000. ? 0.0055 * std::pow((dE + dEr) / 3000., 1.78) : 0;
+  }
 
   static double GatingGridTransparency(double x, double x_min = 10, double x_max = 56)
   {
