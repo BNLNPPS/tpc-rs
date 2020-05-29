@@ -25,18 +25,19 @@ target_link_libraries(test_tpcrs tpcrs ${ROOT_LIBRARIES} ${YAML_CPP_INSTALL_PREF
 include(ExternalProject)
 
 if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-    set(TEST_DATA_FILE 1CJASQerc5KqCyOSEU043VkOfJx_OtI2Z)
+    set(TEST_DATA_DIR data-64)
 else()
-    set(TEST_DATA_FILE 1XESdyqg6kXhu5gPrgS3drq3UIBu0f1l5)
+    set(TEST_DATA_DIR data-32)
 endif()
 
 ExternalProject_Add(
     test-data
-    DOWNLOAD_COMMAND ${CMAKE_SOURCE_DIR}/utils/gdrive.py ${TEST_DATA_FILE} > test-data.tar.gz
-    PREFIX ${CMAKE_BINARY_DIR}/contrib
+    URL               https://github.com/plexoos/tpc-rs-data/archive/tpc-rs-v0.0.10.tar.gz
+    URL_HASH          MD5=f835351d0edc30fe3cd551138671d6ce
+    PREFIX            ${CMAKE_BINARY_DIR}/contrib
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${CMAKE_COMMAND} -E tar xz <DOWNLOAD_DIR>/test-data.tar.gz
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E rename <BINARY_DIR>/data ${CMAKE_BINARY_DIR}/tests/data
+    BUILD_COMMAND     ""
+    INSTALL_COMMAND   ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/${TEST_DATA_DIR} ${CMAKE_BINARY_DIR}/tests/data
 )
 
 
