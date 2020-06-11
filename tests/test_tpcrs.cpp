@@ -7,7 +7,7 @@
 
 #include "TChain.h"
 
-#include "tests/GeantEvent.h"
+#include "GeantEvent.h"
 #include "tpcrs/tpcrs.h"
 #include "tpcrs/configurator.h"
 #include "tpcrs/tpcrs.h"
