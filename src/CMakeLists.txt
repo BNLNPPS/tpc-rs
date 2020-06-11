@@ -140,8 +140,10 @@ set(source_files
 
 add_library(tpcrs ${header_files} ${source_files})
 
-target_include_directories(tpcrs PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/StDetectorDbMaker
-    ${CMAKE_SOURCE_DIR}/include ${YAML_CPP_INSTALL_PREFIX}/include ${CMAKE_BINARY_DIR}/src ${ROOT_INCLUDE_DIR})
+target_include_directories(tpcrs PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/include
+    ${YAML_CPP_INSTALL_PREFIX}/include ${CMAKE_BINARY_DIR}/src ${ROOT_INCLUDE_DIR})
 add_dependencies(tpcrs yaml-cpp-lib)
 
 set_target_properties(tpcrs PROPERTIES
