@@ -1,0 +1,79 @@
+language: cpp
+
+compiler: gcc
+
+_shared_script: &shared_script
+  - pwd
+  - ls -la
+  - mkdir -p build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE ../BNLNPPS/tpc-rs
+  - make -j2
+
+# Ubuntu Trusty 14.04
+_shared_trusty_job: &shared_trusty_job
+  addons:
+    apt:
+      packages:
+        - cmake
+        - libgsl0ldbl
+  before_script:
+    - cd $TRAVIS_BUILD_DIR/../../
+    - wget https://root.cern.ch/download/root_v5.34.38.Linux-ubuntu14-x86_64-gcc4.8.tar.gz
+    - tar -xzf root_v5.34.38.Linux-ubuntu14-x86_64-gcc4.8.tar.gz
+    - source root/bin/thisroot.sh
+  script:
+    - *shared_script
+    - ctest -j2 -R quick
+
+# Ubuntu Xenial 16.04
+_shared_xenial_job: &shared_xenial_job
+  addons:
+    apt:
+      packages:
+        - cmake
+        - libgsl2
+  before_script:
+    - cd $TRAVIS_BUILD_DIR/../../
+    - wget https://root.cern/download/root_v6.20.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz
+    - tar -xzf root_v6.20.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz
+    - source root/bin/thisroot.sh
+  script:
+    - *shared_script
+
+# Ubuntu Bionic 18.04
+_shared_bionic_job: &shared_bionic_job
+  addons:
+    apt:
+      packages:
+        - cmake
+        - libgsl23
+  before_script:
+    - cd $TRAVIS_BUILD_DIR/../../
+    - wget https://root.cern/download/root_v6.20.04.Linux-ubuntu18-x86_64-gcc7.5.tar.gz
+    - tar -xzf root_v6.20.04.Linux-ubuntu18-x86_64-gcc7.5.tar.gz
+    - source root/bin/thisroot.sh
+  script:
+    - *shared_script
+
+jobs:
+  include:
+    - dist: trusty
+      env: CMAKE_BUILD_TYPE=Release
+      <<: *shared_trusty_job
+    - dist: trusty
+      env: CMAKE_BUILD_TYPE=Debug
+      <<: *shared_trusty_job
+
+    - dist: xenial
+      env: CMAKE_BUILD_TYPE=Release
+      <<: *shared_xenial_job
+    - dist: xenial
+      env: CMAKE_BUILD_TYPE=Debug
+      <<: *shared_xenial_job
+
+    - dist: bionic
+      env: CMAKE_BUILD_TYPE=Release
+      <<: *shared_bionic_job
+    - dist: bionic
+      env: CMAKE_BUILD_TYPE=Debug
+      <<: *shared_bionic_job
