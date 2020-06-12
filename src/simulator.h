@@ -20,7 +20,7 @@ class Simulator
 {
  public:
 
-  Simulator(double eCutOff = 1e-3);
+  Simulator(const tpcrs::Configurator& cfg, double eCutOff = 1e-3);
   ~Simulator();
 
   void Make(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
@@ -60,6 +60,7 @@ class Simulator
              };
   enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
 
+  const tpcrs::Configurator& cfg_;
   const double min_signal_;           //!
   const double electron_range_;       //!
   const double electron_range_energy_; //!
@@ -87,9 +88,9 @@ class Simulator
     return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
   };
 
-  static bool IsInner(int row, int sector=1)
+  bool IsInner(int row, int sector=1)
   {
-    return row <= St_tpcPadConfigC::instance()->numberOfInnerRows(sector);
+    return row <= cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
   };
 
   int Debug() const {return 1;}
