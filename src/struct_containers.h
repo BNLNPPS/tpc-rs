@@ -194,9 +194,8 @@ struct St_SurveyC : tpcrs::IConfigStruct {
   void Initialize()
   {
     unsigned int N = GetNRows();
-    fRotations = new TGeoHMatrix*[N];
     for (unsigned int i = 0; i < N; i++) {
-      fRotations[i] = new TGeoHMatrix;
+      fRotations.push_back(new TGeoHMatrix);
       TGeoHMatrix &rot = *fRotations[i];
       if (N == 1) rot.SetName(GetName().c_str());
       else        rot.SetName(Form("%s_%i",GetName().c_str(),i+1));
@@ -241,7 +240,7 @@ struct St_SurveyC : tpcrs::IConfigStruct {
  protected:
   St_SurveyC();
  private:
-  TGeoHMatrix  **fRotations;
+  std::vector<TGeoHMatrix*> fRotations;
 };
 
 struct St_TpcAdcCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcAdcCorrectionMDF, MDFCorrection> {
