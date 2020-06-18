@@ -883,6 +883,21 @@ MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
 
 St_SurveyC::St_SurveyC() : fRotations()  { }
 
+void St_SurveyC::Initialize()
+  {
+    unsigned int N = GetNRows();
+    for (unsigned int i = 0; i < N; i++) {
+      fRotations.push_back(new TGeoHMatrix);
+      TGeoHMatrix &rot = *fRotations[i];
+      if (N == 1) rot.SetName(GetName().c_str());
+      else        rot.SetName(Form("%s_%i",GetName().c_str(),i+1));
+      rot.SetRotation(Rotation(i));
+      rot.SetTranslation(Translation(i));
+      Normalize(rot);
+      assert(TMath::Abs(rot.Determinant())-1 < 1.e-3);
+    }
+  }
+
 
 St_SurveyC::~St_SurveyC() {
     for (unsigned int i = 0; i < GetNRows(); i++) {
