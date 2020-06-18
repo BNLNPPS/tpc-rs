@@ -880,7 +880,6 @@ MakeChairInstance2(Survey,StTpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPo
 MakeChairInstance2(Survey,StTpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPosition);
 MakeChairInstance2(Survey,StTpcHalfPosition,Geometry/tpc/TpcHalfPosition);
 MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
-MakeChairInstance(iTPCSurvey,Geometry/tpc/iTPCSurvey);
 
 St_SurveyC::St_SurveyC() : fRotations(0)  { }
 

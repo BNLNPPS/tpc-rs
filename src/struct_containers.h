@@ -34,17 +34,6 @@ struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadG
   }
 };
 
-struct St_iTPCSurveyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_iTPCSurveyC, iTPCSurvey> {
-  St_iTPCSurveyC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_iTPCSurveyC, iTPCSurvey>(cfg) {}
-  int 	Id(int i = 0) 	const {return Struct(i)->Id;}
-  float 	Angle(int i = 0) 	const {return Struct(i)->Angle;}
-  float 	dx(int i = 0) 	const {return Struct(i)->dx;}
-  float 	dy(int i = 0) 	const {return Struct(i)->dy;}
-  float 	ScaleX(int i = 0) 	const {return Struct(i)->ScaleX;}
-  float 	ScaleY(int i = 0) 	const {return Struct(i)->ScaleY;}
-  char* 	comment(int i = 0) 	const {return Struct(i)->comment;}
-};
-
 struct St_MagFactorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_MagFactorC, MagFactor> {
   float 	ScaleFactor(int i = 0) {return Struct(i)->ScaleFactor;}
 };
