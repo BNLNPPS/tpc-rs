@@ -881,16 +881,13 @@ MakeChairInstance2(Survey,StTpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPo
 MakeChairInstance2(Survey,StTpcHalfPosition,Geometry/tpc/TpcHalfPosition);
 MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
 
-St_SurveyC::St_SurveyC() : fRotations(0)  { }
+St_SurveyC::St_SurveyC() : fRotations()  { }
 
 
 St_SurveyC::~St_SurveyC() {
-  if (fRotations) {
     for (unsigned int i = 0; i < GetNRows(); i++) {
-      SafeDelete(fRotations[0]);
+      SafeDelete(fRotations[i]);
     }
-    SafeDelete(fRotations);
-  }
 }
 
 
@@ -924,7 +921,7 @@ void St_SurveyC::Normalize(TGeoHMatrix &R) {
 
 
 const TGeoHMatrix &St_SurveyC::GetMatrix(int i) {
-  assert(fRotations || fRotations[i]);
+  assert(fRotations[i]);
   assert(std::abs(fRotations[i]->Determinant())-1 < 1.e-3);
   return *fRotations[i];
 }
