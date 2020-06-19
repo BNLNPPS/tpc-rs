@@ -627,7 +627,7 @@ struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGai
   {
     float gain = 0;
 
-    if ((sector > 0 && sector <= 24) && (row > 0 && row <= St_tpcPadConfigC::instance()->padRows(sector)) && (pad > 0 && pad <= 182)) {
+    if ((sector > 0 && sector <= 24) && (row > 0 && row <= cfg_.C<St_tpcPadConfigC>().padRows(sector)) && (pad > 0 && pad <= 182)) {
       gain = Struct()->Gain[sector - 1][row - 1][pad - 1];
     }
 
@@ -637,7 +637,7 @@ struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGai
   {
     float t0 = 0;
 
-    if ((sector > 0 && sector <= 24) && (row > 0 && row <= St_tpcPadConfigC::instance()->padRows(sector)) && (pad > 0 && pad <= 182)) {
+    if ((sector > 0 && sector <= 24) && (row > 0 && row <= cfg_.C<St_tpcPadConfigC>().padRows(sector)) && (pad > 0 && pad <= 182)) {
       t0 = Struct()->T0[sector - 1][row - 1][pad - 1];
     }
 
@@ -800,13 +800,13 @@ struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMask
   }
   static unsigned int rdoForPadrow(int sector, int row)   //Function returns the rdo board number for a given padrow index. Range of map used is 1-45.
   {
-    if (St_tpcPadConfigC::instance()->iTpc(sector)) return 8;
+    if (cfg_.C<St_tpcPadConfigC>().iTpc(sector)) return 8;
 
     return rdoForPadrow(row);
   }
   bool        isOn(int sector, int rdo)
   {
-    if (St_tpcPadConfigC::instance()->iTpc(sector)) return 1;
+    if (cfg_.C<St_tpcPadConfigC>().iTpc(sector)) return 1;
 
     if (sector < 1 || sector > 24 || rdo < 1 || rdo > 6)	return 0;
 
@@ -944,7 +944,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   double getBBCBlueBkg() {return bbcBlueBkg();}
   double getPVPDWest() {return pvpdWest();}
   double getPVPDEast() {return pvpdEast();}
-  unsigned int   getRichHVStatus() {return St_richvoltagesC::instance()->status();}
+  unsigned int   getRichHVStatus() {return cfg_.C<St_richvoltagesC>().status();}
   void     setValidityMargin(double margin = 0) {validityMargin(margin);}
 
   // The following code attempts to correct coincidence rates for accidentals and multiples
@@ -953,7 +953,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   {
     // 111 is a guess using the maximum seen filled bunches in RHIC so far
     // (not always the case, but we don't have access to this number)
-    double Nbc = tpcrs::Cfg<starClockOnl>().frequency * ((double) n_bunches) / 120.;
+    double Nbc = cfg_.S<starClockOnl>().frequency * ((double) n_bunches) / 120.;
     return -Nbc * TMath::Log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
   }
  private:
