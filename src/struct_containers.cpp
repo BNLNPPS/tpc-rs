@@ -428,14 +428,14 @@ int            St_tpcPadConfigC::indexForRowPad(int sector, int row, int pad)   
 }
 
 
-void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f2) {
+void  St_tpcAnodeHVC::sockets(bool is_iTPC, int sector, int padrow, int &e1, int &e2, float &f2) {
   e1 = (sector-1)*19;
   e2 = e1;
   f2 = 0;
   // sector=1..24 , padrow=1..45
   // f2 represents signal couplings from neighboring HV sections
   // see: http://www.star.bnl.gov/public/tpc/hard/signals/signal_division.html
-  if (!  St_tpcPadConfigC::instance()->iTPC(sector)) {
+  if (!is_iTPC) {
     switch (padrow) {
     case  1: e1+= 1; e2+= 2; f2 = 0.00197; break;
     case  2: e1+= 2; break;
@@ -717,9 +717,8 @@ MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainC
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 
 
-int St_TpcAvgCurrentC::ChannelFromRow(int sector, int row) {
-  if (row <  1 || row > St_tpcPadConfigC::instance()->padRows(sector)) return -1;
-  if (!  St_tpcPadConfigC::instance()->iTPC(sector)) {
+int St_TpcAvgCurrentC::ChannelFromRow(int sector, int row, bool is_iTPC) {
+  if (!is_iTPC) {
     if (row <  3) return 1;
     if (row <  7) return 2;
     if (row < 10) return 3;
@@ -981,9 +980,10 @@ void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
 }
 
 
-double St_spaceChargeCorC::getSpaceChargeCoulombs(double scaleFactor)
+double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg)
   {
-    St_trigDetSumsC* scalers = St_trigDetSumsC::instance();
+    double scaleFactor = cfg.S<MagFactor>().ScaleFactor;
+    St_trigDetSumsC* scalers = &cfg.C<St_trigDetSumsC>();
     if (! scalers ) return 0;
     double zf = zeroField(0); // potential validity margin for scalers
     if (zf>0 && zf<1) scalers->setValidityMargin(zf);
