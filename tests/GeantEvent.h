@@ -85,14 +85,14 @@ struct GeantEvent
   }
 
 #ifndef __CINT__
-  void Fill(tpcrs::DigiData& digi_data)
+  void Fill(std::vector<tpcrs::DigiChannel>& digi_data)
   {
     digiHits.clear();
 
     static  short ADCs[__MaxNumberOfTimeBins__];
     static unsigned short IDTs[__MaxNumberOfTimeBins__];
 
-    for (auto tc = digi_data.channels().begin(); tc != digi_data.channels().end(); ++tc)
+    for (auto tc = digi_data.begin(); tc != digi_data.end(); ++tc)
     {
       ADCs[tc->timebin] = tc->adc;
       IDTs[tc->timebin] = tc->idt;

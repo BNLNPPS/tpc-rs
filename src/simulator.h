@@ -23,7 +23,7 @@ class Simulator
   Simulator(const tpcrs::Configurator& cfg, double eCutOff = 1e-3);
   ~Simulator();
 
-  void Simulate(std::vector<tpcrs::GeantHit>& geant_hits, tpcrs::DigiData& digi_data);
+  void Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<tpcrs::DigiChannel>& digi_data);
 
  private:
 
@@ -107,7 +107,8 @@ class Simulator
   int Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
-  void DigitizeSector(int sector, tpcrs::DigiData& digi_data, const std::vector<SignalSum_t>& binned_charge);
+  void DigitizeSector(int sector, std::vector<tpcrs::DigiChannel>& digi_data, const std::vector<SignalSum_t>& binned_charge);
+  void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, std::vector<tpcrs::DigiChannel>& digi_data);
   int AsicThresholds(short* ADCs);
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,

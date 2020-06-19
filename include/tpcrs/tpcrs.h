@@ -57,46 +57,17 @@ struct TPC
 };
 
 
-class DigiData
-{
- public:
-
-  const std::vector<DigiChannel>& channels() const { return channels_; }
-
-  void Add(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins)
-  {
-    bool in_cluster = false;
-
-    for (unsigned int tb = 0; tb < n_timebins; ++tb)
-    {
-      if (!ADCs[tb])
-        in_cluster = false;
-
-      if (ADCs[tb] && !in_cluster)
-        in_cluster = true;
-
-      if (in_cluster)
-        channels_.push_back(DigiChannel{sector, row, pad, tb, ADCs[tb], IDTs[tb]});
-    }
-  }
-
- private:
-
-  std::vector<DigiChannel> channels_;
-};
-
-
 template<typename Simulator, typename InputIt, typename OutputIt>
 OutputIt simulate(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
 {
   static Simulator simu(cfg);
 
   std::vector<GeantHit> hits(first1, last1);
-  DigiData digi_data;
+  std::vector<DigiChannel> digi_data;
 
   simu.Simulate(hits, digi_data);
 
-  return std::copy(std::begin(digi_data.channels()), std::end(digi_data.channels()), d_first);
+  return std::copy(std::begin(digi_data), std::end(digi_data), d_first);
 }
 
 }
