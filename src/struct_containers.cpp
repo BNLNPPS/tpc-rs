@@ -6,8 +6,6 @@
 #include "logger.h"
 #include "struct_containers.h"
 
-using tpcrs::Cfg;
-
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT>::name(# PATH);
 
@@ -337,43 +335,43 @@ MakeChairInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0);
 MakeChairInstance(tpcSectorT0offset,Calibrations/tpc/tpcSectorT0offset);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 unsigned char          St_tpcPadConfigC::iTpc(int sector)                     {unsigned char iTPC = Struct()->itpc[sector-1];  return iTPC;}
-int 	         St_tpcPadConfigC::padRows(int sector) 	          {return St_tpcPadPlanesC::instance()->padRows()               ;}
-int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return St_tpcPadPlanesC::instance()->innerPadRows() 	   ;}
-int 	         St_tpcPadConfigC::innerPadRows48(int sector) 	  {return St_tpcPadPlanesC::instance()->innerPadRows48()	   ;}
-int 	         St_tpcPadConfigC::innerPadRows52(int sector) 	  {return St_tpcPadPlanesC::instance()->innerPadRows52()	   ;}
-int 	         St_tpcPadConfigC::outerPadRows(int sector) 	          {return St_tpcPadPlanesC::instance()->outerPadRows() 	   ;}
-int 	         St_tpcPadConfigC::superInnerPadRows(int sector)        {return St_tpcPadPlanesC::instance()->superInnerPadRows()     ;}
-int 	         St_tpcPadConfigC::superOuterPadRows(int sector)        {return St_tpcPadPlanesC::instance()->superOuterPadRows()     ;}
-double 	 St_tpcPadConfigC::innerSectorPadWidth(int sector)      {return St_tpcPadPlanesC::instance()->innerSectorPadWidth()   ;}
-double 	 St_tpcPadConfigC::innerSectorPadLength(int sector)     {return St_tpcPadPlanesC::instance()->innerSectorPadLength()  ;}
-double 	 St_tpcPadConfigC::innerSectorPadPitch(int sector)      {return St_tpcPadPlanesC::instance()->innerSectorPadPitch()   ;}
-double 	 St_tpcPadConfigC::innerSectorRowPitch1(int sector)     {return St_tpcPadPlanesC::instance()->innerSectorRowPitch1()  ;}
-double 	 St_tpcPadConfigC::innerSectorRowPitch2(int sector)     {return St_tpcPadPlanesC::instance()->innerSectorRowPitch2()  ;}
-double 	 St_tpcPadConfigC::firstPadRow(int sector) 	          {return St_tpcPadPlanesC::instance()->firstPadRow() 	   ;}
-double 	 St_tpcPadConfigC::firstOuterSectorPadRow(int sector)   {return St_tpcPadPlanesC::instance()->firstOuterSectorPadRow();}
-double 	 St_tpcPadConfigC::lastOuterSectorPadRow(int sector)    {return St_tpcPadPlanesC::instance()->lastOuterSectorPadRow() ;}
-double 	 St_tpcPadConfigC::firstRowWidth(int sector) 	          {return St_tpcPadPlanesC::instance()->firstRowWidth()         ;}
-double 	 St_tpcPadConfigC::lastRowWidth(int sector) 	          {return St_tpcPadPlanesC::instance()->lastRowWidth()          ;}
-double 	 St_tpcPadConfigC::outerSectorPadWidth(int sector)      {return St_tpcPadPlanesC::instance()->outerSectorPadWidth()   ;}
-double 	 St_tpcPadConfigC::outerSectorPadLength(int sector)     {return St_tpcPadPlanesC::instance()->outerSectorPadLength()  ;}
-double 	 St_tpcPadConfigC::outerSectorPadPitch(int sector)      {return St_tpcPadPlanesC::instance()->outerSectorPadPitch()   ;}
-double 	 St_tpcPadConfigC::outerSectorRowPitch(int sector)      {return St_tpcPadPlanesC::instance()->outerSectorRowPitch()   ;}
-double 	 St_tpcPadConfigC::outerSectorLength(int sector)        {return St_tpcPadPlanesC::instance()->outerSectorLength()     ;}
-double 	 St_tpcPadConfigC::ioSectorSeparation(int sector)       {return St_tpcPadPlanesC::instance()->ioSectorSeparation()    ;}
-double 	 St_tpcPadConfigC::innerSectorEdge(int sector) 	  {return St_tpcPadPlanesC::instance()->innerSectorEdge()       ;}
-double 	 St_tpcPadConfigC::outerSectorEdge(int sector) 	  {return St_tpcPadPlanesC::instance()->outerSectorEdge() 	   ;}
-double 	 St_tpcPadConfigC::innerSectorPadPlaneZ(int sector)     {return St_tpcPadPlanesC::instance()->innerSectorPadPlaneZ()  ;}
-double 	 St_tpcPadConfigC::outerSectorPadPlaneZ(int sector)     {return St_tpcPadPlanesC::instance()->outerSectorPadPlaneZ()  ;}
-int* 	         St_tpcPadConfigC::innerPadsPerRow(int sector) 	  {return St_tpcPadPlanesC::instance()->innerPadsPerRow()       ;}
-int* 	         St_tpcPadConfigC::outerPadsPerRow(int sector) 	  {return St_tpcPadPlanesC::instance()->outerPadsPerRow()       ;}
+int 	         St_tpcPadConfigC::padRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().padRows()               ;}
+int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().innerPadRows() 	   ;}
+int 	         St_tpcPadConfigC::innerPadRows48(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerPadRows48()	   ;}
+int 	         St_tpcPadConfigC::innerPadRows52(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerPadRows52()	   ;}
+int 	         St_tpcPadConfigC::outerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerPadRows() 	   ;}
+int 	         St_tpcPadConfigC::superInnerPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superInnerPadRows()     ;}
+int 	         St_tpcPadConfigC::superOuterPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superOuterPadRows()     ;}
+double 	 St_tpcPadConfigC::innerSectorPadWidth(int sector)      {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadWidth()   ;}
+double 	 St_tpcPadConfigC::innerSectorPadLength(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadLength()  ;}
+double 	 St_tpcPadConfigC::innerSectorPadPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadPitch()   ;}
+double 	 St_tpcPadConfigC::innerSectorRowPitch1(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorRowPitch1()  ;}
+double 	 St_tpcPadConfigC::innerSectorRowPitch2(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorRowPitch2()  ;}
+double 	 St_tpcPadConfigC::firstPadRow(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().firstPadRow() 	   ;}
+double 	 St_tpcPadConfigC::firstOuterSectorPadRow(int sector)   {return cfg_.C<St_tpcPadPlanesC>().firstOuterSectorPadRow();}
+double 	 St_tpcPadConfigC::lastOuterSectorPadRow(int sector)    {return cfg_.C<St_tpcPadPlanesC>().lastOuterSectorPadRow() ;}
+double 	 St_tpcPadConfigC::firstRowWidth(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().firstRowWidth()         ;}
+double 	 St_tpcPadConfigC::lastRowWidth(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().lastRowWidth()          ;}
+double 	 St_tpcPadConfigC::outerSectorPadWidth(int sector)      {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadWidth()   ;}
+double 	 St_tpcPadConfigC::outerSectorPadLength(int sector)     {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadLength()  ;}
+double 	 St_tpcPadConfigC::outerSectorPadPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadPitch()   ;}
+double 	 St_tpcPadConfigC::outerSectorRowPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().outerSectorRowPitch()   ;}
+double 	 St_tpcPadConfigC::outerSectorLength(int sector)        {return cfg_.C<St_tpcPadPlanesC>().outerSectorLength()     ;}
+double 	 St_tpcPadConfigC::ioSectorSeparation(int sector)       {return cfg_.C<St_tpcPadPlanesC>().ioSectorSeparation()    ;}
+double 	 St_tpcPadConfigC::innerSectorEdge(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerSectorEdge()       ;}
+double 	 St_tpcPadConfigC::outerSectorEdge(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().outerSectorEdge() 	   ;}
+double 	 St_tpcPadConfigC::innerSectorPadPlaneZ(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadPlaneZ()  ;}
+double 	 St_tpcPadConfigC::outerSectorPadPlaneZ(int sector)     {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadPlaneZ()  ;}
+int* 	         St_tpcPadConfigC::innerPadsPerRow(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerPadsPerRow()       ;}
+int* 	         St_tpcPadConfigC::outerPadsPerRow(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().outerPadsPerRow()       ;}
 int            St_tpcPadConfigC::padsPerRow(int sector, int row)    {
   int Ninner = innerPadRows(sector);
   return (row <= Ninner) ?
     innerPadsPerRow(sector)[row-1] :
     outerPadsPerRow(sector)[row-1-Ninner];
 }
-double* 	 St_tpcPadConfigC::innerRowRadii(int sector) 	          {return St_tpcPadPlanesC::instance()->innerRowRadii()         ;}
-double* 	 St_tpcPadConfigC::outerRowRadii(int sector) 	          {return St_tpcPadPlanesC::instance()->outerRowRadii() 	   ;}
+double* 	 St_tpcPadConfigC::innerRowRadii(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().innerRowRadii()         ;}
+double* 	 St_tpcPadConfigC::outerRowRadii(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerRowRadii() 	   ;}
 // taken from StRItpcPadPlane
 int            St_tpcPadConfigC::numberOfRows(int sector)             {return padRows(sector);}
 int            St_tpcPadConfigC::numberOfInnerRows(int sector)        {return innerPadRows(sector);}
@@ -567,7 +565,7 @@ void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f
 
 
 float St_tpcAnodeHVC::voltage(int i) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
      LOG_ERROR << "St_tpcAnodeHVC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
@@ -575,12 +573,12 @@ float St_tpcAnodeHVC::voltage(int i) const {
 
 
 float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
-    return St_TpcAvgPowerSupplyC::instance()->voltagePadrow(sector,padrow);
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg_.C<St_TpcAvgPowerSupplyC>().voltagePadrow(sector,padrow);
   }
   int e1 = 0, e2 = 0;
   float f2 = 0;
-  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
+  St_tpcAnodeHVC::sockets(cfg_.C<St_tpcPadConfigC>().iTPC(sector), sector, padrow, e1, e2, f2);
   if (e1==0) return -99;
   float v1=voltage(e1-1);
   if (f2 < 0.1) return v1;
@@ -589,7 +587,7 @@ float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
   if (std::abs(v2 - v1) <  1) return v1;
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
-  float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
+  float B = (padrow <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
   float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
@@ -599,7 +597,7 @@ MakeChairInstance(TpcAvgPowerSupply,Calibrations/tpc/TpcAvgPowerSupply);
 float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
   int e1 = 0, e2 = 0;
   float f2 = 0;
-  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
+  St_tpcAnodeHVC::sockets(cfg_.C<St_tpcPadConfigC>().iTPC(sector), sector, padrow, e1, e2, f2);
   if (e1==0) return -99;
   int ch1 = St_TpcAvgCurrentC::ChannelFromSocket((e1-1)%19+1);
   float v1=Voltage()[8*(sector-1)+ch1-1] ;
@@ -610,7 +608,7 @@ float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
   if (v2==v1) return v1;
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
-  float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
+  float B = (padrow <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
   float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
@@ -637,7 +635,7 @@ MakeChairInstance(tpcAnodeHVavg,Calibrations/tpc/tpcAnodeHVavg);
 
 
 float St_tpcAnodeHVavgC::voltage(int i) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
      LOG_ERROR << "St_tpcAnodeHVavgC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
@@ -645,20 +643,20 @@ float St_tpcAnodeHVavgC::voltage(int i) const {
 
 
 bool St_tpcAnodeHVavgC::tripped(int sector, int padrow) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
-    return St_TpcAvgPowerSupplyC::instance()->tripped(sector,padrow);
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg_.C<St_TpcAvgPowerSupplyC>().tripped(sector,padrow);
   }
   return (voltage() < -100);
 }
 
 
 float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
-    return St_TpcAvgPowerSupplyC::instance()->voltagePadrow(sector,padrow);
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg_.C<St_TpcAvgPowerSupplyC>().voltagePadrow(sector,padrow);
   }
   int e1 = 0, e2 = 0;
   float f2 = 0;
-  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
+  St_tpcAnodeHVC::sockets(cfg_.C<St_tpcPadConfigC>().iTPC(sector), sector, padrow, e1, e2, f2);
   if (e1==0) return -99;
   float v1=voltage(e1-1);
   if (f2==0) return v1;
@@ -666,7 +664,7 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   if (v2==v1) return v1;
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
-  float B = (padrow <= St_tpcPadConfigC::instance()->innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
+  float B = (padrow <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
   float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
@@ -677,14 +675,14 @@ template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT
 
 float 	St_tpcPadGainT0BC::Gain(int sector, int row, int pad) const {
   float gain = 0;
-  if (St_tpcPadConfigC::instance()->iTPC(sector)) {
+  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {
     if (row <= 40) {
-      gain = St_itpcPadGainT0C::instance()->Gain(sector,row,pad);
+      gain = cfg_.C<St_itpcPadGainT0C>().Gain(sector,row,pad);
     } else {
-      gain = St_tpcPadGainT0C::instance()->Gain(sector,row-40+13,pad);
+      gain = cfg_.C<St_tpcPadGainT0C>().Gain(sector,row-40+13,pad);
     }
   } else { // Tpx
-    gain = St_tpcPadGainT0C::instance()->Gain(sector,row,pad);
+    gain = cfg_.C<St_tpcPadGainT0C>().Gain(sector,row,pad);
   }
   return gain;
 }
@@ -692,26 +690,26 @@ float 	St_tpcPadGainT0BC::Gain(int sector, int row, int pad) const {
 
 float 	  St_tpcPadGainT0BC::T0(int sector, int row, int pad) const {
   float T0 = 0;
-  if (St_tpcPadConfigC::instance()->iTPC(sector)) {
+  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {
     if (row <= 40) 
-      T0 = St_itpcPadGainT0C::instance()->T0(sector,row,pad);
+      T0 = cfg_.C<St_itpcPadGainT0C>().T0(sector,row,pad);
     else 
-      T0 = St_tpcPadGainT0C::instance()->T0(sector,row-40+13,pad);
+      T0 = cfg_.C<St_tpcPadGainT0C>().T0(sector,row-40+13,pad);
   } else { // Tpx
-    T0 = St_tpcPadGainT0C::instance()->T0(sector,row,pad);
+    T0 = cfg_.C<St_tpcPadGainT0C>().T0(sector,row,pad);
   }
   return T0;
 }
 
 
 bool    St_tpcPadGainT0BC::livePadrow(int sector, int row) const {
-  if (St_tpcPadConfigC::instance()->iTPC(sector)) {
+  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {
     if (row <= 40)
-      return St_itpcPadGainT0C::instance()->livePadrow(sector,row);
+      return cfg_.C<St_itpcPadGainT0C>().livePadrow(sector,row);
     else 
-      return St_tpcPadGainT0C::instance()->livePadrow(sector,row-40+13);
+      return cfg_.C<St_tpcPadGainT0C>().livePadrow(sector,row-40+13);
   }
-  return St_tpcPadGainT0C::instance()->livePadrow(sector,row);
+  return cfg_.C<St_tpcPadGainT0C>().livePadrow(sector,row);
 }
 
 
@@ -774,8 +772,8 @@ int St_TpcAvgCurrentC::ChannelFromSocket(int socket) {
 
 
 float St_TpcAvgCurrentC::AcChargeL(int sector, int channel) {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
-    return St_TpcAvgPowerSupplyC::instance()->AcChargeL(sector,channel);
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg_.C<St_TpcAvgPowerSupplyC>().AcChargeL(sector,channel);
   }
   //  static const double RA[2]        = { 154.484, 81.42}; // Outer/ Inner average Radii
   //  static const double WireLenth[2] = {   3.6e5, 1.6e5};
@@ -794,8 +792,8 @@ float St_TpcAvgCurrentC::AcChargeL(int sector, int channel) {
 
 
 float St_TpcAvgCurrentC::AvCurrent(int sector, int channel) {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
-    return St_TpcAvgPowerSupplyC::instance()->AvCurrent(sector,channel);
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg_.C<St_TpcAvgPowerSupplyC>().AvCurrent(sector,channel);
   }
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
     Struct()->AvCurrent[8*(sector-1)+channel-1] :     0;
@@ -803,8 +801,8 @@ float St_TpcAvgCurrentC::AvCurrent(int sector, int channel) {
 
 
 float St_TpcAvgCurrentC::AcCharge(int sector, int channel) {
-  if (! St_TpcAvgPowerSupplyC::instance()->IsMarked()) {
-    return St_TpcAvgPowerSupplyC::instance()->AcCharge(sector,channel);
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg_.C<St_TpcAvgPowerSupplyC>().AcCharge(sector,channel);
   }
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
     Struct()->AcCharge[8*(sector-1)+channel-1] :     0;
@@ -828,8 +826,8 @@ MakeChairInstance(tpcRDOT0offset,Calibrations/tpc/tpcRDOT0offset);
 float St_tpcRDOT0offsetC::T0(int sector, int padrow, int pad) const {
   float t0 = 0;
   if (! IsShfited(sector)) return t0;
-  if (St_tpcPadConfigC::instance()->iTPC(sector) && padrow <= 40)  return t0; // no shift in iTPC
-  int rdo = St_tpcRDOMapC::instance()->rdo(padrow,pad);
+  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector) && padrow <= 40)  return t0; // no shift in iTPC
+  int rdo = cfg_.C<St_tpcRDOMapC>().rdo(padrow,pad);
   if (!rdo) return t0;
   t0 = Struct()->t0[sector-1][rdo-1];
   return t0;
@@ -1033,7 +1031,7 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(double scaleFactor)
 double St_tpcChargeEventC::timeDifference(unsigned long long bunchCrossingNumber, int idx) {
     // time difference between the event # idx and bunchCrossingNumber
     return ((double) (bunchCrossingNumber - eventBunchCrossing(idx))) /
-      (Cfg<starClockOnl>().frequency);
+      (cfg_.S<starClockOnl>().frequency);
   }
 
 int St_tpcChargeEventC::indexBeforeBunchCrossing(unsigned long long bunchCrossingNumber) {
@@ -1104,7 +1102,7 @@ int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, 
 
 int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, double timeWindow) {
   return findChargeTimes(bunchCrossingNumber,
-    (unsigned long long) (timeWindow*Cfg<starClockOnl>().frequency));
+    (unsigned long long) (timeWindow*cfg_.S<starClockOnl>().frequency));
 }
 
 
