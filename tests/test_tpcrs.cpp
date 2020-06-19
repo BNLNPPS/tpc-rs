@@ -72,10 +72,10 @@ int main(int argc, char **argv)
     std::vector<tpcrs::GeantHit> hits;
     std::transform(begin(geantEvent_inp->hits), end(geantEvent_inp->hits), std::back_inserter(hits), convert);
 
-    tpcrs::DigiData  digidata;
-    tpcrs.Simulate(hits, digidata);
+    std::vector<tpcrs::DigiChannel>  digi_data;
+    tpcrs.Simulate(hits, digi_data);
 
-    geantEvent_out.Fill(digidata);
+    geantEvent_out.Fill(digi_data);
     geantEvent_out.Print(logFile_out);
   }
 
