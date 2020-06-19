@@ -174,9 +174,7 @@ struct St_spaceChargeCorC : tpcrs::IConfigStruct {
     else if(scaleFactor < 1.25)	                  value = fullFieldA(i);
     return value;
   }
-  double getSpaceChargeCorrection(){return  getSpaceChargeCorrection(St_starMagOnlC::instance()->getScaleFactor());}
-  double getSpaceChargeCoulombs(double scaleFactor);
-  double getSpaceChargeCoulombs(){return getSpaceChargeCoulombs(St_starMagOnlC::instance()->getScaleFactor());}
+  double getSpaceChargeCoulombs(const tpcrs::Configurator& cfg);
   double getSpaceChargeSatRate(int i = 0) {return satRate(i);}
   float  getSpaceChargeFactor(int i = 0)  {return factor(i);}
   float  getSpaceChargeDetector(int i = 0){return detector(i);}
@@ -184,9 +182,17 @@ struct St_spaceChargeCorC : tpcrs::IConfigStruct {
 
 };
 
-struct St_spaceChargeCorR1C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR1C, spaceChargeCor> {};
+struct St_spaceChargeCorR1C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR1C, spaceChargeCor>
+{
+  double getSpaceChargeCorrection(){return  St_spaceChargeCorC::getSpaceChargeCorrection(cfg_.S<MagFactor>().ScaleFactor);}
+  double getSpaceChargeCoulombs(){return St_spaceChargeCorC::getSpaceChargeCoulombs(cfg_);}
+};
 
-struct St_spaceChargeCorR2C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR2C, spaceChargeCor> {};
+struct St_spaceChargeCorR2C : tpcrs::ConfigStruct<St_spaceChargeCorC, St_spaceChargeCorR2C, spaceChargeCor>
+{
+  double getSpaceChargeCorrection(){return  St_spaceChargeCorC::getSpaceChargeCorrection(cfg_.S<MagFactor>().ScaleFactor);}
+  double getSpaceChargeCoulombs(){return St_spaceChargeCorC::getSpaceChargeCoulombs(cfg_);}
+};
 
 struct St_SurveyC : tpcrs::IConfigStruct {
   virtual Survey* Struct(int i = 0) const = 0;
@@ -267,7 +273,7 @@ struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC
   bool	 livePadrow(int sector = 1, int padrow = 1) const { return voltagePadrow(sector, padrow) > 500; }
   float	 voltagePadrow(int sector = 1, int padrow = 1) const ; // sector=1..24 , padrow=1..100
   bool         tripped(int sector = 1, int padrow = 1) const { return (voltagePadrow(sector, padrow) < -100); }
-  static  void   sockets(int sector, int padrow, int &e1, int &e2, float &f2);
+  static  void   sockets(bool is_iTPC, int sector, int padrow, int &e1, int &e2, float &f2);
 };
 
 struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>
@@ -275,7 +281,7 @@ struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCu
   int 	run(int i = 0) 	const {return Struct(i)->run;}
   int 	start_time(int i = 0) 	const {return Struct(i)->start_time;}
   int 	stop_time(int i = 0) 	const {return Struct(i)->stop_time;}
-  static int  ChannelFromRow(int sector, int row);
+  static int  ChannelFromRow(int sector, int row, bool is_iTPC = false);
   static int  ChannelFromSocket(int socket);
   float       AvCurrent(int sector = 1, int channel = 1);
   /* {
@@ -798,7 +804,7 @@ struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMask
 
     return rdo;
   }
-  static unsigned int rdoForPadrow(int sector, int row)   //Function returns the rdo board number for a given padrow index. Range of map used is 1-45.
+  unsigned int rdoForPadrow(int sector, int row)   //Function returns the rdo board number for a given padrow index. Range of map used is 1-45.
   {
     if (cfg_.C<St_tpcPadConfigC>().iTpc(sector)) return 8;
 
@@ -949,7 +955,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
 
   // The following code attempts to correct coincidence rates for accidentals and multiples
   // See STAR Note 528
-  static double Nc(double New, double Ne, double Nw, int n_bunches = 111)
+  double Nc(double New, double Ne, double Nw, int n_bunches = 111)
   {
     // 111 is a guess using the maximum seen filled bunches in RHIC so far
     // (not always the case, but we don't have access to this number)
