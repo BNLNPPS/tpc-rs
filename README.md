@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bnlnpps/tpc-rs.svg?branch=master)](https://travis-ci.org/bnlnpps/tpc-rs)
+
 **tpc-rs** provides a library to simulate the signal detected by a Time
 Projection Chamber (TPC) and digitized by the readout electronics when charge
 particles traverse its sensitive volume.
