@@ -8,7 +8,7 @@ root_generate_dictionary(
     include/tpcrs/structs.h
     tests/GeantEvent.h
     LINKDEF tests/LinkDef.h
-    OPTIONS -I${CMAKE_SOURCE_DIR}/include/
+    OPTIONS -I${CMAKE_SOURCE_DIR}/include/ -I${YAML_CPP_INSTALL_PREFIX}/include
     INCDIRS ${CMAKE_SOURCE_DIR}
 )
 
