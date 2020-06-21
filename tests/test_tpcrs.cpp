@@ -26,12 +26,8 @@ int main(int argc, char **argv)
   // Process 2nd optional argument
   int maxRecords(argc > 2 ? std::atoi(argv[2]) : -1);
 
-  // Process 3rd optional argument
-  double eCutOff(argc > 3 ? std::atof(argv[3]) : 1e-3);
-
   std::cout << "testName:   " << testName << "\n"
-            << "maxRecords: " << maxRecords << "\n"
-            << "eCutOff:    " << eCutOff << "\n";
+            << "maxRecords: " << maxRecords << "\n";
 
   tpcrs::Configurator cfg(testName);
 

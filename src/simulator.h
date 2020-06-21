@@ -20,7 +20,7 @@ class Simulator
 {
  public:
 
-  Simulator(const tpcrs::Configurator& cfg, double eCutOff = 1e-3);
+  Simulator(const tpcrs::Configurator& cfg);
   ~Simulator();
 
   void Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<tpcrs::DigiChannel>& digi_data);
