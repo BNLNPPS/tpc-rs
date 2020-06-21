@@ -81,7 +81,7 @@ class StMagUtilities
  private:
   const tpcrs::Configurator& cfg_;
   const CoordTransform& transform_;
-  StarMagField mag_field_;
+  MagField mag_field_;
   St_spaceChargeCorC*        fSpaceCharge   ;
   St_spaceChargeCorC*        fSpaceChargeR2 ;
   St_tpcHighVoltagesC*       fTpcVolts      ;
@@ -215,7 +215,7 @@ class StMagUtilities
  public:
 
   StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
-  StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode);
+  StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode);
 
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
   void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
