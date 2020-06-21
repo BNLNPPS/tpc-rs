@@ -58,7 +58,7 @@ TF1F Simulator::fgTimeShape0[2] = {
 
 using dEdxCorr = StTpcdEdxCorrection::Corrections;
 
-Simulator::Simulator(const tpcrs::Configurator& cfg, double e_cutoff):
+Simulator::Simulator(const tpcrs::Configurator& cfg):
   cfg_(cfg),
   transform_(cfg),
   mag_field_utils_(cfg, transform_),
