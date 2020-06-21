@@ -14,19 +14,19 @@
 
 #include "tpcrs/configurator.h"
 
-class StarMagField
+class MagField
 {
  public:
 
   enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
   enum   ESmFSizes {nZ = 57, nR = 28, nPhi = 37, nZSteel = 16, nRSteel = 115, nPhiSteel = 25};
 
-  StarMagField (const tpcrs::Configurator& cfg, EBField map     = kMapped, float Factor  =      1,
+  MagField (const tpcrs::Configurator& cfg, EBField map     = kMapped, float Factor  =      1,
                  bool  Lock    =  false, float Rescale =      1,
                  float Bdipole =  -42.67, float Rmaxdip =  15.34,
                  float Zmindip =   980.0, float Zmaxdip = 1350.0) ;
 
-  ~StarMagField ()
+  ~MagField ()
   {
     SafeDelete(fBzdZCorrection);
     SafeDelete(fBrdZCorrection);
@@ -46,7 +46,7 @@ class StarMagField
   void    ReadField ( ) ;
 
   const tpcrs::Configurator& cfg_;
-  TGeoRotation fStarMagFieldRotation;
+  TGeoRotation fMagFieldRotation;
   TH2F* fBzdZCorrection; // correction due to endcap calomiter
   TH2F* fBrdZCorrection; // correction due to endcap calomiter
 
@@ -78,7 +78,7 @@ class StarMagField
   void    BField   ( const float x[], float B[] ) ;
   void    BField   ( const double x[], double B[] ) ;
   void    B3DField ( const float x[], float B[] ) ;
-  const TGeoRotation &StarMagFieldRotation() {return * &fStarMagFieldRotation;}
+  const TGeoRotation &MagFieldRotation() {return * &fMagFieldRotation;}
 };
 
 #endif

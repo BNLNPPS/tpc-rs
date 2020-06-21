@@ -186,13 +186,13 @@ StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransf
 
 
 /// StMagUtilities constructor not using the DataBase
-StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const StarMagField::EBField map, const float factor, int mode) :
+StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode) :
   cfg_(cfg),
   transform_(trans),
   mag_field_(cfg)
 {
   GetDistoSmearing(0)   ;        // Do not get distortion smearing out of the DB
-  // Get the magnetic field scale factor from the StarMagField
+  // Get the magnetic field scale factor from the MagField
   gFactor = cfg_.S<MagFactor>().ScaleFactor;
   fTpcVolts      =  0   ;        // Do not get TpcVoltages out of the DB   - use defaults in CommonStart
   fOmegaTau      =  0   ;        // Do not get OmegaTau out of the DB      - use defaults in CommonStart

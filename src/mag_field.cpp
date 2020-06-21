@@ -6,7 +6,7 @@
 
 /*!
 
-\class StarMagField
+\class MagField
 
 \author Jim Thomas 10 October 2000
 
@@ -338,7 +338,7 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
 };
 
 
-StarMagField::StarMagField (const tpcrs::Configurator& cfg, EBField map, float factor,
+MagField::MagField (const tpcrs::Configurator& cfg, EBField map, float factor,
                              bool lock, float rescale,
                              float BDipole, float RmaxDip,
                              float ZminDip, float ZmaxDip) :
@@ -353,21 +353,21 @@ StarMagField::StarMagField (const tpcrs::Configurator& cfg, EBField map, float f
   fLock(lock)
 {
   if (fMap == kUndefined) {
-    printf("StarMagField is instantiated with predefined factor %f and map %i\n", fFactor, fMap);
+    printf("MagField is instantiated with predefined factor %f and map %i\n", fFactor, fMap);
   }
   else {
-    if (fLock) printf("StarMagField is locked, no modification from DB will be accepted\n");
+    if (fLock) printf("MagField is locked, no modification from DB will be accepted\n");
   }
 
   fFactor = cfg_.S<MagFactor>().ScaleFactor;
 
   ReadField() ;                       // Read the Magnetic
-  fStarMagFieldRotation = TGeoRotation("StarMagFieldRotation");
+  fMagFieldRotation = TGeoRotation("MagFieldRotation");
 }
 
 
 /// B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
-void StarMagField::BField( const double x[], double B[] )
+void MagField::BField( const double x[], double B[] )
 {
   float xx[3] = {(float) x[0], (float) x[1], (float) x[2]};
   float bb[3];
@@ -376,7 +376,7 @@ void StarMagField::BField( const double x[], double B[] )
 }
 
 
-void StarMagField::BField( const float x[], float B[] )
+void MagField::BField( const float x[], float B[] )
 
 {
 
@@ -422,7 +422,7 @@ void StarMagField::BField( const float x[], float B[] )
     }
 
     double BG[3];
-    fStarMagFieldRotation.LocalToMaster(BL, BG);
+    fMagFieldRotation.LocalToMaster(BL, BG);
 
     for (int i = 0; i < 3; i++) B[i] = BG[i];
 
@@ -482,7 +482,7 @@ void StarMagField::BField( const float x[], float B[] )
 
 
 /// Bfield in Cartesian coordinates - 3D field
-void StarMagField::B3DField( const float x[], float B[] )
+void MagField::B3DField( const float x[], float B[] )
 {
   float r, z, phi, Br_value, Bz_value, Bphi_value ;
   Bphi_value = 0;
@@ -511,7 +511,7 @@ void StarMagField::B3DField( const float x[], float B[] )
 
   double BL[3] = {B[0], B[1], B[2]};
   double BG[3];
-  fStarMagFieldRotation.LocalToMaster(BL, BG);
+  fMagFieldRotation.LocalToMaster(BL, BG);
 
   for (int i = 0; i < 3; i++) B[i] = BG[i];
 
@@ -522,7 +522,7 @@ void StarMagField::B3DField( const float x[], float B[] )
 
 /// Read the electric and magnetic field maps stored on disk
 
-void StarMagField::ReadField( )
+void MagField::ReadField( )
 
 {
   FILE*    magfile, *b3Dfile ;
@@ -549,7 +549,7 @@ void StarMagField::ReadField( )
       fBrdZCorrection->Scale(0.5);
       fBrdZCorrection->Add(Br10cm, 0.5);
       fBrdZCorrection->Add(Br0, -1.0);
-      Warning("StarMagField::ReadField", "Use effective PMT box dZ = 7.5 cm");
+      Warning("MagField::ReadField", "Use effective PMT box dZ = 7.5 cm");
     }
   }
 
@@ -581,16 +581,16 @@ void StarMagField::ReadField( )
     fRescale = 1 ;                        // Normal field
   }
   else {
-    fprintf(stderr, "StarMagField::ReadField  No map available - you must choose a mapped field or a constant field\n");
+    fprintf(stderr, "MagField::ReadField  No map available - you must choose a mapped field or a constant field\n");
     exit(1) ;
   }
 
-  printf("StarMagField::ReadField  Reading  Magnetic Field  %s,  Scale factor = %f \n", comment.c_str(), fFactor);
-  printf("StarMagField::ReadField  Filename is %s, Adjusted Scale factor = %f \n", filename.c_str(), fFactor * fRescale);
+  printf("MagField::ReadField  Reading  Magnetic Field  %s,  Scale factor = %f \n", comment.c_str(), fFactor);
+  printf("MagField::ReadField  Filename is %s, Adjusted Scale factor = %f \n", filename.c_str(), fFactor * fRescale);
 
   MapLocation = cfg_.Locate(filename);
   magfile = fopen(MapLocation.c_str(), "r") ;
-  printf("StarMagField::ReadField  Reading  2D Magnetic Field file: %s \n", filename.c_str());
+  printf("MagField::ReadField  Reading  2D Magnetic Field file: %s \n", filename.c_str());
 
   if (magfile)
 
@@ -618,7 +618,7 @@ void StarMagField::ReadField( )
   else
 
   {
-    fprintf(stderr, "StarMagField::ReadField  File %s not found !\n", MapLocation.c_str());
+    fprintf(stderr, "MagField::ReadField  File %s not found !\n", MapLocation.c_str());
     exit(1);
   }
 
@@ -626,7 +626,7 @@ void StarMagField::ReadField( )
 
   MapLocation = cfg_.Locate(filename3D);
   b3Dfile = fopen(MapLocation.c_str(), "r") ;
-  printf("StarMagField::ReadField  Reading 3D Magnetic Field file: %s \n", filename3D.c_str());
+  printf("MagField::ReadField  Reading 3D Magnetic Field file: %s \n", filename3D.c_str());
 
   if (b3Dfile)
 
@@ -673,7 +673,7 @@ void StarMagField::ReadField( )
   else
 
   {
-    fprintf(stderr, "StarMagField::ReadField  File %s not found !\n", MapLocation.c_str());
+    fprintf(stderr, "MagField::ReadField  File %s not found !\n", MapLocation.c_str());
     exit(1);
   }
 
@@ -682,7 +682,7 @@ void StarMagField::ReadField( )
   magfile = fopen(MapLocation.c_str(), "r") ;
 
   if (magfile) {
-    printf("StarMagField::ReadField  Reading  3D Magnetic Field file: %s \n", filename.c_str());
+    printf("MagField::ReadField  Reading  3D Magnetic Field file: %s \n", filename.c_str());
     char cname[128] ;
 
     for (;;) {
@@ -724,7 +724,7 @@ void StarMagField::ReadField( )
 
 /// Interpolate the B field map - 2D interpolation
 
-void StarMagField::Interpolate2DBfield( const float r, const float z, float &Br_value, float &Bz_value )
+void MagField::Interpolate2DBfield( const float r, const float z, float &Br_value, float &Bz_value )
 
 {
 
@@ -760,7 +760,7 @@ void StarMagField::Interpolate2DBfield( const float r, const float z, float &Br_
 }
 
 
-void StarMagField::Interpolate2ExtDBfield( const float r, const float z, float &Br_value, float &Bz_value )
+void MagField::Interpolate2ExtDBfield( const float r, const float z, float &Br_value, float &Bz_value )
 {
   static float ZExtList[nZext];
   static bool  first = true;
@@ -815,7 +815,7 @@ void StarMagField::Interpolate2ExtDBfield( const float r, const float z, float &
 
 /// Interpolate the B field map - 3D interpolation
 
-void StarMagField::Interpolate3DBfield( const float r, const float z, const float phi,
+void MagField::Interpolate3DBfield( const float r, const float z, const float phi,
                                         float &Br_value, float &Bz_value, float &Bphi_value )
 {
 
@@ -880,7 +880,7 @@ void StarMagField::Interpolate3DBfield( const float r, const float z, const floa
 
 /// Interpolate the B field map - 3D interpolation
 
-void StarMagField::Interpolate3DBSteelfield( const float r, const float z, const float phi,
+void MagField::Interpolate3DBSteelfield( const float r, const float z, const float phi,
     float &Br_value, float &Bz_value, float &Bphi_value )
 {
 
@@ -934,7 +934,7 @@ void StarMagField::Interpolate3DBSteelfield( const float r, const float z, const
 
 
 /// Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
-float StarMagField::Interpolate( const float Xarray[], const float Yarray[],
+float MagField::Interpolate( const float Xarray[], const float Yarray[],
                                    const int ORDER, const float x )
 
 {
@@ -967,7 +967,7 @@ float StarMagField::Interpolate( const float Xarray[], const float Yarray[],
 
 /// Search an ordered table by starting at the most recently used point
 
-void StarMagField::Search( int N, const float Xarray[], float x, int &low )
+void MagField::Search( int N, const float Xarray[], float x, int &low )
 
 {
   assert(! std::isnan(x));
