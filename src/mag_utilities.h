@@ -60,7 +60,7 @@ enum   EBMapSizes {
 // on these values to build an option flag. The option flag used in
 // the chain is 2x larger than shown here in order to allow the first
 // bit to be used as an on/off flag.  It is shifted away before entering
-// StMagUtilities.  So, this can be summarized by saying:
+// MagFieldUtils.  So, this can be summarized by saying:
 // Bit counting starts at 0 for the chain option flag (...,3,2,1,0)
 
 class TDataSet ;
@@ -74,7 +74,7 @@ class St_tpcChargeEventC;
 class TRandom;
 
 
-class StMagUtilities
+class MagFieldUtils
 {
 
 
@@ -214,8 +214,8 @@ class StMagUtilities
   static   TNtuple* fgUnDoDistortion;
  public:
 
-  StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
-  StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode);
+  MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
+  MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode);
 
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
   void    BFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );

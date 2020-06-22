@@ -6,13 +6,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 //                                                                      //
-// StMagUtilities Class                                                 //
+// MagFieldUtils Class                                                 //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
 /*!
 
-\class StMagUtilities
+\class MagFieldUtils
 
 \author Jim Thomas 10 October 2000
 
@@ -71,7 +71,7 @@ enum   DistortSelect                                                  <br>
 Note that the option flag used in the chain is 2x larger
 than shown here in order to allow the first bit to be used
 as an on/off flag and then it is shifted away before entering
-StMagUtilities.  This can be summarized by saying:
+MagFieldUtils.  This can be summarized by saying:
 
 Bit counting starts at 0 for the chain option flag (...,3,2,1,0) <br>
 
@@ -103,8 +103,8 @@ To do:  <br>
 static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
 static const float  PiOver12 = M_PI / 12. ; // Commonly used constant
 static const float  PiOver6 = M_PI / 6. ; // Commonly used constant
-TNtuple* StMagUtilities::fgDoDistortion = 0;
-TNtuple* StMagUtilities::fgUnDoDistortion = 0;
+TNtuple* MagFieldUtils::fgDoDistortion = 0;
+TNtuple* MagFieldUtils::fgUnDoDistortion = 0;
 static const size_t threeFloats = 3 * sizeof(float);
 
 
@@ -146,7 +146,7 @@ static Distortion_t D;
 static const char* Dnames = {"sector:xL:yL:zL:xLC:yLC:zLC"};
 
 
-void StMagUtilities::SetDoDistortionT  (TFile* f)
+void MagFieldUtils::SetDoDistortionT  (TFile* f)
 {
   if (! f) return;
 
@@ -154,7 +154,7 @@ void StMagUtilities::SetDoDistortionT  (TFile* f)
   fgDoDistortion = new TNtuple("DoDist", "Result of DoDistrotion in TPC CS", Dnames);
 }
 
-void StMagUtilities::SetUnDoDistortionT(TFile* f)
+void MagFieldUtils::SetUnDoDistortionT(TFile* f)
 {
   if (! f) return;
 
@@ -163,8 +163,8 @@ void StMagUtilities::SetUnDoDistortionT(TFile* f)
 }
 
 
-/// StMagUtilities constructor using the DataBase
-StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode) :
+/// MagFieldUtils constructor using the DataBase
+MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode) :
   cfg_(cfg),
   transform_(trans),
   mag_field_(cfg)
@@ -185,8 +185,8 @@ StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransf
 }
 
 
-/// StMagUtilities constructor not using the DataBase
-StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode) :
+/// MagFieldUtils constructor not using the DataBase
+MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode) :
   cfg_(cfg),
   transform_(trans),
   mag_field_(cfg)
@@ -204,14 +204,14 @@ StMagUtilities::StMagUtilities(const tpcrs::Configurator& cfg, const CoordTransf
 }
 
 
-void StMagUtilities::GetDistoSmearing (int mode)
+void MagFieldUtils::GetDistoSmearing (int mode)
 {
   fCalibResolutions = ((mode & kDistoSmearing) > 0 ? &cfg_.C<St_tpcCalibResolutionsC>() : 0);
   mRandom = (fCalibResolutions ? new TRandom(time(NULL)) : 0);
 }
 
 
-void StMagUtilities::GetTPCParams ()
+void MagFieldUtils::GetTPCParams ()
 {
   St_tpcPadConfigC*      pads = &cfg_.C<St_tpcPadConfigC>();
   St_tpcFieldCageC*     cages = &cfg_.C<St_tpcFieldCageC>();
@@ -258,7 +258,7 @@ void StMagUtilities::GetTPCParams ()
   WIREGAP        =  OUTERGGFirst - INNERGGLast;
 }
 
-void StMagUtilities::GetE()
+void MagFieldUtils::GetE()
 {
   RPitch         =  1.150 ;            // Field Cage Ring to Ring pitch (cm)
   float R_0    =  2.130 ;            // First resistor (R0) between CM and ring number one (Mohm)
@@ -275,14 +275,14 @@ void StMagUtilities::GetE()
   StarMagE             =  std::abs((CathodeV - GG) / TPC_Z0) ;     // STAR Electric Field (V/cm) Magnitude
 
   if (std::abs(StarMagE) < 1e-6) {
-    LOG_INFO << "StMagUtilities ERROR **** Calculations fail with extremely small or zero primary E field:\n";
-    LOG_INFO << "StMagUtilities     StarMagE = (CathodeV - GG) / TPC_Z0 = (" << CathodeV
+    LOG_INFO << "MagFieldUtils ERROR **** Calculations fail with extremely small or zero primary E field:\n";
+    LOG_INFO << "MagFieldUtils     StarMagE = (CathodeV - GG) / TPC_Z0 = (" << CathodeV
          << " - " << GG << ") / " << TPC_Z0 << " = " << StarMagE << " V/cm\n";
     exit(1);
   }
 }
 
-void StMagUtilities::GetTPCVoltages (int mode)
+void MagFieldUtils::GetTPCVoltages (int mode)
 {
   // GetTPCParams() must be called first!
   fTpcVolts      =  &cfg_.C<St_tpcHighVoltagesC>() ;  // Initialize the DB for TpcVoltages
@@ -323,7 +323,7 @@ void StMagUtilities::GetTPCVoltages (int mode)
 
     double cmnInner = innerVs.GetBinCenter(innerVs.GetMaximumBin());
     double cmnOuter = outerVs.GetBinCenter(outerVs.GetMaximumBin());
-    LOG_INFO << "StMagUtilities assigning common anode voltages as " << cmnInner << " , " << cmnOuter << '\n';
+    LOG_INFO << "MagFieldUtils assigning common anode voltages as " << cmnInner << " , " << cmnOuter << '\n';
 
     for (int i = 1 ; i < 25; i++ ) {
       GLWeights[i] = ( ( std::abs(anodeVolts->voltagePadrow(i, INNER[i - 1]  ) - cmnInner) < stepsInner / 2. ) &&
@@ -350,7 +350,7 @@ void StMagUtilities::GetTPCVoltages (int mode)
 
 }
 
-bool StMagUtilities::UpdateTPCHighVoltages ()
+bool MagFieldUtils::UpdateTPCHighVoltages ()
 {
   static tpcHighVoltages* voltagesTable = 0;
 
@@ -364,7 +364,7 @@ bool StMagUtilities::UpdateTPCHighVoltages ()
   return update;
 }
 
-void StMagUtilities::GetSpaceCharge ()
+void MagFieldUtils::GetSpaceCharge ()
 {
   static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
@@ -382,7 +382,7 @@ void StMagUtilities::GetSpaceCharge ()
   SpaceCharge    =  fSpaceCharge->getSpaceChargeCoulombs(cfg_) ;
 }
 
-void StMagUtilities::GetSpaceChargeR2 ()
+void MagFieldUtils::GetSpaceChargeR2 ()
 {
   static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
@@ -402,7 +402,7 @@ void StMagUtilities::GetSpaceChargeR2 ()
   SpaceChargeEWRatio = fSpaceChargeR2->getEWRatio() ;
 }
 
-void StMagUtilities::GetShortedRing ()
+void MagFieldUtils::GetShortedRing ()
 {
   St_tpcFieldCageShortC* shortedRingsChair = &cfg_.C<St_tpcFieldCageShortC>();
   ShortTableRows = (int) shortedRingsChair->GetNRows() ;
@@ -418,7 +418,7 @@ void StMagUtilities::GetShortedRing ()
   }
 }
 
-bool StMagUtilities::UpdateShortedRing ()
+bool MagFieldUtils::UpdateShortedRing ()
 {
   static tpcFieldCageShort* shortsTable = 0;
 
@@ -432,7 +432,7 @@ bool StMagUtilities::UpdateShortedRing ()
 }
 
 
-void StMagUtilities::GetOmegaTau ()
+void MagFieldUtils::GetOmegaTau ()
 {
   fOmegaTau  =  &cfg_.C<St_tpcOmegaTauC>();
   TensorV1   =  fOmegaTau->getOmegaTauTensorV1();
@@ -441,7 +441,7 @@ void StMagUtilities::GetOmegaTau ()
 }
 
 
-void StMagUtilities::GetGridLeak ( int mode )
+void MagFieldUtils::GetGridLeak ( int mode )
 {
   fGridLeak   =  &cfg_.C<St_tpcGridLeakC>()  ;
   InnerGridLeakStrength  =  fGridLeak -> getGridLeakStrength ( kGLinner )  ;  // Relative strength of the Inner grid leak
@@ -467,7 +467,7 @@ void StMagUtilities::GetGridLeak ( int mode )
 }
 
 
-void StMagUtilities::GetHVPlanes ()
+void MagFieldUtils::GetHVPlanes ()
 {
   // GetTPCVoltages() must be called first!
   fHVPlanes = &cfg_.C<St_tpcHVPlanesC>() ;
@@ -478,7 +478,7 @@ void StMagUtilities::GetHVPlanes ()
 }
 
 
-void StMagUtilities::GetAbortGapCharge()
+void MagFieldUtils::GetAbortGapCharge()
 {
   fAbortGapCharge = &cfg_.C<St_tpcChargeEventC>() ;
   AbortGapCharges = fAbortGapCharge->getCharges() ;
@@ -494,7 +494,7 @@ void StMagUtilities::GetAbortGapCharge()
 //  These maps have enough resolution for all fields except the Grid Leak Calculations.  So note that the Grid Leak calculations
 //  (and PadRow13 calculations) don't use these tables but have custom lists of eRList[] built into each function.
 //
-float StMagUtilities::eRList[EMap_nR] = {   48.0,   49.0,
+float MagFieldUtils::eRList[EMap_nR] = {   48.0,   49.0,
                                               50.0,   52.0,   54.0,   56.0,   58.0,   60.0,   62.0,   64.0,   66.0,   68.0,
                                               70.0,   72.0,   74.0,   76.0,   78.0,   80.0,   82.0,   84.0,   86.0,   88.0,
                                               90.0,   92.0,   94.0,   96.0,   98.0,  100.0,  102.0,  104.0,  106.0,  108.0,
@@ -505,11 +505,11 @@ float StMagUtilities::eRList[EMap_nR] = {   48.0,   49.0,
                                               190.0,  192.0,  193.0,  194.0,  195.0,  196.0,  197.0,  198.0,  199.0,  199.5
                                           } ;
 
-float StMagUtilities::ePhiList[EMap_nPhi] = {  0.0000, 0.5236, 1.0472, 1.5708, 2.0944, 2.6180, 3.1416,
+float MagFieldUtils::ePhiList[EMap_nPhi] = {  0.0000, 0.5236, 1.0472, 1.5708, 2.0944, 2.6180, 3.1416,
                                                  3.6652, 4.1888, 4.7124, 5.2360, 5.7596, 6.2832
                                               } ;  // 13 planes of phi - so can wrap around
 
-float StMagUtilities::eZList[EMap_nZ] = { -208.5, -208.0, -207.0, -206.0, -205.0, -204.0, -202.0,
+float MagFieldUtils::eZList[EMap_nZ] = { -208.5, -208.0, -207.0, -206.0, -205.0, -204.0, -202.0,
                                             -200.0, -198.0, -196.0, -194.0, -192.0, -190.0, -188.0, -186.0, -184.0, -182.0,
                                             -180.0, -178.0, -176.0, -174.0, -172.0, -170.0, -168.0, -166.0, -164.0, -162.0,
                                             -160.0, -158.0, -156.0, -154.0, -152.0, -150.0, -148.0, -146.0, -144.0, -142.0,
@@ -540,14 +540,14 @@ float StMagUtilities::eZList[EMap_nZ] = { -208.5, -208.0, -207.0, -206.0, -205.0
 //  End of standard map parameter lists
 
 /// Initialization method.  This will sort and apply the options received by the tpt Maker
-void StMagUtilities::CommonStart ( int mode )
+void MagFieldUtils::CommonStart ( int mode )
 {
-  LOG_INFO << "StMagUtilities::CommonSta  Magnetic Field scale factor is " << gFactor << '\n' ;
+  LOG_INFO << "MagFieldUtils::CommonSta  Magnetic Field scale factor is " << gFactor << '\n' ;
 
-    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
-    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
-    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
-    LOG_INFO << "StMagUtilities::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
     StarDriftV  =     5.54 ;      // Drift Velocity (cm/microSec) Magnitude
     TPC_Z0      =    208.7 ;      // Z location of STAR TPC Gated Grid (cm)
 #ifndef __NO_TWIST__
@@ -584,7 +584,7 @@ void StMagUtilities::CommonStart ( int mode )
 
     mCorrectionsMode = 0;
 
-    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using hard-wired TPC parameters. \n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using hard-wired TPC parameters. \n" ;
 
   if ( fTpcVolts == 0 ) {
     CathodeV    = -27950.0 ;      // Cathode Voltage (volts)
@@ -595,26 +595,26 @@ void StMagUtilities::CommonStart ( int mode )
 
     for (int i = 0 ; i < 24; i++ ) { Inner_GLW_Voltage[i] = 999; Outer_GLW_Voltage[i] = 999; }
 
-    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected TpcVoltages setting. \n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected TpcVoltages setting. \n" ;
   }
-  else  LOG_INFO << "StMagUtilities::CommonSta  Using TPC voltages from the DB."   << '\n' ;
+  else  LOG_INFO << "MagFieldUtils::CommonSta  Using TPC voltages from the DB."   << '\n' ;
 
   if ( fOmegaTau == 0 ) {
     TensorV1    =  1.35 ;  // Drift velocity tensor term: in the ExB direction
     TensorV2    =  1.10 ;  // Drift velocity tensor term: direction perpendicular to Z and ExB
-    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected OmegaTau parameters. \n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected OmegaTau parameters. \n" ;
   }
-  else  LOG_INFO << "StMagUtilities::CommonSta  Using OmegaTau parameters from the DB."   << '\n' ;
+  else  LOG_INFO << "MagFieldUtils::CommonSta  Using OmegaTau parameters from the DB."   << '\n' ;
 
-  if (fSpaceCharge) LOG_INFO << "StMagUtilities::CommonSta  Using SpaceCharge values from the DB.\n" ;
-  else              LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceCharge settings. \n" ;
+  if (fSpaceCharge) LOG_INFO << "MagFieldUtils::CommonSta  Using SpaceCharge values from the DB.\n" ;
+  else              LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected SpaceCharge settings. \n" ;
 
-  if (fSpaceChargeR2) LOG_INFO << "StMagUtilities::CommonSta  Using SpaceChargeR2 values from the DB.\n" ;
-  else                LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using manually selected SpaceChargeR2 settings. \n" ;
+  if (fSpaceChargeR2) LOG_INFO << "MagFieldUtils::CommonSta  Using SpaceChargeR2 values from the DB.\n" ;
+  else                LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected SpaceChargeR2 settings. \n" ;
 
   if ( fAbortGapCharge == 0 ) {
     IonDriftVel = 181.67; // http://nuclear.ucdavis.edu/~bkimelman/protected/TPC_Meeting_Apr_10.pdf
-    LOG_INFO << "StMagUtilities::CommonSta  WARNING -- Using default Ion Drift Velocity. \n" ;
+    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using default Ion Drift Velocity. \n" ;
   }
 
   // Parse the mode switch which was received from the Tpt maker
@@ -641,14 +641,14 @@ void StMagUtilities::CommonStart ( int mode )
     }
 
     mDistortionMode |= kIFCShift ;
-    printf("StMagUtilities::CommonSta  Default mode selection\n");
+    printf("MagFieldUtils::CommonSta  Default mode selection\n");
   }
-  else printf("StMagUtilities::CommonSta  Using mode option 0x%X\n", mode);
+  else printf("MagFieldUtils::CommonSta  Using mode option 0x%X\n", mode);
 
-  printf("StMagUtilities::CommonSta  Using correction mode 0x%X\n", mCorrectionsMode);
+  printf("MagFieldUtils::CommonSta  Using correction mode 0x%X\n", mCorrectionsMode);
   iterateDistortion = mCorrectionsMode & kIterateUndo;
   iterationFailCounter = -1;
-  printf("StMagUtilities::CommonSta  Version  ");
+  printf("MagFieldUtils::CommonSta  Version  ");
 
   if ( mDistortionMode & kBMap )          printf ("3D Mag Field Distortions") ;
 
@@ -716,67 +716,67 @@ void StMagUtilities::CommonStart ( int mode )
   Const_1    =  TensorV1 * OmegaTau / ( 1. + TensorV1 * TensorV1 * OmegaTau * OmegaTau ) ;
   Const_2    =  TensorV2 * TensorV2 * OmegaTau * OmegaTau / ( 1. + TensorV2 * TensorV2 * OmegaTau * OmegaTau ) ;
 
-  LOG_INFO << "StMagUtilities::BField        =  " << B[2] << " kGauss at (0,0,0)" <<  '\n' ;
-  LOG_INFO << "StMagUtilities::DriftVel      =  " << StarDriftV << " cm/microsec" <<  '\n' ;
-  LOG_INFO << "StMagUtilities::TPC_Z0        =  " << TPC_Z0 << " cm\n" ;
-  LOG_INFO << "StMagUtilities::TensorV1+V2   =  " << TensorV1 << " " << TensorV2 << '\n' ;
-  LOG_INFO << "StMagUtilities::OmegaTau1+2   =  " << OmegaTau* TensorV1 << " " << OmegaTau* TensorV2 << '\n' ;
-  LOG_INFO << "StMagUtilities::XTWIST        =  " << XTWIST << " mrad\n" ;
-  LOG_INFO << "StMagUtilities::YTWIST        =  " << YTWIST << " mrad\n" ;
-  LOG_INFO << "StMagUtilities::SpaceCharge   =  " << SpaceCharge << " Coulombs/epsilon-nought\n" ;
-  LOG_INFO << "StMagUtilities::SpaceChargeR2 =  " << SpaceChargeR2 << " Coulombs/epsilon-nought" << "  EWRatio = "
+  LOG_INFO << "MagFieldUtils::BField        =  " << B[2] << " kGauss at (0,0,0)" <<  '\n' ;
+  LOG_INFO << "MagFieldUtils::DriftVel      =  " << StarDriftV << " cm/microsec" <<  '\n' ;
+  LOG_INFO << "MagFieldUtils::TPC_Z0        =  " << TPC_Z0 << " cm\n" ;
+  LOG_INFO << "MagFieldUtils::TensorV1+V2   =  " << TensorV1 << " " << TensorV2 << '\n' ;
+  LOG_INFO << "MagFieldUtils::OmegaTau1+2   =  " << OmegaTau* TensorV1 << " " << OmegaTau* TensorV2 << '\n' ;
+  LOG_INFO << "MagFieldUtils::XTWIST        =  " << XTWIST << " mrad\n" ;
+  LOG_INFO << "MagFieldUtils::YTWIST        =  " << YTWIST << " mrad\n" ;
+  LOG_INFO << "MagFieldUtils::SpaceCharge   =  " << SpaceCharge << " Coulombs/epsilon-nought\n" ;
+  LOG_INFO << "MagFieldUtils::SpaceChargeR2 =  " << SpaceChargeR2 << " Coulombs/epsilon-nought" << "  EWRatio = "
        << SpaceChargeEWRatio << '\n' ;
 
   if (mDistortionMode & kDistoSmearing) {
-    LOG_INFO << "StMagUtilities::SmearCoefSC   =  " << SmearCoefSC << '\n';
-    LOG_INFO << "StMagUtilities::SmearCoefGL   =  " << SmearCoefGL << '\n';
+    LOG_INFO << "MagFieldUtils::SmearCoefSC   =  " << SmearCoefSC << '\n';
+    LOG_INFO << "MagFieldUtils::SmearCoefGL   =  " << SmearCoefGL << '\n';
   }
 
   if (mDistortionMode & kAbortGap) {
-    LOG_INFO << "StMagUtilities::AbortGapCoef  =  " << AbortGapChargeCoef << '\n';
+    LOG_INFO << "MagFieldUtils::AbortGapCoef  =  " << AbortGapChargeCoef << '\n';
   }
 
-  LOG_INFO << "StMagUtilities::IFCShift      =  " << IFCShift << " cm\n" ;
-  LOG_INFO << "StMagUtilities::CathodeV      =  " << CathodeV << " volts\n" ;
-  LOG_INFO << "StMagUtilities::GG            =  " << GG << " volts\n" ;
+  LOG_INFO << "MagFieldUtils::IFCShift      =  " << IFCShift << " cm\n" ;
+  LOG_INFO << "MagFieldUtils::CathodeV      =  " << CathodeV << " volts\n" ;
+  LOG_INFO << "MagFieldUtils::GG            =  " << GG << " volts\n" ;
 
   if (mDistortionMode & kPadrow40) {
-    LOG_INFO << "StMagUtilities::Inner_GLW_V   =  " ;
+    LOG_INFO << "MagFieldUtils::Inner_GLW_V   =  " ;
 
     for ( int i = 0 ; i < 24 ; i++ ) LOG_INFO << Inner_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
 
-    LOG_INFO << "StMagUtilities::Outer_GLW_V   =  " ;
+    LOG_INFO << "MagFieldUtils::Outer_GLW_V   =  " ;
 
     for ( int i = 0 ; i < 24 ; i++ ) LOG_INFO << Outer_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
   }
 
-  LOG_INFO << "StMagUtilities::EastClock     =  " << EASTCLOCKERROR << " mrad\n";
-  LOG_INFO << "StMagUtilities::WestClock     =  " << WESTCLOCKERROR << " mrad\n";
-  LOG_INFO << "StMagUtilities::Side          =  " ;
+  LOG_INFO << "MagFieldUtils::EastClock     =  " << EASTCLOCKERROR << " mrad\n";
+  LOG_INFO << "MagFieldUtils::WestClock     =  " << WESTCLOCKERROR << " mrad\n";
+  LOG_INFO << "MagFieldUtils::Side          =  " ;
 
   for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Side[i] << " " ; LOG_INFO << "Location of Short E=0 / W=1 \n";
 
-  LOG_INFO << "StMagUtilities::Cage          =  " ;
+  LOG_INFO << "MagFieldUtils::Cage          =  " ;
 
   for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Cage[i] << " " ; LOG_INFO << "Location of Short IFC = 0 / OFC = 1\n";
 
-  LOG_INFO << "StMagUtilities::Ring          =  " ;
+  LOG_INFO << "MagFieldUtils::Ring          =  " ;
 
   for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Ring[i] << " " ; LOG_INFO << "Rings - Location of Short counting from the CM\n";
 
-  LOG_INFO << "StMagUtilities::MissingOhms   =  " ;
+  LOG_INFO << "MagFieldUtils::MissingOhms   =  " ;
 
   for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << MissingResistance[i] << " " ; LOG_INFO << "MOhms Missing Resistance\n";
 
-  LOG_INFO << "StMagUtilities::CompResistor  =  " ;
+  LOG_INFO << "MagFieldUtils::CompResistor  =  " ;
 
   for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Resistor[i] << " " ; LOG_INFO << "MOhm Compensating Resistor Value\n";
 
-  LOG_INFO << "StMagUtilities::InnerGridLeak =  " << InnerGridLeakStrength << " " << InnerGridLeakRadius << " " << InnerGridLeakWidth << '\n';
-  LOG_INFO << "StMagUtilities::MiddlGridLeak =  " << MiddlGridLeakStrength << " " << MiddlGridLeakRadius << " " << MiddlGridLeakWidth << '\n';
-  LOG_INFO << "StMagUtilities::OuterGridLeak =  " << OuterGridLeakStrength << " " << OuterGridLeakRadius << " " << OuterGridLeakWidth << '\n';
-  LOG_INFO << "StMagUtilities::deltaVGG      =  " << deltaVGGEast << " V (east) : " << deltaVGGWest << " V (west)\n";
-  LOG_INFO << "StMagUtilities::GLWeights     =  " ;
+  LOG_INFO << "MagFieldUtils::InnerGridLeak =  " << InnerGridLeakStrength << " " << InnerGridLeakRadius << " " << InnerGridLeakWidth << '\n';
+  LOG_INFO << "MagFieldUtils::MiddlGridLeak =  " << MiddlGridLeakStrength << " " << MiddlGridLeakRadius << " " << MiddlGridLeakWidth << '\n';
+  LOG_INFO << "MagFieldUtils::OuterGridLeak =  " << OuterGridLeakStrength << " " << OuterGridLeakRadius << " " << OuterGridLeakWidth << '\n';
+  LOG_INFO << "MagFieldUtils::deltaVGG      =  " << deltaVGGEast << " V (east) : " << deltaVGGWest << " V (west)\n";
+  LOG_INFO << "MagFieldUtils::GLWeights     =  " ;
 
   if (mDistortionMode & k3DGridLeak) {
     for ( int i = 1 ; i < 25 ; i++ ) LOG_INFO << GLWeights[i] << " " ;
@@ -799,7 +799,7 @@ void StMagUtilities::CommonStart ( int mode )
 }
 
 
-void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoDistortion( const float x[], float Xprime[], int Sector )
 {
   // Control by flags JCD Oct 4, 2001
   // NOTE: x[],Xprime[] must be Cartesian for this function!
@@ -879,14 +879,14 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
   }
 
   if ((mDistortionMode & kBMap) && (mDistortionMode & kFast2DBMap)) {
-    LOG_INFO << "StMagUtilities ERROR **** Do not use kBMap and kFast2DBMap at the same time\n" ;
-    LOG_INFO << "StMagUtilities ERROR **** These routines have duplicate functionality so don't do both.\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** Do not use kBMap and kFast2DBMap at the same time\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** These routines have duplicate functionality so don't do both.\n" ;
     exit(1) ;
   }
 
   if ((mDistortionMode & kPadrow13) && (mDistortionMode & kPadrow40)) {
-    LOG_INFO << "StMagUtilities ERROR **** Do not use kPadrow13 and kPadrow40 at the same time\n" ;
-    LOG_INFO << "StMagUtilities ERROR **** These routines have duplicate functionality so don't do both.\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** Do not use kPadrow13 and kPadrow40 at the same time\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** These routines have duplicate functionality so don't do both.\n" ;
     exit(1) ;
   }
 
@@ -979,7 +979,7 @@ void StMagUtilities::UndoDistortion( const float x[], float Xprime[], int Sector
 
 
 /// Main Entry Point for requests to DO the E and B field distortions (for simulations)
-void StMagUtilities::DoDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::DoDistortion( const float x[], float Xprime[], int Sector )
 {
   // NOTE: x[],Xprime[] must be Cartesian for this function!
   bool tempIterDist = iterateDistortion;
@@ -1015,7 +1015,7 @@ void StMagUtilities::DoDistortion( const float x[], float Xprime[], int Sector )
     This avoids the time required to set up a table of distorted values but
     is slow for a very large number of points ( > 10,000 ).
 */
-void StMagUtilities::UndoBDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoBDistortion( const float x[], float Xprime[], int Sector )
 {
 
   // NOTE: x[],Xprime[] must be Cartesian for this function!
@@ -1058,7 +1058,7 @@ void StMagUtilities::UndoBDistortion( const float x[], float Xprime[], int Secto
     This avoids the time required to set up a table of distorted values but
     is slow for a very large number of points ( > 10,000 ).
 */
-void StMagUtilities::Undo2DBDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::Undo2DBDistortion( const float x[], float Xprime[], int Sector )
 {
 
   // NOTE: x[],Xprime[] must be Cartesian for this function!
@@ -1103,7 +1103,7 @@ void StMagUtilities::Undo2DBDistortion( const float x[], float Xprime[], int Sec
     about 1 minute of CPU time to generate the table but it is very fast after the
     table has been created.  Use it when you have a large number of points ( > 10,000 ).
 */
-void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::FastUndoBDistortion( const float x[], float Xprime[], int Sector )
 {
 
   static  float dx3D[EMap_nPhi][EMap_nR][EMap_nZ], dy3D[EMap_nPhi][EMap_nR][EMap_nZ] ;
@@ -1126,7 +1126,7 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
   float z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::FastUndoD  Please wait for the tables to fill ... ~90 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::FastUndoD  Please wait for the tables to fill ... ~90 seconds\n" ;
 
     for ( k = 0 ; k < EMap_nPhi ; k++ ) {
       for ( i = 0 ; i < EMap_nR ; i++ ) {
@@ -1195,7 +1195,7 @@ void StMagUtilities::FastUndoBDistortion( const float x[], float Xprime[], int S
     very fast after the table has been created. Use it when you have a large number
     of points ( > 10,000 ).
 */
-void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::FastUndo2DBDistortion( const float x[], float Xprime[], int Sector )
 {
 
   static  float dR[EMap_nR][EMap_nZ], dRPhi[EMap_nR][EMap_nZ] ;
@@ -1217,7 +1217,7 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
   float z = LimitZ( Sector, x ) ;                 // Protect against discontinuity at CM
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::FastUndo2  Please wait for the tables to fill ...  ~5 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::FastUndo2  Please wait for the tables to fill ...  ~5 seconds\n" ;
 
     for ( i = 0 ; i < EMap_nR ; i++ ) {
       xx[0] = eRList[i] ;
@@ -1277,7 +1277,7 @@ void StMagUtilities::FastUndo2DBDistortion( const float x[], float Xprime[], int
     an angle between the E and B fields, there will be a distortion in the recorded
     tracks.  This routine takes out that distortion.
  */
-void StMagUtilities::UndoTwistDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoTwistDistortion( const float x[], float Xprime[], int Sector )
 {
 
   double        Zdrift ;
@@ -1313,7 +1313,7 @@ void StMagUtilities::UndoTwistDistortion( const float x[], float Xprime[], int S
     lines to leak out of the anode and gated grid region.  HHWieman has modelled this
     effect and his solution is used to remove the distortions.
  */
-void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoPad13Distortion( const float x[], float Xprime[], int Sector )
 {
   const int   ORDER    =  2           ;         // ORDER = 1 is linear, ORDER = 2 is quadratice interpolation (Leave at 2 for legacy reasons)
   const int   NZDRIFT  =  19          ;         // Dimension of the vector to contain ZDriftArray
@@ -1354,7 +1354,7 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
 
   if ( DoOnce ) {
     // Put these coefficients in a table to save time
-    LOG_INFO << "StMagUtilities::PadRow13   Please wait for the tables to fill ...  ~5 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::PadRow13   Please wait for the tables to fill ...  ~5 seconds\n" ;
     C[0] = WIREGAP * GG * SCALE / ( 2 * BOX ) ;
 
     for ( int i = 1 ; i < TERMS ; i++ )
@@ -1458,7 +1458,7 @@ void StMagUtilities::UndoPad13Distortion( const float x[], float Xprime[], int S
 
     Note that Voltage >= (positive) 100 is the flag for the old sectors.
 */
-void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoPad40Distortion( const float x[], float Xprime[], int Sector )
 {
 
   const int   ROWS           =   5401              ;   // Number of ROWS in the relaxation grid that created DataInTheGap. (must be ODD)
@@ -1512,7 +1512,7 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
   if (fTpcVolts) {DoOnceLocal = UpdateTPCHighVoltages() ;}
 
   if ( DoOnceLocal ) {
-    LOG_INFO << "StMagUtilities::PadRow40   Filling tables ...\n" ;
+    LOG_INFO << "MagFieldUtils::PadRow40   Filling tables ...\n" ;
     int OFFSET = (COLUMNS - SAVEDCOLUMNS) / 2 ;                                        // Explicitly plan for zero'd out data
 
     for ( int MapID = 0 ; MapID < nMAPS ; MapID++ ) {                                  // Read maps and store locally
@@ -1607,7 +1607,7 @@ void StMagUtilities::UndoPad40Distortion( const float x[], float Xprime[], int S
 
 }
 
-void StMagUtilities::GetGLWallData ( const int select, float DataInTheGap[] )
+void MagFieldUtils::GetGLWallData ( const int select, float DataInTheGap[] )
 {
   //  The data were calculated on a grid with the following parameters.  The center of the gap is at point 5000.
   //
@@ -2071,7 +2071,7 @@ void StMagUtilities::GetGLWallData ( const int select, float DataInTheGap[] )
     input a rotation angle for each end, if you wish.  Note: this is a coordinate transformation
     and not a distortion correction.  It is here for historical reasons.
  */
-void StMagUtilities::UndoClockDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoClockDistortion( const float x[], float Xprime[], int Sector )
 {
 
   double r, phi, z ;
@@ -2103,10 +2103,10 @@ void StMagUtilities::UndoClockDistortion( const float x[], float Xprime[], int S
 /*!
 
  */
-void StMagUtilities::UndoMembraneDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoMembraneDistortion( const float x[], float Xprime[], int Sector )
 {
 
-  LOG_INFO << "StMagUtilities::UndoMembrane  This routine was made obosolete on 10/1/2009.  Do not use it.\n" ;
+  LOG_INFO << "MagFieldUtils::UndoMembrane  This routine was made obosolete on 10/1/2009.  Do not use it.\n" ;
   exit(0) ;
 
   // Membrane Distortion correction is Obsolete.  Disabled by JT 2009
@@ -2148,10 +2148,10 @@ void StMagUtilities::UndoMembraneDistortion( const float x[], float Xprime[], in
 /*!
 
  */
-void StMagUtilities::UndoEndcapDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoEndcapDistortion( const float x[], float Xprime[], int Sector )
 {
 
-  LOG_INFO << "StMagUtilities::UndoEndcap  This routine was made obosolete on 10/1/2009.  Do not use it.\n" ;
+  LOG_INFO << "MagFieldUtils::UndoEndcap  This routine was made obosolete on 10/1/2009.  Do not use it.\n" ;
   exit(0) ;
 
   // EndCap Distortion correction is Obsolete.  Disabled by JT 2009
@@ -2198,7 +2198,7 @@ void StMagUtilities::UndoEndcapDistortion( const float x[], float Xprime[], int 
     Electrostatic equations solved in Rectangular Coodinates by Jim Thomas
     Updated to work in cylindrical coordinates by Jamie Dunlop  11/01/2001
 */
-void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoIFCShiftDistortion( const float x[], float Xprime[], int Sector )
 {
 
   float  Er_integral, Ephi_integral ;
@@ -2207,7 +2207,7 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
   const   int ORDER = 1 ;                         // Linear interpolation = 1, Quadratic = 2
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::IFCShift   Please wait for the tables to fill ...  ~5 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::IFCShift   Please wait for the tables to fill ...  ~5 seconds\n" ;
     int Nterms = 100 ;
     double Denominator[100];
     memset(Denominator, 0, 100 * sizeof(double));
@@ -2300,12 +2300,12 @@ void StMagUtilities::UndoIFCShiftDistortion( const float x[], float Xprime[], in
      20 : R2, from DB
      21 : R2, manually set
 */
-void StMagUtilities::UndoSpaceChargeDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoSpaceChargeDistortion( const float x[], float Xprime[], int Sector )
 {
 
   if ((mDistortionMode & kSpaceCharge) && (mDistortionMode & kSpaceChargeR2)) {
-    LOG_INFO << "StMagUtilities ERROR **** Do not use kSpaceCharge and kSpaceChargeR2 at the same time\n" ;
-    LOG_INFO << "StMagUtilities ERROR **** These routines have overlapping functionality.\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** Do not use kSpaceCharge and kSpaceChargeR2 at the same time\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** These routines have overlapping functionality.\n" ;
     exit(1) ;
   }
 
@@ -2330,7 +2330,7 @@ void StMagUtilities::UndoSpaceChargeDistortion( const float x[], float Xprime[],
     for legacy reasons.  Electrostatic equations solved by Jamie Dunlop  11/01/2001
     Updated to include linear increase of charge from endcap to CM by Jim Thomas 12/18/2001
 */
-void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoSpaceChargeR0Distortion( const float x[], float Xprime[], int Sector )
 {
 
   float  Er_integral, Ephi_integral ;
@@ -2432,7 +2432,7 @@ void StMagUtilities::UndoSpaceChargeR0Distortion( const float x[], float Xprime[
   and is greater than 1.0 when there is more charge in the East half to the TPC.
   Original work by H. H. Wieman, N. Smirnov, and J. Thomas
 */
-void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoSpaceChargeR2Distortion( const float x[], float Xprime[], int Sector )
 {
 
   const int     ORDER       =    1 ;  // Linear interpolation = 1, Quadratic = 2
@@ -2443,7 +2443,7 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
   if (fSpaceChargeR2) { GetSpaceChargeR2();} // need to reset it.
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::UndoSpace  Please wait for the tables to fill ...  ~5 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::UndoSpace  Please wait for the tables to fill ...  ~5 seconds\n" ;
     const int     ROWS        =  257 ;  // (2**n + 1)
     const int     COLUMNS     =  129 ;  // (2**m + 1)
     const int     ITERATIONS  =  100 ;  // About 0.05 seconds per iteration
@@ -2604,7 +2604,7 @@ void StMagUtilities::UndoSpaceChargeR2Distortion( const float x[], float Xprime[
   Original work by Gene VanBuren, Benjamin Kimelman and Jim Thomas
 */
 
-void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], int Sector, float TimeSinceDeposition )
+void MagFieldUtils::UndoAbortGapDistortion( const float x[], float Xprime[], int Sector, float TimeSinceDeposition )
 {
 
   const int       ORDER     =    1 ;   // Linear interpolation = 1, Quadratic = 2
@@ -2620,7 +2620,7 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
   const int     ROWS        =  257 ;  // (2**n + 1)
   const int     COLUMNS     =  129 ;  // (2**m + 1)
 
-  //LOG_INFO << "StMagUtilities::UndoAbortGap TimeSinceDeposition=" << TimeSinceDeposition << '\n';
+  //LOG_INFO << "MagFieldUtils::UndoAbortGap TimeSinceDeposition=" << TimeSinceDeposition << '\n';
 
   float AbortGapCharge = 0.0;
   int AbortGapChargeSize = 1;
@@ -2640,7 +2640,7 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
 
   if (DoOnceLocal ) {
     //      LOG_INFO << "fullDriftTime: " << fullDriftTime << '\n';
-    LOG_INFO << "StMagUtilities::UndoAbortGap  Please wait for the tables to fill ... ~5 seconds\n";
+    LOG_INFO << "MagFieldUtils::UndoAbortGap  Please wait for the tables to fill ... ~5 seconds\n";
     const int     ITERATIONS  =  100 ;  // About 0.05 seconds per iteration
     const double  GRIDSIZER   =  (OFCRadius - IFCRadius) / (ROWS - 1) ;
     const double  GRIDSIZEZ   =  TPC_Z0 / (COLUMNS - 1) ;
@@ -2802,7 +2802,7 @@ void StMagUtilities::UndoAbortGapDistortion( const float x[], float Xprime[], in
     Electrostatic Equations from SN0253 by Howard Wieman.
     Note that we use Howard's funny coordinate system where Z==0 at the GG.
 */
-void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoShortedRingDistortion( const float x[], float Xprime[], int Sector )
 {
 
   const   int   ORDER     = 1     ;            // Linear interpolation = 1, Quadratic = 2
@@ -2817,7 +2817,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
 
   if ( DoOnceLocal ) {
 
-    LOG_INFO << "StMagUtilities::UndoShort  Please wait for the tables to fill ...  ~5 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::UndoShort  Please wait for the tables to fill ...  ~5 seconds\n" ;
 
     // Parse the Table and separate out the four different resistor chains
     // Definition: A "missing" resistor is a shorted resistor, an "extra" resistor is a compensating resistor added at the end
@@ -3003,7 +3003,7 @@ void StMagUtilities::UndoShortedRingDistortion( const float x[], float Xprime[],
     Note that we use Howard's funny coordinate system where Z==0 at the GG.
 */
 
-void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoGGVoltErrorDistortion( const float x[], float Xprime[], int Sector )
 {
 
   const   int   ORDER     = 1     ;               // Linear interpolation = 1, Quadratic = 2
@@ -3015,7 +3015,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
 
   if ( DoOnce ) {
 
-    LOG_INFO << "StMagUtilities::UndoGG VE  Please wait for the tables to fill ...  ~5 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::UndoGG VE  Please wait for the tables to fill ...  ~5 seconds\n" ;
 
     int Nterms = 100 ;
     double Denominator[100];
@@ -3095,7 +3095,7 @@ void StMagUtilities::UndoGGVoltErrorDistortion( const float x[], float Xprime[],
 
 
 /// Interpolate a 2D table - 2D interpolation within a 2D TMatrix
-float StMagUtilities::Interpolate2DTable( const int ORDER, const float x, const float y, const int nx, const int ny,
+float MagFieldUtils::Interpolate2DTable( const int ORDER, const float x, const float y, const int nx, const int ny,
     const float XV[], const float YV[], const TMatrix &Array )
 {
 
@@ -3123,7 +3123,7 @@ float StMagUtilities::Interpolate2DTable( const int ORDER, const float x, const 
 }
 
 /// Interpolate the E field map - 2D interpolation
-void StMagUtilities::Interpolate2DEdistortion( const int ORDER, const float r, const float z,
+void MagFieldUtils::Interpolate2DEdistortion( const int ORDER, const float r, const float z,
     const float Er[EMap_nZ][EMap_nR], float &Er_value )
 {
 
@@ -3150,7 +3150,7 @@ void StMagUtilities::Interpolate2DEdistortion( const int ORDER, const float r, c
 }
 
 /// Interpolate the E field map - 3D interpolation
-void StMagUtilities::Interpolate3DEdistortion( const int ORDER, const float r, const float phi, const float z,
+void MagFieldUtils::Interpolate3DEdistortion( const int ORDER, const float r, const float phi, const float z,
     const float Er[EMap_nZ][EMap_nPhi][EMap_nR], const float Ephi[EMap_nZ][EMap_nPhi][EMap_nR],
     float &Er_value, float &Ephi_value )
 {
@@ -3192,7 +3192,7 @@ void StMagUtilities::Interpolate3DEdistortion( const int ORDER, const float r, c
 
 
 /// Interpolate a 3D Table - 3D interpolation within a 3D TMatrix
-float StMagUtilities::Interpolate3DTable ( const int ORDER, const float x,    const float y,    const float z,
+float MagFieldUtils::Interpolate3DTable ( const int ORDER, const float x,    const float y,    const float z,
     const int  nx,    const int  ny,    const int  nz,
     const float XV[], const float YV[], const float ZV[],
     TMatrix** ArrayofArrays )
@@ -3256,7 +3256,7 @@ float StMagUtilities::Interpolate3DTable ( const int ORDER, const float x,    co
     NOTE: In order for this algorith to work, the number of rows and columns must be a power of 2 plus one.
     So ROWS == 2**M + 1 and COLUMNS == 2**N + 1.  The number of ROWS and COLUMNS can be different.
  */
-void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMatrix &EroverEzM,
+void MagFieldUtils::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMatrix &EroverEzM,
                                         const int ITERATIONS )
 {
 
@@ -3270,10 +3270,10 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
   //Check that number of ROWS and COLUMNS is suitable for a binary expansion
 
   if ( !IsPowerOfTwo(ROWS - 1) )
-  { LOG_INFO << "StMagUtilities::PoissonRelaxation - Error in the number of ROWS.  Must be 2**M - 1\n" ; exit(1) ; }
+  { LOG_INFO << "MagFieldUtils::PoissonRelaxation - Error in the number of ROWS.  Must be 2**M - 1\n" ; exit(1) ; }
 
   if ( !IsPowerOfTwo(COLUMNS - 1) )
-  { LOG_INFO << "StMagUtilities::PoissonRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1\n" ; exit(1) ; }
+  { LOG_INFO << "MagFieldUtils::PoissonRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1\n" ; exit(1) ; }
 
   // Because performance of this relaxation is important, we access the arrays directly
   float* ArrayE, *ArrayV, *Charge, *SumCharge, *EroverEz ;
@@ -3495,7 +3495,7 @@ void StMagUtilities::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMat
              = 1 if we have reflection symmetry at the boundaries (eg. sector symmetry or half sector symmetries).
 
  */
-void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** ArrayofCharge, TMatrix** ArrayofEroverEz,
+void MagFieldUtils::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** ArrayofCharge, TMatrix** ArrayofEroverEz,
     TMatrix** ArrayofEPhioverEz,
     const int PHISLICES, const float DELTAPHI,
     const int ITERATIONS, const int SYMMETRY )
@@ -3511,13 +3511,13 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
 
   //Check that the number of ROWS and COLUMNS is suitable for a binary expansion
   if ( !IsPowerOfTwo((ROWS - 1))    )
-  { LOG_INFO << "StMagUtilities::Poisson3DRelaxation - Error in the number of ROWS.  Must be 2**M - 1\n" ; exit(1) ; }
+  { LOG_INFO << "MagFieldUtils::Poisson3DRelaxation - Error in the number of ROWS.  Must be 2**M - 1\n" ; exit(1) ; }
 
   if ( !IsPowerOfTwo((COLUMNS - 1)) )
-  { LOG_INFO << "StMagUtilities::Poisson3DRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1\n" ; exit(1) ; }
+  { LOG_INFO << "MagFieldUtils::Poisson3DRelaxation - Error in the number of COLUMNS.  Must be 2**N - 1\n" ; exit(1) ; }
 
   if ( PHISLICES <= 3   )
-  { LOG_INFO << "StMagUtilities::Poisson3DRelaxation - Error in the number of PHISLICES.  Must be larger than 3\n" ; exit(1) ; }
+  { LOG_INFO << "MagFieldUtils::Poisson3DRelaxation - Error in the number of PHISLICES.  Must be larger than 3\n" ; exit(1) ; }
 
   // Because performance of this relaxation is important, we access the arrays directly
   float* ArrayE, *ArrayV, *ArrayVM, *ArrayVP, *Charge, *SumCharge, *EroverEz, *EPhioverEz ;
@@ -3537,7 +3537,7 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
 
   TMatrix* ArrayofSumCharge[1000] ;    // Create temporary arrays to store low resolution charge arrays
 
-  if  ( PHISLICES > 1000 ) { LOG_INFO << "StMagUtilities::Poisson3D  PHISLICES > 1000 is not allowed (nor wise) \n" ; exit(1) ; }
+  if  ( PHISLICES > 1000 ) { LOG_INFO << "MagFieldUtils::Poisson3D  PHISLICES > 1000 is not allowed (nor wise) \n" ; exit(1) ; }
 
   for ( int i = 0 ; i < PHISLICES ; i++ ) { ArrayofSumCharge[i] = new TMatrix(ROWS, COLUMNS) ; }
 
@@ -3863,7 +3863,7 @@ void StMagUtilities::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arr
   So you can calculate this, external to the function, and then work with a realistic vertex error bar if
   you wish to do it.  200 microns error is a good average value for central Au-Au events.
 */
-void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[3], const float p[3],
+void MagFieldUtils::FixSpaceChargeDistortion ( const int Charge, const float x[3], const float p[3],
     const Prime PrimaryOrGlobal, float x_new[3], float p_new[3],
     const unsigned int RowMask1, const unsigned int RowMask2, const float VertexError)
 {
@@ -4054,7 +4054,7 @@ void StMagUtilities::FixSpaceChargeDistortion ( const int Charge, const float x[
   So you can calculate this, external to the function, and then work with a realistic vertex error bar if
   you wish to do it.  200 microns error is a good average value for central Au-Au events.
 */
-void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Charge, const float x[3], const float p[3],
+void MagFieldUtils::ApplySpaceChargeDistortion (const double sc, const int Charge, const float x[3], const float p[3],
     const Prime PrimaryOrGlobal, int &new_Charge, float x_new[3], float p_new[3],
     const unsigned int RowMask1, const unsigned int RowMask2, const float VertexError )
 {
@@ -4255,7 +4255,7 @@ void StMagUtilities::ApplySpaceChargeDistortion (const double sc, const int Char
 Add comments here.
 TPC Hits only.  Does not include SVT or SSD or any other inner tracking detectors.
 */
-int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, float VertexZ, float PseudoRapidity,
+int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, float VertexZ, float PseudoRapidity,
     float DCA,  const unsigned int RowMask1, const unsigned int RowMask2, float &pSpace )
 {
   const int   ROWS             =  TPCROWS[sec - 1]  ;     // Total number of TPC rows per sector (Inner + Outer)
@@ -4473,7 +4473,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   There are also cuts on Pt and rapdity, etc, that can cause the funtion to return non-zero.
 
 */
-int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, float VertexZ,
+int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, float VertexZ,
     float PseudoRapidity, float Phi, float DCA,
     const unsigned long long RowMask1,
     const unsigned long long RowMask2,
@@ -4744,7 +4744,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int sec, int Charge, float Pt,
   There are also cuts on Pt and rapdity, etc, that can cause the funtion to return non-zero.
 
 */
-int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float Pt, float VertexZ,
+int MagFieldUtils::PredictSpaceChargeDistortion (int NHits, int Charge, float Pt, float VertexZ,
     float PseudoRapidity, float Phi, float DCA,
     double R[128],
     double ErrorR[128],
@@ -4937,7 +4937,7 @@ int StMagUtilities::PredictSpaceChargeDistortion (int NHits, int Charge, float P
 
 /// Check if integer is a power of 2
 
-int StMagUtilities::IsPowerOfTwo(int i)
+int MagFieldUtils::IsPowerOfTwo(int i)
 {
   int j = 0;
 
@@ -4959,14 +4959,14 @@ int StMagUtilities::IsPowerOfTwo(int i)
   for pileup events.  SectorNumber from datatapes is better, if available.
 */
 
-void StMagUtilities::SectorNumber( int &Sector, const float x[] )
+void MagFieldUtils::SectorNumber( int &Sector, const float x[] )
 {
   if ( Sector > 0 ) return              ;  // Already valid
 
   float phi = (usingCartesian ? std::atan2(x[1], x[0]) : x[1]) ;
   SectorNumber( Sector, phi, x[2] )     ;
 }
-void StMagUtilities::SectorNumber( int &Sector, float phi, const float z )
+void MagFieldUtils::SectorNumber( int &Sector, float phi, const float z )
 {
   if ( Sector > 0 ) return              ;  // Already valid
 
@@ -4979,11 +4979,11 @@ void StMagUtilities::SectorNumber( int &Sector, float phi, const float z )
 }
 
 /// Calculate Sector Side from Sector number (-1 for east, +1 for west)
-int StMagUtilities::SectorSide( int &Sector, const float x[] )
+int MagFieldUtils::SectorSide( int &Sector, const float x[] )
 {
   return SectorSide(Sector, x[2]) ;
 }
-int StMagUtilities::SectorSide( int &Sector, const float z )
+int MagFieldUtils::SectorSide( int &Sector, const float z )
 {
   if ( Sector <= 0 ) SectorNumber(Sector, 0, z);
 
@@ -5000,7 +5000,7 @@ int StMagUtilities::SectorSide( int &Sector, const float z )
   by doing calculations no closer than 0.2 cm from it
 */
 
-float StMagUtilities::LimitZ( int &Sector, const float x[] )
+float MagFieldUtils::LimitZ( int &Sector, const float x[] )
 {
   float z = x[2];
   const float zlimit = 0.2;
@@ -5019,14 +5019,14 @@ float StMagUtilities::LimitZ( int &Sector, const float x[] )
 /*!
   Call the appropriate GridLeak function based on distortion mode
 */
-void StMagUtilities::UndoGridLeakDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoGridLeakDistortion( const float x[], float Xprime[], int Sector )
 {
 
   if (((mDistortionMode / kGridLeak)     & 1) +
       ((mDistortionMode / k3DGridLeak)   & 1) +
       ((mDistortionMode / kFullGridLeak) & 1) > 1) {
-    LOG_INFO << "StMagUtilities ERROR **** Do not use multiple GridLeak modes at the same time\n" ;
-    LOG_INFO << "StMagUtilities ERROR **** These routines have overlapping functionality.\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** Do not use multiple GridLeak modes at the same time\n" ;
+    LOG_INFO << "MagFieldUtils ERROR **** These routines have overlapping functionality.\n" ;
     exit(1) ;
   }
 
@@ -5053,7 +5053,7 @@ void StMagUtilities::UndoGridLeakDistortion( const float x[], float Xprime[], in
   Original work by Gene VanBuren, and J. Thomas
   NOTE: This routine is obsolete: 10/31/2009  Recommend that you use Undo3DGridLeakDistortion, instead.
 */
-void StMagUtilities::Undo2DGridLeakDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::Undo2DGridLeakDistortion( const float x[], float Xprime[], int Sector )
 {
 
   const  int     ORDER       =  1   ;  // Linear interpolation = 1, Quadratic = 2
@@ -5074,7 +5074,7 @@ void StMagUtilities::Undo2DGridLeakDistortion( const float x[], float Xprime[], 
   { memcpy(Xprime, x, threeFloats) ; return ; }
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::UndoGridL  Please wait for the tables to fill ... ~30 seconds\n" ;
+    LOG_INFO << "MagFieldUtils::UndoGridL  Please wait for the tables to fill ... ~30 seconds\n" ;
     TMatrix  ArrayV(ROWS, COLUMNS), Charge(ROWS, COLUMNS) ;
     //Fill arrays with initial conditions.  V on the boundary and Charge in the volume.
 
@@ -5166,7 +5166,7 @@ void StMagUtilities::Undo2DGridLeakDistortion( const float x[], float Xprime[], 
   Calculate the 3D distortions due to charge leaking out of the gap between the inner and outer sectors.
   Original work by Gene VanBuren, and J. Thomas
 */
-void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::Undo3DGridLeakDistortion( const float x[], float Xprime[], int Sector )
 {
 
   const int   ORDER       =    1  ;  // Linear interpolation = 1, Quadratic = 2
@@ -5218,7 +5218,7 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
   if ( MiddlGridLeakStrength == 0 ) return ;
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::Undo3DGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
+    LOG_INFO << "MagFieldUtils::Undo3DGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
 
     for ( int k = 0 ; k < PHISLICES ; k++ ) {
       ArrayoftiltEr[k]   =  new TMatrix(neR3D, EMap_nZ) ;
@@ -5383,7 +5383,7 @@ void StMagUtilities::Undo3DGridLeakDistortion( const float x[], float Xprime[], 
   4 locations per sector, all sectors. Mostly a copy of Undo3DGridLeakDistortion().
   Original work by Gene Van Buren and Irakli Chakaberia (GARFIELD simulations)
 */
-void StMagUtilities::UndoFullGridLeakDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoFullGridLeakDistortion( const float x[], float Xprime[], int Sector )
 {
 
   const int   ORDER       =    1  ;  // Linear interpolation = 1, Quadratic = 2
@@ -5447,7 +5447,7 @@ void StMagUtilities::UndoFullGridLeakDistortion( const float x[], float Xprime[]
   if ( MiddlGridLeakStrength == 0 ) return ;
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::UndoFullGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
+    LOG_INFO << "MagFieldUtils::UndoFullGrid Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
     int   SeclistW[PHISLICES1] ;
     int   SeclistE[PHISLICES1] ;
     float SecPhis [PHISLICES1] ;
@@ -5641,7 +5641,7 @@ void StMagUtilities::UndoFullGridLeakDistortion( const float x[], float Xprime[]
   Also interpolate radially to zero out to the field cages.
 
 */
-void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[], int Sector )
+void MagFieldUtils::UndoSectorAlignDistortion( const float x[], float Xprime[], int Sector )
 {
 
   const int   ORDER       =    1  ;  // Linear interpolation = 1, Quadratic = 2
@@ -5696,7 +5696,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
   memcpy(Xprime, x, threeFloats) ;
 
   if ( DoOnce ) {
-    LOG_INFO << "StMagUtilities::UndoSectorAlign Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
+    LOG_INFO << "MagFieldUtils::UndoSectorAlign Please wait for the tables to fill ...  ~5 seconds * PHISLICES\n" ;
     int   SeclistW[PHISLICES1] ;
     int   SeclistE[PHISLICES1] ;
     float SecPhis [PHISLICES1] ;
@@ -5869,7 +5869,7 @@ void StMagUtilities::UndoSectorAlignDistortion( const float x[], float Xprime[],
 // before it starts counting (will return a negative number)
 // Each call resets the count to zero, so it gives the counts
 // since the last time it was called.
-int StMagUtilities::IterationFailCount()
+int MagFieldUtils::IterationFailCount()
 {
 
   int temp = iterationFailCounter;
@@ -5879,7 +5879,7 @@ int StMagUtilities::IterationFailCount()
 }
 
 
-void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
+void MagFieldUtils::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
   if (CoordTransform::IsOldScheme()) {
     mag_field_.BField( xTpc, BTpc) ;
@@ -5902,7 +5902,7 @@ void StMagUtilities::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 }
 
 
-void StMagUtilities::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
+void MagFieldUtils::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 {
   if (CoordTransform::IsOldScheme()) {
     mag_field_.B3DField( xTpc, BTpc) ;
