@@ -28,7 +28,7 @@
 #include "bichsel.h"
 #include "dedx_correction.h"
 #include "logger.h"
-#include "mag_utilities.h"
+#include "mag_field_utils.h"
 #include "math_funcs.h"
 #include "struct_containers.h"
 #include "track_helix.h"
