@@ -13,7 +13,7 @@
 #include "dedx_correction.h"
 #include "struct_containers.h"
 #include "track_helix.h"
-#include "mag_utilities.h"
+#include "mag_field_utils.h"
 
 
 class Simulator

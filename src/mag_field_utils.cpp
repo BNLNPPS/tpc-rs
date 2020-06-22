@@ -96,7 +96,7 @@ To do:  <br>
 #include "tpcrs/configurator.h"
 #include "coords.h"
 #include "logger.h"
-#include "mag_utilities.h"
+#include "mag_field_utils.h"
 #include "math_funcs.h"
 #include "struct_containers.h"
 
