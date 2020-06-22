@@ -62,7 +62,7 @@ class Simulator
 
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
-  StMagUtilities mag_field_utils_;
+  MagFieldUtils mag_field_utils_;
   const int num_sectors_;            //!
   const int max_rows_;               //!
   const int max_pads_;               //!
