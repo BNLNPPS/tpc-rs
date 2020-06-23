@@ -458,43 +458,11 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
           PrPP(Make, seg.Pad);
         }
 
-        static const double m_e = .51099907e-3;
-        static const double eV = 1e-9; // electronvolt in GeV
-        double gamma = std::pow(10., seg.tpc_hitC->lgam) + 1;
-        double betaGamma = std::sqrt(gamma * gamma - 1.);
-        double eKin = -1;
-        Coords pxyzG{seg.tpc_hitC->p[0], seg.tpc_hitC->p[1], seg.tpc_hitC->p[2]};
-        double bg = seg.mass > 0 ? pxyzG.mag() / seg.mass : 0;
-
-        // special case of stopped electrons
-        if (seg.tpc_hitC->particle_id == 3 && seg.tpc_hitC->ds < 0.0050 && seg.tpc_hitC->de < 0) {
-          eKin = -seg.tpc_hitC->de;
-          gamma = eKin / m_e + 1;
-          bg = std::sqrt(gamma * gamma - 1.);
-        }
-
-        if (bg > betaGamma) betaGamma = bg;
-
-        gamma = std::sqrt(betaGamma * betaGamma + 1.);
-        double Tmax;
-
-        if (seg.mass < 2 * m_e) {
-          if (seg.charge > 0) Tmax =       m_e * (gamma - 1);
-          else            Tmax = 0.5 * m_e * (gamma - 1);
-        }
-        else {
-          double r = m_e / seg.mass;
-          Tmax = 2 * m_e * betaGamma * betaGamma / (1 + 2 * gamma * r + r * r);
-        }
-
-        if (Tmax > cfg_.S<ResponseSimulator>().electron_cutoff_energy)
-          Tmax = cfg_.S<ResponseSimulator>().electron_cutoff_energy;
-
         int nP = 0;
         double dESum = 0;
         double dSSum = 0;
 
-        CalcSignalInClusters(gain_local, seg, binned_charge, track, betaGamma, Tmax, eKin, nP, dESum, dSSum);
+        SignalFromSegment(seg, track, gain_local, binned_charge, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
         if (Debug() > 12) {
@@ -502,6 +470,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
                    << " dESum = " << dESum << " /\tdSSum " << dSSum << '\n';
         }
 #endif
+        static const double eV = 1e-9; // electronvolt in GeV
         seg.tpc_hitC->digi.de = dESum * eV;
         seg.tpc_hitC->digi.ds = dSSum;
         seg.tpc_hitC->digi.np = nP;
@@ -1173,13 +1142,43 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 }
 
 
-void Simulator::CalcSignalInClusters(double gain_local,
-  const TrackSegment& segment, std::vector<SignalSum_t>& binned_charge,
-  TrackHelix track, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum)
+void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track, double gain_local,
+  std::vector<SignalSum_t>& binned_charge, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
   static const double cLog10 = std::log(10.);
+
+  double gamma = std::pow(10., segment.tpc_hitC->lgam) + 1;
+  double betaGamma = std::sqrt(gamma * gamma - 1.);
+  double eKin = -1;
+  Coords pxyzG{segment.tpc_hitC->p[0], segment.tpc_hitC->p[1], segment.tpc_hitC->p[2]};
+  double bg = segment.mass > 0 ? pxyzG.mag() / segment.mass : 0;
+
+  // special case of stopped electrons
+  if (segment.tpc_hitC->particle_id == 3 && segment.tpc_hitC->ds < 0.0050 && segment.tpc_hitC->de < 0) {
+    eKin = -segment.tpc_hitC->de;
+    gamma = eKin / m_e + 1;
+    bg = std::sqrt(gamma * gamma - 1.);
+  }
+
+  if (bg > betaGamma) betaGamma = bg;
+
+  gamma = std::sqrt(betaGamma * betaGamma + 1.);
+  double Tmax;
+
+  if (segment.mass < 2 * m_e) {
+    if (segment.charge > 0) Tmax =       m_e * (gamma - 1);
+    else                Tmax = 0.5 * m_e * (gamma - 1);
+  }
+  else {
+    double r = m_e / segment.mass;
+    Tmax = 2 * m_e * betaGamma * betaGamma / (1 + 2 * gamma * r + r * r);
+  }
+
+  if (Tmax > cfg_.S<ResponseSimulator>().electron_cutoff_energy)
+    Tmax = cfg_.S<ResponseSimulator>().electron_cutoff_energy;
+
   float dEr = 0;
   double s_low   = -std::abs(segment.tpc_hitC->ds) / 2;
   double s_upper =  std::abs(segment.tpc_hitC->ds) / 2;

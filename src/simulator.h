@@ -116,9 +116,9 @@ class Simulator
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
 
-  void CalcSignalInClusters(
-    double gain_local, const TrackSegment& segment, std::vector<SignalSum_t>& binned_charge,
-    TrackHelix track, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum);
+  void SignalFromSegment(const TrackSegment& segment, TrackHelix track,
+    double gain_local,
+    std::vector<SignalSum_t>& binned_charge, int& nP, double& dESum, double& dSSum);
 
   void LoopOverElectronsInCluster(
     std::vector<float> rs, const TrackSegment& segment, std::vector<SignalSum_t>& binned_charge,
