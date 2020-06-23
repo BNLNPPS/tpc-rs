@@ -367,7 +367,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
 
     std::vector<TrackSegment> segments_in_sector;
 
-    // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
+    // The hits must be ordered by sector, track_id, and track length to the hit
     for (; sortedIndex < n_hits; sortedIndex++) {
       int indx = sorted_index[sortedIndex];
 
@@ -409,7 +409,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
         }
       }
 
-      // This essentially jumps to the next track/particle
+      // This effectively jumps to the next track/particle
       sortedIndex = sIndex - 1; // Irakli 05/06/19, reduce extra step in for loop
     }
 
@@ -443,13 +443,13 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
 #ifdef __DEBUG__
         if (Debug() > 11) PrPP(Make, track);
 #endif
-        // Propagate track to the pad row plane defined by the normal in this sector coordinate system
-        Coords rowPlane{0, transform_.yFromRow(seg.Pad.sector, seg.Pad.row), 0};
-        double sR = track.pathLength(rowPlane, {0, 1, 0});
+        // Propagate track to middle of the pad row plane by the nominal center point and the normal
+        // in this sector coordinate system
+        double sR = track.pathLength({0, transform_.yFromRow(seg.Pad.sector, seg.Pad.row), 0}, {0, 1, 0});
 
-        // The segment parameters (hit position) are updated!
+        // Update hit position based on the new track crossing the middle of pad row
         if (sR < 1e10) {
-          PrPP(Maker, sR);
+          PrPP(Make, sR);
           PrPP(Make, seg.coorLS);
           seg.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
           PrPP(Make, seg.coorLS);
@@ -1064,9 +1064,10 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
   segment.tpc_hitC = &geant_hit;
   ParticleProperties(geant_hit.particle_id, segment.charge, segment.mass);
 
-  static StTpcLocalCoordinate coorLT;  // before do distortions
+  static StTpcLocalCoordinate coorLT;  // before distortions
   static StTpcLocalSectorCoordinate coorS;
-  // GlobalCoord -> LocalSectorCoord
+  // GlobalCoord -> LocalSectorCoord. This transformation can result in a row
+  // that is not the same as (volId % 100)
   transform_.global_to_local_sector(segment.xyzG, coorS, sector, 0); PrPP(Make, coorS);
   int row = coorS.row;
   transform_.global_to_local(segment.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
@@ -1077,8 +1078,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{geant_hit.p[0], geant_hit.p[1], geant_hit.p[2]};
-  StGlobalDirection     dirG{pxyzG.unit()};                                   PrPP(Make, dirG);
-  StGlobalDirection     BG{BFieldG[0], BFieldG[1], BFieldG[2]};               PrPP(Make, BG);
+  StGlobalDirection dirG{pxyzG.unit()};                                      PrPP(Make, dirG);
+  StGlobalDirection BG{BFieldG[0], BFieldG[1], BFieldG[2]};                  PrPP(Make, BG);
   transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, row);  PrPP(Make, segment.dirLS);
   transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, row);  PrPP(Make, segment.BLS);
 
@@ -1088,10 +1089,12 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
     float posMoved[3];
     mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
-    transform_.local_to_global(coorLT, segment.xyzG);        PrPP(Make, coorLT);
+    transform_.local_to_global(coorLT, segment.xyzG);
+    PrPP(Make, coorLT);
   }
 
-  transform_.local_to_local_sector(coorLT, segment.coorLS); PrPP(Make, segment.coorLS);
+  transform_.local_to_local_sector(coorLT, segment.coorLS);
+  PrPP(Make, segment.coorLS);
 
   double driftLength = segment.coorLS.position.z + geant_hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
@@ -1101,9 +1104,11 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
       driftLength = std::abs(driftLength);
   }
 
-  segment.coorLS.position.z = driftLength; PrPP(Make, segment.coorLS);
+  segment.coorLS.position.z = driftLength;
+  PrPP(Make, segment.coorLS);
   transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, segment.Pad);
+
   return segment;
 }
 
@@ -1421,7 +1426,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
       double gain = gain_local_gas;
       double dt = dT;
 
-      if (! TESTBIT(options_, kGAINOAtALL)) {
+      if ( !TESTBIT(options_, kGAINOAtALL) ) {
         gain *= cfg_.C<St_tpcPadGainT0BC>().Gain(sector, row, pad);
 
         if (gain <= 0.0) continue;

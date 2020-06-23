@@ -30,9 +30,7 @@ TrackHelix::TrackHelix(const Coords &p, const Coords &o, double B, double q)
   setDipAngle(atan2(p.z, p.perp()));
   origin_ = o;
 
-  {
-    setCurvature(std::abs(c_light * q * B / p.mag() / cos_dip_angle_));
-  }
+  setCurvature(std::abs(c_light * q * B / p.mag() / cos_dip_angle_));
 }
 
 
@@ -154,9 +152,9 @@ void TrackHelix::setCurvature(double val)
     curvature_ = val;
 
   if (std::abs(curvature_) <= std::numeric_limits<double>::epsilon())
-    singularity_ = true;			// straight line
+    singularity_ = true;   // straight line
   else
-    singularity_ = false;            	// curved
+    singularity_ = false;  // curved
 }
 
 void TrackHelix::setPhase(double val)
