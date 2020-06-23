@@ -418,12 +418,10 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
       if (ipart == 3) charge = -101;
 
       // Track segment to propagate
-      double smin = 9999;
-      double smax = -9999;
       int sIndex = sortedIndex;
 
       std::vector<HitPoint_t> TrackSegmentHits;
-      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, smin, smax, sIndex, charge, mass);
+      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, sIndex, charge, mass);
       int nSegHits = TrackSegmentHits.size();
 
       if (!nSegHits) continue;
@@ -569,7 +567,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
 
 void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
   std::vector<tpcrs::GeantHit>& geant_hits,
-  std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex,
+  std::vector<HitPoint_t>& segments, int& sIndex,
   int charge, double mass)
 {
   int n_hits = sorted_index.size();
@@ -619,10 +617,6 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
     }
 
     TrackSegment2Propagate(geant_hit, curr_segment);
-
-    // Update smin and smax for this collection of segments
-    if (curr_segment.sMin < smin) smin = curr_segment.sMin;
-    if (curr_segment.sMax > smax) smax = curr_segment.sMax;
 
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
 
@@ -1079,8 +1073,6 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
   TrackSegmentHits.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
   TrackSegmentHits.TrackId  = geant_hit.track_id;
   TrackSegmentHits.tpc_hitC = &geant_hit;
-  TrackSegmentHits.sMin = TrackSegmentHits.s - TrackSegmentHits.tpc_hitC->ds;
-  TrackSegmentHits.sMax = TrackSegmentHits.s;
 
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
