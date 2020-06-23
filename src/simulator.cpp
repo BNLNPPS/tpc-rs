@@ -1164,10 +1164,6 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
     }
   }
 
-#ifndef __NO_1STROWCORRECTION__
-  if (row == 1) dedx_corr *= std::exp(cfg_.S<TpcResponseSimulator>().FirstRowC);
-#endif
-
   return gain_base / dedx_corr / num_electrons_per_adc;
 }
 
@@ -1315,16 +1311,12 @@ void Simulator::LoopOverElectronsInCluster(
     // Transport to wire
     if (y <= lastInnerSectorAnodeWire) {
       WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
-#ifndef __NO_1STROWCORRECTION__
       if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {// two first and two last wires are removed, and 3rd wire is fat wiere
         if (WireIndex <= 3 || WireIndex >= numberOfInnerSectorAnodeWires - 3) continue;
       }
       else {   // old TPC the first and last wires are fat ones
         if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue;
       }
-#else
-      if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue; // to check the 1-st pad row effect
-#endif
       yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
     }
     else { // the first and last wires are fat ones
