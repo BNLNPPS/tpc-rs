@@ -75,6 +75,7 @@ class Simulator
   static double PadResponseFunc(double* x, double* p);
   static double Gatti(double* x, double* p);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
+  static void ParticleProperties(int particle_id, int& charge, double& mass);
 
   /**
    * sigma = electron_range*(eEnery/electron_range_energy)^electron_range_power
