@@ -612,10 +612,6 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
     curr_segment.charge = charge;
     curr_segment.mass = mass;
 
-    if (geant_hit.len == 0 && num_segments > 1) {
-      curr_segment.s = prev_segment.s + curr_segment.tpc_hitC->ds;
-    }
-
     TrackSegment2Propagate(geant_hit, curr_segment);
 
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
