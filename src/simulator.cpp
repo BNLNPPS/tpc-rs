@@ -386,14 +386,11 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
 
       if (geant_hit.volume_id <= 0 || geant_hit.volume_id > 1000000) continue;
 
-      double mass = 0;
-      int charge = 0;
-      ParticleProperties(geant_hit.particle_id, charge, mass);
       // Track segment to propagate
       int sIndex = sortedIndex;
 
       std::vector<HitPoint_t> TrackSegmentHits;
-      BuildTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, sIndex, charge, mass);
+      CreateTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, sIndex);
       int nSegHits = TrackSegmentHits.size();
 
       if (!nSegHits) continue;
@@ -537,10 +534,9 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
 }
 
 
-void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
+void Simulator::CreateTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
   std::vector<tpcrs::GeantHit>& geant_hits,
-  std::vector<HitPoint_t>& segments, int& sIndex,
-  int charge, double mass)
+  std::vector<HitPoint_t>& segments, int& sIndex)
 {
   int n_hits = sorted_index.size();
 
@@ -579,11 +575,7 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
 
     if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << &geant_hit << '\n';
 
-    HitPoint_t curr_segment;
-    curr_segment.charge = charge;
-    curr_segment.mass = mass;
-
-    TrackSegment2Propagate(geant_hit, curr_segment);
+    HitPoint_t curr_segment = CreateTrackSegment(geant_hit);
 
     if (curr_segment.charge == 0) continue;
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
@@ -1063,14 +1055,16 @@ double Simulator::Ec(double* x, double* p)
 }
 
 
-void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits)
+Simulator::HitPoint_t Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit)
 {
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
 
+  HitPoint_t TrackSegmentHits;
   TrackSegmentHits.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
   TrackSegmentHits.TrackId  = geant_hit.track_id;
   TrackSegmentHits.tpc_hitC = &geant_hit;
+  ParticleProperties(geant_hit.particle_id, TrackSegmentHits.charge, TrackSegmentHits.mass);
 
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
@@ -1112,6 +1106,7 @@ void Simulator::TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &T
   TrackSegmentHits.coorLS.position.z = driftLength; PrPP(Make, TrackSegmentHits.coorLS);
   transform_.local_sector_to_hardware(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
   PrPP(Make, TrackSegmentHits.Pad);
+  return TrackSegmentHits;
 }
 
 
