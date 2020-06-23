@@ -389,22 +389,22 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
       // Track segment to propagate
       int sIndex = sortedIndex;
 
-      std::vector<TrackSegment> TrackSegmentHits;
-      CreateTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, sIndex);
-      int nSegHits = TrackSegmentHits.size();
+      std::vector<TrackSegment> segments;
+      CreateTrackSegments(sector, sorted_index, sortedIndex, geant_hits, segments, sIndex);
+      int nSegHits = segments.size();
 
       if (!nSegHits) continue;
 
-      segments_in_sector.insert(segments_in_sector.end(), TrackSegmentHits.begin(), TrackSegmentHits.end());
+      segments_in_sector.insert(segments_in_sector.end(), segments.begin(), segments.end());
 
       if (Debug() >= 10) {
         PrPP(Make, nSegHits);
 
         for (int s = 0; s < nSegHits; s++) {
-          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << TrackSegmentHits[s].TrackId << "\ts = " << TrackSegmentHits[s].tpc_hitC->len
-               << "\tvolumeID :" <<  Form("%6i", TrackSegmentHits[s].tpc_hitC->volume_id) << "\t" << TrackSegmentHits[s].Pad
-               << "\ts1/s2 = " << TrackSegmentHits[s].tpc_hitC->len - TrackSegmentHits[s].tpc_hitC->ds / 2
-               << "\t" << TrackSegmentHits[s].tpc_hitC->len + TrackSegmentHits[s].tpc_hitC->ds / 2 << "\tds = " << TrackSegmentHits[s].tpc_hitC->ds
+          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << segments[s].TrackId << "\ts = " << segments[s].tpc_hitC->len
+               << "\tvolumeID :" <<  Form("%6i", segments[s].tpc_hitC->volume_id) << "\t" << segments[s].Pad
+               << "\ts1/s2 = " << segments[s].tpc_hitC->len - segments[s].tpc_hitC->ds / 2
+               << "\t" << segments[s].tpc_hitC->len + segments[s].tpc_hitC->ds / 2 << "\tds = " << segments[s].tpc_hitC->ds
                << '\n';
         }
       }
@@ -1058,18 +1058,18 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
 
-  TrackSegment TrackSegmentHits;
-  TrackSegmentHits.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
-  TrackSegmentHits.TrackId  = geant_hit.track_id;
-  TrackSegmentHits.tpc_hitC = &geant_hit;
-  ParticleProperties(geant_hit.particle_id, TrackSegmentHits.charge, TrackSegmentHits.mass);
+  TrackSegment segment;
+  segment.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, segment.xyzG);
+  segment.TrackId  = geant_hit.track_id;
+  segment.tpc_hitC = &geant_hit;
+  ParticleProperties(geant_hit.particle_id, segment.charge, segment.mass);
 
   static StTpcLocalCoordinate coorLT;  // before do distortions
   static StTpcLocalSectorCoordinate coorS;
   // GlobalCoord -> LocalSectorCoord
-  transform_.global_to_local_sector(TrackSegmentHits.xyzG, coorS, sector, 0); PrPP(Make, coorS);
+  transform_.global_to_local_sector(segment.xyzG, coorS, sector, 0); PrPP(Make, coorS);
   int row = coorS.row;
-  transform_.global_to_local(TrackSegmentHits.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
+  transform_.global_to_local(segment.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -1079,8 +1079,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
   Coords pxyzG{geant_hit.p[0], geant_hit.p[1], geant_hit.p[2]};
   StGlobalDirection     dirG{pxyzG.unit()};                                   PrPP(Make, dirG);
   StGlobalDirection     BG{BFieldG[0], BFieldG[1], BFieldG[2]};               PrPP(Make, BG);
-  transform_.global_to_local_sector_dir( dirG, TrackSegmentHits.dirLS, sector, row);  PrPP(Make, TrackSegmentHits.dirLS);
-  transform_.global_to_local_sector_dir(   BG, TrackSegmentHits.BLS,   sector, row);  PrPP(Make, TrackSegmentHits.BLS);
+  transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, row);  PrPP(Make, segment.dirLS);
+  transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, row);  PrPP(Make, segment.BLS);
 
   // Distortions
   if (TESTBIT(options_, kDistortion)) {
@@ -1088,12 +1088,12 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
     float posMoved[3];
     mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
-    transform_.local_to_global(coorLT, TrackSegmentHits.xyzG);        PrPP(Make, coorLT);
+    transform_.local_to_global(coorLT, segment.xyzG);        PrPP(Make, coorLT);
   }
 
-  transform_.local_to_local_sector(coorLT, TrackSegmentHits.coorLS); PrPP(Make, TrackSegmentHits.coorLS);
+  transform_.local_to_local_sector(coorLT, segment.coorLS); PrPP(Make, segment.coorLS);
 
-  double driftLength = TrackSegmentHits.coorLS.position.z + geant_hit.tof * tpcrs::DriftVelocity(sector, cfg_);
+  double driftLength = segment.coorLS.position.z + geant_hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((!IsInner(row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
@@ -1101,10 +1101,10 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
       driftLength = std::abs(driftLength);
   }
 
-  TrackSegmentHits.coorLS.position.z = driftLength; PrPP(Make, TrackSegmentHits.coorLS);
-  transform_.local_sector_to_hardware(TrackSegmentHits.coorLS, TrackSegmentHits.Pad, false, false); // don't use T0, don't use Tau
-  PrPP(Make, TrackSegmentHits.Pad);
-  return TrackSegmentHits;
+  segment.coorLS.position.z = driftLength; PrPP(Make, segment.coorLS);
+  transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
+  PrPP(Make, segment.Pad);
+  return segment;
 }
 
 
@@ -1169,19 +1169,19 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 
 
 void Simulator::CalcSignalInClusters(double gain_local,
-  const TrackSegment& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+  const TrackSegment& segment, std::vector<SignalSum_t>& binned_charge,
   TrackHelix track, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
   static const double cLog10 = std::log(10.);
   float dEr = 0;
-  double s_low   = -std::abs(TrackSegmentHit.tpc_hitC->ds) / 2;
-  double s_upper =  std::abs(TrackSegmentHit.tpc_hitC->ds) / 2;
+  double s_low   = -std::abs(segment.tpc_hitC->ds) / 2;
+  double s_upper =  std::abs(segment.tpc_hitC->ds) / 2;
   double newPosition = s_low;
 
   // generate electrons: No. of primary clusters per cm
-  double NP = GetNoPrimaryClusters(betaGamma, TrackSegmentHit.charge); // per cm
+  double NP = GetNoPrimaryClusters(betaGamma, segment.charge); // per cm
 
   do {// Clusters
     float dS = 0;
@@ -1196,11 +1196,11 @@ void Simulator::CalcSignalInClusters(double gain_local,
 
       if (Tmax <= cfg_.S<TpcResponseSimulator>().W / 2 * eV) break;
 
-      NP = GetNoPrimaryClusters(betaGamma, TrackSegmentHit.charge);
+      NP = GetNoPrimaryClusters(betaGamma, segment.charge);
       dE = std::exp(cLog10 * mdNdEL10->GetRandom());
     }
     else {
-      if (TrackSegmentHit.charge) {
+      if (segment.charge) {
         dS = - std::log(gRandom->Rndm()) / NP;
 
         if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
@@ -1210,7 +1210,7 @@ void Simulator::CalcSignalInClusters(double gain_local,
       else { // charge == 0 geantino
         // for LASERINO assume dE/dx = 25 keV/cm;
         dE = 10; // eV
-        dS = dE * eV / (std::abs(TrackSegmentHit.tpc_hitC->de / TrackSegmentHit.tpc_hitC->ds));
+        dS = dE * eV / (std::abs(segment.tpc_hitC->de / segment.tpc_hitC->ds));
       }
     }
 
@@ -1247,21 +1247,21 @@ void Simulator::CalcSignalInClusters(double gain_local,
 
     Coords xyzC = track.at(newPosition);
 
-    LoopOverElectronsInCluster(rs, TrackSegmentHit, binned_charge, xRange, xyzC, gain_local);
+    LoopOverElectronsInCluster(rs, segment, binned_charge, xRange, xyzC, gain_local);
   }
   while (true);   // Clusters
 }
 
 
 void Simulator::LoopOverElectronsInCluster(
-  std::vector<float> rs, const TrackSegment &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+  std::vector<float> rs, const TrackSegment &segment, std::vector<SignalSum_t>& binned_charge,
   double xRange, Coords xyzC, double gain_local)
 {
-  int sector = TrackSegmentHits.Pad.sector;
-  int row    = TrackSegmentHits.Pad.row;
+  int sector = segment.Pad.sector;
+  int row    = segment.Pad.row;
   double OmegaTau = cfg_.S<TpcResponseSimulator>().OmegaTau *
-                      TrackSegmentHits.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
-  double driftLength = std::abs(TrackSegmentHit.coorLS.position.z);
+                      segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
+  double driftLength = std::abs(segment.coorLS.position.z);
   double D = 1. + OmegaTau * OmegaTau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
   double SigmaT = cfg_.S<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
@@ -1277,7 +1277,7 @@ void Simulator::LoopOverElectronsInCluster(
 
   InOut io = IsInner(row, sector) ? kInner : kOuter;
 
-  Coords unit = TrackSegmentHits.dirLS.position.unit();
+  Coords unit = segment.dirLS.position.unit();
   double L2L[9] = {unit.z,                  - unit.x*unit.z, unit.x,
                    unit.x,                  - unit.y*unit.z, unit.y,
                    0.0,       unit.x*unit.x + unit.y*unit.y, unit.z};
@@ -1361,17 +1361,17 @@ void Simulator::LoopOverElectronsInCluster(
       continue;
     }
 
-    GenerateSignal(TrackSegmentHits, rowMin, rowMax,
+    GenerateSignal(segment, rowMin, rowMax,
                    &mShaperResponses[io][sector - 1], binned_charge, gain_local * gain_gas);
   }  // electrons in Cluster
 }
 
 
-void Simulator::GenerateSignal(const TrackSegment &TrackSegmentHits, int rowMin, int rowMax,
+void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowMax,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas)
 {
-  int sector = TrackSegmentHits.Pad.sector;
-  int row    = TrackSegmentHits.Pad.row;
+  int sector = segment.Pad.sector;
+  int row    = segment.Pad.row;
   double sigmaJitterT = (IsInner(row, sector) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
@@ -1450,18 +1450,18 @@ void Simulator::GenerateSignal(const TrackSegment &TrackSegmentHits, int rowMin,
         binned_charge[index].Sum += signal;
 
         // Record truth ID of the MC particle produced this signal
-        if ( TrackSegmentHits.TrackId ) {
+        if ( segment.TrackId ) {
           if ( !binned_charge[index].TrackId )
-            binned_charge[index].TrackId = TrackSegmentHits.TrackId;
+            binned_charge[index].TrackId = segment.TrackId;
           else { // switch TrackId, works only for 2 tracks, more tracks ?
-            if ( binned_charge[index].TrackId != TrackSegmentHits.TrackId && binned_charge[index].Sum < 2 * signal)
-              binned_charge[index].TrackId = TrackSegmentHits.TrackId;
+            if ( binned_charge[index].TrackId != segment.TrackId && binned_charge[index].Sum < 2 * signal)
+              binned_charge[index].TrackId = segment.TrackId;
           }
         }
 
 #ifdef __DEBUG__
         if (Debug() > 13 && (binned_charge[index].Sum > 0 || ! std::isfinite(binned_charge[index].Sum)) ) {
-          LOG_INFO << "simu row = " << TrackSegmentHits.tpc_hitC->volume_id % 100 << "\tR/P/T/I = " << row << " /\t" << pad << " /\t" << itbin << " /\t" << index
+          LOG_INFO << "simu row = " << segment.tpc_hitC->volume_id % 100 << "\tR/P/T/I = " << row << " /\t" << pad << " /\t" << itbin << " /\t" << index
                    << "\tSum/TrackId = " << binned_charge[index].Sum << " /\t" << binned_charge[index].TrackId
                    << "\tsignal = " << signal
                    << "\trow Min/Max = " << rowMin << "/" << rowMax
