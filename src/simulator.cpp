@@ -40,8 +40,6 @@
 #else
 #define PrPP(A,B)
 #endif
-#define LASERINO 170
-#define CHASRINO 171
 
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
@@ -389,34 +387,8 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
       if (geant_hit.volume_id <= 0 || geant_hit.volume_id > 1000000) continue;
 
       double mass = 0;
-
-      int ipart  = geant_hit.particle_id;
       int charge = 0;
-
-      StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(ipart);
-
-      if (particle) {
-        mass = particle->mass();
-        charge = particle->charge();
-      }
-
-      if (ipart == LASERINO || ipart == CHASRINO) {
-        charge = 0;
-      }
-      else {
-        if (ipart == 1) {// gamma => electron
-          ipart = 3;
-          charge = -1;
-        }
-
-        if (charge == 0) {
-          continue;
-        }
-      }
-      // special treatment for electron/positron
-      if (ipart == 2) charge =  101;
-      if (ipart == 3) charge = -101;
-
+      ParticleProperties(geant_hit.particle_id, charge, mass);
       // Track segment to propagate
       int sIndex = sortedIndex;
 
@@ -613,6 +585,7 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
 
     TrackSegment2Propagate(geant_hit, curr_segment);
 
+    if (curr_segment.charge == 0) continue;
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
 
     segments[num_segments++] = curr_segment;
@@ -948,6 +921,36 @@ double Simulator::InducedCharge(double s, double h, double ra, double Va, double
 
   return r;
 }
+
+
+void Simulator::ParticleProperties(int particle_id, int& charge, double& mass)
+{
+  const int LASERINO = 170;
+  const int CHASRINO = 171;
+
+  charge = 0;
+  mass = 0;
+
+  StParticleDefinition* particle = StParticleTable::instance()->findParticleByGeantId(particle_id);
+
+  if (particle) {
+    mass = particle->mass();
+    charge = particle->charge();
+  }
+
+  if (particle_id == LASERINO || particle_id == CHASRINO) {
+    charge = 0;
+  }
+  else {
+    if (particle_id == 1) {// gamma => electron
+      particle_id = 3;
+      charge = -1;
+    }
+  }
+  // special treatment for electron/positron
+  if (particle_id == 2) charge =  101;
+  if (particle_id == 3) charge = -101;
+};
 
 
 double Simulator::fei(double t, double t0, double t1)
