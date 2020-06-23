@@ -432,7 +432,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
         PrPP(Make, nSegHits);
 
         for (int s = 0; s < nSegHits; s++) {
-          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << TrackSegmentHits[s].TrackId << "\ts = " << TrackSegmentHits[s].s
+          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << TrackSegmentHits[s].TrackId << "\ts = " << TrackSegmentHits[s].tpc_hitC->len
                << "\tvolumeID :" <<  Form("%6i", TrackSegmentHits[s].tpc_hitC->volume_id) << "\t" << TrackSegmentHits[s].Pad
                << "\ts1/s2 = " << TrackSegmentHits[s].tpc_hitC->len - TrackSegmentHits[s].tpc_hitC->ds / 2
                << "\t" << TrackSegmentHits[s].tpc_hitC->len + TrackSegmentHits[s].tpc_hitC->ds / 2 << "\tds = " << TrackSegmentHits[s].tpc_hitC->ds
@@ -608,7 +608,6 @@ void Simulator::BuildTrackSegments(int sector, const std::vector<size_t>& sorted
     if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << &geant_hit << '\n';
 
     HitPoint_t curr_segment;
-    curr_segment.s = geant_hit.len;
     curr_segment.charge = charge;
     curr_segment.mass = mass;
 

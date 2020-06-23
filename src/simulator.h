@@ -31,8 +31,6 @@ class Simulator
     int TrackId;
     int charge;
     double mass;
-    /// Track length to current point
-    double s;
     tpcrs::GeantHit* tpc_hitC;
     /// The original coordinates of the hit with applied distortions
     StGlobalCoordinate xyzG;
