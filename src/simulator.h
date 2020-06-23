@@ -33,7 +33,6 @@ class Simulator
     double mass;
     /// Track length to current point
     double s;
-    double sMin, sMax;
     tpcrs::GeantHit* tpc_hitC;
     /// The original coordinates of the hit with applied distortions
     StGlobalCoordinate xyzG;
@@ -111,7 +110,7 @@ class Simulator
 
   void BuildTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
     std::vector<tpcrs::GeantHit>& geant_hits,
-    std::vector<HitPoint_t>& segments, double& smin, double& smax, int& sIndex,
+    std::vector<HitPoint_t>& segments, int& sIndex,
     int charge, double mass);
 
   void TrackSegment2Propagate(tpcrs::GeantHit& geant_hit, HitPoint_t &TrackSegmentHits);
