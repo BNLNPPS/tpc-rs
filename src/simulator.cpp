@@ -494,9 +494,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
         double dESum = 0;
         double dSSum = 0;
 
-        CalcSignalInClusters(seg.Pad.sector, seg.Pad.row, gain_local,
-          seg, binned_charge,
-          track, seg.charge, betaGamma, Tmax, eKin, nP, dESum, dSSum);
+        CalcSignalInClusters(gain_local, seg, binned_charge, track, betaGamma, Tmax, eKin, nP, dESum, dSSum);
 
 #ifdef __DEBUG__
         if (Debug() > 12) {
@@ -1174,9 +1172,9 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 }
 
 
-void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
+void Simulator::CalcSignalInClusters(double gain_local,
   const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
-  TrackHelix track, int charge, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum)
+  TrackHelix track, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
@@ -1187,7 +1185,7 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
   double newPosition = s_low;
 
   // generate electrons: No. of primary clusters per cm
-  double NP = GetNoPrimaryClusters(betaGamma, charge); // per cm
+  double NP = GetNoPrimaryClusters(betaGamma, TrackSegmentHit.charge); // per cm
 
   do {// Clusters
     float dS = 0;
@@ -1202,11 +1200,11 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
 
       if (Tmax <= cfg_.S<TpcResponseSimulator>().W / 2 * eV) break;
 
-      NP = GetNoPrimaryClusters(betaGamma, charge);
+      NP = GetNoPrimaryClusters(betaGamma, TrackSegmentHit.charge);
       dE = std::exp(cLog10 * mdNdEL10->GetRandom());
     }
     else {
-      if (charge) {
+      if (TrackSegmentHit.charge) {
         dS = - std::log(gRandom->Rndm()) / NP;
 
         if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
@@ -1253,19 +1251,21 @@ void Simulator::CalcSignalInClusters(int sector, int row, double gain_local,
 
     Coords xyzC = track.at(newPosition);
 
-    LoopOverElectronsInCluster(sector, row, rs, TrackSegmentHit, binned_charge, xRange, xyzC, gain_local);
+    LoopOverElectronsInCluster(rs, TrackSegmentHit, binned_charge, xRange, xyzC, gain_local);
   }
   while (true);   // Clusters
 }
 
 
-void Simulator::LoopOverElectronsInCluster(int sector, int row,
+void Simulator::LoopOverElectronsInCluster(
   std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
   double xRange, Coords xyzC, double gain_local)
 {
+  int sector = TrackSegmentHits.Pad.sector;
+  int row    = TrackSegmentHits.Pad.row;
   double OmegaTau = cfg_.S<TpcResponseSimulator>().OmegaTau *
                       TrackSegmentHits.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
-  double driftLength = std::abs(TrackSegmentHits.coorLS.position.z);
+  double driftLength = std::abs(TrackSegmentHit.coorLS.position.z);
   double D = 1. + OmegaTau * OmegaTau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
   double SigmaT = cfg_.S<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
@@ -1369,15 +1369,17 @@ void Simulator::LoopOverElectronsInCluster(int sector, int row,
       continue;
     }
 
-    GenerateSignal(sector, row, TrackSegmentHits, rowMin, rowMax,
+    GenerateSignal(TrackSegmentHits, rowMin, rowMax,
                    &mShaperResponses[io][sector - 1], binned_charge, gain_local * gain_gas);
   }  // electrons in Cluster
 }
 
 
-void Simulator::GenerateSignal(int sector, int row, const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
+void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas)
 {
+  int sector = TrackSegmentHits.Pad.sector;
+  int row    = TrackSegmentHits.Pad.row;
   double sigmaJitterT = (IsInner(row, sector) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
