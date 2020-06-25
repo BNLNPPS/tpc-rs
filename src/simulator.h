@@ -176,7 +176,7 @@ inline bool operator< (const tpcrs::GeantHit& lhs, const tpcrs::GeantHit& rhs)
     return lhs.track_id < rhs.track_id;
 
   // track length
-  return lhs.len < rhs.len;
+  return lhs.s < rhs.s;
 }
 
 #endif

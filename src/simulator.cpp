@@ -401,10 +401,10 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
         PrPP(Make, nSegHits);
 
         for (int s = 0; s < nSegHits; s++) {
-          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << segments[s].TrackId << "\ts = " << segments[s].tpc_hitC->len
+          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << segments[s].TrackId << "\ts = " << segments[s].tpc_hitC->s
                << "\tvolumeID :" <<  Form("%6i", segments[s].tpc_hitC->volume_id) << "\t" << segments[s].Pad
-               << "\ts1/s2 = " << segments[s].tpc_hitC->len - segments[s].tpc_hitC->ds / 2
-               << "\t" << segments[s].tpc_hitC->len + segments[s].tpc_hitC->ds / 2 << "\tds = " << segments[s].tpc_hitC->ds
+               << "\ts1/s2 = " << segments[s].tpc_hitC->s - segments[s].tpc_hitC->ds / 2
+               << "\t" << segments[s].tpc_hitC->s + segments[s].tpc_hitC->ds / 2 << "\tds = " << segments[s].tpc_hitC->ds
                << '\n';
         }
       }
