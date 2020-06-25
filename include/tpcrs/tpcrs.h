@@ -57,7 +57,7 @@ struct TPC
 
 
 template<typename Simulator, typename InputIt, typename OutputIt>
-OutputIt simulate(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
+OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
 {
   std::vector<GeantHit> hits(first1, last1);
   std::vector<DigiChannel> digi_data;
