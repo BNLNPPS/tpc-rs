@@ -40,10 +40,10 @@ struct GeantHit
   int particle_id; /// GEANT particle id
   int volume_id;   /// Volume id packed as SSRR, SS = sector, RR = pad row
   float x[3];      /// Hit center
-  float p[3];      /// Local momentum
-  float de;        /// energy deposited at hit
-  float ds;        /// path length within pad row
-  float s;         /// track length up to this hit. Used in hit ordering
+  double p[3];     /// Local momentum
+  double de;       /// energy deposited at hit
+  double ds;       /// path length within pad row
+  double s;        /// track length up to this hit. Used in hit ordering
   double tof;      /// Time of flight including the GEANT vertex production time
   float lgam;      /// Deprecated. ALOG10(GEKin/AMass)
   SimuHit digi;    /// Deprecated.
