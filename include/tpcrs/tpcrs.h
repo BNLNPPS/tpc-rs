@@ -43,7 +43,7 @@ struct GeantHit
   float p[3];      /// Local momentum
   float de;        /// energy deposited at hit
   float ds;        /// path length within pad row
-  float len;       /// track length up to this hit. Used in hit ordering
+  float s;         /// track length up to this hit. Used in hit ordering
   double tof;      /// Time of flight including the GEANT vertex production time
   float lgam;      /// Deprecated. ALOG10(GEKin/AMass)
   SimuHit digi;    /// Deprecated.
