@@ -384,8 +384,6 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
         break;
       }
 
-      if (geant_hit.volume_id <= 0 || geant_hit.volume_id > 1000000) continue;
-
       // Track segment to propagate
       int sIndex = sortedIndex;
 
