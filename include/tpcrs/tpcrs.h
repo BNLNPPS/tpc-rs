@@ -34,6 +34,13 @@ struct SimuHit
 };
 
 
+struct SimulatedCharge
+{
+  unsigned int sector : 5, row : 7, pad : 10, timebin : 10;
+  double q;
+};
+
+
 struct GeantHit
 {
   int track_id;    /// Parent track
