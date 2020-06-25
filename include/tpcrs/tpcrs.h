@@ -70,8 +70,8 @@ template<typename T>
 inline bool operator< (const T& lhs, const T& rhs)
 {
   // sectors
-  if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
-    return (lhs.volume_id % 100000) / 100 < (rhs.volume_id % 100000) / 100;
+  if ((lhs.volume_id % 10000) / 100 != (rhs.volume_id % 10000) / 100)
+    return (lhs.volume_id % 10000) / 100 < (rhs.volume_id % 10000) / 100;
 
   // track id
   if (lhs.track_id != rhs.track_id)
