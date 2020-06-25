@@ -164,19 +164,4 @@ class Simulator
   double xOnWire, yOnWire, zOnWire; //!
 };
 
-
-inline bool operator< (const tpcrs::GeantHit& lhs, const tpcrs::GeantHit& rhs)
-{
-  // sectors
-  if ((lhs.volume_id % 100000) / 100 != (rhs.volume_id % 100000) / 100)
-    return (lhs.volume_id % 100000) / 100 < (rhs.volume_id % 100000) / 100;
-
-  // track id
-  if (lhs.track_id != rhs.track_id)
-    return lhs.track_id < rhs.track_id;
-
-  // track length
-  return lhs.s < rhs.s;
-}
-
 #endif
