@@ -32,8 +32,8 @@ endif()
 
 ExternalProject_Add(
     test-data
-    URL               https://github.com/plexoos/tpc-rs-data/archive/tpc-rs-v0.0.10.tar.gz
-    URL_HASH          MD5=f835351d0edc30fe3cd551138671d6ce
+    URL               https://github.com/plexoos/tpc-rs-data/archive/tpc-rs-v0.0.11.tar.gz
+    URL_HASH          MD5=aa28693c3615e7f2eb14a24f39c884a6
     PREFIX            ${CMAKE_BINARY_DIR}/contrib
     CONFIGURE_COMMAND ""
     BUILD_COMMAND     ""
