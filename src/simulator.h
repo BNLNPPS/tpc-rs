@@ -110,9 +110,7 @@ class Simulator
   void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
   int AsicThresholds(short* ADCs);
 
-  void CreateTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-    std::vector<tpcrs::GeantHit>& geant_hits,
-    std::vector<TrackSegment>& segments, int& sIndex);
+  void CreateTrackSegments(std::vector<tpcrs::GeantHit>::iterator, std::vector<tpcrs::GeantHit>::iterator, std::vector<TrackSegment>&);
 
   TrackSegment CreateTrackSegment(tpcrs::GeantHit& geant_hit);
 
