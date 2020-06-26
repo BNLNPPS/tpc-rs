@@ -67,6 +67,9 @@ int main(int argc, char **argv)
     std::vector<tpcrs::GeantHit> hits;
     std::transform(begin(geantEvent_inp->hits), end(geantEvent_inp->hits), std::back_inserter(hits), convert);
 
+    // Sort generated hits
+    std::stable_sort(begin(hits), end(hits));
+
     std::vector<tpcrs::DigiChannel>  digi_data;
     tpcrs::digitize<Simulator>(std::begin(hits), std::end(hits), back_inserter(digi_data), cfg);
 
