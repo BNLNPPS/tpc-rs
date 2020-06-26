@@ -357,7 +357,6 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, DigiInserter 
   int n_hits = geant_hits.size();
   std::vector<size_t> sorted_index(n_hits);
   std::iota(sorted_index.begin(), sorted_index.end(), 0);
-  std::stable_sort(sorted_index.begin(), sorted_index.end(), [&geant_hits](size_t i1, size_t i2) {return geant_hits[i1] < geant_hits[i2];});
 
   using SegmentedTrack = std::vector<TrackSegment>;
   std::vector< std::vector<TrackSegment> > segments_by_sector;
