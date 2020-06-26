@@ -85,12 +85,11 @@ template<typename Simulator, typename InputIt, typename OutputIt>
 OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
 {
   std::vector<GeantHit> hits(first1, last1);
-  std::vector<DigiChannel> digi_data;
 
   static Simulator simu(cfg);
-  simu.Simulate(hits, digi_data);
+  simu.Simulate(hits, d_first);
 
-  return std::copy(std::begin(digi_data), std::end(digi_data), d_first);
+  return d_first;
 }
 
 }

@@ -330,7 +330,8 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
 }
 
 
-void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<tpcrs::DigiChannel>& digi_data)
+template<>
+void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, DigiInserter digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -678,7 +679,7 @@ void  Simulator::Print(Option_t* /* option */) const
 }
 
 
-void Simulator::DigitizeSector(int sector, std::vector<tpcrs::DigiChannel>& digi_data, const std::vector<SignalSum_t>& binned_charge)
+void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::vector<SignalSum_t>& binned_charge)
 {
   for (int row = 1;  row <= cfg_.C<St_tpcPadConfigC>().numberOfRows(sector); row++) {
     int nPadsPerRow = cfg_.C<St_tpcPadConfigC>().padsPerRow(sector, row);
@@ -783,7 +784,7 @@ void Simulator::DigitizeSector(int sector, std::vector<tpcrs::DigiChannel>& digi
 }
 
 
-void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, std::vector<tpcrs::DigiChannel>& digi_data)
+void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data)
 {
   bool in_cluster = false;
 
@@ -796,7 +797,7 @@ void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int 
       in_cluster = true;
 
     if (in_cluster)
-      digi_data.push_back(tpcrs::DigiChannel{sector, row, pad, tb, ADCs[tb], IDTs[tb]});
+      *digi_data = tpcrs::DigiChannel{sector, row, pad, tb, ADCs[tb], IDTs[tb]};
   }
 }
 
