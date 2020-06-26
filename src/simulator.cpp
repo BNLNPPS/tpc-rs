@@ -352,66 +352,34 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, DigiInserter 
              << " (V)\n";
   }
 
-  // sort
-  // initialize original index locations
-  int n_hits = geant_hits.size();
-  std::vector<size_t> sorted_index(n_hits);
-  std::iota(sorted_index.begin(), sorted_index.end(), 0);
+  std::vector< std::vector<TrackSegment> > segments_by_sector(num_sectors_);
+  std::vector<TrackSegment> segments_in_sector;
 
-  using SegmentedTrack = std::vector<TrackSegment>;
-  std::vector< std::vector<TrackSegment> > segments_by_sector;
+  auto first_hit = begin(geant_hits);
+  int curr_direction = 0; // 0 - increase no of row, 1 - decrease no of. row.
 
-  int sortedIndex = 0;
+  for (auto curr_hit = begin(geant_hits); curr_hit != end(geant_hits); ++curr_hit)
+  {
+    auto next_hit = next(curr_hit);    
 
-  for (int sector = 1; sector <= num_sectors_; sector++) {
+    int  next_direction  =  next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
+    bool sector_boundary = (next_hit->volume_id % 10000) / 100 !=
+                           (curr_hit->volume_id % 10000) / 100;
+    bool track_boundary  = (next_hit->track_id != curr_hit->track_id || curr_hit->track_id == 0);
 
-    std::vector<TrackSegment> segments_in_sector;
+    bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
 
-    // The hits must be ordered by sector, track_id, and track length to the hit
-    for (; sortedIndex < n_hits; sortedIndex++) {
-      int indx = sorted_index[sortedIndex];
+    if (start_new_track || next_hit == end(geant_hits)) {
+      CreateTrackSegments(first_hit, next_hit, segments_in_sector);
+      first_hit = next_hit;
 
-      tpcrs::GeantHit& geant_hit = geant_hits[indx];
-      int volId = geant_hit.volume_id % 10000;
-      int iSector = volId / 100;
-
-      if (iSector != sector) {
-        if (iSector < sector) {
-          LOG_ERROR << "Simulator::Simulate: geant_hits table has not been ordered by sector no. " << sector << '\n';
-          assert( iSector > sector );
-        }
-
-        break;
+      if ( (sector_boundary || next_hit == end(geant_hits) ) && segments_in_sector.size() != 0) {
+        segments_by_sector[(curr_hit->volume_id % 10000) / 100 - 1] = segments_in_sector;
+        segments_in_sector.clear();
       }
-
-      // Track segment to propagate
-      int sIndex = sortedIndex;
-
-      std::vector<TrackSegment> segments;
-      CreateTrackSegments(sector, sorted_index, sortedIndex, geant_hits, segments, sIndex);
-      int nSegHits = segments.size();
-
-      if (!nSegHits) continue;
-
-      segments_in_sector.insert(segments_in_sector.end(), segments.begin(), segments.end());
-
-      if (Debug() >= 10) {
-        PrPP(Make, nSegHits);
-
-        for (int s = 0; s < nSegHits; s++) {
-          LOG_INFO << "Seg[" << Form("%2i", s) << "]\tId " << segments[s].TrackId << "\ts = " << segments[s].tpc_hitC->s
-               << "\tvolumeID :" <<  Form("%6i", segments[s].tpc_hitC->volume_id) << "\t" << segments[s].Pad
-               << "\ts1/s2 = " << segments[s].tpc_hitC->s - segments[s].tpc_hitC->ds / 2
-               << "\t" << segments[s].tpc_hitC->s + segments[s].tpc_hitC->ds / 2 << "\tds = " << segments[s].tpc_hitC->ds
-               << '\n';
-        }
-      }
-
-      // This effectively jumps to the next track/particle
-      sortedIndex = sIndex - 1; // Irakli 05/06/19, reduce extra step in for loop
     }
 
-    segments_by_sector.push_back(segments_in_sector);
+    curr_direction = next_direction;
   }
 
   int sector = 1;
@@ -499,57 +467,17 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, DigiInserter 
 }
 
 
-void Simulator::CreateTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
-  std::vector<tpcrs::GeantHit>& geant_hits,
-  std::vector<TrackSegment>& segments, int& sIndex)
+void Simulator::CreateTrackSegments(std::vector<tpcrs::GeantHit>::iterator first_hit, std::vector<tpcrs::GeantHit>::iterator last_hit, std::vector<TrackSegment>& segments)
 {
-  int n_hits = sorted_index.size();
-
-  if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tn_hits = " << n_hits << '\n';
-
-  segments.resize(100);
-  TrackSegment prev_segment;
-  int parent_track_idx = 0;
-  int TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
-  int num_segments = 0;
-
-  for (sIndex = sortedIndex; sIndex < n_hits && num_segments < 100; sIndex++)
+  for (auto ihit = first_hit; ihit != last_hit; ++ihit)
   {
-    int indx = sorted_index[sIndex];
-    tpcrs::GeantHit& geant_hit = geant_hits[indx];
-
-    if ((geant_hit.volume_id % 10000) / 100 != sector) break;
-
-    if (parent_track_idx > 0 && parent_track_idx != geant_hit.track_id) break;
-
-    parent_track_idx = geant_hit.track_id;
-
-    if (num_segments == 1) { // No Loopers !
-      if (prev_segment.tpc_hitC->volume_id % 100 <= geant_hit.volume_id % 100) {
-        TrackDirection = 0;
-      }
-      else {
-        TrackDirection = 1;
-      }
-    }
-    else if (num_segments > 1) {
-      if ((! TrackDirection && prev_segment.tpc_hitC->volume_id % 100 > geant_hit.volume_id % 100) ||
-          (  TrackDirection && prev_segment.tpc_hitC->volume_id % 100 < geant_hit.volume_id % 100))
-        break;
-    }
-
-    if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << &geant_hit << '\n';
-
-    TrackSegment curr_segment = CreateTrackSegment(geant_hit);
+    TrackSegment curr_segment = CreateTrackSegment(*ihit);
 
     if (curr_segment.charge == 0) continue;
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
 
-    segments[num_segments++] = curr_segment;
-    prev_segment = curr_segment;
+    segments.push_back(curr_segment);
   }
-
-  segments.resize(num_segments);
 }
 
 
