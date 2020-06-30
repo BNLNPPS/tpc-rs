@@ -109,7 +109,10 @@ class Simulator
   void Print(Option_t* option = "") const;
   void DigitizeSector(int sector, DigiInserter digi_data, const std::vector<SignalSum_t>& binned_charge);
   void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
-  int AsicThresholds(short* ADCs);
+
+  /// Returns the number of non-zero elements in ADC
+  int SimulateAltro(std::vector<short>& ADC, std::vector<short>& IDT, bool cancel_tail);
+  int SimulateAsic(std::vector<short>& ADC);
 
   void CreateTrackSegments(GeneratedHitIt, GeneratedHitIt, std::vector<TrackSegment>&);
 
