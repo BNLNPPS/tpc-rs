@@ -619,7 +619,6 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::ve
       static std::vector<short> IDTs(max_timebins_, 0);
       std::fill(ADCs.begin(), ADCs.end(), 0);
       std::fill(IDTs.begin(), IDTs.end(), 0);
-      int num_time_bins = 0;
       int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
 
       for (int bin = 0; bin < max_timebins_; bin++, index++) {
@@ -629,19 +628,14 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::ve
         if (adc > 1023) adc = 1023;
         if (adc < 1) continue;
 
-        num_time_bins++;
         ADCs[bin] = adc;
         IDTs[bin] = binned_charge[index].TrackId;
       }
 
-      if (!num_time_bins) continue;
-
       int flag = cfg_.S<tpcAltroParams>(sector - 1).N;
-      num_time_bins =  flag >= 0 ? SimulateAltro(ADCs, IDTs, flag>0) : SimulateAsic(ADCs);
+      flag >= 0 ? SimulateAltro(ADCs, IDTs, flag>0) : SimulateAsic(ADCs);
 
-      if (num_time_bins > 0) {
-        AddDigiData(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_, digi_data);
-      }
+      AddDigiData(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_, digi_data);
     } // pads
   } // row
 }
