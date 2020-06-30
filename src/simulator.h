@@ -23,11 +23,12 @@ class Simulator
   Simulator(const tpcrs::Configurator& cfg);
   ~Simulator();
 
-  template<typename OutputIt>
-  void Simulate(std::vector<tpcrs::GeantHit>& geant_hits, OutputIt digi_data);
+  template<typename InputIt, typename OutputIt>
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt digi_data);
 
  private:
 
+  using GeneratedHitIt = std::vector<tpcrs::GeantHit>::iterator;
   using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiChannel>>;
 
   struct TrackSegment {
@@ -110,7 +111,7 @@ class Simulator
   void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
   int AsicThresholds(short* ADCs);
 
-  void CreateTrackSegments(std::vector<tpcrs::GeantHit>::iterator, std::vector<tpcrs::GeantHit>::iterator, std::vector<TrackSegment>&);
+  void CreateTrackSegments(GeneratedHitIt, GeneratedHitIt, std::vector<TrackSegment>&);
 
   TrackSegment CreateTrackSegment(tpcrs::GeantHit& geant_hit);
 
@@ -166,6 +167,6 @@ class Simulator
 };
 
 template<>
-void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, DigiInserter digi_data);
+void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, DigiInserter digi_data);
 
 #endif
