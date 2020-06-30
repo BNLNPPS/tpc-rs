@@ -84,10 +84,8 @@ inline bool operator< (const SimulatedCharge& lhs, const SimulatedCharge& rhs)
 template<typename Simulator, typename InputIt, typename OutputIt>
 OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
 {
-  std::vector<GeantHit> hits(first1, last1);
-
   static Simulator simu(cfg);
-  simu.Simulate(hits, d_first);
+  simu.Simulate(first1, last1, d_first);
 
   return d_first;
 }
