@@ -406,9 +406,6 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
         TrackHelix track(seg.dirLS.position,
                          seg.coorLS.position,
                          seg.BLS.position.z * 1e-14 * seg.charge, 1);
-#ifdef __DEBUG__
-        if (Debug() > 11) PrPP(Make, track);
-#endif
         // Propagate track to middle of the pad row plane by the nominal center point and the normal
         // in this sector coordinate system
         double sR = track.pathLength({0, transform_.yFromRow(seg.Pad.sector, seg.Pad.row), 0}, {0, 1, 0});
@@ -430,12 +427,6 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
 
         SignalFromSegment(seg, track, gain_local, binned_charge, nP, dESum, dSSum);
 
-#ifdef __DEBUG__
-        if (Debug() > 12) {
-          LOG_INFO << "sIndex = " << "N/A" << " volId = " << "N/A"
-                   << " dESum = " << dESum << " /\tdSSum " << dSSum << '\n';
-        }
-#endif
         static const double eV = 1e-9; // electronvolt in GeV
         seg.tpc_hitC->digi.de = dESum * eV;
         seg.tpc_hitC->digi.ds = dSSum;
@@ -618,10 +609,6 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::ve
       }
     }
 
-#ifdef __DEBUG__
-    float AdcSumBeforeAltro = 0, AdcSumAfterAltro = 0;
-#endif
-
     for (int pad = 1; pad <= nPadsPerRow; pad++) {
       double gain = cfg_.C<St_tpcPadGainT0BC>().Gain(sector, row, pad);
 
@@ -645,13 +632,6 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::ve
         num_time_bins++;
         ADCs[bin] = adc;
         IDTs[bin] = binned_charge[index].TrackId;
-#ifdef __DEBUG__
-        if (adc > 3 * pedRMS) AdcSumBeforeAltro += adc;
-        if (Debug() > 11 && binned_charge[index].Sum > 0) {
-          LOG_INFO << "digi R/P/T/I = " << row << " /\t" << pad << " /\t" << bin << " /\t" << index
-                   << "\tSum/TrackId = " << binned_charge[index].Sum << " /\t" << binned_charge[index].TrackId << '\n';
-        }
-#endif
       }
 
       if (!num_time_bins) continue;
@@ -682,13 +662,6 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::ve
 
           if (ADCs[i]) {
             num_time_bins++;
-#ifdef __DEBUG__
-            if (ADCs[i] > 3 * pedRMS) AdcSumAfterAltro += ADCs[i];
-            if (Debug() > 12) {
-              LOG_INFO << "Altro R/P/T/I = " << row << " /\t" << pad << " /\t" << i
-                       << "\tAdc/TrackId = " << ADCs[i] << " /\t" << IDTs[i] << '\n';
-            }
-#endif
           }
           else {IDTs[i] = 0;}
         }
@@ -701,12 +674,6 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::ve
         AddDigiData(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_, digi_data);
       }
     } // pads
-
-#ifdef __DEBUG__
-    if (Debug() > 10) {
-      LOG_INFO << "row = " << row << "\tAdcSumBeforeAltro = " << AdcSumBeforeAltro << "\tAdcSumAfterAltro = " << AdcSumAfterAltro << '\n';
-    }
-#endif
   } // row
 }
 
@@ -1144,11 +1111,6 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
       }
     }
 
-#ifdef __DEBUG__
-    if (Debug() > 12) {
-      LOG_INFO << "s_low/s_upper/dSD\t" << s_low << "/\t" << s_upper << "\t" << dS <<  '\n';
-    }
-#endif
     double E = dE * eV;
     newPosition += dS;
 
@@ -1164,11 +1126,6 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
     dESum += dE;
     dSSum += dS;
     nP++;
-#ifdef __DEBUG__
-    if (Debug() > 12) {
-      LOG_INFO << "dESum = " << dESum << " /\tdSSum " << dSSum << " /\t newPosition " << newPosition << '\n';
-    }
-#endif
     double xRange = ElectronRange(dE, dEr);
 
     std::vector<float> rs = NumberOfElectronsInCluster(mHeed, dE, dEr);
@@ -1223,15 +1180,6 @@ void Simulator::LoopOverElectronsInCluster(
       double xyzRangeL[3] = {rs[ie] * xRange * rX, rs[ie] * xRange * rY, 0.};
       double xyzR[3] = {0};
       TCL::mxmpy(L2L, xyzRangeL, xyzR, 3, 3, 1);
-#ifdef __DEBUG__
-      if (Debug() > 13) {
-        LOG_INFO << "xyzRangeL: " << xyzRangeL[0] << " " << xyzRangeL[1] << " " << xyzRangeL[2] << '\n';
-        LOG_INFO << "L2L: " << L2L[0] << " " << L2L[1] << " " << L2L[2]
-                            << L2L[3] << " " << L2L[4] << " " << L2L[3]
-                            << L2L[6] << " " << L2L[7] << " " << L2L[8] << '\n';
-        LOG_INFO << "xyzR: " << xyzR[0] << " " << xyzR[1] << " " << xyzR[2] << '\n';
-      }
-#endif
       for (int i=0; i<3; i++) xyzE.position[i] += xyzR[i];
     }
 
@@ -1388,20 +1336,6 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
               binned_charge[index].TrackId = segment.TrackId;
           }
         }
-
-#ifdef __DEBUG__
-        if (Debug() > 13 && (binned_charge[index].Sum > 0 || ! std::isfinite(binned_charge[index].Sum)) ) {
-          LOG_INFO << "simu row = " << segment.tpc_hitC->volume_id % 100 << "\tR/P/T/I = " << row << " /\t" << pad << " /\t" << itbin << " /\t" << index
-                   << "\tSum/TrackId = " << binned_charge[index].Sum << " /\t" << binned_charge[index].TrackId
-                   << "\tsignal = " << signal
-                   << "\trow Min/Max = " << rowMin << "/" << rowMax
-                   << '\n';
-
-          if (! std::isfinite(binned_charge[index].Sum)) {
-            LOG_INFO << "Not Finite\n";
-          }
-        }
-#endif
       } // time
     } // pad limits
   } // row limits
