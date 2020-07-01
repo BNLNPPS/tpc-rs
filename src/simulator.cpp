@@ -920,7 +920,6 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit
 
   TrackSegment segment;
   segment.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, segment.xyzG);
-  segment.TrackId  = geant_hit.track_id;
   segment.tpc_hitC = &geant_hit;
   ParticleProperties(geant_hit.particle_id, segment.charge, segment.mass);
 
@@ -1326,12 +1325,12 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
         binned_charge[index].Sum += signal;
 
         // Record truth ID of the MC particle produced this signal
-        if ( segment.TrackId ) {
+        if ( segment.tpc_hitC->track_id ) {
           if ( !binned_charge[index].TrackId )
-            binned_charge[index].TrackId = segment.TrackId;
+            binned_charge[index].TrackId = segment.tpc_hitC->track_id;
           else { // switch TrackId, works only for 2 tracks, more tracks ?
-            if ( binned_charge[index].TrackId != segment.TrackId && binned_charge[index].Sum < 2 * signal)
-              binned_charge[index].TrackId = segment.TrackId;
+            if ( binned_charge[index].TrackId != segment.tpc_hitC->track_id && binned_charge[index].Sum < 2 * signal)
+              binned_charge[index].TrackId = segment.tpc_hitC->track_id;
           }
         }
       } // time
