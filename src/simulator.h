@@ -32,7 +32,6 @@ class Simulator
   using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiChannel>>;
 
   struct TrackSegment {
-    int TrackId;
     int charge;
     double mass;
     tpcrs::GeantHit* tpc_hitC;
