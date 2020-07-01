@@ -385,7 +385,7 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
   int sector = 1;
   for (auto segments_in_sector : segments_by_sector) {
     int nHitsInTheSector = 0;
-    std::vector<SignalSum_t> binned_charge(max_rows_ * max_pads_ * max_timebins_);
+    ChargeContainer binned_charge(max_rows_ * max_pads_ * max_timebins_);
 
       for (TrackSegment& seg : segments_in_sector) {
         seg.tpc_hitC->digi.adc = 0;
@@ -597,7 +597,7 @@ void  Simulator::Print(Option_t* /* option */) const
 }
 
 
-void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const std::vector<SignalSum_t>& binned_charge)
+void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const ChargeContainer& binned_charge)
 {
   for (int row = 1;  row <= cfg_.C<St_tpcPadConfigC>().numberOfRows(sector); row++) {
     int nPadsPerRow = cfg_.C<St_tpcPadConfigC>().padsPerRow(sector, row);
@@ -1033,7 +1033,7 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 
 
 void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track, double gain_local,
-  std::vector<SignalSum_t>& binned_charge, int& nP, double& dESum, double& dSSum)
+  ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
@@ -1138,7 +1138,7 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
 
 
 void Simulator::LoopOverElectronsInCluster(
-  std::vector<float> rs, const TrackSegment &segment, std::vector<SignalSum_t>& binned_charge,
+  std::vector<float> rs, const TrackSegment &segment, ChargeContainer& binned_charge,
   double xRange, Coords xyzC, double gain_local)
 {
   int sector = segment.Pad.sector;
@@ -1243,7 +1243,7 @@ void Simulator::LoopOverElectronsInCluster(
 
 
 void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowMax,
-  TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas)
+  TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas)
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;

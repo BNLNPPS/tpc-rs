@@ -49,6 +49,8 @@ class Simulator
     short  TrackId;
   };
 
+  using ChargeContainer = std::vector<SignalSum_t>;
+
   enum InOut {kInner = 0, kOuter = 1};
   enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
               kBICHSEL     = 1,// switch to Bichsel from GEANT
@@ -106,7 +108,7 @@ class Simulator
   int Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
-  void DigitizeSector(int sector, DigiInserter digi_data, const std::vector<SignalSum_t>& binned_charge);
+  void DigitizeSector(int sector, DigiInserter digi_data, const ChargeContainer& binned_charge);
   void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
 
   /// Returns the number of non-zero elements in ADC
@@ -122,14 +124,14 @@ class Simulator
 
   void SignalFromSegment(const TrackSegment& segment, TrackHelix track,
     double gain_local,
-    std::vector<SignalSum_t>& binned_charge, int& nP, double& dESum, double& dSSum);
+    ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum);
 
   void LoopOverElectronsInCluster(
-    std::vector<float> rs, const TrackSegment& segment, std::vector<SignalSum_t>& binned_charge,
+    std::vector<float> rs, const TrackSegment& segment, ChargeContainer& binned_charge,
     double xRange, Coords xyzC, double gain_local);
 
   void GenerateSignal(const TrackSegment &segment, int rowMin, int rowMax,
-                      TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas);
+                      TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas);
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
 
