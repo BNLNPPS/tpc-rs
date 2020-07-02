@@ -2,6 +2,7 @@
 #define TPCRS_TPCRS_H_
 
 #include <vector>
+#include <tuple>
 
 #include "tpcrs/configurator.h"
 
@@ -72,6 +73,12 @@ inline bool operator< (const T& lhs, const T& rhs)
   int lhs_sector = (lhs.volume_id % 10000) / 100;
   int rhs_sector = (rhs.volume_id % 10000) / 100;
   return std::tie(lhs_sector, lhs.track_id, lhs.s) < std::tie(rhs_sector, rhs.track_id, rhs.s);
+}
+
+
+inline bool operator< (const SimulatedCharge& lhs, const SimulatedCharge& rhs)
+{
+  return std::tie(lhs.sector, lhs.row, lhs.pad, lhs.timebin) < std::tie(rhs.sector, rhs.row, rhs.pad, rhs.timebin);
 }
 
 
