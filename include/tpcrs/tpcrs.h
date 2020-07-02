@@ -67,8 +67,7 @@ struct TPC
 /**
  * Expects a type similar to GeneratedHit
  */
-template<typename T>
-inline bool operator< (const T& lhs, const T& rhs)
+inline bool operator< (const GeantHit& lhs, const GeantHit& rhs)
 {
   int lhs_sector = (lhs.volume_id % 10000) / 100;
   int rhs_sector = (rhs.volume_id % 10000) / 100;
