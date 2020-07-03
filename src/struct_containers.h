@@ -661,7 +661,10 @@ struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGai
   {
     float gain = 0;
 
-    if ((sector > 0 && sector <= 24) && (row > 0 && row <= cfg_.C<St_tpcPadConfigC>().padRows(sector)) && (pad > 0 && pad <= 182)) {
+    if ((sector > 0 && sector <= 24) &&
+        (row > 0 && row <= cfg_.C<St_tpcPadConfigC>().padRows(sector)) &&
+        (pad > 0 && pad <= cfg_.C<St_tpcPadConfigC>().padsPerRow(sector, row)))
+    {
       gain = Struct()->Gain[sector - 1][row - 1][pad - 1];
     }
 
