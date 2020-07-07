@@ -8,6 +8,12 @@
 
 namespace tpcrs {
 
+struct DigiChannel
+{
+  unsigned int sector : 5, row : 7, pad : 10, timebin : 10;
+};
+
+
 /**
  * Associates a packed hardware index with the data.
  *
@@ -16,9 +22,9 @@ namespace tpcrs {
  * bits                5 +   7 +   10 +      10 = 32 = 4 bytes = unsigned int
  * max value          32   128   1024      1024
  */
-struct DigiChannel
+struct DigiHit
 {
-  unsigned int sector : 5, row : 7, pad : 10, timebin : 10;
+  DigiChannel channel;
   short adc;
   short idt;
 };
@@ -37,7 +43,7 @@ struct SimuHit
 
 struct SimulatedCharge
 {
-  unsigned int sector : 5, row : 7, pad : 10, timebin : 10;
+  DigiChannel channel;
   double q;
 };
 
@@ -111,7 +117,8 @@ inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
 
 inline bool operator< (const SimulatedCharge& lhs, const SimulatedCharge& rhs)
 {
-  return std::tie(lhs.sector, lhs.row, lhs.pad, lhs.timebin) < std::tie(rhs.sector, rhs.row, rhs.pad, rhs.timebin);
+  return std::tie(lhs.channel.sector, lhs.channel.row, lhs.channel.pad, lhs.channel.timebin) <
+         std::tie(rhs.channel.sector, rhs.channel.row, rhs.channel.pad, rhs.channel.timebin);
 }
 
 

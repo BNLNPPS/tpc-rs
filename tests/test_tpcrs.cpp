@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     // Sort generated hits
     std::stable_sort(begin(hits), end(hits));
 
-    std::vector<tpcrs::DigiChannel>  digi_data;
+    std::vector<tpcrs::DigiHit>  digi_data;
     tpcrs::digitize<Simulator>(std::begin(hits), std::end(hits), back_inserter(digi_data), cfg);
 
     geantEvent_out.Fill(digi_data);

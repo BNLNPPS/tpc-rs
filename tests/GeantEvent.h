@@ -91,14 +91,14 @@ struct GeantEvent
 
     for (auto tc = begin(digi_data); tc != end(digi_data); ++tc)
     {
-      ADCs[tc->timebin] = tc->adc;
-      IDTs[tc->timebin] = tc->idt;
+      ADCs[tc->channel.timebin] = tc->adc;
+      IDTs[tc->channel.timebin] = tc->idt;
 
       auto next_tc = std::next(tc);
-      bool same_pad = (tc->sector == next_tc->sector && tc->row == next_tc->row && tc->pad == next_tc->pad);
+      bool same_pad = (tc->channel.sector == next_tc->channel.sector && tc->channel.row == next_tc->channel.row && tc->channel.pad == next_tc->channel.pad);
 
       if (!same_pad) {
-        digiHits.push_back( DigitizedHit(tc->sector, tc->row, tc->pad,
+        digiHits.push_back( DigitizedHit(tc->channel.sector, tc->channel.row, tc->channel.pad,
             std::vector<short>(ADCs, ADCs + __MaxNumberOfTimeBins__),
             std::vector<unsigned short>(IDTs, IDTs + __MaxNumberOfTimeBins__) ) );
         std::memset(ADCs, 0, __MaxNumberOfTimeBins__*sizeof(short));
