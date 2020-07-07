@@ -69,16 +69,9 @@ struct TPC
 template<typename T>
 inline bool operator< (const T& lhs, const T& rhs)
 {
-  // sectors
-  if ((lhs.volume_id % 10000) / 100 != (rhs.volume_id % 10000) / 100)
-    return (lhs.volume_id % 10000) / 100 < (rhs.volume_id % 10000) / 100;
-
-  // track id
-  if (lhs.track_id != rhs.track_id)
-    return lhs.track_id < rhs.track_id;
-
-  // track length
-  return lhs.s < rhs.s;
+  int lhs_sector = (lhs.volume_id % 10000) / 100;
+  int rhs_sector = (rhs.volume_id % 10000) / 100;
+  return std::tie(lhs_sector, lhs.track_id, lhs.s) < std::tie(rhs_sector, rhs.track_id, rhs.s);
 }
 
 
