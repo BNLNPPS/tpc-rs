@@ -29,7 +29,7 @@ class Simulator
  private:
 
   using GeneratedHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
-  using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiChannel>>;
+  using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiHit>>;
 
   struct TrackSegment {
     int charge;

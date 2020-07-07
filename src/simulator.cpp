@@ -654,7 +654,7 @@ void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int 
       in_cluster = true;
 
     if (in_cluster)
-      *digi_data = tpcrs::DigiChannel{sector, row, pad, tb, ADCs[tb], IDTs[tb]};
+      *digi_data = tpcrs::DigiHit{sector, row, pad, tb, ADCs[tb], IDTs[tb]};
   }
 }
 
