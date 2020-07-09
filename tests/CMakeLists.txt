@@ -57,7 +57,7 @@ function(ADD_TESTS tests)
         endif()
 
         set(_test_name "${_name}_${_label}")
-        set(_cmd "command time -f \"time: real %E user %U sys %S\" ./test_tpcrs ${_test_args} &> log_${_test_name}")
+        set(_cmd "command time -f \"time: real %E user %U sys %S mem: max %M avg %K io %I %O\" ./test_tpcrs ${_test_args} &> log_${_test_name}")
         set(_cmd "${_cmd} && diff -y --suppress-common-lines ${_name}_inp.log ${_name}_out.log")
         set(_cmd "${_cmd} | wc -l | (read N; ((\"$N\" == ${_diff_lines})))")
 
