@@ -358,14 +358,14 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
   std::iota(sorted_index.begin(), sorted_index.end(), 0);
   std::stable_sort(sorted_index.begin(), sorted_index.end(), [&geant_hits](size_t i1, size_t i2) {return geant_hits[i1] < geant_hits[i2];});
 
-  using SegmentedTrack = std::vector<HitPoint_t>;
-  std::vector< std::vector<HitPoint_t> > segments_by_sector;
+  using SegmentedTrack = std::vector<TrackSegment>;
+  std::vector< std::vector<TrackSegment> > segments_by_sector;
 
   int sortedIndex = 0;
 
   for (int sector = 1; sector <= num_sectors_; sector++) {
 
-    std::vector<HitPoint_t> segments_in_sector;
+    std::vector<TrackSegment> segments_in_sector;
 
     // it is assumed that hit are ordered by sector, trackId, pad rows, and track length
     for (; sortedIndex < n_hits; sortedIndex++) {
@@ -389,7 +389,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
       // Track segment to propagate
       int sIndex = sortedIndex;
 
-      std::vector<HitPoint_t> TrackSegmentHits;
+      std::vector<TrackSegment> TrackSegmentHits;
       CreateTrackSegments(sector, sorted_index, sortedIndex, geant_hits, TrackSegmentHits, sIndex);
       int nSegHits = TrackSegmentHits.size();
 
@@ -421,7 +421,7 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
     int nHitsInTheSector = 0;
     std::vector<SignalSum_t> binned_charge(max_rows_ * max_pads_ * max_timebins_);
 
-      for (HitPoint_t& seg : segments_in_sector) {
+      for (TrackSegment& seg : segments_in_sector) {
         seg.tpc_hitC->digi.adc = 0;
         int row = seg.coorLS.row;
 
@@ -534,14 +534,14 @@ void Simulator::Simulate(std::vector<tpcrs::GeantHit>& geant_hits, std::vector<t
 
 void Simulator::CreateTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
   std::vector<tpcrs::GeantHit>& geant_hits,
-  std::vector<HitPoint_t>& segments, int& sIndex)
+  std::vector<TrackSegment>& segments, int& sIndex)
 {
   int n_hits = sorted_index.size();
 
   if (Debug() > 13) LOG_INFO << "sortedIndex = " << sortedIndex << "\tn_hits = " << n_hits << '\n';
 
   segments.resize(100);
-  HitPoint_t prev_segment;
+  TrackSegment prev_segment;
   int parent_track_idx = 0;
   int TrackDirection = 0; // 0 - increase no of row, 1 - decrease no of. row.
   int num_segments = 0;
@@ -573,7 +573,7 @@ void Simulator::CreateTrackSegments(int sector, const std::vector<size_t>& sorte
 
     if (Debug() > 13) LOG_INFO << "sIndex = " << sIndex << "\tindx = " << indx << "\ttpc_hitC = " << &geant_hit << '\n';
 
-    HitPoint_t curr_segment = CreateTrackSegment(geant_hit);
+    TrackSegment curr_segment = CreateTrackSegment(geant_hit);
 
     if (curr_segment.charge == 0) continue;
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
@@ -1053,12 +1053,12 @@ double Simulator::Ec(double* x, double* p)
 }
 
 
-Simulator::HitPoint_t Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit)
+Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit)
 {
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
 
-  HitPoint_t TrackSegmentHits;
+  TrackSegment TrackSegmentHits;
   TrackSegmentHits.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, TrackSegmentHits.xyzG);
   TrackSegmentHits.TrackId  = geant_hit.track_id;
   TrackSegmentHits.tpc_hitC = &geant_hit;
@@ -1169,7 +1169,7 @@ double Simulator::CalcLocalGain(int sector, int row, double gain_base, double de
 
 
 void Simulator::CalcSignalInClusters(double gain_local,
-  const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+  const TrackSegment& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
   TrackHelix track, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum)
 {
   static const double m_e = .51099907e-3;
@@ -1254,7 +1254,7 @@ void Simulator::CalcSignalInClusters(double gain_local,
 
 
 void Simulator::LoopOverElectronsInCluster(
-  std::vector<float> rs, const HitPoint_t &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+  std::vector<float> rs, const TrackSegment &TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
   double xRange, Coords xyzC, double gain_local)
 {
   int sector = TrackSegmentHits.Pad.sector;
@@ -1367,7 +1367,7 @@ void Simulator::LoopOverElectronsInCluster(
 }
 
 
-void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
+void Simulator::GenerateSignal(const TrackSegment &TrackSegmentHits, int rowMin, int rowMax,
   TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas)
 {
   int sector = TrackSegmentHits.Pad.sector;
@@ -1478,7 +1478,7 @@ void Simulator::GenerateSignal(const HitPoint_t &TrackSegmentHits, int rowMin, i
 }
 
 
-double Simulator::dEdxCorrection(const HitPoint_t &path_segment)
+double Simulator::dEdxCorrection(const TrackSegment &path_segment)
 {
   dEdxY2_t CdEdx;
   memset(&CdEdx, 0, sizeof(dEdxY2_t));
