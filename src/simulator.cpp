@@ -646,50 +646,6 @@ void Simulator::DigitizeSector(int sector, const ChargeContainer& binned_charge,
 }
 
 
-void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const ChargeContainer& binned_charge)
-{
-  for (int row = 1;  row <= cfg_.C<St_tpcPadConfigC>().numberOfRows(sector); row++) {
-    int nPadsPerRow = cfg_.C<St_tpcPadConfigC>().padsPerRow(sector, row);
-    double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMS;
-
-    if (cfg_.S<tpcAltroParams>(sector - 1).N > 0) {
-      if (! (cfg_.C<St_tpcPadConfigC>().iTPC(sector) && cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row))) {
-        pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
-      }
-    }
-
-    for (int pad = 1; pad <= nPadsPerRow; pad++) {
-      double gain = cfg_.C<St_tpcPadGainT0BC>().Gain(sector, row, pad);
-
-      if (gain <= 0.0) continue;
-
-      double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
-      static std::vector<short> ADCs(max_timebins_, 0);
-      static std::vector<short> IDTs(max_timebins_, 0);
-      std::fill(ADCs.begin(), ADCs.end(), 0);
-      std::fill(IDTs.begin(), IDTs.end(), 0);
-      int index = max_timebins_ * (digi_.total_pads(row) + pad - 1);
-
-      for (int bin = 0; bin < max_timebins_; bin++, index++) {
-        int adc = pedRMS > 0 ? int(binned_charge[index].Sum / gain + gRandom->Gaus(ped, pedRMS)) - int(ped) :
-                               int(binned_charge[index].Sum / gain);
-
-        if (adc > 1023) adc = 1023;
-        if (adc < 1) continue;
-
-        ADCs[bin] = adc;
-        IDTs[bin] = binned_charge[index].TrackId;
-      }
-
-      int flag = cfg_.S<tpcAltroParams>(sector - 1).N;
-      flag >= 0 ? SimulateAltro(ADCs.begin(), ADCs.end(), flag>0) : SimulateAsic(ADCs);
-
-      AddDigiData(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_, digi_data);
-    } // pads
-  } // row
-}
-
-
 void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data)
 {
   bool in_cluster = false;
