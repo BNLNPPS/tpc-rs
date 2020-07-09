@@ -75,8 +75,7 @@ class MagField
 
   float  Br3DSteel[nPhiSteel][nZSteel][nRSteel], Bphi3DSteel[nPhiSteel][nZSteel][nRSteel] ;
 
-  void    BField   ( const float x[], float B[] ) ;
-  void    BField   ( const double x[], double B[] ) ;
+  void    BField   ( const double x[], float B[] ) ;
   void    B3DField ( const float x[], float B[] ) ;
   const TGeoRotation &MagFieldRotation() {return * &fMagFieldRotation;}
 };

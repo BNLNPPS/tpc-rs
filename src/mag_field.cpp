@@ -367,17 +367,7 @@ MagField::MagField (const tpcrs::Configurator& cfg, EBField map, float factor,
 
 
 /// B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
-void MagField::BField( const double x[], double B[] )
-{
-  float xx[3] = {(float) x[0], (float) x[1], (float) x[2]};
-  float bb[3];
-  BField(xx, bb);
-  B[0] = bb[0]; B[1] = bb[1]; B[2] = bb[2];
-}
-
-
-void MagField::BField( const float x[], float B[] )
-
+void MagField::BField( const double x[], float B[] )
 {
 
 
