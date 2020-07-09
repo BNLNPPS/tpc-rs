@@ -58,7 +58,8 @@ struct SimuHit
 struct SimulatedCharge
 {
   DigiChannel channel;
-  double q;
+  float Sum;
+  short TrackId;
 };
 
 

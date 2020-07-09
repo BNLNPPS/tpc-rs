@@ -43,12 +43,7 @@ class Simulator
     StTpcPadCoordinate Pad;
   };
 
-  struct SignalSum_t {
-    float      Sum;
-    short  TrackId;
-  };
-
-  using ChargeContainer = std::vector<SignalSum_t>;
+  using ChargeContainer = std::vector<tpcrs::SimulatedCharge>;
 
   enum InOut {kInner = 0, kOuter = 1};
   enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
