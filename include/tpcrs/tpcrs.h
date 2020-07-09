@@ -39,7 +39,7 @@ struct GeantHit
   int track_id;    /// Parent track
   int particle_id; /// GEANT particle id
   int volume_id;   /// Volume id packed as SSRR, SS = sector, RR = pad row
-  float x[3];      /// Hit center
+  double x[3];     /// Hit center
   double p[3];     /// Local momentum
   double de;       /// energy deposited at hit
   double ds;       /// path length within pad row

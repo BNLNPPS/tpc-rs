@@ -692,7 +692,8 @@ void MagFieldUtils::CommonStart ( int mode )
 
   printf("\n");
 
-  float  B[3], X[3] = { 0, 0, 0 } ;
+  double X[3] = { 0, 0, 0 } ;
+  float  B[3] = { 0, 0, 0 } ;
   float  OmegaTau ;                       // For an electron, OmegaTau carries the sign opposite of B
   mag_field_.BField(X, B) ;                            // Work in kGauss, cm and assume Bz dominates
 
@@ -1083,7 +1084,7 @@ void MagFieldUtils::Undo2DBDistortion( const float x[], float Xprime[], int Sect
     if ( i == NSTEPS ) index = 1 ;
 
     Xprime[2] +=  index * (ah / 3) ;
-    BFieldTpc( Xprime, B, Sector);                   // Work in kGauss, cm (uses Cartesian coordinates)
+    BFieldTpc( std::array<double, 3>{Xprime[0], Xprime[1], Xprime[2]}.data(), B, Sector);                   // Work in kGauss, cm (uses Cartesian coordinates)
 
     if ( std::abs(B[2]) > 0.001 ) {                // Protect From Divide by Zero Faults
       Xprime[0] +=  index * (ah / 3) * ( Const_2 * B[0] - Const_1 * B[1] ) / B[2] ;
@@ -3886,7 +3887,7 @@ void MagFieldUtils::FixSpaceChargeDistortion ( const int Charge, const float x[3
   double R[ROWS], dX[ROWS], dY[ROWS], C0, X0, Y0, R0, Pt, R2, theta, theta0, DeltaTheta ;
   double Xprime[ROWS + 1], Yprime[ROWS + 1], eX[ROWS + 1], eY[ROWS + 1] ; // Extra index is to accomodate the vertex in the fit for primaries
 
-  BFieldTpc(x, B) ;
+  BFieldTpc(std::array<double, 3>{x[0], x[1], x[2]}.data(), B) ;
   ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   Pt = std::sqrt( p[0] * p[0] + p[1] * p[1] ) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
@@ -4087,7 +4088,7 @@ void MagFieldUtils::ApplySpaceChargeDistortion (const double sc, const int Charg
   double tempSpaceChargeR2 = SpaceChargeR2 ;
   ManualSpaceChargeR2(sc, SpaceChargeEWRatio); // Set a custom value of the spacecharge parameter but keep previous E/W ratio
 
-  BFieldTpc(x, B) ;
+  BFieldTpc(std::array<double, 3>{x[0], x[1], x[2]}.data(), B) ;
   ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   Pt = std::sqrt( p[0] * p[0] + p[1] * p[1] ) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
@@ -4311,7 +4312,7 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   ManualSpaceChargeR2(0.01, SpaceChargeEWRatio); // Set "medium to large" value of the spacecharge parameter for tests, not critical.
 
   // but keep EWRatio that was previously defined
-  float x[3] = { 0, 0, 0 } ;
+  double x[3] = { 0, 0, 0 } ;
   BFieldTpc(x, B) ;
   ChargeB  = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
@@ -4548,7 +4549,7 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   else if (tempDistortionMode & k3DGridLeak  ) mDistortionMode |= k3DGridLeak   ;
   else if (tempDistortionMode & kGridLeak    ) mDistortionMode |= kGridLeak     ;
 
-  float x[3] = { 0, 0, 0 } ;  // Get the B field at the vertex
+  double x[3] = { 0, 0, 0 } ;  // Get the B field at the vertex
   BFieldTpc(x, B) ;
   ChargeB = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
@@ -4802,7 +4803,7 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int NHits, int Charge, float Pt
   mDistortionMode = (tempDistortionMode & (kSpaceCharge | kSpaceChargeR2 | kGridLeak | k3DGridLeak | kFullGridLeak));
 
   memset(xx, 0, 3 * sizeof(float)); // Get the B field at the vertex
-  BFieldTpc(xx, B) ;
+  BFieldTpc(std::array<double, 3>{xx[0], xx[1], xx[2]}.data(), B) ;
   ChargeB = Charge * std::copysign((int)1, (int)(B[2] * 1000)) ;
   R0 = std::abs( 1000.0 * Pt / ( 0.299792 * B[2] ) ) ;     // P in GeV, R in cm, B in kGauss
   X0 = ChargeB *  0.0 * R0  ;   // Assume a test particle that shoots out at 0 degrees
@@ -5879,7 +5880,7 @@ int MagFieldUtils::IterationFailCount()
 }
 
 
-void MagFieldUtils::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
+void MagFieldUtils::BFieldTpc ( const double xTpc[], float BTpc[], int Sector )
 {
   if (CoordTransform::IsOldScheme()) {
     mag_field_.BField( xTpc, BTpc) ;
@@ -5889,7 +5890,7 @@ void MagFieldUtils::BFieldTpc ( const float xTpc[], float BTpc[], int Sector )
     double Tpc[3] =  {xTpc[0], xTpc[1], xTpc[2]};
     double coorG[3];
     transform_.Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
-    float xyzG[3] = {(float) coorG[0], (float) coorG[1], (float) coorG[2]};
+    double xyzG[3] = {coorG[0], coorG[1], coorG[2]};
     float BG[3];
     mag_field_.BField( xyzG, BG) ;
     double    BGD[3] = {BG[0], BG[1], BG[2]};
@@ -5908,7 +5909,7 @@ void MagFieldUtils::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
     mag_field_.B3DField( xTpc, BTpc) ;
   }
   else {
-    BFieldTpc(xTpc, BTpc, Sector);
+    BFieldTpc(std::array<double, 3>{xTpc[0], xTpc[1], xTpc[2]}.data(), BTpc, Sector);
   }
 }
 
