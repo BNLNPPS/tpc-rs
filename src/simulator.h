@@ -27,7 +27,7 @@ class Simulator
 
  private:
 
-  struct HitPoint_t {
+  struct TrackSegment {
     int TrackId;
     int charge;
     double mass;
@@ -109,27 +109,27 @@ class Simulator
 
   void CreateTrackSegments(int sector, const std::vector<size_t>& sorted_index, int sortedIndex,
     std::vector<tpcrs::GeantHit>& geant_hits,
-    std::vector<HitPoint_t>& segments, int& sIndex);
+    std::vector<TrackSegment>& segments, int& sIndex);
 
-  HitPoint_t CreateTrackSegment(tpcrs::GeantHit& geant_hit);
+  TrackSegment CreateTrackSegment(tpcrs::GeantHit& geant_hit);
 
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
 
   void CalcSignalInClusters(
-    double gain_local, const HitPoint_t& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
+    double gain_local, const TrackSegment& TrackSegmentHit, std::vector<SignalSum_t>& binned_charge,
     TrackHelix track, double betaGamma, double Tmax, double eKin, int& nP, double& dESum, double& dSSum);
 
   void LoopOverElectronsInCluster(
-    std::vector<float> rs, const HitPoint_t& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
+    std::vector<float> rs, const TrackSegment& TrackSegmentHits, std::vector<SignalSum_t>& binned_charge,
     double xRange, Coords xyzC, double gain_local);
 
-  void GenerateSignal(const HitPoint_t &TrackSegmentHits, int rowMin, int rowMax,
+  void GenerateSignal(const TrackSegment &TrackSegmentHits, int rowMin, int rowMax,
                       TF1F* shaper, std::vector<SignalSum_t>& binned_charge, double gain_local_gas);
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
 
-  double dEdxCorrection(const HitPoint_t &path_segment);
+  double dEdxCorrection(const TrackSegment &path_segment);
 
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
