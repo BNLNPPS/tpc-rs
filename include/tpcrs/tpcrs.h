@@ -14,6 +14,20 @@ struct DigiChannel
 };
 
 
+inline bool operator< (const DigiChannel& a, const DigiChannel& b)
+{
+  return std::tie(a.sector, a.row, a.pad, a.timebin) <
+         std::tie(b.sector, b.row, b.pad, b.timebin);
+}
+
+
+inline bool operator== (const DigiChannel& a, const DigiChannel& b)
+{
+  return std::tie(a.sector, a.row, a.pad, a.timebin) ==
+         std::tie(b.sector, b.row, b.pad, b.timebin);
+}
+
+
 /**
  * Associates a packed hardware index with the data.
  *
