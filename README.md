@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.org/bnlnpps/tpc-rs.svg?branch=master)](https://travis-ci.org/bnlnpps/tpc-rs)
 
-**tpc-rs** provides a library to simulate the signal detected by a Time
-Projection Chamber (TPC) and digitized by the readout electronics when charge
-particles traverse its sensitive volume.
+**tpc-rs** is a C++ library to simulate and digitize the signal produced by
+charged particles traversing the sensitive volume of a Time Projection Chamber
+(TPC).
+
 
 ## Quick Start
 
@@ -49,9 +50,10 @@ following in your CMakeLists.txt:
 ## Basic Test
 
 Once the source code is built one can execute basic tests to verify the
-performance of the library. A reference file is provided with a pre-generated
-input and the corresponding output from the main `tpc-rs` conversion routine.
+integrity and performance of the library. For that purpose, a reference file is
+provided with a pre-generated input and the corresponding output from the main
+`tpc-rs` conversion routine.
 
     cd tpc-rs/build
-    python ../utils/gdrive.py 1XESdyqg6kXhu5gPrgS3drq3UIBu0f1l5 | tar -xz
-    ../tests/run_tests.sh
+    ctest -R quick
+    ctest -R long
