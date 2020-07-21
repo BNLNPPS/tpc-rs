@@ -14,8 +14,8 @@
 #include "simulator.h"
 
 
-tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g2t_vertex& vertex);
-tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const std::vector<g2t_track>& particles, const std::vector<g2t_vertex>& vertices);
+tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g2t_vertex& vertex);
+tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const std::vector<g2t_track>& particles, const std::vector<g2t_vertex>& vertices);
 
 
 int main(int argc, char **argv)
@@ -59,12 +59,12 @@ int main(int argc, char **argv)
 
     std::cout << geantEvent_inp->hits.size() << "\n";
 
-    auto convert = [geantEvent_inp](const g2t_tpc_hit& hit) -> tpcrs::GeantHit
+    auto convert = [geantEvent_inp](const g2t_tpc_hit& hit) -> tpcrs::SimulatedHit
     {
       return merge(hit, geantEvent_inp->tracks, geantEvent_inp->vertices);
     };
 
-    std::vector<tpcrs::GeantHit> hits;
+    std::vector<tpcrs::SimulatedHit> hits;
     std::transform(begin(geantEvent_inp->hits), end(geantEvent_inp->hits), std::back_inserter(hits), convert);
 
     // Sort generated hits
@@ -83,9 +83,9 @@ int main(int argc, char **argv)
 }
 
 
-tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g2t_vertex& vertex)
+tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g2t_vertex& vertex)
 {
-  return tpcrs::GeantHit{
+  return tpcrs::SimulatedHit{
     hit.track_p,
     particle.ge_pid,
     hit.volume_id,
@@ -101,7 +101,7 @@ tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g
 }
 
 
-tpcrs::GeantHit merge(const g2t_tpc_hit& hit, const std::vector<g2t_track>& particles, const std::vector<g2t_vertex>& vertices)
+tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const std::vector<g2t_track>& particles, const std::vector<g2t_vertex>& vertices)
 {
   int particle_idx  = hit.track_p;
   int vertex_idx = particles[particle_idx - 1].start_vertex_p;

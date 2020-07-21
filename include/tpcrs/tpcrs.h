@@ -42,7 +42,7 @@ struct SimulatedCharge
 };
 
 
-struct GeantHit
+struct SimulatedHit
 {
   /// Unique id of the particle produced this hit. The simulated signal is
   /// associated with tracks using these ids
@@ -101,7 +101,7 @@ struct TPC
 /**
  * Expects a type similar to GeneratedHit
  */
-inline bool operator< (const GeantHit& lhs, const GeantHit& rhs)
+inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
 {
   int lhs_sector = (lhs.volume_id % 10000) / 100;
   int rhs_sector = (rhs.volume_id % 10000) / 100;

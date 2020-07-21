@@ -28,13 +28,13 @@ class Simulator
 
  private:
 
-  using GeneratedHitIt = std::vector<tpcrs::GeantHit>::iterator;
+  using GeneratedHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
   using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiChannel>>;
 
   struct TrackSegment {
     int charge;
     double mass;
-    tpcrs::GeantHit* tpc_hitC;
+    tpcrs::SimulatedHit* tpc_hitC;
     /// The original coordinates of the hit with applied distortions
     StGlobalCoordinate xyzG;
     StTpcLocalSectorCoordinate coorLS;
@@ -117,7 +117,7 @@ class Simulator
 
   void CreateTrackSegments(GeneratedHitIt, GeneratedHitIt, std::vector<TrackSegment>&);
 
-  TrackSegment CreateTrackSegment(tpcrs::GeantHit& geant_hit);
+  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& geant_hit);
 
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
