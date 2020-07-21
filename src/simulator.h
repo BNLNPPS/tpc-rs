@@ -135,7 +135,7 @@ class Simulator
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
 
-  double dEdxCorrection(const TrackSegment &path_segment);
+  double dEdxCorrection(const TrackSegment &segment);
 
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
