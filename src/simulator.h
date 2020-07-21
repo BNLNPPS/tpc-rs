@@ -170,6 +170,7 @@ class Simulator
   double xOnWire, yOnWire, zOnWire; //!
 };
 
+
 template<>
 void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, DigiInserter digi_data);
 
