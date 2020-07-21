@@ -1339,7 +1339,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
 }
 
 
-double Simulator::dEdxCorrection(const TrackSegment &path_segment)
+double Simulator::dEdxCorrection(const TrackSegment &segment)
 {
   dEdxY2_t CdEdx;
   memset(&CdEdx, 0, sizeof(dEdxY2_t));
@@ -1347,30 +1347,30 @@ double Simulator::dEdxCorrection(const TrackSegment &path_segment)
   CdEdx.QRatio  = -2;
   CdEdx.QRatioA = -2.;
   CdEdx.QSumA   = 0;
-  CdEdx.sector  = path_segment.Pad.sector;
-  CdEdx.row     = path_segment.Pad.row;
-  CdEdx.pad     = tpcrs::irint(path_segment.Pad.pad);
+  CdEdx.sector  = segment.Pad.sector;
+  CdEdx.row     = segment.Pad.row;
+  CdEdx.pad     = tpcrs::irint(segment.Pad.pad);
   CdEdx.edge    = CdEdx.pad;
 
   if (CdEdx.edge > 0.5 * cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
     CdEdx.edge += 1 - cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
 
   CdEdx.F.dE   = 1;
-  CdEdx.F.dx   = std::abs(path_segment.tpc_hitC->ds);
-  CdEdx.xyz[0] = path_segment.coorLS.position.x;
-  CdEdx.xyz[1] = path_segment.coorLS.position.y;
-  CdEdx.xyz[2] = path_segment.coorLS.position.z;
+  CdEdx.F.dx   = std::abs(segment.tpc_hitC->ds);
+  CdEdx.xyz[0] = segment.coorLS.position.x;
+  CdEdx.xyz[1] = segment.coorLS.position.y;
+  CdEdx.xyz[2] = segment.coorLS.position.z;
   double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
   double pitch = IsInner(CdEdx.row, CdEdx.sector) ? cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(CdEdx.sector) :
                                                     cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(CdEdx.sector);
   double PhiMax = std::atan2(probablePad * pitch, cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(CdEdx.sector, CdEdx.row));
   CdEdx.PhiR    = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
-  CdEdx.xyzD[0] = path_segment.dirLS.position.x;
-  CdEdx.xyzD[1] = path_segment.dirLS.position.y;
-  CdEdx.xyzD[2] = path_segment.dirLS.position.z;
+  CdEdx.xyzD[0] = segment.dirLS.position.x;
+  CdEdx.xyzD[1] = segment.dirLS.position.y;
+  CdEdx.xyzD[2] = segment.dirLS.position.z;
   CdEdx.zG      = CdEdx.xyz[2];
   CdEdx.Zdc     = cfg_.S<trigDetSums>().zdcX;
-  CdEdx.ZdriftDistance = path_segment.coorLS.position.z; // drift length
+  CdEdx.ZdriftDistance = segment.coorLS.position.z; // drift length
   CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * cfg_.S<tpcGas>().ppmOxygenIn;
 
   return dEdx_correction_.dEdxCorrection(CdEdx) ? 1 : CdEdx.F.dE;
