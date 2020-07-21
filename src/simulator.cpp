@@ -913,7 +913,7 @@ double Simulator::Ec(double* x, double* p)
 }
 
 
-Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::GeantHit& geant_hit)
+Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& geant_hit)
 {
   int volId = geant_hit.volume_id % 10000;
   int sector = volId / 100;
