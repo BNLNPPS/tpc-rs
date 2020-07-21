@@ -387,55 +387,55 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
     int nHitsInTheSector = 0;
     ChargeContainer binned_charge(max_rows_ * max_pads_ * max_timebins_);
 
-      for (TrackSegment& segment : segments_in_sector) {
-        segment.tpc_hitC->digi.adc = 0;
-        int row = segment.coorLS.row;
+    for (TrackSegment& segment : segments_in_sector) {
+      segment.tpc_hitC->digi.adc = 0;
+      int row = segment.coorLS.row;
 
-        double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
+      double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
 
-        // dE/dx correction
-        double dEdxCor = dEdxCorrection(segment);
-        dEdxCor *= GatingGridTransparency(segment.Pad.timeBucket);
-        if (dEdxCor < cfg_.S<ResponseSimulator>().min_signal) continue;
+      // dE/dx correction
+      double dEdxCor = dEdxCorrection(segment);
+      dEdxCor *= GatingGridTransparency(segment.Pad.timeBucket);
+      if (dEdxCor < cfg_.S<ResponseSimulator>().min_signal) continue;
 
-        double gain_local = CalcLocalGain(segment.Pad.sector, segment.Pad.row, gain_base, dEdxCor);
+      double gain_local = CalcLocalGain(segment.Pad.sector, segment.Pad.row, gain_base, dEdxCor);
 
-        // Initialize propagation
-        // Magnetic field BField must be in kilogauss
-        // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-        TrackHelix track(segment.dirLS.position,
-                         segment.coorLS.position,
-                         segment.BLS.position.z * 1e-14 * segment.charge, 1);
-        // Propagate track to middle of the pad row plane by the nominal center point and the normal
-        // in this sector coordinate system
-        double sR = track.pathLength({0, transform_.yFromRow(segment.Pad.sector, segment.Pad.row), 0}, {0, 1, 0});
+      // Initialize propagation
+      // Magnetic field BField must be in kilogauss
+      // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
+      TrackHelix track(segment.dirLS.position,
+                       segment.coorLS.position,
+                       segment.BLS.position.z * 1e-14 * segment.charge, 1);
+      // Propagate track to middle of the pad row plane by the nominal center point and the normal
+      // in this sector coordinate system
+      double sR = track.pathLength({0, transform_.yFromRow(segment.Pad.sector, segment.Pad.row), 0}, {0, 1, 0});
 
-        // Update hit position based on the new track crossing the middle of pad row
-        if (sR < 1e10) {
-          PrPP(Make, sR);
-          PrPP(Make, segment.coorLS);
-          segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-          PrPP(Make, segment.coorLS);
-          PrPP(Make, segment.Pad);
-          transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
-          PrPP(Make, segment.Pad);
-        }
+      // Update hit position based on the new track crossing the middle of pad row
+      if (sR < 1e10) {
+        PrPP(Make, sR);
+        PrPP(Make, segment.coorLS);
+        segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
+        PrPP(Make, segment.coorLS);
+        PrPP(Make, segment.Pad);
+        transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
+        PrPP(Make, segment.Pad);
+      }
 
-        int nP = 0;
-        double dESum = 0;
-        double dSSum = 0;
+      int nP = 0;
+      double dESum = 0;
+      double dSSum = 0;
 
-        SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
+      SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
-        static const double eV = 1e-9; // electronvolt in GeV
-        segment.tpc_hitC->digi.de = dESum * eV;
-        segment.tpc_hitC->digi.ds = dSSum;
-        segment.tpc_hitC->digi.np = nP;
-        segment.tpc_hitC->digi.pad = segment.Pad.pad;
-        segment.tpc_hitC->digi.timebin = segment.Pad.timeBucket;
+      static const double eV = 1e-9; // electronvolt in GeV
+      segment.tpc_hitC->digi.de = dESum * eV;
+      segment.tpc_hitC->digi.ds = dSSum;
+      segment.tpc_hitC->digi.np = nP;
+      segment.tpc_hitC->digi.pad = segment.Pad.pad;
+      segment.tpc_hitC->digi.timebin = segment.Pad.timeBucket;
 
-        nHitsInTheSector++;
-      } // end do loop over segments for a given particle
+      nHitsInTheSector++;
+    } // end do loop over segments for a given particle
 
     if (nHitsInTheSector) {
       DigitizeSector(sector, digi_data, binned_charge);
@@ -923,13 +923,12 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   segment.tpc_hitC = &hit;
   ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
-  static StTpcLocalCoordinate coorLT;  // before distortions
   static StTpcLocalSectorCoordinate coorS;
   // GlobalCoord -> LocalSectorCoord. This transformation can result in a row
   // that is not the same as (volId % 100)
   transform_.global_to_local_sector(segment.xyzG, coorS, sector, 0); PrPP(Make, coorS);
-  int row = coorS.row;
-  transform_.global_to_local(segment.xyzG, coorLT, sector, row); PrPP(Make, coorLT);
+  static StTpcLocalCoordinate coorLT;  // before distortions
+  transform_.global_to_local(segment.xyzG, coorLT, sector, coorS.row); PrPP(Make, coorLT);
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -939,8 +938,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
   StGlobalDirection dirG{pxyzG.unit()};                                      PrPP(Make, dirG);
   StGlobalDirection BG{BFieldG[0], BFieldG[1], BFieldG[2]};                  PrPP(Make, BG);
-  transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, row);  PrPP(Make, segment.dirLS);
-  transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, row);  PrPP(Make, segment.BLS);
+  transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);  PrPP(Make, segment.dirLS);
+  transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);  PrPP(Make, segment.BLS);
 
   // Distortions
   if (TESTBIT(options_, kDistortion)) {
@@ -958,8 +957,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   double driftLength = segment.coorLS.position.z + hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
   if (driftLength > -1.0 && driftLength <= 0) {
-    if ((!IsInner(row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
-        ( IsInner(row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep))
+    if ((!IsInner(coorS.row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
+        ( IsInner(coorS.row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep))
       driftLength = std::abs(driftLength);
   }
 
@@ -980,7 +979,7 @@ std::vector<float> Simulator::NumberOfElectronsInCluster(const TF1& heed, float 
   dEr = dET;
   float EC;
 
-  while ((EC = mHeed.GetRandom()) < dEr) {
+  while ((EC = const_cast<TF1&>(heed).GetRandom()) < dEr) {
     dEr -= EC;
     rs.push_back(1 - dEr / dET);
   }
@@ -1059,7 +1058,7 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
 
   if (segment.mass < 2 * m_e) {
     if (segment.charge > 0) Tmax =       m_e * (gamma - 1);
-    else                Tmax = 0.5 * m_e * (gamma - 1);
+    else                    Tmax = 0.5 * m_e * (gamma - 1);
   }
   else {
     double r = m_e / segment.mass;
@@ -1155,7 +1154,8 @@ void Simulator::LoopOverElectronsInCluster(
     SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);
   }
 
-  double phiXY = 2 * M_PI * gRandom->Rndm();
+  // Dummy call to keep the same random number sequence
+  gRandom->Rndm();
   double rX, rY;
   int WireIndex = 0;
 
