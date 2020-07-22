@@ -383,7 +383,7 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
     curr_direction = next_direction;
   }
 
-  int sector = 1;
+  unsigned int sector = 1;
   for (auto segments_in_sector : segments_by_sector) {
     int nHitsInTheSector = 0;
     ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
@@ -598,7 +598,7 @@ void  Simulator::Print(Option_t* /* option */) const
 }
 
 
-void Simulator::DigitizeSector(int sector, const ChargeContainer& binned_charge, DigiInserter digi_data)
+void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, DigiInserter digi_data)
 {
   double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
   double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
@@ -1245,7 +1245,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
   double sigmaJitterT = (IsInner(row, sector) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
-  for (int row = rowMin; row <= rowMax; row++) {
+  for (unsigned row = rowMin; row <= rowMax; row++) {
     if (cfg_.C<St_tpcPadConfigC>().numberOfRows(sector) == 45) { // ! iTpx
       if ( !cfg_.C<St_tpcRDOMasksC>().isRowOn(sector, row) ) continue;
       if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
@@ -1287,7 +1287,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
     static double XDirectionCouplings[kPadMax];
     mPadResponseFunction[io][sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
-    for (int pad = padMin; pad <= padMax; pad++) {
+    for (unsigned pad = padMin; pad <= padMax; pad++) {
       double gain = gain_local_gas;
       double dt = dT;
 
@@ -1312,7 +1312,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
 
       int index = max_timebins_ * (digi_.total_pads(row) + pad - 1) + tbin_first;
 
-      for (int itbin = tbin_first; itbin <= tbin_last; itbin++, index++) {
+      for (unsigned itbin = tbin_first; itbin <= tbin_last; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - tbin_first];
 
         if (signal < cfg_.S<ResponseSimulator>().min_signal) continue;
