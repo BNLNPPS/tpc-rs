@@ -57,7 +57,6 @@ struct SimuHit
 
 struct SimulatedCharge
 {
-  DigiChannel channel;
   float Sum;
   short TrackId;
 };
@@ -127,13 +126,6 @@ inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
   int lhs_sector = (lhs.volume_id % 10000) / 100;
   int rhs_sector = (rhs.volume_id % 10000) / 100;
   return std::tie(lhs_sector, lhs.track_id, lhs.s) < std::tie(rhs_sector, rhs.track_id, rhs.s);
-}
-
-
-inline bool operator< (const SimulatedCharge& lhs, const SimulatedCharge& rhs)
-{
-  return std::tie(lhs.channel.sector, lhs.channel.row, lhs.channel.pad, lhs.channel.timebin) <
-         std::tie(rhs.channel.sector, rhs.channel.row, rhs.channel.pad, rhs.channel.timebin);
 }
 
 
