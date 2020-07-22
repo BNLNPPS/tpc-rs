@@ -439,7 +439,7 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
     } // end do loop over segments for a given particle
 
     if (nHitsInTheSector) {
-      DigitizeSector(sector, digi_data, binned_charge);
+      DigitizeSector(sector, binned_charge, digi_data);
 
       if (Debug()) LOG_INFO << "Simulator: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
     }
@@ -595,6 +595,54 @@ void  Simulator::Print(Option_t* /* option */) const
   PrPP(Print, cfg_.S<TpcResponseSimulator>().K3OR);
   PrPP(Print, cfg_.S<TpcResponseSimulator>().SigmaJitterTI);
   PrPP(Print, cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
+}
+
+
+void Simulator::DigitizeSector(int sector, const ChargeContainer& binned_charge, DigiInserter digi_data)
+{
+  double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
+  double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
+
+  std::vector<short> ADCs_(binned_charge.size(), 0);
+
+  auto bc = binned_charge.begin();
+  auto adcs_iter = ADCs_.begin();
+
+  for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += max_timebins_)
+  {
+    double gain = cfg_.C<St_tpcPadGainT0C>().Gain(sector, ch->row, ch->pad);
+
+    if (gain <= 0) {
+      bc        += max_timebins_;
+      adcs_iter += max_timebins_;
+      continue;
+    }
+
+    for (int i=0; i != max_timebins_; ++i, ++bc, ++adcs_iter)
+    {
+      int adc = int(bc->Sum / gain + gRandom->Gaus(ped, pedRMS) - ped);
+      // Zero negative values
+      adc = adc & ~(adc >> 31);
+      // Select minimum between adc and 1023, i.e. overflow at 1023
+      adc = adc - !(((adc - 1023) >> 31) & 0x1) * (adc - 1023);
+
+      *adcs_iter = adc;
+    }
+  }
+
+  for (auto adcs_iter = ADCs_.begin(); adcs_iter != ADCs_.end(); adcs_iter += max_timebins_)
+  {
+    SimulateAltro(adcs_iter, adcs_iter + max_timebins_, true);
+  }
+
+  auto ch = digi_.channels.begin();
+  adcs_iter = ADCs_.begin();
+
+  for (auto bc = binned_charge.begin(); bc != binned_charge.end(); ++bc, ++ch, ++adcs_iter)
+  {
+    if (*adcs_iter == 0) continue;
+    *digi_data = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->TrackId};
+  }
 }
 
 

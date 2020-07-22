@@ -102,6 +102,7 @@ class Simulator
   int Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
+  void DigitizeSector(int sector, const ChargeContainer& binned_charge, DigiInserter digi_data);
   void DigitizeSector(int sector, DigiInserter digi_data, const ChargeContainer& binned_charge);
   void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
 
