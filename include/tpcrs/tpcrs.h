@@ -129,6 +129,15 @@ inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
 }
 
 
+inline SimulatedCharge& operator+= (SimulatedCharge& a, const SimulatedCharge& b)
+{
+  a.Sum += b.Sum;
+  if (a.TrackId != b.TrackId && a.Sum < 2 * b.Sum)
+    a.TrackId = b.TrackId;
+  return a;
+}
+
+
 template<typename Simulator, typename InputIt, typename OutputIt>
 OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
 {
