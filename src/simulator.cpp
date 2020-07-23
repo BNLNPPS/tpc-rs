@@ -137,7 +137,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     int nAliveInner = 0;
     int nAliveOuter = 0;
 
-    for (int row = 1; row <= cfg_.C<St_tpcPadConfigC>().numberOfRows(sector); row++) {
+    for (int row = 1; row <= cfg_.S<tpcPadPlanes>().padRows; row++) {
       if (cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) {
         nAliveInner++;
         innerSectorAnodeVoltage[sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
@@ -238,8 +238,8 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
         io == kInner ? cfg_.S<TpcResponseSimulator>().K3IP :
                        cfg_.S<TpcResponseSimulator>().K3OP,
         0,
-        io == kInner ? cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(sector) :
-                       cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(sector)
+        io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+                       cfg_.S<tpcPadPlanes>().outerSectorPadPitch
       };
 
       mPadResponseFunction[io][sector - 1].SetParameters(params);
@@ -610,7 +610,7 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
 
   for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += max_timebins_)
   {
-    double gain = cfg_.C<St_tpcPadGainT0C>().Gain(sector, ch->row, ch->pad);
+    double gain = cfg_.S<tpcPadGainT0>().Gain[sector-1][ch->row-1][ch->pad-1];
 
     if (gain <= 0) {
       bc        += max_timebins_;
@@ -1292,11 +1292,11 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
       double dt = dT;
 
       if ( !TESTBIT(options_, kGAINOAtALL) ) {
-        gain *= cfg_.C<St_tpcPadGainT0BC>().Gain(sector, row, pad);
+        gain *= cfg_.S<tpcPadGainT0>().Gain[sector-1][row-1][pad-1];
 
         if (gain <= 0.0) continue;
 
-        dt -= cfg_.C<St_tpcPadGainT0BC>().T0(sector, row, pad);
+        dt -= cfg_.S<tpcPadGainT0>().T0[sector-1][row-1][pad-1];
       }
 
       double XYcoupling = gain * XDirectionCouplings[pad - padMin] * YDirectionCoupling;
@@ -1346,8 +1346,8 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
   CdEdx.xyz[1] = segment.coorLS.position.y;
   CdEdx.xyz[2] = segment.coorLS.position.z;
   double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
-  double pitch = IsInner(CdEdx.row, CdEdx.sector) ? cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(CdEdx.sector) :
-                                                    cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(CdEdx.sector);
+  double pitch = IsInner(CdEdx.row, CdEdx.sector) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+                                                    cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
   double PhiMax = std::atan2(probablePad * pitch, cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(CdEdx.sector, CdEdx.row));
   CdEdx.PhiR    = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
   CdEdx.xyzD[0] = segment.dirLS.position.x;
