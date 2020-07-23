@@ -669,50 +669,6 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   return v_eff;
 }
 
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0>::name("Calibrations/tpc/tpcPadGainT0");
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0>::name("Calibrations/tpc/tpcPadGainT0");
-template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0>::name("Calibrations/tpc/itpcPadGainT0");
-
-float 	St_tpcPadGainT0BC::Gain(int sector, int row, int pad) const {
-  float gain = 0;
-  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {
-    if (row <= 40) {
-      gain = cfg_.C<St_itpcPadGainT0C>().Gain(sector,row,pad);
-    } else {
-      gain = cfg_.C<St_tpcPadGainT0C>().Gain(sector,row-40+13,pad);
-    }
-  } else { // Tpx
-    gain = cfg_.C<St_tpcPadGainT0C>().Gain(sector,row,pad);
-  }
-  return gain;
-}
-
-
-float 	  St_tpcPadGainT0BC::T0(int sector, int row, int pad) const {
-  float T0 = 0;
-  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {
-    if (row <= 40) 
-      T0 = cfg_.C<St_itpcPadGainT0C>().T0(sector,row,pad);
-    else 
-      T0 = cfg_.C<St_tpcPadGainT0C>().T0(sector,row-40+13,pad);
-  } else { // Tpx
-    T0 = cfg_.C<St_tpcPadGainT0C>().T0(sector,row,pad);
-  }
-  return T0;
-}
-
-
-bool    St_tpcPadGainT0BC::livePadrow(int sector, int row) const {
-  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {
-    if (row <= 40)
-      return cfg_.C<St_itpcPadGainT0C>().livePadrow(sector,row);
-    else 
-      return cfg_.C<St_tpcPadGainT0C>().livePadrow(sector,row-40+13);
-  }
-  return cfg_.C<St_tpcPadGainT0C>().livePadrow(sector,row);
-}
-
-
 MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainCorrection);
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 

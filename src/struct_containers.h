@@ -12,28 +12,6 @@
 #include "config_structs.h"
 
 
-struct St_itpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0>
-{
-  St_itpcPadGainT0C(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_itpcPadGainT0C, itpcPadGainT0>(cfg) {}
-  int 	run(int i = 0) 	const {return Struct(i)->run;}
-  float 	Gain(int sector, int row, int pad) const
-  {
-    return ((sector > 0 && sector <= 24) && (row > 0 && row <= 40) && (pad > 0 && pad <= 120)) ?
-           Struct()->Gain[sector - 1][row - 1][pad - 1] : 0;
-  }
-  float 	  T0(int sector, int row, int pad) const
-  {
-    return ((sector > 0 && sector <= 24) && (row > 0 && row <= 40) && (pad > 0 && pad <= 120)) ?
-           Struct()->T0[sector - 1][row - 1][pad - 1] : 0;
-  }
-  bool    livePadrow(int sector, int row)
-  {
-    for (int pad = 1; pad <= 120; pad++) if (Gain(sector, row, pad) > 0) return kTRUE;
-
-    return kFALSE;
-  }
-};
-
 struct St_MagFactorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_MagFactorC, MagFactor> {
   float 	ScaleFactor(int i = 0) {return Struct(i)->ScaleFactor;}
 };
@@ -643,49 +621,6 @@ struct St_tpcOmegaTauC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTa
 
 struct St_TpcPadCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcPadCorrectionMDF, MDFCorrection> {
   St_TpcPadCorrectionMDF(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcPadCorrectionMDF, MDFCorrection>(cfg) {}
-};
-
-struct St_tpcPadGainT0BC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0>
-{
-  St_tpcPadGainT0BC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0BC, tpcPadGainT0>(cfg) {}
-  float 	Gain(int sector, int row, int pad) const;
-  float 	  T0(int sector, int row, int pad) const;
-  bool    livePadrow(int sector, int row) const;
-};
-
-struct St_tpcPadGainT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0>
-{
-  St_tpcPadGainT0C(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadGainT0C, tpcPadGainT0>(cfg) {}
-  int 	run()           	const {return Struct()->run;}
-  float 	Gain(int sector, int row, int pad) const
-  {
-    float gain = 0;
-
-    if ((sector > 0 && sector <= 24) &&
-        (row > 0 && row <= cfg_.C<St_tpcPadConfigC>().padRows(sector)) &&
-        (pad > 0 && pad <= cfg_.C<St_tpcPadConfigC>().padsPerRow(sector, row)))
-    {
-      gain = Struct()->Gain[sector - 1][row - 1][pad - 1];
-    }
-
-    return gain;
-  }
-  float 	  T0(int sector, int row, int pad) const
-  {
-    float t0 = 0;
-
-    if ((sector > 0 && sector <= 24) && (row > 0 && row <= cfg_.C<St_tpcPadConfigC>().padRows(sector)) && (pad > 0 && pad <= 182)) {
-      t0 = Struct()->T0[sector - 1][row - 1][pad - 1];
-    }
-
-    return t0;
-  }
-  bool    livePadrow(int sector, int row)
-  {
-    for (int pad = 1; pad <= 182; pad++) if (Gain(sector, row, pad) > 0) return kTRUE;
-
-    return kFALSE;
-  }
 };
 
 struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPlanesC, tpcPadPlanes>
