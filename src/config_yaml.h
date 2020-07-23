@@ -1356,36 +1356,6 @@ struct convert<tpcAltroParams> {
 
 namespace YAML {
 template<>
-struct convert<itpcPadGainT0> {
-  static Node encode(const itpcPadGainT0& st) {
-    Node node;
-    
-    node["run"] = st.run;
-    node["Gain"] = reinterpret_cast<const array<float, 115200>&>( st.Gain );
-    node["Gain"].SetStyle(YAML::EmitterStyle::Flow);
-    node["T0"] = reinterpret_cast<const array<float, 115200>&>( st.T0 );
-    node["T0"].SetStyle(YAML::EmitterStyle::Flow);
-    return node;
-  };
-
-  static bool decode(const Node& node, itpcPadGainT0& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.run = node["run"].as<int>();
-    auto Gain = node["Gain"].as<array<float, 115200>>();
-    copy(begin(Gain), end(Gain), reinterpret_cast<float*>(st.Gain));
-    auto T0 = node["T0"].as<array<float, 115200>>();
-    copy(begin(T0), end(T0), reinterpret_cast<float*>(st.T0));
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
 struct convert<tpcGridLeak> {
   static Node encode(const tpcGridLeak& st) {
     Node node;
