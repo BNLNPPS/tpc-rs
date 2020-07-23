@@ -125,12 +125,6 @@ struct g2t_vertex {
   float ge_x[3]; /* GEANT vertex coordinate (Cartesian) */
 };
 
-struct itpcPadGainT0 {
-  int run; /* pulser run number used */
-  float Gain[24][40][120]; /* Gains per pad*/
-  float T0[24][40][120]; /* T0 per pad*/
-};
-
 /** Survey data */
 struct iTPCSurvey {
 	int Id; 
