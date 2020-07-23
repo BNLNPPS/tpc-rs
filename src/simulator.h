@@ -103,7 +103,6 @@ class Simulator
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void Print(Option_t* option = "") const;
   void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, DigiInserter digi_data);
-  void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
 
   /// Returns the number of non-zero elements in ADC
   void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail);
