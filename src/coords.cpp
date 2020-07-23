@@ -133,12 +133,12 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and  = false for MC
   int row = a.row;
 
-  if (row < 1 || row > cfg_.C<St_tpcPadConfigC>().numberOfRows(a.sector))
+  if (row < 1 || row > cfg_.S<tpcPadPlanes>().padRows)
     row = rowFromLocalY(a.position.y, a.sector);
 
   double probablePad = padFromX(a.position.x, a.sector, a.row);
-  double zoffset = (row > cfg_.C<St_tpcPadConfigC>().innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? cfg_.C<St_tpcPadGainT0BC>().T0(a.sector, row, tpcrs::irint(probablePad)) : 0;
+  double zoffset = (row > cfg_.S<tpcPadPlanes>().innerPadRows) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][row-1][tpcrs::irint(probablePad)-1] : 0;
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
@@ -154,8 +154,8 @@ void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpc
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and = false for MC
   Coords  tmp{xFromPad(a.sector, a.row, a.pad), yFromRow(a.sector, a.row), 0};
-  double zoffset =  (a.row > cfg_.C<St_tpcPadConfigC>().innerPadRows(a.sector)) ? mOuterSectorzOffset : mInnerSectorzOffset;
-  double t0offset = useT0 ? cfg_.C<St_tpcPadGainT0BC>().T0(a.sector, a.row, tpcrs::irint(a.pad)) : 0;
+  double zoffset =  (a.row > cfg_.S<tpcPadPlanes>().innerPadRows) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double t0offset = useT0 ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][a.row-1][tpcrs::irint(a.pad)-1] : 0;
   t0offset *= mTimeBinWidth;
 
   if (!useT0 && useTau) // for cluster
@@ -171,13 +171,13 @@ void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpc
 
 double CoordTransform::padFromX(double x, int sector, int row) const
 {
-  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector)) row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
+  if (row > cfg_.S<tpcPadPlanes>().padRows) row = cfg_.S<tpcPadPlanes>().padRows;
 
-  double pitch = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ?
-                         cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(sector) :
-                         cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(sector);
+  double pitch = (row <= cfg_.S<tpcPadPlanes>().innerPadRows) ?
+                         cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+                         cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
   // x coordinate in sector 12
-  int npads = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(sector, row);
+  int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
   double xL = x;
   int NiRows = cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
 
@@ -206,12 +206,12 @@ double CoordTransform::padFromX(double x, int sector, int row) const
 
 double CoordTransform::xFromPad(int sector, int row, double pad) const      // x coordinate in sector 12
 {
-  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector)) row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
+  if (row > cfg_.S<tpcPadPlanes>().padRows) row = cfg_.S<tpcPadPlanes>().padRows;
 
-  double pitch = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ?
-                   cfg_.C<St_tpcPadConfigC>().innerSectorPadPitch(sector) :
-                   cfg_.C<St_tpcPadConfigC>().outerSectorPadPitch(sector);
-  int npads = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(sector, row);
+  double pitch = (row <= cfg_.S<tpcPadPlanes>().innerPadRows) ?
+                         cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+                         cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
+  int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
   double xPad = -pitch * (pad - (npads + 1.) / 2.);
 
   int NiRows = cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
@@ -241,8 +241,7 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
 
 double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 {
-  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector))
-    row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
+  if (row > cfg_.S<tpcPadPlanes>().padRows) row = cfg_.S<tpcPadPlanes>().padRows;
 
   double trigT0 = triggerTimeOffset() * 1e6; // units are s
   double elecT0 = cfg_.S<tpcElectronics>().tZero;    // units are us
@@ -252,7 +251,7 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 
   if ( cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) l += 24;
 
-  double tbx = tb + cfg_.C<St_tpcSectorT0offsetC>().t0offset(l);
+  double tbx = tb + cfg_.S<tpcSectorT0offset>().t0[l-1];
 
   if (cfg_.C<St_tpcRDOT0offsetC>().IsShfited(sector)) {
     tbx += cfg_.C<St_tpcRDOT0offsetC>().T0(sector, row, pad);
@@ -266,8 +265,7 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 
 double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 {
-  if (row > cfg_.C<St_tpcPadConfigC>().numberOfRows(sector))
-    row = cfg_.C<St_tpcPadConfigC>().numberOfRows(sector);
+  if (row > cfg_.S<tpcPadPlanes>().padRows) row = cfg_.S<tpcPadPlanes>().padRows;
 
   double trigT0 = triggerTimeOffset() * 1e6; // units are s
   double elecT0 = cfg_.S<tpcElectronics>().tZero;    // units are us
@@ -278,7 +276,7 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 
   if ( cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) l += 24;
 
-  double tb = (time - t0) / mTimeBinWidth - cfg_.C<St_tpcSectorT0offsetC>().t0offset(l);
+  double tb = (time - t0) / mTimeBinWidth - cfg_.S<tpcSectorT0offset>().t0[l-1];
 
   if (cfg_.C<St_tpcRDOT0offsetC>().IsShfited(sector)) {
     tb -= cfg_.C<St_tpcRDOT0offsetC>().T0(sector, row, pad);
@@ -293,8 +291,8 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
   static int Nrows = 0;
   static double* Radii = 0;
 
-  if (Nrows != cfg_.C<St_tpcPadConfigC>().padRows(sector)) {
-    Nrows = cfg_.C<St_tpcPadConfigC>().padRows(sector);
+  if (Nrows != cfg_.S<tpcPadPlanes>().padRows) {
+    Nrows = cfg_.S<tpcPadPlanes>().padRows;
 
     if (Radii) delete [] Radii;
 
@@ -332,7 +330,7 @@ void CoordTransform::local_sector_to_local(const StTpcLocalSectorCoordinate &a, 
 {
   int row = a.row;
 
-  if (row < 1 || row > cfg_.C<St_tpcPadConfigC>().numberOfRows(a.sector))
+  if (row < 1 || row > cfg_.S<tpcPadPlanes>().padRows)
     row = rowFromLocalY(a.position.y, a.sector);
 
   Coords xGG;
@@ -350,7 +348,7 @@ void CoordTransform::local_to_local_sector(const StTpcLocalCoordinate &a, StTpcL
 {
   int row = a.row;
 
-  if (row < 1 || row > cfg_.C<St_tpcPadConfigC>().numberOfRows(a.sector)) {
+  if (row < 1 || row > cfg_.S<tpcPadPlanes>().padRows) {
     Coords xyzS;
     SupS2Tpc(a.sector).MasterToLocalVect(a.position.xyz(), xyzS.xyz());
     row = rowFromLocalY(xyzS.x, a.sector);

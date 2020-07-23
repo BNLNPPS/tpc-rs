@@ -336,7 +336,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
     if (nrows <= 3)
       l = std::min(nrows - 1, static_cast<int>(kTpcOutIn));
     else {
-      if (nrows == cfg_.C<St_tpcPadConfigC>().numberOfRows(sector)) l = row - 1;
+      if (nrows == cfg_.S<tpcPadPlanes>().padRows) l = row - 1;
       else if (nrows == 192) {l = 8 * (sector - 1) + channel - 1; assert(l == (cor + l)->idx - 1);}
       else if (nrows ==  48) {l = 2 * (sector - 1) + kTpcOutIn;}
       else if (nrows ==   6) {l =            kTpcOutIn;     if (sector > 12) l += 3;}
