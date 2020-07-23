@@ -646,24 +646,6 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
 }
 
 
-void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data)
-{
-  bool in_cluster = false;
-
-  for (unsigned int tb = 0; tb < n_timebins; ++tb)
-  {
-    if (!ADCs[tb])
-      in_cluster = false;
-
-    if (ADCs[tb] && !in_cluster)
-      in_cluster = true;
-
-    if (in_cluster)
-      *digi_data = tpcrs::DigiHit{sector, row, pad, tb, ADCs[tb], IDTs[tb]};
-  }
-}
-
-
 void Simulator::SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail)
 {
   Altro altro_sim(last - first, &*first);
