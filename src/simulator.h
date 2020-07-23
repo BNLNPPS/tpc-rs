@@ -106,8 +106,8 @@ class Simulator
   void AddDigiData(unsigned int sector, unsigned int row, unsigned int pad, short* ADCs, short* IDTs, int n_timebins, DigiInserter digi_data);
 
   /// Returns the number of non-zero elements in ADC
-  int SimulateAltro(std::vector<short>& ADC, std::vector<short>& IDT, bool cancel_tail);
-  int SimulateAsic(std::vector<short>& ADC);
+  void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail);
+  void SimulateAsic(std::vector<short>& ADC);
 
   void CreateTrackSegments(GeneratedHitIt, GeneratedHitIt, std::vector<TrackSegment>&);
 

@@ -633,7 +633,7 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const ChargeC
       }
 
       int flag = cfg_.S<tpcAltroParams>(sector - 1).N;
-      flag >= 0 ? SimulateAltro(ADCs, IDTs, flag>0) : SimulateAsic(ADCs);
+      flag >= 0 ? SimulateAltro(ADCs.begin(), ADCs.end(), flag>0) : SimulateAsic(ADCs);
 
       AddDigiData(sector, row, pad, ADCs.data(), IDTs.data(), max_timebins_, digi_data);
     } // pads
@@ -659,9 +659,9 @@ void Simulator::AddDigiData(unsigned int sector, unsigned int row, unsigned int 
 }
 
 
-int Simulator::SimulateAltro(std::vector<short>& ADCs, std::vector<short>& IDTs, bool cancel_tail)
+void Simulator::SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail)
 {
-  Altro altro_sim(ADCs.size(), ADCs.data());
+  Altro altro_sim(last - first, &*first);
 
   if (cancel_tail) {
     //        ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
@@ -680,26 +680,18 @@ int Simulator::SimulateAltro(std::vector<short>& ADCs, std::vector<short>& IDTs,
   altro_sim.ConfigZerosuppression(cfg_.S<tpcAltroParams>().Altro_thr, cfg_.S<tpcAltroParams>().Altro_seq, 0, 0);
   altro_sim.RunEmulation();
 
-  int num_time_bins = 0;
-  for (int i = 0; i < ADCs.size(); i++) {
-    if (ADCs[i] && !altro_sim.ADCkeep[i]) {ADCs[i] = 0;}
-
-    if (ADCs[i]) {
-      num_time_bins++;
-    }
-    else {IDTs[i] = 0;}
+  int i = 0;
+  for (auto it = first; it != last; ++it, ++i) {
+    if (*it && !altro_sim.ADCkeep[i]) { *it = 0;}
   }
-
-  return num_time_bins;
 }
 
 
-int Simulator::SimulateAsic(std::vector<short>& ADC)
+void Simulator::SimulateAsic(std::vector<short>& ADC)
 {
   int t1 = 0;
   int nSeqLo = 0;
   int nSeqHi = 0;
-  int noTbleft = 0;
 
   for (unsigned int tb = 0; tb != ADC.size(); ++tb) {
     if (ADC[tb] <= cfg_.S<asic_thresholds>().thresh_lo) {
@@ -707,8 +699,9 @@ int Simulator::SimulateAsic(std::vector<short>& ADC)
       else {
         if (nSeqLo <= cfg_.S<asic_thresholds>().n_seq_lo ||
             nSeqHi <= cfg_.S<asic_thresholds>().n_seq_hi)
+        {
           for (unsigned int t = t1; t <= tb; t++) ADC[t] = 0;
-        else noTbleft += nSeqLo;
+        }
       }
 
       t1 = nSeqLo = nSeqHi = 0;
@@ -716,12 +709,9 @@ int Simulator::SimulateAsic(std::vector<short>& ADC)
 
     nSeqLo++;
 
-    if (! t1) t1 = tb;
-
+    if (!t1) t1 = tb;
     if (ADC[tb] > cfg_.S<asic_thresholds>().thresh_hi) {nSeqHi++;}
   }
-
-  return noTbleft;
 }
 
 
