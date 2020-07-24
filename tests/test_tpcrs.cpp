@@ -93,8 +93,7 @@ tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, con
     hit.ds,
     hit.length,
     double(hit.tof) + double(vertex.ge_tof),
-    hit.lgam,
-    {0, 0, 0, 0, 0, 0}
+    hit.lgam
   };
 }
 

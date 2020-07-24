@@ -378,7 +378,6 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
     ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
     for (TrackSegment& segment : segments_in_sector) {
-      segment.tpc_hitC->digi.adc = 0;
       int row = segment.coorLS.row;
 
       double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
@@ -412,12 +411,13 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
 
       SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
-      static const double eV = 1e-9; // electronvolt in GeV
-      segment.tpc_hitC->digi.de = dESum * eV;
-      segment.tpc_hitC->digi.ds = dSSum;
-      segment.tpc_hitC->digi.np = nP;
-      segment.tpc_hitC->digi.pad = segment.Pad.pad;
-      segment.tpc_hitC->digi.timebin = segment.Pad.timeBucket;
+      *distorted = tpcrs::DistortedHit{
+        {segment.coorLS.position.x, segment.coorLS.position.y, segment.coorLS.position.z},
+        {segment.dirLS.position.x,  segment.dirLS.position.y,  segment.dirLS.position.z},
+        dESum * 1e-9, // electronvolt in GeV
+        dSSum,
+        nP
+      };
 
       nHitsInTheSector++;
     } // end do loop over segments for a given particle
