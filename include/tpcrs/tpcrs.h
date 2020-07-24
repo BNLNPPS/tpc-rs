@@ -149,7 +149,8 @@ template<typename Simulator, typename InputIt, typename OutputIt>
 OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
 {
   static Simulator simu(cfg);
-  simu.Simulate(first1, last1, d_first);
+  std::vector<DistortedHit>  dummy;
+  simu.Simulate(first1, last1, d_first, std::back_inserter(dummy));
 
   return d_first;
 }
