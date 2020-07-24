@@ -206,16 +206,16 @@ int CoordTransform::rowFromLocalY(double y, int sector) const
 
     for (int i = 1; i <= Nrows + 1; i++) {
       if (i == 1) {
-        Radii[i - 1] =  (3 * cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i)
-                           - cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i + 1)) / 2;
+        Radii[i - 1] =  (3 * tpcrs::RadialDistanceAtRow(i, cfg_)
+                           - tpcrs::RadialDistanceAtRow(i + 1, cfg_)) / 2;
       }
       else if (i == Nrows + 1) {
-        Radii[i - 1] =  (3 * cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i - 1)
-                           - cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i - 2)) / 2;
+        Radii[i - 1] =  (3 * tpcrs::RadialDistanceAtRow(i - 1, cfg_)
+                           - tpcrs::RadialDistanceAtRow(i - 2, cfg_)) / 2;
       }
       else {
-        Radii[i - 1] = (cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i - 1) +
-                        cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, i)) / 2;
+        Radii[i - 1] = (tpcrs::RadialDistanceAtRow(i - 1, cfg_) +
+                        tpcrs::RadialDistanceAtRow(i, cfg_)) / 2;
       }
     }
   }

@@ -347,7 +347,7 @@ struct CoordTransform
 
   double yFromRow(int sector, int row) const
   {
-    return cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, row);
+    return tpcrs::RadialDistanceAtRow(row, cfg_);
   }
 
   double xFromPad(int sector, int row, double pad) const;

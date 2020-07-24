@@ -994,6 +994,17 @@ float DriftVelocity(int sector, const Configurator& cfg)
 bool IsInner(int row, const Configurator& cfg)
 {
   return row <= cfg.S<tpcPadPlanes>().innerPadRows;
-};
+}
+
+
+double RadialDistanceAtRow(int row, const Configurator& cfg)
+{
+  if (IsInner(row, cfg)) {
+    return cfg.S<tpcPadPlanes>().innerRowRadii[row - 1];
+  } else {
+    int n_inner_rows = cfg.S<tpcPadPlanes>().innerPadRows;
+    return cfg.S<tpcPadPlanes>().outerRowRadii[row - 1 - n_inner_rows];
+  }
+}
 
 }

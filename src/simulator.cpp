@@ -1251,7 +1251,7 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
   double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
   double pitch = tpcrs::IsInner(CdEdx.row, cfg_) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                                                    cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
-  double PhiMax = std::atan2(probablePad * pitch, cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(CdEdx.sector, CdEdx.row));
+  double PhiMax = std::atan2(probablePad * pitch, tpcrs::RadialDistanceAtRow(CdEdx.row, cfg_));
   CdEdx.PhiR    = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
   CdEdx.xyzD[0] = segment.dirLS.position.x;
   CdEdx.xyzD[1] = segment.dirLS.position.y;

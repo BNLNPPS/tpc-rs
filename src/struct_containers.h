@@ -868,6 +868,8 @@ float DriftVelocity(int sector, const Configurator& cfg);
 
 bool IsInner(int row, const Configurator& cfg);
 
+double RadialDistanceAtRow(int row, const Configurator& cfg);
+
 }
 
 #endif
