@@ -1152,7 +1152,6 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
   for (unsigned row = rowMin; row <= rowMax; row++) {
-    if ( !cfg_.C<St_tpcRDOMasksC>().isRowOn(sector, row) ) continue;
     if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
 
     StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};

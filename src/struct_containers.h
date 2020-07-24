@@ -196,12 +196,8 @@ struct St_SurveyC : tpcrs::IConfigStruct {
   const double  *Rotation(int i = 0)     const {return &Struct(i)->r00;} 
   const double  *Translation(int i = 0)  const {return &Struct(i)->t0;} 
   const TGeoHMatrix  &GetMatrix(int i = 0);
-  const TGeoHMatrix  &GetMatrix4Id(int id);
-  const TGeoHMatrix  &GetMatrixR(int i); // ignoring rotation alpha and beta
   const double *r(int i = 0)        const {return &Struct(i)->r00;}
   const double *t(int i = 0)        const {return &Struct(i)->t0;}
-  static void Normalize(TGeoHMatrix &rot);
-  static double IsOrtogonal(const double *r);
  protected:
   St_SurveyC();
  private:
@@ -392,8 +388,6 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   unsigned char          iTPC(int sector) {return iTpc(sector);}
   int 	   padRows(int sector);
   int 	   innerPadRows(int sector);
-  int 	   innerPadRows48(int sector);
-  int 	   innerPadRows52(int sector);
   int 	   outerPadRows(int sector);
   int 	   superInnerPadRows(int sector);
   int 	   superOuterPadRows(int sector);
@@ -420,25 +414,13 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   int* 	   innerPadsPerRow(int sector);
   int* 	   outerPadsPerRow(int sector);
   int            padsPerRow(int sector, int row = 1);
-  double* 	   innerRowRadii(int sector);
-  double* 	   outerRowRadii(int sector);
-  //               taken from StRItpcPadPlane
-  int            numberOfRows(int sector);
-  int            numberOfInnerRows(int sector);
-  int            numberOfInnerRows48(int sector);
-  int            numberOfInnerRows52(int sector);
-  int            numberOfOuterRows(int sector);
   bool           isRowInRange(int sector, int row);
-  double         radialDistanceAtRow(int sector, int row);
   int            numberOfPadsAtRow(int sector, int row);
   double         PadWidthAtRow(int sector, int row);
   double 	   PadLengthAtRow(int sector, int row);
-  double 	   PadPitchAtRow(int sector, int row);
-  double 	   RowPitchAtRow(int sector, int row);
-  int            indexForRowPad(int sector, int row, int pad);
   bool             isiTpcSector(int sector) { return iTpc(sector) == 1; }
-  bool             isiTpcPadRow(int sector, int row) { return iTpc(sector) && row >= 1 && row <= numberOfInnerRows(sector); }
-  bool             isInnerPadRow(int sector, int row) { return row <= numberOfInnerRows(sector); }
+  bool             isiTpcPadRow(int sector, int row) { return iTpc(sector) && row >= 1 && row <= innerPadRows(sector); }
+  bool             isInnerPadRow(int sector, int row) { return row <= innerPadRows(sector); }
   int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };
 
@@ -628,8 +610,6 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
   St_tpcPadPlanesC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPlanesC, tpcPadPlanes>(cfg) {}
   int 	padRows(int i = 0) 	         {return Struct(i)->padRows;}
   int 	innerPadRows(int i = 0) 	 {return Struct(i)->innerPadRows;}
-  int 	innerPadRows48(int i = 0) 	 {return Struct(i)->innerPadRows48;}
-  int 	innerPadRows52(int i = 0) 	 {return Struct(i)->innerPadRows52;}
   int 	outerPadRows(int i = 0) 	 {return Struct(i)->outerPadRows;}
   int 	superInnerPadRows(int i = 0) 	 {return Struct(i)->superInnerPadRows;}
   int 	superOuterPadRows(int i = 0) 	 {return Struct(i)->superOuterPadRows;}
@@ -663,33 +643,27 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
   }
   double* 	innerRowRadii(int i = 0) 	 {return Struct(i)->innerRowRadii;}
   double* 	outerRowRadii(int i = 0) 	 {return Struct(i)->outerRowRadii;}
-  // taken from StRTpcPadPlane
-  int         numberOfRows()                   {return padRows();}
-  int         numberOfInnerRows()              {return innerPadRows();}
-  int         numberOfInnerRows48()            {return innerPadRows48();}
-  int         numberOfInnerRows52()            {return innerPadRows52();}
-  int         numberOfOuterRows()              {return outerPadRows();}
-  bool        isRowInRange(int row)          {return (row >= 1 && row <= numberOfRows()) ? kTRUE : kFALSE;}
+  bool        isRowInRange(int row)          {return (row >= 1 && row <= padRows()) ? kTRUE : kFALSE;}
   double      radialDistanceAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
-    if ( row <= numberOfInnerRows() ) return innerRowRadii()[row - 1];
-    else                            return outerRowRadii()[row - 1 - numberOfInnerRows()];
+    if ( row <= innerPadRows() ) return innerRowRadii()[row - 1];
+    else                            return outerRowRadii()[row - 1 - innerPadRows()];
   }
   int   numberOfPadsAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
-    if ( row <= numberOfInnerRows() ) return innerPadsPerRow()[row - 1];
+    if ( row <= innerPadRows() ) return innerPadsPerRow()[row - 1];
 
-    return outerPadsPerRow()[row - 1 - numberOfInnerRows()];
+    return outerPadsPerRow()[row - 1 - innerPadRows()];
   }
   double PadWidthAtRow(int row)
   {
     if (! isRowInRange(row)) return 0;
 
-    if ( row <= numberOfInnerRows()) return innerSectorPadWidth();
+    if ( row <= innerPadRows()) return innerSectorPadWidth();
 
     return outerSectorPadWidth();
   }
@@ -697,44 +671,10 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
   {
     if (! isRowInRange(row)) return 0;
 
-    if ( row <= numberOfInnerRows()) return innerSectorPadLength();
+    if ( row <= innerPadRows()) return innerSectorPadLength();
 
     return outerSectorPadLength();
   }
-  double PadPitchAtRow(int row)
-  {
-    if (! isRowInRange(row)) return 0;
-
-    if ( row <= numberOfInnerRows()) return innerSectorPadPitch();
-
-    return outerSectorPadPitch();
-  }
-  double RowPitchAtRow(int row)
-  {
-    if (! isRowInRange(row)) return 0;
-
-    if ( row <= numberOfInnerRows48() ) return innerSectorRowPitch1();
-    else if (row > numberOfInnerRows48() && row <= numberOfInnerRows()) return innerSectorRowPitch2();
-
-    return outerSectorRowPitch();
-  }
-  int indexForRowPad(int row, int pad)
-  {
-    if (pad > numberOfPadsAtRow(row)) return -1;
-
-    int index = 0;
-
-    if (row > 0 && row <= numberOfInnerRows() )             for (int i = 1; i < row; i++) index += numberOfPadsAtRow(i);
-    else if (row > numberOfInnerRows() && row <= numberOfRows()) for (int i = numberOfInnerRows() + 1; i < row; i++)  index += numberOfPadsAtRow(i);
-
-    index += pad - 1;
-    return index;
-  }
-};
-
-struct St_tpcPadrowT0C : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadrowT0C, tpcPadrowT0> {
-  St_tpcPadrowT0C(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadrowT0C, tpcPadrowT0>(cfg) {}
-  float T0(int sector, int row) {return Struct(sector-1)->T0[row-1];}
 };
 
 struct St_TpcPhiDirectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcPhiDirectionC, tpcCorrection> {
@@ -758,46 +698,6 @@ struct St_tpcRDOMapC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMapC, 
   unsigned char 	padMax(int i = 0) 	const {return Struct(i)->padMax;}
   unsigned char 	rdoI(int i = 0) 	const {return Struct(i)->rdo;}
   int         rdo(int padrow, int pad = 0) const;
-};
-
-struct St_tpcRDOMasksC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMasksC, tpcRDOMasks>
-{
-  St_tpcRDOMasksC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMasksC, tpcRDOMasks>(cfg) {}
-  unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
-  unsigned int 	sector(int i = 0) 	        {return Struct(i)->sector;}
-  unsigned int 	mask(int i = 0) 	        {return Struct(i)->mask;}
-  unsigned int        getSectorMask(unsigned int sector);
-  static unsigned int rdoForPadrow(int row)   //Function returns the rdo board number for a given padrow index. Range of map used is 1-45.
-  {
-    unsigned int rdo = 0;
-
-    if      (row > 0 && row <=  8) rdo = 1;
-    else if (row > 8 && row <= 13) rdo = 2;
-    else if (row > 13 && row <= 21) rdo = 3;
-    else if (row > 21 && row <= 29) rdo = 4;
-    else if (row > 29 && row <= 37) rdo = 5;
-    else if (row > 37 && row <= 45) rdo = 6;
-
-    return rdo;
-  }
-  unsigned int rdoForPadrow(int sector, int row)   //Function returns the rdo board number for a given padrow index. Range of map used is 1-45.
-  {
-    if (cfg_.C<St_tpcPadConfigC>().iTpc(sector)) return 8;
-
-    return rdoForPadrow(row);
-  }
-  bool        isOn(int sector, int rdo)
-  {
-    if (cfg_.C<St_tpcPadConfigC>().iTpc(sector)) return 1;
-
-    if (sector < 1 || sector > 24 || rdo < 1 || rdo > 6)	return 0;
-
-    unsigned int MASK = getSectorMask(sector);
-    MASK = MASK >> (rdo - 1);
-    MASK &= 0x00000001;
-    return MASK;
-  }
-  bool       isRowOn(int sector, int row) {return isOn(sector, rdoForPadrow(sector, row));}
 };
 
 struct St_tpcRDOT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOT0offsetC, tpcRDOT0offset> {
@@ -841,12 +741,6 @@ struct St_TpcSecRowCC : tpcrs::ConfigStruct<St_TpcSecRowCorC, St_TpcSecRowCC, Tp
   St_TpcSecRowCC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_TpcSecRowCorC, St_TpcSecRowCC, TpcSecRowCor>(cfg) {}
 };
 
-struct St_tpcSectorT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSectorT0offsetC, tpcSectorT0offset> {
-  St_tpcSectorT0offsetC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcSectorT0offsetC, tpcSectorT0offset>(cfg) {}
-  float* 	t0(int i = 0) 	        {return Struct(i)->t0;}
-  float       t0offset(int sector=1)        {return t0()[sector-1];}
-};
-
 struct St_TpcSpaceChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcSpaceChargeC, tpcCorrection> {
   St_TpcSpaceChargeC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcSpaceChargeC, tpcCorrection>(cfg) {}
 };
@@ -871,9 +765,6 @@ struct StTpcHalfPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Su
   StTpcHalfPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey>(cfg) {}
   const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(tpcrs::TPC::Half::first);}
   const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(tpcrs::TPC::Half::second);}
-  const TGeoHMatrix  &GetEastMatrixR() {return  GetMatrixR(tpcrs::TPC::Half::first);}
-  const TGeoHMatrix  &GetWestMatrixR() {return  GetMatrixR(tpcrs::TPC::Half::second);}
-  static void Normalize(TGeoHMatrix &R) {}
 };
 
 // Global position of TPC in Magnet
