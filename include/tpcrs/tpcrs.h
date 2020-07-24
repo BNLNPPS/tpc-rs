@@ -3,11 +3,16 @@
 
 #include <numeric>
 #include <vector>
-#include <tuple>
 
 #include "tpcrs/configurator.h"
 
 namespace tpcrs {
+
+struct TPC
+{
+  enum Half { first, second };
+};
+
 
 struct DigiChannel
 {
@@ -116,12 +121,6 @@ struct SimulatedHit
 
   /// log_10(E_kin/mass) -- Deprecated
   float lgam;
-};
-
-
-struct TPC
-{
-  enum Half { first, second };
 };
 
 

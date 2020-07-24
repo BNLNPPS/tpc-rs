@@ -1,14 +1,3 @@
-/**
- *  The maker's algorithms and formulae based on
- *  http://www.inst.bnl.gov/programs/gasnobledet/publications/Mathieson's_Book.pdf,
- *  and  Photo Absorption Model
- *  "Ionization energy loss in very thin absorbers.", V.M. Grishin, V.K. Ermilova, S.K. Kotelnikov Nucl.Instrum.Meth.A309:476-484,1991
- *  "A method to improve tracking and particle identification in TPC's and silicon detectors.", Hans Bichsel, Nucl.Instrum.Meth.A562:154-197,2006
- *  HEED: "Modeling of ionization produced by fast charged particles in gases", I.B. Smirnov, Nucl.Instrum.Meth.A55(2005) 747-493.
- *
- *  \Author Y.Fisyak, fisyak@bnl.gov
- */
-
 #include <algorithm>
 #include <cassert>
 #include <numeric>
@@ -326,8 +315,6 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
   double vminI = cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min;
   double vminO = cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min;
 
-  // TODO: Confirm proper handling of empty input containers
-
   cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = -500;
   cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = -500;
 
@@ -345,7 +332,7 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
 
   for (auto curr_hit = first_hit; curr_hit != last_hit; ++curr_hit)
   {
-    auto next_hit = next(curr_hit);    
+    auto next_hit = next(curr_hit);
 
     int  next_direction  =  next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
     bool sector_boundary = (next_hit->volume_id % 10000) / 100 !=
@@ -373,8 +360,6 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
     ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
     for (TrackSegment& segment : segments_in_sector) {
-      int row = segment.coorLS.row;
-
       double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
 
       // dE/dx correction
@@ -417,14 +402,10 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
       nHitsInTheSector++;
     } // end do loop over segments for a given particle
 
-    int channels_with_charge = std::count_if(binned_charge.begin(), binned_charge.end(),
-        [](tpcrs::SimulatedCharge& ch) { return ch.Sum > 0; });
-
     if (nHitsInTheSector) {
       DigitizeSector(sector, binned_charge, digi_data);
     }
 
-    LOG_INFO << "Done with sector " << sector << ", total hits: " << nHitsInTheSector << " " << channels_with_charge << '\n';
     sector++;
   }
 
@@ -913,21 +894,7 @@ double Simulator::CalcBaseGain(int sector, int row)
 
 double Simulator::CalcLocalGain(int sector, int row, double gain_base, double dedx_corr)
 {
-  double num_electrons_per_adc = cfg_.S<TpcResponseSimulator>().NoElPerAdc;
-
-  if (num_electrons_per_adc <= 0) {
-    if (cfg_.C<St_tpcPadConfigC>().iTPC(sector) && cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) {
-      num_electrons_per_adc = cfg_.S<TpcResponseSimulator>().NoElPerAdcX; // iTPC
-    }
-    else if (cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) {
-      num_electrons_per_adc = cfg_.S<TpcResponseSimulator>().NoElPerAdcI; // inner TPX
-    }
-    else {
-      num_electrons_per_adc = cfg_.S<TpcResponseSimulator>().NoElPerAdcO; // outer TPX
-    }
-  }
-
-  return gain_base / dedx_corr / num_electrons_per_adc;
+  return gain_base / dedx_corr / cfg_.S<TpcResponseSimulator>().NoElPerAdc;
 }
 
 
@@ -984,7 +951,6 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
       if (eKin == 0.0) break;
 
       double gamma = eKin / m_e + 1;
-      double bg = std::sqrt(gamma * gamma - 1.);
       Tmax = 0.5 * m_e * (gamma - 1);
 
       if (Tmax <= cfg_.S<TpcResponseSimulator>().W / 2 * eV) break;
@@ -1057,7 +1023,6 @@ void Simulator::LoopOverElectronsInCluster(
   // Dummy call to keep the same random number sequence
   gRandom->Rndm();
   double rX, rY;
-  int WireIndex = 0;
 
   InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
@@ -1066,7 +1031,8 @@ void Simulator::LoopOverElectronsInCluster(
                    unit.x,                  - unit.y*unit.z, unit.y,
                    0.0,       unit.x*unit.x + unit.y*unit.y, unit.z};
 
-  for (int ie = 0; ie < rs.size(); ie++) {
+  for (int ie = 0; ie < rs.size(); ie++)
+  {
     double gain_gas = mPolya[io].GetRandom();
     // transport to wire
     gRandom->Rannor(rX, rY);
@@ -1080,12 +1046,13 @@ void Simulator::LoopOverElectronsInCluster(
       for (int i=0; i<3; i++) xyzE.position[i] += xyzR[i];
     }
 
+    // Transport to wire
     double y = xyzE.position.y;
     double alphaVariation = InnerAlphaVariation[sector - 1];
 
-    // Transport to wire
     double firstOuterSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstOuterSectorAnodeWire;
     double anodeWirePitch            = cfg_.S<tpcWirePlanes>().anodeWirePitch;
+    int WireIndex = 0;
 
     if (y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) {
       double firstInnerSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstInnerSectorAnodeWire;
@@ -1094,11 +1061,10 @@ void Simulator::LoopOverElectronsInCluster(
       if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numInnerSectorAnodeWires) continue;
       yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
     }
-    else { // the first and last wires are fat ones
+    else {
       WireIndex = tpcrs::irint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
-
+      // In TPC the first and last wires are fat ones
       if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numOuterSectorAnodeWires) continue;
-
       yOnWire = firstOuterSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
       alphaVariation = OuterAlphaVariation[sector - 1];
     }

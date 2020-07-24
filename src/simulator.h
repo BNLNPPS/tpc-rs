@@ -35,7 +35,7 @@ class Simulator
   struct TrackSegment {
     int charge;
     double mass;
-    tpcrs::SimulatedHit* simu_hit;
+    const tpcrs::SimulatedHit* simu_hit;
     /// The original coordinates of the hit with applied distortions
     StTpcLocalSectorCoordinate coorLS;
     StTpcLocalSectorDirection  dirLS;
@@ -47,20 +47,19 @@ class Simulator
   using ChargeContainer = std::vector<tpcrs::SimulatedCharge>;
 
   enum InOut {kInner = 0, kOuter = 1};
-  enum EMode {kPAI         = 0,// switch to PAI from GEANT (obsolete)
-              kBICHSEL     = 1,// switch to Bichsel from GEANT
-              kHEED        = 6,// switch to HEED
-              kGAINOAtALL  = 2,// do not use GAIN at all
-              kdEdxCorr    = 3,// do use TpcdEdxCorrection
-              kDistortion  = 4,// include distortions
-              kNoToflight  = 5 // don't account for particle time of flight
+  enum EMode {kBICHSEL     = 1, /// Use Bichsel dE/dx model
+              kHEED        = 6, /// Use Heed dE/dx model
+              kGAINOAtALL  = 2, /// Do not use GAIN at all
+              kdEdxCorr    = 3, /// Do use TpcdEdxCorrection
+              kDistortion  = 4, /// Apply distortions
+              kNoToflight  = 5  /// Do not account for particle time of flight
              };
-  enum {kPadMax = 32, kTimeBacketMax = 64, kRowMax = 72};
+  enum {kPadMax = 32, kTimeBacketMax = 64};
 
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
   MagFieldUtils mag_field_utils_;
-  const int num_sectors_;            //!
+  const int num_sectors_;
   const int max_timebins_;
 
   static double shapeEI(double* x, double* par = 0);
@@ -96,7 +95,6 @@ class Simulator
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, DigiInserter digi_data);
 
-  /// Returns the number of non-zero elements in ADC
   void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail);
   void SimulateAsic(std::vector<short>& ADC);
 
@@ -128,21 +126,26 @@ class Simulator
   void InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
     double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);
 
-  static TF1F     fgTimeShape3[2];  //!
-  static TF1F     fgTimeShape0[2];   //!
+  static TF1F fgTimeShape3[2];
+  static TF1F fgTimeShape0[2];
   int    options_;
-  TH1D*    mdNdx;                     //!
-  TH1D*    mdNdxL10;                  //!
-  TH1D*    mdNdEL10;                  //!
-  std::array<std::vector<TF1F>, 2>  mShaperResponses;     //!
-  std::array<std::vector<TF1F>, 2>  mChargeFraction;      //!
-  std::array<std::vector<TF1F>, 2>  mPadResponseFunction; //!
-  TF1F   mPolya[2];                   //!
-  TF1    mHeed;                       //!
-  StTpcdEdxCorrection dEdx_correction_; // !
-  double InnerAlphaVariation[24];   //!
-  double OuterAlphaVariation[24];   //!
-  double xOnWire, yOnWire, zOnWire; //!
+  TH1D*  mdNdx;
+  TH1D*  mdNdxL10;
+
+  /// A probability distribution for energy lost by primary electrons.
+  /// Can be parameterized as
+  /// dE = cfg_.S<TpcResponseSimulator>().W * gRandom->Poisson(cfg_.S<TpcResponseSimulator>().Cluster);
+  TH1D*  mdNdEL10;
+
+  std::array<std::vector<TF1F>, 2>  mShaperResponses;
+  std::array<std::vector<TF1F>, 2>  mChargeFraction;
+  std::array<std::vector<TF1F>, 2>  mPadResponseFunction;
+  TF1F   mPolya[2];
+  TF1    mHeed;
+  StTpcdEdxCorrection dEdx_correction_;
+  double InnerAlphaVariation[24];
+  double OuterAlphaVariation[24];
+  double xOnWire, yOnWire, zOnWire;
 
   tpcrs::DigiChannelMap digi_;
 };

@@ -544,10 +544,6 @@ void MagFieldUtils::CommonStart ( int mode )
 {
   LOG_INFO << "MagFieldUtils::CommonSta  Magnetic Field scale factor is " << gFactor << '\n' ;
 
-    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
-    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
-    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
-    LOG_INFO << "MagFieldUtils::CommonSta  ***NO TPC DB, Using default TPC parameters. You sure it is OK??? ***\n" ;
     StarDriftV  =     5.54 ;      // Drift Velocity (cm/microSec) Magnitude
     TPC_Z0      =    208.7 ;      // Z location of STAR TPC Gated Grid (cm)
 #ifndef __NO_TWIST__
@@ -686,7 +682,7 @@ void MagFieldUtils::CommonStart ( int mode )
 
   if ( mDistortionMode & kDistoSmearing ) printf (" + DistoSmearing") ;
 
-  if ( ! CoordTransform::IsOldScheme())          printf (" + New TPC Alignment schema") ;
+  if ( ! CoordTransform::IsOldScheme())   printf (" + New TPC Alignment schema") ;
 
   usingCartesian = true; // default
 
@@ -4681,7 +4677,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
     Index++ ;   if ( i >= TPCOFFSET ) TPCIndex++ ;
     Xprime[Index] = Xtrack[i] ;        Yprime[Index] = Ytrack[i] ;         // Zprime[Index] = Ztrack[i] ;
     dX[Index]     = RowMaskErrorR[i] ;     dY[Index] = RowMaskErrorRPhi[i] ;
-    // printf("%9.2f  %9.2f  %9.2f  %9.2f  %9.2f \n", Xprime[Index], Yprime[Index], Zprime[Index], dX[Index], dY[Index] ) ; // JT Test
   }
 
   TGraphErrors gre(Index + 1, Xprime, Yprime, dX, dY) ;

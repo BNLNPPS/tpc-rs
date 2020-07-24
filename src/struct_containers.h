@@ -649,7 +649,7 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
     if (! isRowInRange(row)) return 0;
 
     if ( row <= innerPadRows() ) return innerRowRadii()[row - 1];
-    else                            return outerRowRadii()[row - 1 - innerPadRows()];
+    else                         return outerRowRadii()[row - 1 - innerPadRows()];
   }
   int   numberOfPadsAtRow(int row)
   {
