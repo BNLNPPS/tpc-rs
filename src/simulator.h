@@ -117,7 +117,7 @@ class Simulator
 
   void CreateTrackSegments(GeneratedHitIt, GeneratedHitIt, std::vector<TrackSegment>&);
 
-  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& geant_hit);
+  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit);
 
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);

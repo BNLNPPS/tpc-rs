@@ -913,15 +913,15 @@ double Simulator::Ec(double* x, double* p)
 }
 
 
-Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& geant_hit)
+Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
 {
-  int volId = geant_hit.volume_id % 10000;
+  int volId = hit.volume_id % 10000;
   int sector = volId / 100;
 
   TrackSegment segment;
-  segment.xyzG = {geant_hit.x[0], geant_hit.x[1], geant_hit.x[2]};  PrPP(Make, segment.xyzG);
-  segment.tpc_hitC = &geant_hit;
-  ParticleProperties(geant_hit.particle_id, segment.charge, segment.mass);
+  segment.xyzG = {hit.x[0], hit.x[1], hit.x[2]};  PrPP(Make, segment.xyzG);
+  segment.tpc_hitC = &hit;
+  ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
   static StTpcLocalCoordinate coorLT;  // before distortions
   static StTpcLocalSectorCoordinate coorS;
@@ -933,10 +933,10 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& geant
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
-  mag_field_utils_.BFieldTpc(geant_hit.x, BFieldG);
+  mag_field_utils_.BFieldTpc(hit.x, BFieldG);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
-  Coords pxyzG{geant_hit.p[0], geant_hit.p[1], geant_hit.p[2]};
+  Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
   StGlobalDirection dirG{pxyzG.unit()};                                      PrPP(Make, dirG);
   StGlobalDirection BG{BFieldG[0], BFieldG[1], BFieldG[2]};                  PrPP(Make, BG);
   transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, row);  PrPP(Make, segment.dirLS);
@@ -955,7 +955,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& geant
   transform_.local_to_local_sector(coorLT, segment.coorLS);
   PrPP(Make, segment.coorLS);
 
-  double driftLength = segment.coorLS.position.z + geant_hit.tof * tpcrs::DriftVelocity(sector, cfg_);
+  double driftLength = segment.coorLS.position.z + hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
   if (driftLength > -1.0 && driftLength <= 0) {
     if ((!IsInner(row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
