@@ -241,7 +241,7 @@ void MagFieldUtils::GetTPCParams ()
     TPCROWS[sec - 1]        =  pads->padRows(sec);
 
     for ( int row = 1 ; row <= TPCROWS[sec - 1] ; row++ )
-      TPCROWR[sec - 1][row - 1] = pads->radialDistanceAtRow(sec, row);
+      TPCROWR[sec - 1][row - 1] = tpcrs::RadialDistanceAtRow(row, cfg_);
   }
 
   IFCRadius      =    47.90 ;  // Radius of the Inner Field Cage (GVB: not sure where in DB?)
