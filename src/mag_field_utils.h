@@ -3,8 +3,8 @@
  *
  * Description: Utilities for the Magnetic Field
  ***********************************************************************/
-#ifndef TPCRS_MAG_UTILITIES_H_
-#define TPCRS_MAG_UTILITIES_H_
+#ifndef TPCRS_MAG_FIELD_UTILS_H_
+#define TPCRS_MAG_FIELD_UTILS_H_
 
 #include <cmath>
 

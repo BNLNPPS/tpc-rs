@@ -9,8 +9,6 @@
 
 #include "GeantEvent.h"
 #include "tpcrs/tpcrs.h"
-#include "tpcrs/configurator.h"
-#include "tpcrs/tpcrs.h"
 #include "simulator.h"
 
 
@@ -21,31 +19,31 @@ tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const std::vector<g2t_track>& 
 int main(int argc, char **argv)
 {
   // Process 1st optional argument
-  std::string testName(argc > 1 ? argv[1] : "starY16_dAu200");
+  std::string test_name(argc > 1 ? argv[1] : "starY16_dAu200");
 
   // Process 2nd optional argument
-  int maxRecords(argc > 2 ? std::atoi(argv[2]) : -1);
+  int max_records(argc > 2 ? std::atoi(argv[2]) : -1);
 
-  std::cout << "testName:   " << testName << "\n"
-            << "maxRecords: " << maxRecords << "\n";
+  std::cout << "test_name:   " << test_name << "\n"
+            << "max_records: " << max_records << "\n";
 
-  tpcrs::Configurator cfg(testName);
+  tpcrs::Configurator cfg(test_name);
 
 
   TChain trsTreeChain("t", "tpcrs test TTree");
-  trsTreeChain.AddFile( cfg.Locate(testName + ".root").c_str() );
+  trsTreeChain.AddFile( cfg.Locate(test_name + ".root").c_str() );
 
   GeantEvent* geantEvent_inp = new GeantEvent();
   GeantEvent  geantEvent_out;
 
   trsTreeChain.SetBranchAddress("b", &geantEvent_inp);
 
-  std::ofstream logFile_inp(testName + "_inp.log");
-  std::ofstream logFile_out(testName + "_out.log");
+  std::ofstream logFile_inp(test_name + "_inp.log");
+  std::ofstream logFile_out(test_name + "_out.log");
 
-  maxRecords = (maxRecords < 0 || maxRecords > trsTreeChain.GetEntries() ? trsTreeChain.GetEntries() : maxRecords);
+  max_records = (max_records < 0 || max_records > trsTreeChain.GetEntries() ? trsTreeChain.GetEntries() : max_records);
 
-  for (int iRecord = 1; iRecord <= maxRecords; iRecord++)
+  for (int iRecord = 1; iRecord <= max_records; iRecord++)
   {
     logFile_inp << "event: " << iRecord << "\n";
     logFile_out << "event: " << iRecord << "\n";

@@ -338,7 +338,7 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
 };
 
 
-MagField::MagField (const tpcrs::Configurator& cfg, EBField map, float factor,
+MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float factor,
                              bool lock, float rescale,
                              float BDipole, float RmaxDip,
                              float ZminDip, float ZmaxDip) :
@@ -369,8 +369,6 @@ MagField::MagField (const tpcrs::Configurator& cfg, EBField map, float factor,
 /// B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
 void MagField::BField( const double x[], float B[] )
 {
-
-
   float r, z, Br_value, Bz_value ;
   float phi, Bphi_value, phi1;
   Bphi_value = 0;
@@ -382,8 +380,6 @@ void MagField::BField( const double x[], float B[] )
 
   if ( phi < 0 ) phi += 2 * M_PI ;           // Table uses phi from 0 to 2*Pi
 
-
-
   if ( mConstBz ) {
     B[0] = B[1] = B[2] = 0.;
 
@@ -391,8 +387,6 @@ void MagField::BField( const double x[], float B[] )
 
     return;
   }
-
-
 
   float za = std::abs(z);
 
@@ -419,9 +413,7 @@ void MagField::BField( const double x[], float B[] )
     return;
   }
 
-  //   //added by Lijuan within the steel
-
-
+  // added by Lijuan within the steel
   if (za <= 342.20  && r >= 303.29 && r <= 364.25) { // within Map
 
     phi1 = phi * 180.0 / M_PI;
@@ -440,9 +432,7 @@ void MagField::BField( const double x[], float B[] )
 
     return;
   }
-
   //end added by Lijuan within the steel
-
 
   Interpolate2ExtDBfield( r, z, Br_value, Bz_value ) ;
 
@@ -466,8 +456,6 @@ void MagField::BField( const double x[], float B[] )
     B[0] = Br_value * (x[0] / r) ;
     B[1] = Br_value * (x[1] / r) ;
   }
-
-  return;
 }
 
 
@@ -504,16 +492,11 @@ void MagField::B3DField( const float x[], float B[] )
   fMagFieldRotation.LocalToMaster(BL, BG);
 
   for (int i = 0; i < 3; i++) B[i] = BG[i];
-
-  return ;
-
 }
 
 
 /// Read the electric and magnetic field maps stored on disk
-
-void MagField::ReadField( )
-
+void MagField::ReadField()
 {
   FILE*    magfile, *b3Dfile ;
   std::string comment, filename, filename3D ;
@@ -583,7 +566,6 @@ void MagField::ReadField( )
   printf("MagField::ReadField  Reading  2D Magnetic Field file: %s \n", filename.c_str());
 
   if (magfile)
-
   {
     char cname[128] ;
     fgets  ( cname, sizeof(cname), magfile ) ;     // Read comment lines at begining of file
@@ -603,11 +585,7 @@ void MagField::ReadField( )
         }
       }
     }
-  }
-
-  else
-
-  {
+  } else {
     fprintf(stderr, "MagField::ReadField  File %s not found !\n", MapLocation.c_str());
     exit(1);
   }
@@ -619,7 +597,6 @@ void MagField::ReadField( )
   printf("MagField::ReadField  Reading 3D Magnetic Field file: %s \n", filename3D.c_str());
 
   if (b3Dfile)
-
   {
     char cname[128] ;
     fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
@@ -658,11 +635,7 @@ void MagField::ReadField( )
         }
       }
     }
-  }
-
-  else
-
-  {
+  } else {
     fprintf(stderr, "MagField::ReadField  File %s not found !\n", MapLocation.c_str());
     exit(1);
   }
@@ -676,18 +649,14 @@ void MagField::ReadField( )
     char cname[128] ;
 
     for (;;) {
-      fgets  ( cname, sizeof(cname), magfile ) ;     // Read comment lines at begining of file
-
+      fgets(cname, sizeof(cname), magfile);     // Read comment lines at begining of file
       if (cname[0] == '#') continue;
-
       break;
     }
 
     for ( int i = 0 ; i < nPhiSteel ; i++ ) {
-
       for ( int k = 0 ; k < nRSteel ; k++ ) {
         for ( int j = 0 ; j < nZSteel ; j++ ) {
-
 
           fgets  ( cname, sizeof(cname), magfile ) ;
           sscanf ( cname, " %f %f %f %f %f %f ",
@@ -695,7 +664,6 @@ void MagField::ReadField( )
 
           //added by Lijuan
           Br3DSteel[i][j][k] = std::cos(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::sin(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
-
           Bphi3DSteel[i][j][k] = 0 - std::sin(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::cos(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
         }
       }
@@ -703,13 +671,7 @@ void MagField::ReadField( )
 
     fclose(magfile);
   }
-
-  return ;
-
 }
-
-
-
 
 
 /// Interpolate the B field map - 2D interpolation

@@ -16,10 +16,10 @@ Configurator::Configurator(std::string configname) :
   size_t next = 0;
   while ((next = paths.find(':', last)) != std::string::npos)
   {
-    searchPaths.push_back(paths.substr(last, next-last));
+    search_paths.push_back(paths.substr(last, next-last));
     last = next + 1;
   }
-  searchPaths.push_back(paths.substr(last));
+  search_paths.push_back(paths.substr(last));
 
   yaml = YAML::LoadFile(Configurator::File());
 }
@@ -28,7 +28,7 @@ Configurator::Configurator(std::string configname) :
 std::string Configurator::Locate(std::string filename) const
 {
   struct stat buffer;   
-  for (std::string path : searchPaths)
+  for (std::string path : search_paths)
   {
     std::string fullname(path + "/" + filename);
     if (stat(fullname.c_str(), &buffer) == 0)

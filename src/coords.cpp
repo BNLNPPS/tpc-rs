@@ -57,10 +57,11 @@ CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
 
   mFlip = new TGeoHMatrix;
   mzGG = cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
+
   double Rotation[9] = {0, 1, 0,
                         1, 0, 0,
                         0, 0, -1};
-  //  double Translation[3] = {0, 0, mzGG};
+
   mFlip->SetName("Flip"); mFlip->SetRotation(Rotation);// mFlip->SetTranslation(Translation);
   mSwap[0] = new TGeoTranslation("Signed Drift distance to z for East", 0, 0, -mzGG);
   mSwap[1] = new TGeoTranslation("Signed Drift distance to z for West", 0, 0,  mzGG);
@@ -120,18 +121,16 @@ double CoordTransform::padFromX(double x, int sector, int row) const
   double pitch = (row <= cfg_.S<tpcPadPlanes>().innerPadRows) ?
                          cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                          cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
-  // x coordinate in sector 12
-  int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
-  double xL = x;
 
-  double probablePad = (npads + 1.) / 2. - xL / pitch;
+  int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
+  double probablePad = (npads + 1.) / 2. - x / pitch;
 
   // CAUTION: pad cannot be <1
   if (probablePad < 0.500001) {
     probablePad = 0.500001;
   }
 
-  return (probablePad);
+  return probablePad;
 }
 
 
@@ -142,9 +141,9 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
   double pitch = (row <= cfg_.S<tpcPadPlanes>().innerPadRows) ?
                          cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                          cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
+
   int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
   double xPad = -pitch * (pad - (npads + 1.) / 2.);
-
 
   return xPad;
 }

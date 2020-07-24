@@ -1,5 +1,5 @@
-#ifndef tpcrs_configurator_h
-#define tpcrs_configurator_h
+#ifndef TPCRS_CONFIGURATOR_H_
+#define TPCRS_CONFIGURATOR_H_
 
 #include <string>
 #include <vector>
@@ -32,8 +32,9 @@ template<> std::string ConfigNodeName<starClockOnl>();
 template<> std::string ConfigNodeName<tss_tsspar>();
 template<> std::string ConfigNodeName<iTPCSurvey>();
 
+
 /**
- * A singleton class 
+ * Provides access to all configuration types and data loaded from a yaml file.
  */
 class Configurator
 {
@@ -80,10 +81,10 @@ class Configurator
 
  private:
 
-  /// A unique name used in various file names associated with this Configurator.
+  /// A unique name associated with this Configurator
   std::string name;
 
-  std::vector<std::string> searchPaths;
+  std::vector<std::string> search_paths;
 
   YAML::Node yaml;
 };
