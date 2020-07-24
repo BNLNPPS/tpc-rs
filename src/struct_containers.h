@@ -700,13 +700,6 @@ struct St_tpcRDOMapC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOMapC, 
   int         rdo(int padrow, int pad = 0) const;
 };
 
-struct St_tpcRDOT0offsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOT0offsetC, tpcRDOT0offset> {
-  St_tpcRDOT0offsetC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcRDOT0offsetC, tpcRDOT0offset>(cfg) {}
-  unsigned char* 	isShifted(int i = 0) 	const {return Struct(i)->isShifted;}
-  bool        IsShfited(int sector) const {return isShifted()[sector-1];}
-  float       T0(int sector, int padrow, int pad) const;
-};
-
 struct St_TpcRowQC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcRowQC, tpcCorrection> {
   St_TpcRowQC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcRowQC, tpcCorrection>(cfg) {}
 };

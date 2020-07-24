@@ -645,11 +645,6 @@ struct tpcRDOMasks {
   unsigned int mask; /*   enable mask  */
 };
 
-struct tpcRDOT0offset {
-	unsigned char isShifted[24]; /* flag if there is any RDO off set to tsector */
-	float t0[24][10]; /* RDO t0 offset per sector: [0-23], rdo [0-5] Tpx, [6-9] iTpc  (time bins) */
-};
-
 /**
 Tpc Response Simulator parameters  Tpc Response Simulator parameters
   2.145, effective reduction of OmegaTau near
