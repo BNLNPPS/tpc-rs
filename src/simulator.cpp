@@ -1163,12 +1163,8 @@ void Simulator::LoopOverElectronsInCluster(
     // Transport to wire
     if (y <= lastInnerSectorAnodeWire) {
       WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
-      if (cfg_.C<St_tpcPadConfigC>().iTPC(sector)) {// two first and two last wires are removed, and 3rd wire is fat wiere
-        if (WireIndex <= 3 || WireIndex >= numberOfInnerSectorAnodeWires - 3) continue;
-      }
-      else {   // old TPC the first and last wires are fat ones
-        if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue;
-      }
+      // In TPC the first and last wires are fat ones
+      if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue;
       yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
     }
     else { // the first and last wires are fat ones
@@ -1228,10 +1224,8 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
   for (unsigned row = rowMin; row <= rowMax; row++) {
-    if (cfg_.C<St_tpcPadConfigC>().numberOfRows(sector) == 45) { // ! iTpx
-      if ( !cfg_.C<St_tpcRDOMasksC>().isRowOn(sector, row) ) continue;
-      if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
-    }
+    if ( !cfg_.C<St_tpcRDOMasksC>().isRowOn(sector, row) ) continue;
+    if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
 
     StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
     StTpcPadCoordinate Pad;

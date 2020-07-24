@@ -179,19 +179,6 @@ double CoordTransform::padFromX(double x, int sector, int row) const
   // x coordinate in sector 12
   int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
   double xL = x;
-  int NiRows = cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
-
-  if (NiRows != 13 && row <= NiRows) {
-    // iTPC Survey, see  Jim Thomas comments in CoordTransform::xFromPad
-    double yRef = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, NiRows) + 0.565;
-    double xHit = xL;
-    double yHit = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, row) - yRef;
-    const iTPCSurvey& sur = cfg_.S<iTPCSurvey>(sector - 1);
-    double dx = sur.dx;
-    double Xscale = sur.ScaleX;
-    double theta  = sur.Angle;
-    xL = xHit * (1. - Xscale) - dx + theta * yHit;
-  }
 
   double probablePad = (npads + 1.) / 2. - xL / pitch;
 
@@ -214,25 +201,8 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
   int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
   double xPad = -pitch * (pad - (npads + 1.) / 2.);
 
-  int NiRows = cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
 
-  if (NiRows == 13 || row > NiRows) {
-    return xPad;
-  }
-
-  // iTPC Survey, Jim Thomas correction 08/21/18
-  // The change in the yRef comes about because the origin of the coordinate system is 0.565 mm above the center of PadRow 40.
-  // The changes for the X coordinates come about because of the reversal of pad counting by the DAQ guys … as you know.
-  double yRef = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, NiRows) + 0.565; // Change sign in front of 0.565
-  double xL = xPad;  // Eliminate -1 in front of xPad
-  double yL = cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(sector, row) - yRef;
-  const iTPCSurvey& sur = cfg_.S<iTPCSurvey>(sector-1);
-  double dx = sur.dx;
-  double Xscale = sur.ScaleX;
-  double theta  = sur.Angle;
-  double xHit = xL * (1. + Xscale) + dx - theta * yL; // Eliminate -1 in front of whole expression and delete ( )
-  //double yHit = yL*(1. + Yscale) + dy + theta*xL + yRef;
-  return xHit;
+  return xPad;
 }
 // Coordinate from Row
 //
