@@ -34,7 +34,7 @@ class Simulator
   struct TrackSegment {
     int charge;
     double mass;
-    tpcrs::SimulatedHit* tpc_hitC;
+    tpcrs::SimulatedHit* simu_hit;
     /// The original coordinates of the hit with applied distortions
     StTpcLocalSectorCoordinate coorLS;
     StTpcLocalSectorDirection  dirLS;
