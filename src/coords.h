@@ -186,12 +186,6 @@ inline ThreeVector<T> operator/(const ThreeVector<T> &v, double c)
   return ThreeVector<T>(v) /= c;
 }
 
-template<class T>
-std::ostream  &operator<<(std::ostream &os, const ThreeVector<T> &v)
-{
-  return os << v.x << '\t' << v.y << '\t' << v.z;
-}
-
 using Coords = ThreeVector<double>;
 
 double mag(const Coords& c);
@@ -231,15 +225,6 @@ using StTpcLocalCoordinate = TCoordinate<2>;
 using StTpcLocalDirection = TCoordinate<3>;
 using StTpcLocalSectorCoordinate = TCoordinate<4>;
 using StTpcLocalSectorDirection = TCoordinate<5>;
-
-std::ostream &operator<<(std::ostream &os, const StTpcPadCoordinate &a);
-std::ostream &operator<<(std::ostream &os, const StGlobalCoordinate &a);
-std::ostream &operator<<(std::ostream &os, const StGlobalDirection &a);
-std::ostream &operator<<(std::ostream &os, const StTpcCoordinate &a);
-std::ostream &operator<<(std::ostream &os, const StTpcLocalCoordinate &a);
-std::ostream &operator<<(std::ostream &os, const StTpcLocalDirection &a);
-std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorCoordinate &a);
-std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorDirection &a);
 
 // pad              => sector12       =>   subsector => sector => tpc      => global
 // TpcPadCoordinate => TpcSectL => TpcSectLAligned => TpcLocal => Global
