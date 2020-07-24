@@ -99,9 +99,7 @@ class Simulator
     return row <= cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
   };
 
-  int Debug() const {return 1;}
   double GetNoPrimaryClusters(double betaGamma, int charge);
-  void Print(Option_t* option = "") const;
   void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, DigiInserter digi_data);
 
   /// Returns the number of non-zero elements in ADC

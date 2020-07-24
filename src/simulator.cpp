@@ -34,13 +34,6 @@
 #include "track_helix.h"
 
 
-#define __DEBUG__
-#if defined(__DEBUG__)
-#define PrPP(A,B) if (Debug()%10 > 2) {LOG_INFO << "Simulator::" << (#A) << "\t" << (#B) << " = \t" << (B) << '\n';}
-#else
-#define PrPP(A,B)
-#endif
-
 //                                    Inner        Outer
 static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
 
@@ -85,16 +78,16 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug()),
+  dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, 0),
   digi_(cfg_)
 {
-  //  SETBIT(options_,kHEED);
+  //SETBIT(options_, kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
   SETBIT(options_, kdEdxCorr);
   //SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
-    LOG_INFO << "Simulator:: use H.Bichsel model for dE/dx simulation\n";
+    LOG_INFO << "Model for dE/dx simulation: Bichsel\n";
 
     TFile inner(cfg_.Locate("dNdE_Bichsel.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
@@ -105,7 +98,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     mdNdx->SetDirectory(0);
   }
   else if (TESTBIT(options_, kHEED)) {
-    LOG_INFO << "Simulator:: use Heed model for dE/dx simulation\n";
+    LOG_INFO << "Model for dE/dx simulation: Heed\n";
 
     TFile inner(cfg_.Locate("dNdx_Heed.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
@@ -115,7 +108,9 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     mdNdxL10 = (TH1D*) outer.Get("dNdxL10"); assert(mdNdxL10);
     mdNdxL10->SetDirectory(0);
   }
-  else {LOG_INFO << "Simulator:: use GEANT321 model for dE/dx simulation\n";}
+  else {
+    LOG_INFO << "Error: Model for dE/dx simulation not set\n";
+  }
 
   double TimeBinWidth = 1. / cfg_.S<starClockOnl>().frequency;
   numberOfInnerSectorAnodeWires  = cfg_.S<tpcWirePlanes>().numInnerSectorAnodeWires;
@@ -165,7 +160,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
           InnerAlphaVariation[sector - 1] = InnerAlphaVariation[sector - 2];
         }
         else {
-          LOG_INFO << "Inner Sector " << sector << " ======================\n";
           InnerAlphaVariation[sector - 1] = InducedCharge(anodeWirePitch,
                                             CathodeAnodeGap[io],
                                             anodeWireRadius,
@@ -177,7 +171,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
           OuterAlphaVariation[sector - 1] = OuterAlphaVariation[sector - 2];
         }
         else {
-          LOG_INFO << "Outer Sector " << sector << " ======================\n";
           OuterAlphaVariation[sector - 1] = InducedCharge(anodeWirePitch,
                                             CathodeAnodeGap[io],
                                             anodeWireRadius,
@@ -282,8 +275,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     }
   }
 
-  if (Debug()) Print();
-
   //  mPolya = new TF1F("Polya;x = G/G_0;signal","sqrt(x)/exp(1.5*x)",0,10); // original Polya
   //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
   //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
@@ -345,13 +336,11 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
   cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = -500;
   cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = -500;
 
-  if (Debug()) {
-    LOG_INFO << "Reset min for gain Correction to I/O\t"
-             << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
-             << "\t"
-             << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
-             << " (V)\n";
-  }
+  LOG_INFO << "Reset min for gain Correction to I/O\t"
+           << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
+           << "\t"
+           << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
+           << " (V)\n";
 
   std::vector< std::vector<TrackSegment> > segments_by_sector(num_sectors_);
   std::vector<TrackSegment> segments_in_sector;
@@ -413,13 +402,8 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
 
       // Update hit position based on the new track crossing the middle of pad row
       if (sR < 1e10) {
-        PrPP(Make, sR);
-        PrPP(Make, segment.coorLS);
         segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-        PrPP(Make, segment.coorLS);
-        PrPP(Make, segment.Pad);
         transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
-        PrPP(Make, segment.Pad);
       }
 
       int nP = 0;
@@ -441,21 +425,20 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
     if (nHitsInTheSector) {
       DigitizeSector(sector, binned_charge, digi_data);
 
-      if (Debug()) LOG_INFO << "Simulator: Done with sector\t" << sector << " total no. of hit = " << nHitsInTheSector << '\n';
     }
+
+    LOG_INFO << "Done with sector " << sector << ", total hits: " << nHitsInTheSector << '\n';
     sector++;
-  } // sector
+  }
 
   cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = vminI;
   cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = vminO;
 
-  if (Debug()) {
-    LOG_INFO << "Reset min for gain Correction to I/O\t"
-             << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
-             << "\t"
-             << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
-             << " (V)\n";
-  }
+  LOG_INFO << "Reset min for gain Correction to I/O\t"
+           << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
+           << "\t"
+           << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
+           << " (V)\n";
 }
 
 
@@ -551,50 +534,6 @@ double Simulator::Gatti(double* x, double* par)
   double Z2 = sqK3 * std::tanh(X2);
   double val = ATsqK3 * (std::atan(Z2) - std::atan(Z1));
   return val;
-}
-
-
-void  Simulator::Print(Option_t* /* option */) const
-{
-  PrPP(Print, num_sectors_);
-  PrPP(Print, cfg_.C<St_tpcPadConfigC>().numberOfRows(1));
-  PrPP(Print, cfg_.C<St_tpcPadConfigC>().numberOfRows(20));
-  PrPP(Print, cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(20));
-  PrPP(Print, max_pads_);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().W);// = 26.2);//*eV
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().Cluster);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().longitudinalDiffusion);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().transverseDiffusion);
-  //  PrPP(Print, Gain);
-  PrPP(Print, max_timebins_);
-  PrPP(Print, numberOfInnerSectorAnodeWires);
-  PrPP(Print, firstInnerSectorAnodeWire);
-  PrPP(Print, lastInnerSectorAnodeWire);
-  PrPP(Print, numberOfOuterSectorAnodeWires);
-  PrPP(Print, firstOuterSectorAnodeWire);
-  PrPP(Print, lastOuterSectorAnodeWire);
-  PrPP(Print, anodeWirePitch);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().OmegaTau); // tan of Lorentz angle
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().NoElPerAdcI);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().NoElPerAdcO);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().NoElPerAdcX);
-  PrPP(Print, anodeWireRadius);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().AveragePedestal);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().AveragePedestalRMS);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().FanoFactor);
-
-  for (int sector = 1; sector <= num_sectors_; sector++) {
-    PrPP(Print, innerSectorAnodeVoltage[sector-1]);
-    PrPP(Print, outerSectorAnodeVoltage[sector-1]);
-  }
-
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().K3IP);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().K3IR);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().K3OP);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().K3OR);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().SigmaJitterTI);
-  PrPP(Print, cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 }
 
 
@@ -706,44 +645,35 @@ double Simulator::InducedCharge(double s, double h, double ra, double Va, double
 {
   // Calculate variation of induced charge due to different arrived angles
   // alpha = -26 and -70 degrees
-  LOG_INFO << "wire spacing = " << s << " cm"
-           << "\tcathode anode gap = " << h << " cm"
-           << "\tanode wire radius = " << ra << " cm"
-           << "\tpotential on anode wire = " << Va << " V\n";
   const double B  = 30e-3; // 1/V
   const double E0 = 20e3; // V/cm
   const double mu = 2.26; // cm**2/V/sec CH4+ mobility
   // const double mu = 1.87; // cm**2/V/sec Ar+ mobility
   double alpha[2] = {-26., -70.};
   // E.Mathieson (3.2b), V.Chernyatin said that it should be used this (Weber ) approximation 07/09/08
-  double rc = s / (2 * M_PI) * std::exp(M_PI * h / s); LOG_INFO << "rc(Cylinder approx) = " << rc << " cm\n";
-  //  double rc = 4*h/M_PI; LOG_INFO << "rc = " << rc << " cm\n";   // E.Mathieson (4.3), no valid for our case
-  double C  = 1. / (2 * std::log(rc / ra)); LOG_INFO << "C = " << C << '\n';
-  double E  = 2 * M_PI * C * Va / s; LOG_INFO << "E = " << E << " V/cm\n";
+  double rc = s / (2 * M_PI) * std::exp(M_PI * h / s);
+  double C  = 1. / (2 * std::log(rc / ra));
+  double E  = 2 * M_PI * C * Va / s;
   // Gain variation: M = M0*(1 - k*cos(2*alpha))
-  double k = 2 * B / 3.*std::pow((M_PI / E0 / s), 2) * std::pow(C * Va, 3); LOG_INFO << "k = " << k << '\n';
+  double k = 2 * B / 3.*std::pow((M_PI / E0 / s), 2) * std::pow(C * Va, 3);
   // Induced charge variation
   t0 = ra * ra / (4 * mu * C * Va);
-  LOG_INFO << "t0 = " << 1e9 * t0 << " ns\n";                                   // E.Mathieson (2.10)
-  double Tav = t0 * h / s / (2 * M_PI * C);  LOG_INFO << "Tav = " << 1e9 * Tav << " ns\n";
-  //  double t = 5*55e-9;             LOG_INFO << "t = " << 1e9*t << " ns\n";
-  double t = 180e-9;             LOG_INFO << "t = " << 1e9 * t << " ns\n";
-  double rp = std::sqrt(1. + t / t0); LOG_INFO << "r' = " << rp << '\n';
-  // qc = rp*ra*sin(alpha)/(2*h) + C/2*log(1 + t/t0) = A*sin(alpha) + B
-  double Aconstant = rp * ra / (2 * h);        LOG_INFO << "Aconstant = " << Aconstant << '\n';
-  double Bconstant = C / 2 * std::log(1 + t / t0); LOG_INFO << "Bconstant = " << Bconstant << '\n';
+  double Tav = t0 * h / s / (2 * M_PI * C);
+  double t = 180e-9;
+  double rp = std::sqrt(1. + t / t0);
+  double Aconstant = rp * ra / (2 * h);
+  double Bconstant = C / 2 * std::log(1 + t / t0);
   double Gains[2];
 
   for (int i = 0; i < 2; i++) {
     Gains[i] = Aconstant * std::sin(M_PI / 180 * alpha[i]) + Bconstant;
-    LOG_INFO << "Gain = " << Gains[i] << " at alpha = " << alpha[i] << " degree\n";
   }
 
   double GainsAv = std::sqrt(Gains[0] * Gains[1]);
   double r = 0;
 
   for (int i = 0; i < 2; i++) {
-    r = std::log(Gains[i] / GainsAv); LOG_INFO << "Relative gain " << r << " at alpha = " << alpha[i] << '\n';
+    r = std::log(Gains[i] / GainsAv);
   }
 
   return r;
@@ -896,16 +826,16 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   int sector = volId / 100;
 
   TrackSegment segment;
-  StGlobalCoordinate xyzG{hit.x[0], hit.x[1], hit.x[2]};  PrPP(Make, xyzG);
+  StGlobalCoordinate xyzG{hit.x[0], hit.x[1], hit.x[2]};
   segment.tpc_hitC = &hit;
   ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
   StTpcLocalSectorCoordinate coorS;
   // GlobalCoord -> LocalSectorCoord. This transformation can result in a row
   // that is not the same as (volId % 100)
-  transform_.global_to_local_sector(xyzG, coorS, sector, 0); PrPP(Make, coorS);
+  transform_.global_to_local_sector(xyzG, coorS, sector, 0);
   StTpcLocalCoordinate coorLT;  // before distortions
-  transform_.global_to_local(xyzG, coorLT, sector, coorS.row); PrPP(Make, coorLT);
+  transform_.global_to_local(xyzG, coorLT, sector, coorS.row);
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -913,10 +843,10 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
-  StGlobalDirection dirG{pxyzG.unit()};                                      PrPP(Make, dirG);
-  StGlobalDirection BG{BFieldG[0], BFieldG[1], BFieldG[2]};                  PrPP(Make, BG);
-  transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);  PrPP(Make, segment.dirLS);
-  transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);  PrPP(Make, segment.BLS);
+  StGlobalDirection dirG{pxyzG.unit()};
+  StGlobalDirection BG{BFieldG[0], BFieldG[1], BFieldG[2]};
+  transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);
+  transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
 
   // Distortions
   if (TESTBIT(options_, kDistortion)) {
@@ -925,11 +855,9 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
     mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
     transform_.local_to_global(coorLT, xyzG);
-    PrPP(Make, coorLT);
   }
 
   transform_.local_to_local_sector(coorLT, segment.coorLS);
-  PrPP(Make, segment.coorLS);
 
   double driftLength = segment.coorLS.position.z + hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
@@ -940,9 +868,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   }
 
   segment.coorLS.position.z = driftLength;
-  PrPP(Make, segment.coorLS);
   transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
-  PrPP(Make, segment.Pad);
 
   return segment;
 }
@@ -1336,5 +1262,3 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
 
   return dEdx_correction_.dEdxCorrection(CdEdx) ? 1 : CdEdx.F.dE;
 }
-
-#undef PrPP

@@ -57,8 +57,6 @@ int main(int argc, char **argv)
     geantEvent_out.tracks   = geantEvent_inp->tracks;
     geantEvent_out.vertices = geantEvent_inp->vertices;
 
-    std::cout << geantEvent_inp->hits.size() << "\n";
-
     auto convert = [geantEvent_inp](const g2t_tpc_hit& hit) -> tpcrs::SimulatedHit
     {
       return merge(hit, geantEvent_inp->tracks, geantEvent_inp->vertices);
