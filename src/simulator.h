@@ -36,7 +36,6 @@ class Simulator
     double mass;
     tpcrs::SimulatedHit* tpc_hitC;
     /// The original coordinates of the hit with applied distortions
-    StGlobalCoordinate xyzG;
     StTpcLocalSectorCoordinate coorLS;
     StTpcLocalSectorDirection  dirLS;
     StTpcLocalSectorDirection  BLS;

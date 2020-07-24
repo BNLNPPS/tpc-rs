@@ -919,16 +919,16 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   int sector = volId / 100;
 
   TrackSegment segment;
-  segment.xyzG = {hit.x[0], hit.x[1], hit.x[2]};  PrPP(Make, segment.xyzG);
+  StGlobalCoordinate xyzG{hit.x[0], hit.x[1], hit.x[2]};  PrPP(Make, xyzG);
   segment.tpc_hitC = &hit;
   ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
   static StTpcLocalSectorCoordinate coorS;
   // GlobalCoord -> LocalSectorCoord. This transformation can result in a row
   // that is not the same as (volId % 100)
-  transform_.global_to_local_sector(segment.xyzG, coorS, sector, 0); PrPP(Make, coorS);
+  transform_.global_to_local_sector(xyzG, coorS, sector, 0); PrPP(Make, coorS);
   static StTpcLocalCoordinate coorLT;  // before distortions
-  transform_.global_to_local(segment.xyzG, coorLT, sector, coorS.row); PrPP(Make, coorLT);
+  transform_.global_to_local(xyzG, coorLT, sector, coorS.row); PrPP(Make, coorLT);
 
   // move up, calculate field at center of TPC
   static float BFieldG[3];
@@ -947,7 +947,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
     float posMoved[3];
     mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
     coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
-    transform_.local_to_global(coorLT, segment.xyzG);
+    transform_.local_to_global(coorLT, xyzG);
     PrPP(Make, coorLT);
   }
 
