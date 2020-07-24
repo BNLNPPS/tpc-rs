@@ -23,13 +23,14 @@ class Simulator
   Simulator(const tpcrs::Configurator& cfg);
   ~Simulator();
 
-  template<typename InputIt, typename OutputIt>
-  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt digi_data);
+  template<typename InputIt, typename OutputIt1, typename OutputIt2>
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digi_data, OutputIt2);
 
  private:
 
   using SimuHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
   using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiHit>>;
+  using DistInserter = std::back_insert_iterator<std::vector<tpcrs::DistortedHit>>;
 
   struct TrackSegment {
     int charge;
@@ -165,6 +166,6 @@ class Simulator
 
 
 template<>
-void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data);
+void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data, DistInserter);
 
 #endif
