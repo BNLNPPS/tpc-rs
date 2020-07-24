@@ -331,14 +331,10 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
   return r;
 }
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
-MakeChairInstance(tpcPadrowT0,Calibrations/tpc/tpcPadrowT0);
-MakeChairInstance(tpcSectorT0offset,Calibrations/tpc/tpcSectorT0offset);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 unsigned char          St_tpcPadConfigC::iTpc(int sector)                     {unsigned char iTPC = Struct()->itpc[sector-1];  return iTPC;}
 int 	         St_tpcPadConfigC::padRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().padRows()               ;}
 int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().innerPadRows() 	   ;}
-int 	         St_tpcPadConfigC::innerPadRows48(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerPadRows48()	   ;}
-int 	         St_tpcPadConfigC::innerPadRows52(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerPadRows52()	   ;}
 int 	         St_tpcPadConfigC::outerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerPadRows() 	   ;}
 int 	         St_tpcPadConfigC::superInnerPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superInnerPadRows()     ;}
 int 	         St_tpcPadConfigC::superOuterPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superOuterPadRows()     ;}
@@ -370,21 +366,7 @@ int            St_tpcPadConfigC::padsPerRow(int sector, int row)    {
     innerPadsPerRow(sector)[row-1] :
     outerPadsPerRow(sector)[row-1-Ninner];
 }
-double* 	 St_tpcPadConfigC::innerRowRadii(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().innerRowRadii()         ;}
-double* 	 St_tpcPadConfigC::outerRowRadii(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerRowRadii() 	   ;}
-// taken from StRItpcPadPlane
-int            St_tpcPadConfigC::numberOfRows(int sector)             {return padRows(sector);}
-int            St_tpcPadConfigC::numberOfInnerRows(int sector)        {return innerPadRows(sector);}
-int            St_tpcPadConfigC::numberOfInnerRows48(int sector)      {return innerPadRows48(sector);}
-int            St_tpcPadConfigC::numberOfInnerRows52(int sector)      {return innerPadRows52(sector);}
-int            St_tpcPadConfigC::numberOfOuterRows(int sector)        {return outerPadRows(sector);}
-bool           St_tpcPadConfigC::isRowInRange(int sector, int row)  {return (row >= 1 && row<=numberOfRows(sector)) ? true: false;}
-double         St_tpcPadConfigC::radialDistanceAtRow(int sector, int row)       {
-  if (! isRowInRange(sector,row)) return 0;
-  int Ninner = innerPadRows(sector);
-  if ( row<=Ninner ) return innerRowRadii(sector)[row-1];
-  else               return outerRowRadii(sector)[row-1-Ninner];
-}
+bool           St_tpcPadConfigC::isRowInRange(int sector, int row)  {return (row >= 1 && row<=padRows(sector)) ? true: false;}
 int            St_tpcPadConfigC::numberOfPadsAtRow(int sector, int row)       {
   if (! isRowInRange(sector, row)) return 0;
   int Ninner = innerPadRows(sector);
@@ -402,29 +384,6 @@ double         St_tpcPadConfigC::PadLengthAtRow(int sector, int row)       {
   int Ninner = innerPadRows(sector);
   if ( row<=Ninner) return innerSectorPadLength(sector);
   return outerSectorPadLength(sector);
-}
-double         St_tpcPadConfigC::PadPitchAtRow(int sector, int row)       {
-  if (! isRowInRange(sector,row)) return 0;
-  int Ninner = innerPadRows(sector);
-  if ( row<=Ninner) return innerSectorPadPitch(sector);
-  return outerSectorPadPitch(sector);
-}
-double         St_tpcPadConfigC::RowPitchAtRow(int sector, int row)       {
-  if (! isRowInRange(sector,row)) return 0;
-  int Ninner = innerPadRows(sector);
-  if ( row<=numberOfInnerRows48(sector) ) return innerSectorRowPitch1(sector);
-  else if (row>numberOfInnerRows48(sector)&&row<=Ninner) return innerSectorRowPitch2(sector);
-  return outerSectorRowPitch(sector);
-}
-int            St_tpcPadConfigC::indexForRowPad(int sector, int row, int pad)       {
-  if (pad >numberOfPadsAtRow(sector,row)) return -1;
-  int index = 0;
-  int Ninner = innerPadRows(sector);
-  if (row>0 && row<=Ninner )             for (int i=1;i<row;i++) index += numberOfPadsAtRow(sector,i);
-  else
-    if (row>Ninner&&row<=numberOfRows(sector)) for (int i=Ninner+1;i<row;i++)  index += numberOfPadsAtRow(sector,i);
-  index+=pad-1;
-  return index;
 }
 
 
@@ -801,27 +760,6 @@ MakeChairInstance(MagFactor,RunLog/MagFactor);
 
 MakeChairInstance(starMagOnl,RunLog/onl/starMagOnl);
 
-MakeChairInstance(tpcRDOMasks,RunLog/onl/tpcRDOMasks);
-
-
-unsigned int       St_tpcRDOMasksC::getSectorMask(unsigned int sector) {
-  unsigned int MASK = 0x0000; // default is to mask it out
-  //unsigned int MASK = 0xFFFF; // change to  ON by default ** THIS WAS A HACK
-  if(sector < 1 || sector > 24 || GetNRows() == 0){
-    LOG_WARN << "St_tpcRDOMasksC:: getSectorMask : return default mask for "
-     << "sector= " << sector << " GetNRows()=" << GetNRows() << '\n';
-    return MASK;
-  }
-  MASK = mask(((sector + 1) / 2) - 1); // does the mapping from sector 1-24 to packed sectors
-  if( sector % 2 == 0){ // if its even relevent bits are 6-11
-    MASK = MASK >> 6;
-  }
-  // Otherwise want lower 6 bits
-  MASK &= 0x000003F; // Mask out higher order bits
-  if (sector == 16 && MASK == 0 && runNumber() > 8181000 && runNumber() < 9181000) MASK = 4095;
-  return MASK;
-}
-
 //___________________Conditions/trg_____________________________________________________________
 MakeChairInstance(trgTimeOffset,Conditions/trg/trgTimeOffset);
 //___________________Geometry/tpc_____________________________________________________________
@@ -849,7 +787,6 @@ void St_SurveyC::Initialize()
       else        rot.SetName(Form("%s_%i",GetName().c_str(),i+1));
       rot.SetRotation(Rotation(i));
       rot.SetTranslation(Translation(i));
-      Normalize(rot);
       assert(TMath::Abs(rot.Determinant())-1 < 1.e-3);
     }
   }
@@ -862,64 +799,10 @@ St_SurveyC::~St_SurveyC() {
 }
 
 
-double St_SurveyC::IsOrtogonal(const double *r) {
-// Perform orthogonality test for rotation.
-  double cmax = 0;
-  double cij;
-  for (int i=0; i<2; i++) {
-    for (int j=i+1; j<3; j++) {
-      // check columns
-      cij = std::abs(r[i]*r[j]+r[i+3]*r[j+3]+r[i+6]*r[j+6]);
-      if (cij>1E-4) cmax = cij;
-      // check rows
-      cij = std::abs(r[3*i]*r[3*j]+r[3*i+1]*r[3*j+1]+r[3*i+2]*r[3*j+2]);
-      if (cij>cmax) cmax = cij;
-    }
-  }
-  return cmax;
-}
-
-
-void St_SurveyC::Normalize(TGeoHMatrix &R) {
-  if (_debug) {
-    LOG_INFO << "Matrix:\n"; R.Print("");
-    LOG_INFO << "Determinant-1 = " << R.Determinant()-1 << '\n';
-    const double *rr = R.GetRotationMatrix();
-    LOG_INFO << "Ortogonality " << IsOrtogonal(rr) << '\n';
-  }
-  return;
-}
-
-
 const TGeoHMatrix &St_SurveyC::GetMatrix(int i) {
   assert(fRotations[i]);
   assert(std::abs(fRotations[i]->Determinant())-1 < 1.e-3);
   return *fRotations[i];
-}
-
-
-const TGeoHMatrix &St_SurveyC::GetMatrix4Id(int id) {
-  for (unsigned int i = 0; i < GetNRows(); i++) {
-    if (Id(i) == id) {
-      return GetMatrix(i);
-    }
-  }
-  LOG_INFO  << "St_SurveyC::GetMatrix4Id(" << id << ") entry has not been found\n";
-  assert(0);
-  return GetMatrix(0);
-}
-
-
-const TGeoHMatrix &St_SurveyC::GetMatrixR(int i) {
-  static TGeoHMatrix rot;
-  double rotations[9] = {
-    r00(i), r01(i),      0,
-    r10(i), r11(i),      0,
-    0     ,      0, r22(i)};
-  rot.SetName(Form("%s_%i",GetName().c_str(),i));
-  rot.SetRotation(rotations);
-  rot.SetTranslation(Translation(i));
-  return *&rot;
 }
 
 
