@@ -923,11 +923,11 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   segment.tpc_hitC = &hit;
   ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
-  static StTpcLocalSectorCoordinate coorS;
+  StTpcLocalSectorCoordinate coorS;
   // GlobalCoord -> LocalSectorCoord. This transformation can result in a row
   // that is not the same as (volId % 100)
   transform_.global_to_local_sector(xyzG, coorS, sector, 0); PrPP(Make, coorS);
-  static StTpcLocalCoordinate coorLT;  // before distortions
+  StTpcLocalCoordinate coorLT;  // before distortions
   transform_.global_to_local(xyzG, coorLT, sector, coorS.row); PrPP(Make, coorLT);
 
   // move up, calculate field at center of TPC
@@ -1257,7 +1257,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
     }
 
     StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
-    static StTpcPadCoordinate Pad;
+    StTpcPadCoordinate Pad;
     transform_.local_sector_to_hardware(xyzW, Pad, false, false); // don't use T0, don't use Tau
     float bin = Pad.timeBucket;//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
