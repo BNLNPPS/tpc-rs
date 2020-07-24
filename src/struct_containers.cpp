@@ -1117,4 +1117,10 @@ float DriftVelocity(int sector, const Configurator& cfg)
   return 1e6 * drift_velocity;
 }
 
+
+bool IsInner(int row, const Configurator& cfg)
+{
+  return row <= cfg.S<tpcPadPlanes>().innerPadRows;
+};
+
 }

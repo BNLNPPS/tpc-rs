@@ -95,11 +95,6 @@ class Simulator
     return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
   };
 
-  bool IsInner(int row, int sector=1)
-  {
-    return row <= cfg_.C<St_tpcPadConfigC>().numberOfInnerRows(sector);
-  };
-
   double GetNoPrimaryClusters(double betaGamma, int charge);
   void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, DigiInserter digi_data);
 

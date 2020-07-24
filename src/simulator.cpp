@@ -864,8 +864,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   double driftLength = segment.coorLS.position.z + hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
   if (driftLength > -1.0 && driftLength <= 0) {
-    if ((!IsInner(coorS.row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
-        ( IsInner(coorS.row, sector) && driftLength > - cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep))
+    if ((!tpcrs::IsInner(coorS.row, cfg_) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
+        ( tpcrs::IsInner(coorS.row, cfg_) && driftLength > - cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep))
       driftLength = std::abs(driftLength);
   }
 
@@ -898,7 +898,7 @@ double Simulator::CalcBaseGain(int sector, int row)
   // switch between Inner / Outer Sector paramters
   int iowe = 0;
   if (sector > 12)  iowe += 4;
-  if (!IsInner(row, sector)) iowe += 2;
+  if (!tpcrs::IsInner(row, cfg_)) iowe += 2;
 
   // Extra correction for simulation with respect to data
   const float* AdditionalMcCorrection = cfg_.S<TpcResponseSimulator>().SecRowCorIW;
@@ -1053,7 +1053,7 @@ void Simulator::LoopOverElectronsInCluster(
   double D = 1. + OmegaTau * OmegaTau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
   double SigmaT = cfg_.S<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
-  double sigmaJitterX = IsInner(row, sector) ?  cfg_.S<TpcResponseSimulator>().SigmaJitterXI :
+  double sigmaJitterX = tpcrs::IsInner(row, cfg_) ?  cfg_.S<TpcResponseSimulator>().SigmaJitterXI :
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterXO;
   if (sigmaJitterX > 0) {
     SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);
@@ -1064,7 +1064,7 @@ void Simulator::LoopOverElectronsInCluster(
   double rX, rY;
   int WireIndex = 0;
 
-  InOut io = IsInner(row, sector) ? kInner : kOuter;
+  InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
   Coords unit = segment.dirLS.position.unit();
   double L2L[9] = {unit.z,                  - unit.x*unit.z, unit.x,
@@ -1148,7 +1148,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
-  double sigmaJitterT = (IsInner(row, sector) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
+  double sigmaJitterT = (tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
   for (unsigned row = rowMin; row <= rowMax; row++) {
@@ -1164,12 +1164,12 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
     if (binT < 0 || binT >= max_timebins_) continue;
 
     double dT = bin - binT + cfg_.S<TpcResponseSimulator>().T0offset;
-    dT += IsInner(row, sector) ? cfg_.S<TpcResponseSimulator>().T0offsetI :
+    dT += tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().T0offsetI :
                                  cfg_.S<TpcResponseSimulator>().T0offsetO;
 
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT);
 
-    InOut io = IsInner(row, sector) ? kInner : kOuter;
+    InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
     double delta_y = transform_.yFromRow(sector, row) - yOnWire;
     double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(delta_y);
@@ -1250,8 +1250,8 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
   CdEdx.xyz[1] = segment.coorLS.position.y;
   CdEdx.xyz[2] = segment.coorLS.position.z;
   double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
-  double pitch = IsInner(CdEdx.row, CdEdx.sector) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
-                                                    cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
+  double pitch = tpcrs::IsInner(CdEdx.row, cfg_) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+                                                   cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
   double PhiMax = std::atan2(probablePad * pitch, cfg_.C<St_tpcPadConfigC>().radialDistanceAtRow(CdEdx.sector, CdEdx.row));
   CdEdx.PhiR    = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
   CdEdx.xyzD[0] = segment.dirLS.position.x;

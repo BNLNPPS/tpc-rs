@@ -163,7 +163,7 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
   double t0 = trigT0 + elecT0 + sectT0;
   int l = sector;
 
-  if ( cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) l += 24;
+  if (tpcrs::IsInner(row, cfg_)) l += 24;
 
   double tbx = tb + cfg_.S<tpcSectorT0offset>().t0[l-1];
 
@@ -188,7 +188,7 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
   double time = z / (tpcrs::DriftVelocity(sector, cfg_) * 1e-6);
   int l = sector;
 
-  if ( cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) l += 24;
+  if (tpcrs::IsInner(row, cfg_)) l += 24;
 
   double tb = (time - t0) / mTimeBinWidth - cfg_.S<tpcSectorT0offset>().t0[l-1];
 
