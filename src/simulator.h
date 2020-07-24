@@ -28,7 +28,7 @@ class Simulator
 
  private:
 
-  using GeneratedHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
+  using SimuHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
   using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiHit>>;
 
   struct TrackSegment {
@@ -106,7 +106,7 @@ class Simulator
   void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail);
   void SimulateAsic(std::vector<short>& ADC);
 
-  void CreateTrackSegments(GeneratedHitIt, GeneratedHitIt, std::vector<TrackSegment>&);
+  void CreateTrackSegments(SimuHitIt, SimuHitIt, std::vector<TrackSegment>&);
 
   TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit);
 
@@ -165,6 +165,6 @@ class Simulator
 
 
 template<>
-void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, DigiInserter digi_data);
+void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data);
 
 #endif

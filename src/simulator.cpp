@@ -323,7 +323,7 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
 
 
 template<>
-void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, DigiInserter digi_data)
+void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -444,7 +444,7 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
 }
 
 
-void Simulator::CreateTrackSegments(GeneratedHitIt first_hit, GeneratedHitIt last_hit, std::vector<TrackSegment>& segments)
+void Simulator::CreateTrackSegments(SimuHitIt first_hit, SimuHitIt last_hit, std::vector<TrackSegment>& segments)
 {
   for (auto ihit = first_hit; ihit != last_hit; ++ihit)
   {
