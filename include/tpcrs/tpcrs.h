@@ -45,14 +45,23 @@ struct DigiHit
 };
 
 
-struct SimuHit
+struct DistortedHit
 {
-  int np;         /// Number of primary electrons
-  double de;      /// Energy deposited at hit
-  double ds;      /// path length within pad row
-  float adc;
-  float pad;
-  float timebin;
+  /// Distorted position of the simulated hit at the center of a pad row layer
+  /// in the global coordinate system
+  double x[3];
+
+  /// Distorted particle momentum at point x
+  double p[3];
+
+  /// Energy deposited by the particle within pad row boundaries
+  double de;
+
+  /// Path length within pad row boundaries
+  double ds;
+
+  /// Number of primary electrons
+  int np;
 };
 
 
@@ -107,9 +116,6 @@ struct SimulatedHit
 
   /// log_10(E_kin/mass) -- Deprecated
   float lgam;
-
-  /// Deprecated
-  SimuHit digi;
 };
 
 
