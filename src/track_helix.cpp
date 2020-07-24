@@ -622,5 +622,5 @@ std::ostream &operator<<(std::ostream &os, const TrackHelix &h)
          << "dip angle = "  << h.dipAngle()  << ", "
          << "phase = "      << h.phase()     << ", "
          << "h = "          << h.h()         << ", "
-         << "origin = "     << h.origin()    << ')';
+         << "origin = "     << h.origin().x << " " << h.origin().y << " " << h.origin().z << ')';
 }

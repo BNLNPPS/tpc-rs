@@ -1,5 +1,3 @@
-#include <ostream>
-
 #include "TEnv.h"
 #include "TGeoManager.h"
 #include "TVector3.h"
@@ -39,60 +37,6 @@ double operator*(const Coords &c1, const Coords &c2)
 Coords operator/(const Coords &c, double v)
 {
   return Coords{c.x/v, c.y/v, c.z/v};
-}
-
-std::ostream &operator<<(std::ostream &os, const StTpcPadCoordinate &a)
-{
-  return os << "(sector= " << a.sector
-         << ", row= "    << a.row
-         << ", pad= "    << a.pad
-         << ", tbuck= "  << a.timeBucket << ")";
-}
-
-std::ostream &operator<<(std::ostream &os, const StGlobalCoordinate &a)
-{
-  return os << "GC ( "
-         << a.position.x << ", "
-         << a.position.y << ", "
-         << a.position.z << ")";
-}
-
-std::ostream &operator<<(std::ostream &os, const StGlobalDirection &a)
-{
-  return os << "GD ( "
-         << a.position.x << ", "
-         << a.position.y << ", "
-         << a.position.z << ")";
-}
-
-#define OS "( (" <<  a.position.x << ", " \
-    << a.position.y << ", " \
-    << a.position.z << ") " \
-    << ", " << a.sector << "," << a.row << " )"
-
-std::ostream &operator<<(std::ostream &os, const StTpcCoordinate &a)
-{
-  return os << OS;
-}
-
-std::ostream &operator<<(std::ostream &os, const StTpcLocalCoordinate &a)
-{
-  return os << "TPC_Local( (" << OS;
-}
-
-std::ostream &operator<<(std::ostream &os, const StTpcLocalDirection &a)
-{
-  return os << "TPC_Local Direction( (" << OS;
-}
-
-std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorCoordinate &a)
-{
-  return os << "TPC_Local_Sector( (" << OS;
-}
-
-std::ostream &operator<<(std::ostream &os, const StTpcLocalSectorDirection &a)
-{
-  return os << "TPC_Local_Sector Direction( (" << OS;
 }
 
 
