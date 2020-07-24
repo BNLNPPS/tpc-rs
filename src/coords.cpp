@@ -167,10 +167,6 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 
   double tbx = tb + cfg_.S<tpcSectorT0offset>().t0[l-1];
 
-  if (cfg_.C<St_tpcRDOT0offsetC>().IsShfited(sector)) {
-    tbx += cfg_.C<St_tpcRDOT0offsetC>().T0(sector, row, pad);
-  }
-
   double time = t0 + tbx * mTimeBinWidth;
   double z = tpcrs::DriftVelocity(sector, cfg_) * 1e-6 * time;
   return z;
@@ -191,10 +187,6 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
   if (tpcrs::IsInner(row, cfg_)) l += 24;
 
   double tb = (time - t0) / mTimeBinWidth - cfg_.S<tpcSectorT0offset>().t0[l-1];
-
-  if (cfg_.C<St_tpcRDOT0offsetC>().IsShfited(sector)) {
-    tb -= cfg_.C<St_tpcRDOT0offsetC>().T0(sector, row, pad);
-  }
 
   return tb;
 }

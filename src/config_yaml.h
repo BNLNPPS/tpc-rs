@@ -596,34 +596,6 @@ struct convert<trigDetSums> {
 
 namespace YAML {
 template<>
-struct convert<tpcRDOT0offset> {
-  static Node encode(const tpcRDOT0offset& st) {
-    Node node;
-    
-    node["isShifted"] = vector<int>(st.isShifted, st.isShifted + 24);
-    node["isShifted"].SetStyle(YAML::EmitterStyle::Flow);
-    node["t0"] = reinterpret_cast<const array<float, 240>&>( st.t0 );
-    node["t0"].SetStyle(YAML::EmitterStyle::Flow);
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcRDOT0offset& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    auto isShifted = node["isShifted"].as< vector<int> >();
-    copy(begin(isShifted), end(isShifted), st.isShifted);
-    auto t0 = node["t0"].as<array<float, 240>>();
-    copy(begin(t0), end(t0), reinterpret_cast<float*>(st.t0));
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
 struct convert<tpcPadPlanes> {
   static Node encode(const tpcPadPlanes& st) {
     Node node;

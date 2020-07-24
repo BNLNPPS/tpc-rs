@@ -736,16 +736,6 @@ int St_tpcRDOMapC::rdo(int padrow, int pad) const {
   }
   return rdo;
 }
-MakeChairInstance(tpcRDOT0offset,Calibrations/tpc/tpcRDOT0offset);
-float St_tpcRDOT0offsetC::T0(int sector, int padrow, int pad) const {
-  float t0 = 0;
-  if (! IsShfited(sector)) return t0;
-  if (cfg_.C<St_tpcPadConfigC>().iTPC(sector) && padrow <= 40)  return t0; // no shift in iTPC
-  int rdo = cfg_.C<St_tpcRDOMapC>().rdo(padrow,pad);
-  if (!rdo) return t0;
-  t0 = Struct()->t0[sector-1][rdo-1];
-  return t0;
-}
 
 MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 
