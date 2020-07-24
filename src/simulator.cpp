@@ -323,7 +323,7 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
 
 
 template<>
-void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data)
+void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data, DistInserter distorted)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
