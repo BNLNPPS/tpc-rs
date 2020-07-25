@@ -61,8 +61,6 @@ class Simulator
   const CoordTransform transform_;
   MagFieldUtils mag_field_utils_;
   const int num_sectors_;            //!
-  const int max_rows_;               //!
-  const int max_pads_;               //!
   const int max_timebins_;
 
   static double shapeEI(double* x, double* par = 0);
@@ -144,16 +142,6 @@ class Simulator
   StTpcdEdxCorrection dEdx_correction_; // !
   double InnerAlphaVariation[24];   //!
   double OuterAlphaVariation[24];   //!
-  int    numberOfInnerSectorAnodeWires; //!
-  double firstInnerSectorAnodeWire; //!
-  double lastInnerSectorAnodeWire;  //!
-  int    numberOfOuterSectorAnodeWires; //!
-  double firstOuterSectorAnodeWire; //!
-  double lastOuterSectorAnodeWire;  //!
-  double anodeWirePitch;            //!
-  double anodeWireRadius;           //!
-  double innerSectorAnodeVoltage[24];//!
-  double outerSectorAnodeVoltage[24];//!
   double xOnWire, yOnWire, zOnWire; //!
 
   tpcrs::DigiChannelMap digi_;

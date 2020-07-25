@@ -54,8 +54,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   transform_(cfg),
   mag_field_utils_(cfg, transform_),
   num_sectors_(cfg_.S<tpcDimensions>().numberOfSectors),
-  max_rows_(72),
-  max_pads_(182),
   max_timebins_(512),
   options_(0),
   mdNdx(nullptr),
@@ -113,22 +111,19 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   }
 
   double TimeBinWidth = 1. / cfg_.S<starClockOnl>().frequency;
-  numberOfInnerSectorAnodeWires  = cfg_.S<tpcWirePlanes>().numInnerSectorAnodeWires;
-  firstInnerSectorAnodeWire      = cfg_.S<tpcWirePlanes>().firstInnerSectorAnodeWire;
-  lastInnerSectorAnodeWire       = cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire;
-  numberOfOuterSectorAnodeWires  = cfg_.S<tpcWirePlanes>().numOuterSectorAnodeWires;
-  firstOuterSectorAnodeWire      = cfg_.S<tpcWirePlanes>().firstOuterSectorAnodeWire;
-  lastOuterSectorAnodeWire       = cfg_.S<tpcWirePlanes>().lastOuterSectorAnodeWire;
-  anodeWirePitch                 = cfg_.S<tpcWirePlanes>().anodeWirePitch;
-  anodeWireRadius                = cfg_.S<tpcWirePlanes>().anodeWireRadius;
+  double anodeWirePitch  = cfg_.S<tpcWirePlanes>().anodeWirePitch;
+  double anodeWireRadius = cfg_.S<tpcWirePlanes>().anodeWireRadius;
 
   // Shapers
   double timeBinMin = -0.5;
   double timeBinMax = 44.5;
   double CathodeAnodeGap[2] = {0.2, 0.4};
+  double innerSectorAnodeVoltage[24];
+  double outerSectorAnodeVoltage[24];
 
   for (int sector = 1; sector <= num_sectors_; sector++) {
-    innerSectorAnodeVoltage[sector - 1] = outerSectorAnodeVoltage[sector - 1] = 0;
+    innerSectorAnodeVoltage[sector - 1] = 0;
+    outerSectorAnodeVoltage[sector - 1] = 0;
     int nAliveInner = 0;
     int nAliveOuter = 0;
 
@@ -1089,16 +1084,20 @@ void Simulator::LoopOverElectronsInCluster(
     double alphaVariation = InnerAlphaVariation[sector - 1];
 
     // Transport to wire
-    if (y <= lastInnerSectorAnodeWire) {
+    double firstOuterSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstOuterSectorAnodeWire;
+    double anodeWirePitch            = cfg_.S<tpcWirePlanes>().anodeWirePitch;
+
+    if (y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) {
+      double firstInnerSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstInnerSectorAnodeWire;
       WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
       // In TPC the first and last wires are fat ones
-      if (WireIndex <= 1 || WireIndex >= numberOfInnerSectorAnodeWires) continue;
+      if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numInnerSectorAnodeWires) continue;
       yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
     }
     else { // the first and last wires are fat ones
       WireIndex = tpcrs::irint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
 
-      if (WireIndex <= 1 || WireIndex >= numberOfOuterSectorAnodeWires) continue;
+      if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numOuterSectorAnodeWires) continue;
 
       yOnWire = firstOuterSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
       alphaVariation = OuterAlphaVariation[sector - 1];
