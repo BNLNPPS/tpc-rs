@@ -939,18 +939,11 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
       dE = std::exp(cLog10 * mdNdEL10->GetRandom());
     }
     else {
-      if (segment.charge) {
-        dS = - std::log(gRandom->Rndm()) / NP;
+      dS = - std::log(gRandom->Rndm()) / NP;
 
-        if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
-        else          dE = cfg_.S<TpcResponseSimulator>().W *
-                           gRandom->Poisson(cfg_.S<TpcResponseSimulator>().Cluster);
-      }
-      else { // charge == 0 geantino
-        // for LASERINO assume dE/dx = 25 keV/cm;
-        dE = 10; // eV
-        dS = dE * eV / (std::abs(segment.simu_hit->de / segment.simu_hit->ds));
-      }
+      if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
+      else          dE = cfg_.S<TpcResponseSimulator>().W *
+                         gRandom->Poisson(cfg_.S<TpcResponseSimulator>().Cluster);
     }
 
     double E = dE * eV;
