@@ -1046,12 +1046,6 @@ void Simulator::LoopOverElectronsInCluster(
 
     int    rowMin = transform_.rowFromLocalY(yLmin, sector);
     int    rowMax = transform_.rowFromLocalY(yLmax, sector);
-    double yRmin  = transform_.yFromRow(sector, rowMin) - cfg_.C<St_tpcPadConfigC>().PadLengthAtRow(sector, rowMin) / 2;
-    double yRmax  = transform_.yFromRow(sector, rowMax) + cfg_.C<St_tpcPadConfigC>().PadLengthAtRow(sector, rowMax) / 2;
-
-    if (yRmin > yLmax || yRmax < yLmin) {
-      continue;
-    }
 
     GenerateSignal(segment, at_readout, rowMin, rowMax,
                    &mShaperResponses[io][sector - 1], binned_charge, gain_local * gain_gas);
