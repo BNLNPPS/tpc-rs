@@ -1026,54 +1026,23 @@ void Simulator::LoopOverElectronsInCluster(
       for (int i=0; i<3; i++) xyzE.position[i] += xyzR[i];
     }
 
-    // Transport to wire
-    double y = xyzE.position.y;
+    bool missed_readout = false;
+    bool is_ground_wire = false;
 
-    double firstOuterSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstOuterSectorAnodeWire;
-    double anodeWirePitch            = cfg_.S<tpcWirePlanes>().anodeWirePitch;
-    int WireIndex = 0;
+    Coords at_readout = TransportToReadout(xyzE.position, OmegaTau, missed_readout, is_ground_wire);
 
-    if (y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) {
-      double firstInnerSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstInnerSectorAnodeWire;
-      WireIndex = tpcrs::irint((y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
-      // In TPC the first and last wires are fat ones
-      if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numInnerSectorAnodeWires) continue;
-      yOnWire = firstInnerSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
-    }
-    else {
-      WireIndex = tpcrs::irint((y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
-      // In TPC the first and last wires are fat ones
-      if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numOuterSectorAnodeWires) continue;
-      yOnWire = firstOuterSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
-    }
+    if (missed_readout) continue;
 
-    double distanceToWire = y - yOnWire; // Calculated effective distance to wire affected by Lorentz shift
-    xOnWire = xyzE.position.x;
-    zOnWire = xyzE.position.z;
-    // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
-    int iGridWire = int(std::abs(10.*distanceToWire));
-    double dist2Grid = std::copysign(0.05 + 0.1 * iGridWire, distanceToWire); // [cm]
-    // Ground plane (1 mm spacing) focusing effect
-    int iGroundWire = int(std::abs(10.*dist2Grid));
-    double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
-    // OmegaTau near wires taken from comparison with data
-    double tanLorentz = OmegaTau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleO;
-
-    if (y < firstOuterSectorAnodeWire) tanLorentz = OmegaTau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleI;
-
-    xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
-    zOnWire += std::abs(distFocused);
-
-    double alphaVariation = (y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) ?
+    double alphaVariation = (xyzE.position.y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) ?
                              alpha_gain_variations_[num_sectors_*0 + sector - 1] :
                              alpha_gain_variations_[num_sectors_*1 + sector - 1];
 
-    if (! iGroundWire ) gain_gas *= std::exp( alphaVariation);
-    else                gain_gas *= std::exp(-alphaVariation);
+    if (!is_ground_wire) gain_gas *= std::exp( alphaVariation);
+    else                 gain_gas *= std::exp(-alphaVariation);
 
     double dY     = mChargeFraction[io][sector - 1].GetXmax();
-    double yLmin  = yOnWire - dY;
-    double yLmax  = yOnWire + dY;
+    double yLmin  = at_readout.y - dY;
+    double yLmax  = at_readout.y + dY;
 
     int    rowMin = transform_.rowFromLocalY(yLmin, sector);
     int    rowMax = transform_.rowFromLocalY(yLmax, sector);
@@ -1084,13 +1053,13 @@ void Simulator::LoopOverElectronsInCluster(
       continue;
     }
 
-    GenerateSignal(segment, rowMin, rowMax,
+    GenerateSignal(segment, at_readout, rowMin, rowMax,
                    &mShaperResponses[io][sector - 1], binned_charge, gain_local * gain_gas);
   }  // electrons in Cluster
 }
 
 
-void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowMax,
+void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, int rowMin, int rowMax,
   TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas)
 {
   int sector = segment.Pad.sector;
@@ -1101,7 +1070,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
   for (unsigned row = rowMin; row <= rowMax; row++) {
     if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
 
-    StTpcLocalSectorCoordinate xyzW{xOnWire, yOnWire, zOnWire, sector, row};
+    StTpcLocalSectorCoordinate xyzW{at_readout.x, at_readout.y, at_readout.z, sector, row};
     StTpcPadCoordinate Pad;
     transform_.local_sector_to_hardware(xyzW, Pad, false, false); // don't use T0, don't use Tau
     float bin = Pad.timeBucket;//L  - 1; // K
@@ -1117,7 +1086,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
 
     InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
-    double delta_y = transform_.yFromRow(sector, row) - yOnWire;
+    double delta_y = transform_.yFromRow(sector, row) - at_readout.y;
     double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(delta_y);
 
     if (YDirectionCoupling < cfg_.S<ResponseSimulator>().min_signal) continue;
@@ -1171,6 +1140,53 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
       } // time
     } // pad limits
   } // row limits
+}
+
+
+Coords Simulator::TransportToReadout(const Coords c, double OmegaTau, bool& missed_readout, bool& is_ground_wire)
+{
+  Coords readout;
+  missed_readout = false;
+
+  // Transport to wire
+  double firstOuterSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstOuterSectorAnodeWire;
+  double anodeWirePitch            = cfg_.S<tpcWirePlanes>().anodeWirePitch;
+  int wire_index = 0;
+
+  if (c.y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) {
+    double firstInnerSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstInnerSectorAnodeWire;
+    wire_index = tpcrs::irint((c.y - firstInnerSectorAnodeWire) / anodeWirePitch) + 1;
+    // In TPC the first and last wires are fat ones
+    if (wire_index <= 1 || wire_index >= cfg_.S<tpcWirePlanes>().numInnerSectorAnodeWires)
+      missed_readout = true;
+    readout.y = firstInnerSectorAnodeWire + (wire_index - 1) * anodeWirePitch;
+  }
+  else {
+    wire_index = tpcrs::irint((c.y - firstOuterSectorAnodeWire) / anodeWirePitch) + 1;
+    // In TPC the first and last wires are fat ones
+    if (wire_index <= 1 || wire_index >= cfg_.S<tpcWirePlanes>().numOuterSectorAnodeWires)
+      missed_readout = true;
+    readout.y = firstOuterSectorAnodeWire + (wire_index - 1) * anodeWirePitch;
+  }
+
+  double distance_to_wire = c.y - readout.y; // Calculated effective distance to wire affected by Lorentz shift
+  // Grid plane (1 mm spacing) focusing effect + Lorentz angle in drift volume
+  int iGridWire = int(std::abs(10.*distance_to_wire));
+  double dist2Grid = std::copysign(0.05 + 0.1 * iGridWire, distance_to_wire); // [cm]
+  // Ground plane (1 mm spacing) focusing effect
+  int iGroundWire = int(std::abs(10.*dist2Grid));
+  double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
+
+  // OmegaTau near wires taken from comparison with data
+  double tanLorentz = (c.y < firstOuterSectorAnodeWire) ? OmegaTau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleI :
+                                                          OmegaTau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleO;
+
+  readout.x = c.x + distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
+  readout.z = c.z + std::abs(distFocused);
+
+  is_ground_wire = iGroundWire != 0;
+
+  return readout;
 }
 
 

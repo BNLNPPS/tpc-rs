@@ -113,10 +113,12 @@ class Simulator
     std::vector<float> rs, const TrackSegment& segment, ChargeContainer& binned_charge,
     double xRange, Coords xyzC, double gain_local);
 
-  void GenerateSignal(const TrackSegment &segment, int rowMin, int rowMax,
+  void GenerateSignal(const TrackSegment &segment, Coords at_readout, int rowMin, int rowMax,
                       TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas);
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
+
+  Coords TransportToReadout(const Coords c, double OmegaTau, bool& missed_readout, bool& is_ground_wire);
 
   double dEdxCorrection(const TrackSegment &segment);
 
@@ -145,7 +147,6 @@ class Simulator
   TF1F   mPolya[2];
   TF1    mHeed;
   StTpcdEdxCorrection dEdx_correction_;
-  double xOnWire, yOnWire, zOnWire;
 
   tpcrs::DigiChannelMap digi_;
   std::vector<double> alpha_gain_variations_;
