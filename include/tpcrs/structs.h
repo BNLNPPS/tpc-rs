@@ -593,8 +593,8 @@ struct tpcPadGainT0 {
 };
 
 struct tpcPadPlanes {
-  int padRows; /*   */
-  int innerPadRows; /*   */
+  int padRows; /* Total number of pad rows in a sector */
+  int innerPadRows; /* Total number of inner pad rows in a sector */
   int innerPadRows48; /*   */
   int innerPadRows52; /*   */
   int outerPadRows; /*   */

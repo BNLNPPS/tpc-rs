@@ -44,17 +44,51 @@ struct SimulatedCharge
 
 struct GeantHit
 {
-  int track_id;    /// Parent track
-  int particle_id; /// GEANT particle id
-  int volume_id;   /// Volume id packed as SSRR, SS = sector, RR = pad row
-  double x[3];     /// Hit center
-  double p[3];     /// Local momentum
-  double de;       /// energy deposited at hit
-  double ds;       /// path length within pad row
-  double s;        /// track length up to this hit. Used in hit ordering
-  double tof;      /// Time of flight including the GEANT vertex production time
-  float lgam;      /// Deprecated. ALOG10(GEKin/AMass)
-  SimuHit digi;    /// Deprecated.
+  /// Unique id of the particle produced this hit. The simulated signal is
+  /// associated with tracks using these ids
+  int track_id;
+
+  /// Physical particle id. It is primarily used to get the particle's charge
+  /// and mass from a local list of known particles
+  int particle_id;
+
+  /// Volume id packed as a four digit decimal number SSRR, SS = sector, RR = pad row
+  /// Many configuration properties are defined on per sector basis. The prior
+  /// knowledge of hits' pad row allows to split loopers into multiple shorter
+  /// tracks
+  int volume_id;
+
+  /// Position of the simulated hit at the center of a pad row layer in the
+  /// global coordinate system
+  double x[3];
+
+  /// Local particle momentum at point x
+  double p[3];
+
+  /// Energy deposited by the particle within pad row boundaries. Not strictly
+  /// necessary as it is used only in special cases such as "stopped electrons"
+  /// and indicated by negative `de` and `ds` < 50 um
+  double de;
+
+  /// Path length within pad row boundaries. Used to define beginning and end
+  /// points of the track rebuilt around the distorted hit. Also used in
+  /// calculation of local gain correction due to de/ds effects
+  double ds;
+
+  /// Distance from the origin to the point x. Not strictly necessary as it is
+  /// used only for hit ordering
+  double s;
+
+  /// Time of flight up to the point x including the vertex production time. The
+  /// time of flight is used to correct the hit `z` position for drift velocity
+  /// in cm/us obtained from laser data
+  double tof;
+
+  /// log_10(E_kin/mass) -- Deprecated
+  float lgam;
+
+  /// Deprecated
+  SimuHit digi;
 };
 
 
