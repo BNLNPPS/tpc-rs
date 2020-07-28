@@ -1,6 +1,7 @@
 #ifndef TPCRS_TPCRS_H_
 #define TPCRS_TPCRS_H_
 
+#include <numeric>
 #include <vector>
 #include <tuple>
 
@@ -146,6 +147,53 @@ OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configu
 
   return d_first;
 }
+
+
+struct DigiChannelMap
+{
+  DigiChannelMap(const Configurator& cfg, DigiChannel first = {1, 1, 1, 0}, DigiChannel last = {2, 1, 1, 0}) :
+    channels(),
+    n_sectors(cfg.S<tpcDimensions>().numberOfSectors),
+    n_rows(cfg.S<tpcPadPlanes>().innerPadRows + cfg.S<tpcPadPlanes>().outerPadRows),
+    n_timebins(cfg.S<tpcElectronics>().numberOfTimeBins),
+    num_pads_(),
+    num_pads_cumul_(n_rows + 1, 0)
+  {
+    num_pads_.insert(std::end(num_pads_), cfg.S<tpcPadPlanes>().innerPadsPerRow,
+                                          cfg.S<tpcPadPlanes>().innerPadsPerRow + cfg.S<tpcPadPlanes>().innerPadRows),
+    num_pads_.insert(std::end(num_pads_), cfg.S<tpcPadPlanes>().outerPadsPerRow,
+                                          cfg.S<tpcPadPlanes>().outerPadsPerRow + cfg.S<tpcPadPlanes>().outerPadRows);
+
+    std::partial_sum(std::begin(num_pads_), std::end(num_pads_), std::begin(num_pads_cumul_)+1);
+
+    DigiChannel channel = first;
+    while ( !(channel == last) )
+    {
+      channels.push_back(channel);
+
+      channel.timebin++;
+
+      if (channel.timebin > n_timebins - 1) { channel.timebin = 0; channel.pad++; }
+      if (channel.pad > num_pads_[channel.row-1]) { channel.pad = 1; channel.row++; }
+      if (channel.row > n_rows) { channel.row = 1; channel.sector++; }
+    }
+  }
+
+  int n_pads(int row)     { return num_pads_[row-1]; }
+  int total_pads(int row) { return num_pads_cumul_[row-1]; }
+  int total_timebins()    { return num_pads_cumul_[n_rows] * n_timebins; }
+
+  int n_sectors;
+  int n_rows;
+  int n_timebins;
+
+  std::vector<DigiChannel> channels;
+
+ private:
+
+  std::vector<int> num_pads_;
+  std::vector<int> num_pads_cumul_;
+};
 
 }
 
