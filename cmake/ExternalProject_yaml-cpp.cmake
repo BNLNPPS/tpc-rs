@@ -1,6 +1,6 @@
 include(ExternalProject)
 
-set(_YAML_CPP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+set(_YAML_CPP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -fPIC")
 
 # yaml-cpp
 ExternalProject_Add(
