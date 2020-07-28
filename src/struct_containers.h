@@ -7,7 +7,6 @@
 #include "TMath.h"
 #include "TF1.h"
 
-#include "tpcrs/structs.h"
 #include "tpcrs/tpcrs.h"
 #include "config_structs.h"
 

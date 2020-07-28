@@ -1,5 +1,5 @@
-#ifndef TPCRS_STRUCTS_H_
-#define TPCRS_STRUCTS_H_
+#ifndef TPCRS_CONFIG_TYPE_H_
+#define TPCRS_CONFIG_TYPE_H_
 
 struct asic_thresholds {
   int thresh_lo;

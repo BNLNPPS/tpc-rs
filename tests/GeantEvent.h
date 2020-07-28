@@ -11,7 +11,7 @@
 
 #include "Rtypes.h"
 
-#include "tpcrs/structs.h"
+#include "tpcrs/config_type.h"
 
 #define __MaxNumberOfTimeBins__ 512
 

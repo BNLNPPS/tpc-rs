@@ -5,7 +5,7 @@ add_executable(test_tpcrs
 
 root_generate_dictionary(
     test_tpcrs_dict
-    include/tpcrs/structs.h
+    include/tpcrs/config_type.h
     tests/GeantEvent.h
     LINKDEF tests/LinkDef.h
     OPTIONS -I${CMAKE_SOURCE_DIR}/include/ -I${YAML_CPP_INSTALL_PREFIX}/include
