@@ -139,7 +139,11 @@ set(source_files
 
 add_library(tpcrs ${header_files} ${source_files})
 
-target_include_directories(tpcrs PRIVATE
+target_include_directories(tpcrs
+    INTERFACE
+    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:include/tpcrs/contrib>
+    PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/include
     ${YAML_CPP_INSTALL_PREFIX}/include ${CMAKE_BINARY_DIR}/src ${ROOT_INCLUDE_DIR})
@@ -180,6 +184,7 @@ set(data_files
     ${TPCRS_SOURCE_DIR}/data/steel_magfieldmap.dat
 )
 
+install(DIRECTORY ${YAML_CPP_INSTALL_PREFIX}/include/yaml-cpp DESTINATION ${TPCRS_INC_INSTALL_DIR}/contrib)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h DESTINATION ${TPCRS_INC_INSTALL_DIR})
 install(FILES ${header_files} DESTINATION ${TPCRS_INC_INSTALL_DIR})
 install(FILES ${data_files}   DESTINATION ${TPCRS_DATA_INSTALL_DIR})
