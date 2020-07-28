@@ -6,6 +6,7 @@
 
 #include "yaml-cpp/yaml.h"
 #include "tpcrs/structs.h"
+#include "tpcrs/config_yaml.h"
 
 
 namespace tpcrs {
