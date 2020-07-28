@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "yaml-cpp/yaml.h"
-#include "tpcrs/structs.h"
+#include "tpcrs/config_type.h"
 
 namespace YAML {
 using std::copy;

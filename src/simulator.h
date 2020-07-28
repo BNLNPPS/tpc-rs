@@ -7,7 +7,6 @@
 #include "TF1F.h"
 #include "TH1.h"
 
-#include "tpcrs/structs.h"
 #include "tpcrs/tpcrs.h"
 #include "coords.h"
 #include "dedx_correction.h"

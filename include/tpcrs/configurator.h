@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "yaml-cpp/yaml.h"
-#include "tpcrs/structs.h"
+#include "tpcrs/config_type.h"
 #include "tpcrs/config_yaml.h"
 
 
