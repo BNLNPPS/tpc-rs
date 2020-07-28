@@ -85,7 +85,8 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug())
+  dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, Debug()),
+  digi_(cfg_)
 {
   //  SETBIT(options_,kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
@@ -385,7 +386,7 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
   int sector = 1;
   for (auto segments_in_sector : segments_by_sector) {
     int nHitsInTheSector = 0;
-    ChargeContainer binned_charge(max_rows_ * max_pads_ * max_timebins_);
+    ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
     for (TrackSegment& segment : segments_in_sector) {
       segment.tpc_hitC->digi.adc = 0;
@@ -619,7 +620,7 @@ void Simulator::DigitizeSector(int sector, DigiInserter digi_data, const ChargeC
       static std::vector<short> IDTs(max_timebins_, 0);
       std::fill(ADCs.begin(), ADCs.end(), 0);
       std::fill(IDTs.begin(), IDTs.end(), 0);
-      int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1);
+      int index = max_timebins_ * (digi_.total_pads(row) + pad - 1);
 
       for (int bin = 0; bin < max_timebins_; bin++, index++) {
         int adc = pedRMS > 0 ? int(binned_charge[index].Sum / gain + gRandom->Gaus(ped, pedRMS)) - int(ped) :
@@ -1305,24 +1306,14 @@ void Simulator::GenerateSignal(const TrackSegment &segment, int rowMin, int rowM
       static double TimeCouplings[kTimeBacketMax];
       shaper->GetSaveL(num_tbins, tbin_first - binT - dt, TimeCouplings);
 
-      int index = max_timebins_ * ((row - 1) * max_pads_ + pad - 1) + tbin_first;
+      int index = max_timebins_ * (digi_.total_pads(row) + pad - 1) + tbin_first;
 
       for (int itbin = tbin_first; itbin <= tbin_last; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - tbin_first];
 
-        if (signal < cfg_.S<ResponseSimulator>().min_signal)  continue;
+        if (signal < cfg_.S<ResponseSimulator>().min_signal) continue;
 
-        binned_charge[index].Sum += signal;
-
-        // Record truth ID of the MC particle produced this signal
-        if ( segment.tpc_hitC->track_id ) {
-          if ( !binned_charge[index].TrackId )
-            binned_charge[index].TrackId = segment.tpc_hitC->track_id;
-          else { // switch TrackId, works only for 2 tracks, more tracks ?
-            if ( binned_charge[index].TrackId != segment.tpc_hitC->track_id && binned_charge[index].Sum < 2 * signal)
-              binned_charge[index].TrackId = segment.tpc_hitC->track_id;
-          }
-        }
+        binned_charge[index] += {signal, segment.tpc_hitC->track_id};
       } // time
     } // pad limits
   } // row limits
