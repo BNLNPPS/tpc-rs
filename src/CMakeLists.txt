@@ -143,7 +143,7 @@ target_include_directories(tpcrs PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/include
     ${YAML_CPP_INSTALL_PREFIX}/include ${CMAKE_BINARY_DIR}/src ${ROOT_INCLUDE_DIR})
-add_dependencies(tpcrs yaml-cpp-lib)
+target_link_libraries(tpcrs PRIVATE yaml-cpp-lib ${ROOT_LIBRARIES})
 
 set_target_properties(tpcrs PROPERTIES
     VERSION ${TPCRS_VERSION}
