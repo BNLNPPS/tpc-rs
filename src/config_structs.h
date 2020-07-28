@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "tpcrs/configurator.h"
-#include "config_yaml.h"
+#include "tpcrs/config_yaml.h"
 
 
 namespace tpcrs {
