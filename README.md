@@ -96,15 +96,15 @@ following data members:
 ```c++
 struct SimulatedHit
 {
-  int track_id;    /// Unique id of the particle produced this hit
-  int particle_id; /// Physical particle id
+  int track_id;    /// Unique id of the particle/track produced this hit
+  int particle_id; /// Physical particle id, e.g. GEANT particle id
   int volume_id;   /// Volume id packed as a four digit decimal number SSRR, SS = sector, RR = pad row
-  double x[3];     /// Position of the simulated hit at the center of a pad row layer
+  double x[3];     /// Position of the simulated hit, i.e. where the particle crosses the center of a pad row layer
   double p[3];     /// Local particle momentum at point x
   double de;       /// Energy deposited by the particle within pad row boundaries
   double ds;       /// Path length within pad row boundaries
-  double s;        /// Distance from the origin to the point x. Used in hit ordering
-  double tof;      /// Time of flight up to the point x including the vertex production time
+  double s;        /// Distance along the track from the origin to the point x. Used in hit ordering
+  double tof;      /// Time of flight up to the point x including the track origin production time
   float lgam;      /// log_10(E_kin/mass) -- deprecated
 }
 ```
