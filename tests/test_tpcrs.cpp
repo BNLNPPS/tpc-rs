@@ -9,7 +9,6 @@
 
 #include "GeantEvent.h"
 #include "tpcrs/tpcrs.h"
-#include "simulator.h"
 
 
 tpcrs::SimulatedHit merge(const g2t_tpc_hit& hit, const g2t_track& particle, const g2t_vertex& vertex);
@@ -67,7 +66,7 @@ int main(int argc, char **argv)
     std::stable_sort(begin(hits), end(hits));
 
     std::vector<tpcrs::DigiHit>  digi_data;
-    tpcrs::digitize<Simulator>(std::begin(hits), std::end(hits), back_inserter(digi_data), cfg);
+    tpcrs::digitize(std::begin(hits), std::end(hits), back_inserter(digi_data), cfg);
 
     geantEvent_out.Fill(digi_data);
     geantEvent_out.Print(logFile_out);
