@@ -72,8 +72,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   //SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
-    LOG_INFO << "Model for dE/dx simulation: Bichsel\n";
-
     TFile inner(cfg_.Locate("dNdE_Bichsel.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
     mdNdEL10->SetDirectory(0);
@@ -83,8 +81,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     mdNdx->SetDirectory(0);
   }
   else if (TESTBIT(options_, kHEED)) {
-    LOG_INFO << "Model for dE/dx simulation: Heed\n";
-
     TFile inner(cfg_.Locate("dNdx_Heed.root").c_str());
     mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
     mdNdEL10->SetDirectory(0);
@@ -92,9 +88,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     TFile outer(cfg_.Locate("dNdx_Heed.root").c_str());
     mdNdxL10 = (TH1D*) outer.Get("dNdxL10"); assert(mdNdxL10);
     mdNdxL10->SetDirectory(0);
-  }
-  else {
-    LOG_INFO << "Error: Model for dE/dx simulation not set\n";
   }
 
   double t0IO[2];
@@ -298,12 +291,6 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
   cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = -500;
   cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = -500;
 
-  LOG_INFO << "Reset min for gain Correction to I/O\t"
-           << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
-           << "\t"
-           << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
-           << " (V)\n";
-
   std::vector< std::vector<TrackSegment> > segments_by_sector(num_sectors_);
   std::vector<TrackSegment> segments_in_sector;
 
@@ -391,12 +378,6 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
 
   cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = vminI;
   cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = vminO;
-
-  LOG_INFO << "Reset min for gain Correction to I/O\t"
-           << cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min
-           << "\t"
-           << cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min
-           << " (V)\n";
 }
 
 

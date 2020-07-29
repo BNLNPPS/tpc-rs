@@ -81,10 +81,9 @@ void StTpcdEdxCorrection::ReSetCorrections()
     if (! m_Corrections[k].Chair) continue;
 
     nrows = 0;
-    LOG_INFO << "StTpcdEdxCorrection: " << m_Corrections[k].Name << "/" << m_Corrections[k].Title << '\n';
 
     if (! TESTBIT(m_Mask, k) || m_Corrections[k].Chair->IsMarked()) {
-      LOG_INFO << " \tis missing\n";
+      // correction is missing
       goto CLEAR;
     }
 
@@ -92,7 +91,7 @@ void StTpcdEdxCorrection::ReSetCorrections()
     chairMDF = dynamic_cast<St_MDFCorrectionC*>(m_Corrections[k].Chair);
 
     if (! chair && ! chairMDF) {
-      LOG_WARN << " \tis not tpcCorrection or MDFCorrection type\n";
+      // This correction is not tpcCorrection or MDFCorrection type
       m_Corrections[k].nrows = m_Corrections[k].Chair->GetNRows();
       continue; // not St_tpcCorrectionC
     }
@@ -123,7 +122,7 @@ void StTpcdEdxCorrection::ReSetCorrections()
       }
 
       if (! npar ) {
-        LOG_INFO << " \thas no significant corrections => switch it off\n";
+        // no significant corrections => switch it off
         goto CLEAR;
       }
 
@@ -149,14 +148,14 @@ void StTpcdEdxCorrection::ReSetCorrections()
     }
 
     if (! npar ) {
-      LOG_INFO << " \thas no significant corrections => switch it off\n";
+      // no significant corrections => switch it off
       goto CLEAR;
     }
 
     m_Corrections[k].nrows = nrows;
     continue;
 EMPTY:
-    LOG_INFO << " \tis empty\n";
+    // correction is empty
 CLEAR:
     CLRBIT(m_Mask, k);
     m_Corrections[k].Chair = 0;

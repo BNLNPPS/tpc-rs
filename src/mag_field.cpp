@@ -48,6 +48,7 @@ To do:  <br>
 #include "TEnv.h"
 
 #include "tpcrs/configurator.h"
+#include "logger.h"
 #include "mag_field.h"
 #include "struct_containers.h"
 
@@ -353,10 +354,10 @@ MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float factor,
   fLock(lock)
 {
   if (fMap == kUndefined) {
-    printf("MagField is instantiated with predefined factor %f and map %i\n", fFactor, fMap);
+    LOG_INFO << "MagField is instantiated with predefined factor " << fFactor << " and map " << fMap << '\n';
   }
   else {
-    if (fLock) printf("MagField is locked, no modification from DB will be accepted\n");
+    if (fLock) LOG_INFO << "MagField is locked, no modification from DB will be accepted\n";
   }
 
   fFactor = cfg_.S<MagFactor>().ScaleFactor;
@@ -500,7 +501,6 @@ void MagField::ReadField()
 {
   FILE*    magfile, *b3Dfile ;
   std::string comment, filename, filename3D ;
-  std::string MapLocation ;
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) {
     TFile pFile(cfg_.Locate("StarFieldZ.root").c_str());
@@ -554,16 +554,12 @@ void MagField::ReadField()
     fRescale = 1 ;                        // Normal field
   }
   else {
-    fprintf(stderr, "MagField::ReadField  No map available - you must choose a mapped field or a constant field\n");
+    LOG_ERROR << "MagField::ReadField  No map available - you must choose a mapped field or a constant field\n";
     exit(1) ;
   }
 
-  printf("MagField::ReadField  Reading  Magnetic Field  %s,  Scale factor = %f \n", comment.c_str(), fFactor);
-  printf("MagField::ReadField  Filename is %s, Adjusted Scale factor = %f \n", filename.c_str(), fFactor * fRescale);
-
-  MapLocation = cfg_.Locate(filename);
+  std::string MapLocation = cfg_.Locate(filename);
   magfile = fopen(MapLocation.c_str(), "r") ;
-  printf("MagField::ReadField  Reading  2D Magnetic Field file: %s \n", filename.c_str());
 
   if (magfile)
   {
@@ -586,7 +582,7 @@ void MagField::ReadField()
       }
     }
   } else {
-    fprintf(stderr, "MagField::ReadField  File %s not found !\n", MapLocation.c_str());
+    LOG_ERROR << "MagField: File " << MapLocation << " not found\n";
     exit(1);
   }
 
@@ -594,7 +590,6 @@ void MagField::ReadField()
 
   MapLocation = cfg_.Locate(filename3D);
   b3Dfile = fopen(MapLocation.c_str(), "r") ;
-  printf("MagField::ReadField  Reading 3D Magnetic Field file: %s \n", filename3D.c_str());
 
   if (b3Dfile)
   {
@@ -636,7 +631,7 @@ void MagField::ReadField()
       }
     }
   } else {
-    fprintf(stderr, "MagField::ReadField  File %s not found !\n", MapLocation.c_str());
+    LOG_ERROR << "MagField: File " << MapLocation << " not found\n";
     exit(1);
   }
 
@@ -645,7 +640,6 @@ void MagField::ReadField()
   magfile = fopen(MapLocation.c_str(), "r") ;
 
   if (magfile) {
-    printf("MagField::ReadField  Reading  3D Magnetic Field file: %s \n", filename.c_str());
     char cname[128] ;
 
     for (;;) {

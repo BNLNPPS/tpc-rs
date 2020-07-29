@@ -542,8 +542,6 @@ float MagFieldUtils::eZList[EMap_nZ] = { -208.5, -208.0, -207.0, -206.0, -205.0,
 /// Initialization method.  This will sort and apply the options received by the tpt Maker
 void MagFieldUtils::CommonStart ( int mode )
 {
-  LOG_INFO << "MagFieldUtils::CommonSta  Magnetic Field scale factor is " << gFactor << '\n' ;
-
     StarDriftV  =     5.54 ;      // Drift Velocity (cm/microSec) Magnitude
     TPC_Z0      =    208.7 ;      // Z location of STAR TPC Gated Grid (cm)
 #ifndef __NO_TWIST__
@@ -580,8 +578,6 @@ void MagFieldUtils::CommonStart ( int mode )
 
     mCorrectionsMode = 0;
 
-    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using hard-wired TPC parameters. \n" ;
-
   if ( fTpcVolts == 0 ) {
     CathodeV    = -27950.0 ;      // Cathode Voltage (volts)
     GG          =   -115.0 ;      // Gating Grid voltage (volts)
@@ -591,26 +587,15 @@ void MagFieldUtils::CommonStart ( int mode )
 
     for (int i = 0 ; i < 24; i++ ) { Inner_GLW_Voltage[i] = 999; Outer_GLW_Voltage[i] = 999; }
 
-    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected TpcVoltages setting. \n" ;
   }
-  else  LOG_INFO << "MagFieldUtils::CommonSta  Using TPC voltages from the DB."   << '\n' ;
 
   if ( fOmegaTau == 0 ) {
     TensorV1    =  1.35 ;  // Drift velocity tensor term: in the ExB direction
     TensorV2    =  1.10 ;  // Drift velocity tensor term: direction perpendicular to Z and ExB
-    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected OmegaTau parameters. \n" ;
   }
-  else  LOG_INFO << "MagFieldUtils::CommonSta  Using OmegaTau parameters from the DB."   << '\n' ;
-
-  if (fSpaceCharge) LOG_INFO << "MagFieldUtils::CommonSta  Using SpaceCharge values from the DB.\n" ;
-  else              LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected SpaceCharge settings. \n" ;
-
-  if (fSpaceChargeR2) LOG_INFO << "MagFieldUtils::CommonSta  Using SpaceChargeR2 values from the DB.\n" ;
-  else                LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using manually selected SpaceChargeR2 settings. \n" ;
 
   if ( fAbortGapCharge == 0 ) {
     IonDriftVel = 181.67; // http://nuclear.ucdavis.edu/~bkimelman/protected/TPC_Meeting_Apr_10.pdf
-    LOG_INFO << "MagFieldUtils::CommonSta  WARNING -- Using default Ion Drift Velocity. \n" ;
   }
 
   // Parse the mode switch which was received from the Tpt maker
@@ -637,56 +622,12 @@ void MagFieldUtils::CommonStart ( int mode )
     }
 
     mDistortionMode |= kIFCShift ;
-    printf("MagFieldUtils::CommonSta  Default mode selection\n");
   }
-  else printf("MagFieldUtils::CommonSta  Using mode option 0x%X\n", mode);
 
-  printf("MagFieldUtils::CommonSta  Using correction mode 0x%X\n", mCorrectionsMode);
   iterateDistortion = mCorrectionsMode & kIterateUndo;
   iterationFailCounter = -1;
-  printf("MagFieldUtils::CommonSta  Version  ");
-
-  if ( mDistortionMode & kBMap )          printf ("3D Mag Field Distortions") ;
-
-  if ( mDistortionMode & kFast2DBMap )    printf ("2D Mag Field Distortions") ;
-
-  if ( mDistortionMode & kPadrow13 )      printf (" + Padrow 13") ;
-
-  if ( mDistortionMode & kPadrow40 )      printf (" + Padrow 40") ;
-
-  if ( mDistortionMode & kTwist )         printf (" + Twist") ;
-
-  if ( mDistortionMode & kClock )         printf (" + Clock") ;
-
-  if ( mDistortionMode & kIFCShift )      printf (" + IFCShift") ;
-
-  if ( mDistortionMode & kSpaceCharge )   printf (" + SpaceCharge") ;
-
-  if ( mDistortionMode & kSpaceChargeR2 ) printf (" + SpaceChargeR2") ;
-
-  if ( mDistortionMode & kAbortGap )      printf (" + AbortGapSpaceR2") ;
-
-  if ( mDistortionMode & kMembrane )      printf (" + Central Membrane") ;
-
-  if ( mDistortionMode & kEndcap )        printf (" + Endcap") ;
-
-  if ( mDistortionMode & kShortedRing )   printf (" + ShortedRing") ;
-
-  if ( mDistortionMode & kGridLeak )      printf (" + GridLeak") ;
-
-  if ( mDistortionMode & k3DGridLeak )    printf (" + 3DGridLeak") ;
-
-  if ( mDistortionMode & kSectorAlign )   printf (" + SectorAlign") ;
-
-  if ( mDistortionMode & kFullGridLeak )  printf (" + FullGridLeak") ;
-
-  if ( mDistortionMode & kDistoSmearing ) printf (" + DistoSmearing") ;
-
-  if ( ! CoordTransform::IsOldScheme())   printf (" + New TPC Alignment schema") ;
 
   usingCartesian = true; // default
-
-  printf("\n");
 
   double X[3] = { 0, 0, 0 } ;
   float  B[3] = { 0, 0, 0 } ;
