@@ -144,26 +144,12 @@ inline SimulatedCharge& operator+= (SimulatedCharge& a, const SimulatedCharge& b
 }
 
 
-template<typename Simulator, typename InputIt, typename OutputIt>
-OutputIt distort(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
-{
-  static Simulator simu(cfg);
-  std::vector<DigiHit>  dummy;
-  simu.Simulate(first1, last1, std::back_inserter(dummy), d_first);
-
-  return d_first;
-}
+template<typename InputIt, typename OutputIt>
+OutputIt distort(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg);
 
 
-template<typename Simulator, typename InputIt, typename OutputIt>
-OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg)
-{
-  static Simulator simu(cfg);
-  std::vector<DistortedHit>  dummy;
-  simu.Simulate(first1, last1, d_first, std::back_inserter(dummy));
-
-  return d_first;
-}
+template<typename InputIt, typename OutputIt>
+OutputIt digitize(InputIt first1, InputIt last1, OutputIt d_first, const Configurator& cfg);
 
 
 struct DigiChannelMap

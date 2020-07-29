@@ -1213,3 +1213,33 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
 
   return dEdx_correction_.dEdxCorrection(CdEdx) ? 1 : CdEdx.F.dE;
 }
+
+
+namespace tpcrs {
+
+using SimuHitIt = std::vector<SimulatedHit>::iterator;
+using DigiInserter = std::back_insert_iterator<std::vector<DigiHit>>;
+using DistInserter = std::back_insert_iterator<std::vector<DistortedHit>>;
+
+
+template<>
+DistInserter distort(SimuHitIt first1, SimuHitIt last1, DistInserter d_first, const Configurator& cfg)
+{
+  static Simulator simu(cfg);
+  std::vector<DigiHit>  dummy;
+  simu.Simulate(first1, last1, std::back_inserter(dummy), d_first);
+
+  return d_first;
+}
+
+template<>
+DigiInserter digitize(SimuHitIt first1, SimuHitIt last1, DigiInserter d_first, const Configurator& cfg)
+{
+  static Simulator simu(cfg);
+  std::vector<DistortedHit>  dummy;
+  simu.Simulate(first1, last1, d_first, std::back_inserter(dummy));
+
+  return d_first;
+}
+
+}
