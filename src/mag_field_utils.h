@@ -330,6 +330,9 @@ class MagFieldUtils
     Xprime[0] = r * std::cos(phi) ;
     Xprime[1] = r * std::sin(phi) ;
   }
+
+  /// Print out parameters
+  void Print(float B[3], float OmegaTau);
 };
 
 #endif

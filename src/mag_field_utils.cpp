@@ -654,83 +654,7 @@ void MagFieldUtils::CommonStart ( int mode )
   Const_1    =  TensorV1 * OmegaTau / ( 1. + TensorV1 * TensorV1 * OmegaTau * OmegaTau ) ;
   Const_2    =  TensorV2 * TensorV2 * OmegaTau * OmegaTau / ( 1. + TensorV2 * TensorV2 * OmegaTau * OmegaTau ) ;
 
-  LOG_INFO << "MagFieldUtils::BField        =  " << B[2] << " kGauss at (0,0,0)" <<  '\n' ;
-  LOG_INFO << "MagFieldUtils::DriftVel      =  " << StarDriftV << " cm/microsec" <<  '\n' ;
-  LOG_INFO << "MagFieldUtils::TPC_Z0        =  " << TPC_Z0 << " cm\n" ;
-  LOG_INFO << "MagFieldUtils::TensorV1+V2   =  " << TensorV1 << " " << TensorV2 << '\n' ;
-  LOG_INFO << "MagFieldUtils::OmegaTau1+2   =  " << OmegaTau* TensorV1 << " " << OmegaTau* TensorV2 << '\n' ;
-  LOG_INFO << "MagFieldUtils::XTWIST        =  " << XTWIST << " mrad\n" ;
-  LOG_INFO << "MagFieldUtils::YTWIST        =  " << YTWIST << " mrad\n" ;
-  LOG_INFO << "MagFieldUtils::SpaceCharge   =  " << SpaceCharge << " Coulombs/epsilon-nought\n" ;
-  LOG_INFO << "MagFieldUtils::SpaceChargeR2 =  " << SpaceChargeR2 << " Coulombs/epsilon-nought" << "  EWRatio = "
-       << SpaceChargeEWRatio << '\n' ;
-
-  if (mDistortionMode & kDistoSmearing) {
-    LOG_INFO << "MagFieldUtils::SmearCoefSC   =  " << SmearCoefSC << '\n';
-    LOG_INFO << "MagFieldUtils::SmearCoefGL   =  " << SmearCoefGL << '\n';
-  }
-
-  if (mDistortionMode & kAbortGap) {
-    LOG_INFO << "MagFieldUtils::AbortGapCoef  =  " << AbortGapChargeCoef << '\n';
-  }
-
-  LOG_INFO << "MagFieldUtils::IFCShift      =  " << IFCShift << " cm\n" ;
-  LOG_INFO << "MagFieldUtils::CathodeV      =  " << CathodeV << " volts\n" ;
-  LOG_INFO << "MagFieldUtils::GG            =  " << GG << " volts\n" ;
-
-  if (mDistortionMode & kPadrow40) {
-    LOG_INFO << "MagFieldUtils::Inner_GLW_V   =  " ;
-
-    for ( int i = 0 ; i < 24 ; i++ ) LOG_INFO << Inner_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
-
-    LOG_INFO << "MagFieldUtils::Outer_GLW_V   =  " ;
-
-    for ( int i = 0 ; i < 24 ; i++ ) LOG_INFO << Outer_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
-  }
-
-  LOG_INFO << "MagFieldUtils::EastClock     =  " << EASTCLOCKERROR << " mrad\n";
-  LOG_INFO << "MagFieldUtils::WestClock     =  " << WESTCLOCKERROR << " mrad\n";
-  LOG_INFO << "MagFieldUtils::Side          =  " ;
-
-  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Side[i] << " " ; LOG_INFO << "Location of Short E=0 / W=1 \n";
-
-  LOG_INFO << "MagFieldUtils::Cage          =  " ;
-
-  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Cage[i] << " " ; LOG_INFO << "Location of Short IFC = 0 / OFC = 1\n";
-
-  LOG_INFO << "MagFieldUtils::Ring          =  " ;
-
-  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Ring[i] << " " ; LOG_INFO << "Rings - Location of Short counting from the CM\n";
-
-  LOG_INFO << "MagFieldUtils::MissingOhms   =  " ;
-
-  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << MissingResistance[i] << " " ; LOG_INFO << "MOhms Missing Resistance\n";
-
-  LOG_INFO << "MagFieldUtils::CompResistor  =  " ;
-
-  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Resistor[i] << " " ; LOG_INFO << "MOhm Compensating Resistor Value\n";
-
-  LOG_INFO << "MagFieldUtils::InnerGridLeak =  " << InnerGridLeakStrength << " " << InnerGridLeakRadius << " " << InnerGridLeakWidth << '\n';
-  LOG_INFO << "MagFieldUtils::MiddlGridLeak =  " << MiddlGridLeakStrength << " " << MiddlGridLeakRadius << " " << MiddlGridLeakWidth << '\n';
-  LOG_INFO << "MagFieldUtils::OuterGridLeak =  " << OuterGridLeakStrength << " " << OuterGridLeakRadius << " " << OuterGridLeakWidth << '\n';
-  LOG_INFO << "MagFieldUtils::deltaVGG      =  " << deltaVGGEast << " V (east) : " << deltaVGGWest << " V (west)\n";
-  LOG_INFO << "MagFieldUtils::GLWeights     =  " ;
-
-  if (mDistortionMode & k3DGridLeak) {
-    for ( int i = 1 ; i < 25 ; i++ ) LOG_INFO << GLWeights[i] << " " ;
-
-    LOG_INFO << '\n';
-  }
-  else if (mDistortionMode & kFullGridLeak) {
-    LOG_INFO << '\n';
-
-    for ( int i = 0 ; i < 24 ; i++ ) {
-      for ( int j = 0 ; j < 96 ; j += 24 ) LOG_INFO << std::fixed << "    " << std::setprecision(2) << GLWeights[i + j];
-
-      LOG_INFO << '\n';
-    }
-  }
-  else LOG_INFO << "N/A\n";
+  //Print(B, OmegaTau);
 
   doingDistortion = false;
   DoOnce = true;
@@ -5850,3 +5774,83 @@ void MagFieldUtils::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
 }
 
 
+void MagFieldUtils::Print(float B[3], float OmegaTau)
+{
+  LOG_INFO << "MagFieldUtils::BField        =  " << B[2] << " kGauss at (0,0,0)" <<  '\n' ;
+  LOG_INFO << "MagFieldUtils::DriftVel      =  " << StarDriftV << " cm/microsec" <<  '\n' ;
+  LOG_INFO << "MagFieldUtils::TPC_Z0        =  " << TPC_Z0 << " cm\n" ;
+  LOG_INFO << "MagFieldUtils::TensorV1+V2   =  " << TensorV1 << " " << TensorV2 << '\n' ;
+  LOG_INFO << "MagFieldUtils::OmegaTau1+2   =  " << OmegaTau* TensorV1 << " " << OmegaTau* TensorV2 << '\n' ;
+  LOG_INFO << "MagFieldUtils::XTWIST        =  " << XTWIST << " mrad\n" ;
+  LOG_INFO << "MagFieldUtils::YTWIST        =  " << YTWIST << " mrad\n" ;
+  LOG_INFO << "MagFieldUtils::SpaceCharge   =  " << SpaceCharge << " Coulombs/epsilon-nought\n" ;
+  LOG_INFO << "MagFieldUtils::SpaceChargeR2 =  " << SpaceChargeR2 << " Coulombs/epsilon-nought" << "  EWRatio = "
+       << SpaceChargeEWRatio << '\n' ;
+
+  if (mDistortionMode & kDistoSmearing) {
+    LOG_INFO << "MagFieldUtils::SmearCoefSC   =  " << SmearCoefSC << '\n';
+    LOG_INFO << "MagFieldUtils::SmearCoefGL   =  " << SmearCoefGL << '\n';
+  }
+
+  if (mDistortionMode & kAbortGap) {
+    LOG_INFO << "MagFieldUtils::AbortGapCoef  =  " << AbortGapChargeCoef << '\n';
+  }
+
+  LOG_INFO << "MagFieldUtils::IFCShift      =  " << IFCShift << " cm\n" ;
+  LOG_INFO << "MagFieldUtils::CathodeV      =  " << CathodeV << " volts\n" ;
+  LOG_INFO << "MagFieldUtils::GG            =  " << GG << " volts\n" ;
+
+  if (mDistortionMode & kPadrow40) {
+    LOG_INFO << "MagFieldUtils::Inner_GLW_V   =  " ;
+
+    for ( int i = 0 ; i < 24 ; i++ ) LOG_INFO << Inner_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
+
+    LOG_INFO << "MagFieldUtils::Outer_GLW_V   =  " ;
+
+    for ( int i = 0 ; i < 24 ; i++ ) LOG_INFO << Outer_GLW_Voltage[i] << " " ; LOG_INFO << "volts\n" ;
+  }
+
+  LOG_INFO << "MagFieldUtils::EastClock     =  " << EASTCLOCKERROR << " mrad\n";
+  LOG_INFO << "MagFieldUtils::WestClock     =  " << WESTCLOCKERROR << " mrad\n";
+  LOG_INFO << "MagFieldUtils::Side          =  " ;
+
+  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Side[i] << " " ; LOG_INFO << "Location of Short E=0 / W=1 \n";
+
+  LOG_INFO << "MagFieldUtils::Cage          =  " ;
+
+  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Cage[i] << " " ; LOG_INFO << "Location of Short IFC = 0 / OFC = 1\n";
+
+  LOG_INFO << "MagFieldUtils::Ring          =  " ;
+
+  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Ring[i] << " " ; LOG_INFO << "Rings - Location of Short counting from the CM\n";
+
+  LOG_INFO << "MagFieldUtils::MissingOhms   =  " ;
+
+  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << MissingResistance[i] << " " ; LOG_INFO << "MOhms Missing Resistance\n";
+
+  LOG_INFO << "MagFieldUtils::CompResistor  =  " ;
+
+  for ( int i = 0 ; i < ShortTableRows ; i++ ) LOG_INFO << Resistor[i] << " " ; LOG_INFO << "MOhm Compensating Resistor Value\n";
+
+  LOG_INFO << "MagFieldUtils::InnerGridLeak =  " << InnerGridLeakStrength << " " << InnerGridLeakRadius << " " << InnerGridLeakWidth << '\n';
+  LOG_INFO << "MagFieldUtils::MiddlGridLeak =  " << MiddlGridLeakStrength << " " << MiddlGridLeakRadius << " " << MiddlGridLeakWidth << '\n';
+  LOG_INFO << "MagFieldUtils::OuterGridLeak =  " << OuterGridLeakStrength << " " << OuterGridLeakRadius << " " << OuterGridLeakWidth << '\n';
+  LOG_INFO << "MagFieldUtils::deltaVGG      =  " << deltaVGGEast << " V (east) : " << deltaVGGWest << " V (west)\n";
+  LOG_INFO << "MagFieldUtils::GLWeights     =  " ;
+
+  if (mDistortionMode & k3DGridLeak) {
+    for ( int i = 1 ; i < 25 ; i++ ) LOG_INFO << GLWeights[i] << " " ;
+
+    LOG_INFO << '\n';
+  }
+  else if (mDistortionMode & kFullGridLeak) {
+    LOG_INFO << '\n';
+
+    for ( int i = 0 ; i < 24 ; i++ ) {
+      for ( int j = 0 ; j < 96 ; j += 24 ) LOG_INFO << std::fixed << "    " << std::setprecision(2) << GLWeights[i + j];
+
+      LOG_INFO << '\n';
+    }
+  }
+  else LOG_INFO << "N/A\n";
+}
