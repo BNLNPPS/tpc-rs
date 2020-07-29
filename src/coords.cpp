@@ -333,13 +333,6 @@ void CoordTransform::SetTpcRotations()
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = false;
 
-  if (!mOldScheme) {
-    LOG_INFO << "StTpcDb::SetTpcRotations use new schema for Rotation matrices\n";
-  }
-  else {
-    LOG_INFO << "StTpcDb::SetTpcRotations use old schema for Rotation matrices\n";
-  }
-
   for (int sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors
     int k;
     int k1 = kSupS2Tpc;
