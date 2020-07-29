@@ -23,9 +23,6 @@
 #include "track_helix.h"
 
 
-//                                    Inner        Outer
-static       double t0IO[2]   = {1.20868e-9, 1.43615e-9}; // recalculated in InducedCharge
-
 TF1F Simulator::fgTimeShape3[2] = {
   TF1F("TimeShape3Inner;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7),
   TF1F("TimeShape3Outer;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7)
@@ -66,7 +63,8 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
   dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, 0),
-  digi_(cfg_)
+  digi_(cfg_),
+  alpha_gain_variations_()
 {
   //SETBIT(options_, kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
@@ -99,70 +97,14 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     LOG_INFO << "Error: Model for dE/dx simulation not set\n";
   }
 
+  double t0IO[2];
+  InitAlphaGainVariations(t0IO);
+
   double TimeBinWidth = 1. / cfg_.S<starClockOnl>().frequency;
-  double anodeWirePitch  = cfg_.S<tpcWirePlanes>().anodeWirePitch;
-  double anodeWireRadius = cfg_.S<tpcWirePlanes>().anodeWireRadius;
 
   // Shapers
   double timeBinMin = -0.5;
   double timeBinMax = 44.5;
-  double CathodeAnodeGap[2] = {0.2, 0.4};
-  double innerSectorAnodeVoltage[24];
-  double outerSectorAnodeVoltage[24];
-
-  for (int sector = 1; sector <= num_sectors_; sector++) {
-    innerSectorAnodeVoltage[sector - 1] = 0;
-    outerSectorAnodeVoltage[sector - 1] = 0;
-    int nAliveInner = 0;
-    int nAliveOuter = 0;
-
-    for (int row = 1; row <= cfg_.S<tpcPadPlanes>().padRows; row++) {
-      if (cfg_.C<St_tpcPadConfigC>().IsRowInner(sector, row)) {
-        nAliveInner++;
-        innerSectorAnodeVoltage[sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
-      }
-      else {
-        nAliveOuter++;
-        outerSectorAnodeVoltage[sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
-      }
-    }
-
-    if (! nAliveInner && ! nAliveOuter) {
-      LOG_INFO << "Illegal date/time. Tpc sector " << sector << " Anode Voltage is not set to run condition: AliveInner: " << nAliveInner
-               << "\tAliveOuter: " << nAliveOuter
-               << "\tStop the run\n";
-      assert(nAliveInner || nAliveOuter);
-    }
-    else {
-      if (nAliveInner > 1) innerSectorAnodeVoltage[sector - 1] /= nAliveInner;
-      if (nAliveOuter > 1) outerSectorAnodeVoltage[sector - 1] /= nAliveOuter;
-    }
-
-    for (int io = 0; io < 2; io++) {// In/Out
-      if (io == 0) {
-        if (sector > 1 && std::abs(innerSectorAnodeVoltage[sector - 1] - innerSectorAnodeVoltage[sector - 2]) < 1) {
-          InnerAlphaVariation[sector - 1] = InnerAlphaVariation[sector - 2];
-        }
-        else {
-          InnerAlphaVariation[sector - 1] = InducedCharge(anodeWirePitch,
-                                            CathodeAnodeGap[io],
-                                            anodeWireRadius,
-                                            innerSectorAnodeVoltage[sector - 1], t0IO[io]);
-        }
-      }
-      else {
-        if (sector > 1 && std::abs(outerSectorAnodeVoltage[sector - 1] - outerSectorAnodeVoltage[sector - 2]) < 1) {
-          OuterAlphaVariation[sector - 1] = OuterAlphaVariation[sector - 2];
-        }
-        else {
-          OuterAlphaVariation[sector - 1] = InducedCharge(anodeWirePitch,
-                                            CathodeAnodeGap[io],
-                                            anodeWireRadius,
-                                            outerSectorAnodeVoltage[sector - 1], t0IO[io]);
-        }
-      }
-    }
-  }
 
   for (int io = 0; io < 2; io++) {// In/Out
     FuncParams_t params3{
@@ -303,6 +245,44 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
 
   funcs[io][sector - 1].SetRange(timeBinMin, t);
   funcs[io][sector - 1].Save(timeBinMin, t, 0, 0, 0, 0);
+}
+
+
+void Simulator::InitAlphaGainVariations(double t0IO[2])
+{
+  alpha_gain_variations_.resize(num_sectors_*2, 0);
+
+  double anode_wire_pitch  = cfg_.S<tpcWirePlanes>().anodeWirePitch;
+  double anode_wire_radius = cfg_.S<tpcWirePlanes>().anodeWireRadius;
+  double cathod_anode_gap[2] = {0.2, 0.4};
+  std::vector<double> avg_anode_voltage(num_sectors_*2, 0);
+
+  for (int sector = 1; sector <= num_sectors_; sector++)
+  {
+    int n_inner = 0, n_outer = 0;
+    for (int row = 1; row <= cfg_.S<tpcPadPlanes>().padRows; row++) {
+      if (tpcrs::IsInner(row, cfg_)) {
+        n_inner++;
+        avg_anode_voltage[num_sectors_*0 + sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
+      }
+      else {
+        n_outer++;
+        avg_anode_voltage[num_sectors_*1 + sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
+      }
+    }
+
+    avg_anode_voltage[num_sectors_*0 + sector - 1] /= n_inner;
+    avg_anode_voltage[num_sectors_*1 + sector - 1] /= n_outer;
+
+    for (int io = kInner; io <= kOuter; io++)
+    {
+      double volt   = avg_anode_voltage[num_sectors_*io + sector - 1];
+      double charge = InducedCharge(anode_wire_pitch, cathod_anode_gap[io],
+                                    anode_wire_radius, volt, t0IO[io]);
+
+      alpha_gain_variations_[num_sectors_*io + sector - 1] = charge;
+    }
+  }
 }
 
 
@@ -1048,7 +1028,6 @@ void Simulator::LoopOverElectronsInCluster(
 
     // Transport to wire
     double y = xyzE.position.y;
-    double alphaVariation = InnerAlphaVariation[sector - 1];
 
     double firstOuterSectorAnodeWire = cfg_.S<tpcWirePlanes>().firstOuterSectorAnodeWire;
     double anodeWirePitch            = cfg_.S<tpcWirePlanes>().anodeWirePitch;
@@ -1066,7 +1045,6 @@ void Simulator::LoopOverElectronsInCluster(
       // In TPC the first and last wires are fat ones
       if (WireIndex <= 1 || WireIndex >= cfg_.S<tpcWirePlanes>().numOuterSectorAnodeWires) continue;
       yOnWire = firstOuterSectorAnodeWire + (WireIndex - 1) * anodeWirePitch;
-      alphaVariation = OuterAlphaVariation[sector - 1];
     }
 
     double distanceToWire = y - yOnWire; // Calculated effective distance to wire affected by Lorentz shift
@@ -1085,6 +1063,10 @@ void Simulator::LoopOverElectronsInCluster(
 
     xOnWire += distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
     zOnWire += std::abs(distFocused);
+
+    double alphaVariation = (y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) ?
+                             alpha_gain_variations_[num_sectors_*0 + sector - 1] :
+                             alpha_gain_variations_[num_sectors_*1 + sector - 1];
 
     if (! iGroundWire ) gain_gas *= std::exp( alphaVariation);
     else                gain_gas *= std::exp(-alphaVariation);

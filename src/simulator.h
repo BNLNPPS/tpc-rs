@@ -126,6 +126,8 @@ class Simulator
   void InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
     double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);
 
+  void InitAlphaGainVariations(double t0IO[2]);
+
   static TF1F fgTimeShape3[2];
   static TF1F fgTimeShape0[2];
   int    options_;
@@ -143,11 +145,10 @@ class Simulator
   TF1F   mPolya[2];
   TF1    mHeed;
   StTpcdEdxCorrection dEdx_correction_;
-  double InnerAlphaVariation[24];
-  double OuterAlphaVariation[24];
   double xOnWire, yOnWire, zOnWire;
 
   tpcrs::DigiChannelMap digi_;
+  std::vector<double> alpha_gain_variations_;
 };
 
 
