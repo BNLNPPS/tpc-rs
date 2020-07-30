@@ -207,7 +207,6 @@ MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransfor
 void MagFieldUtils::GetDistoSmearing (int mode)
 {
   fCalibResolutions = ((mode & kDistoSmearing) > 0 ? &cfg_.C<St_tpcCalibResolutionsC>() : 0);
-  mRandom = (fCalibResolutions ? new TRandom(time(NULL)) : 0);
 }
 
 
@@ -398,7 +397,7 @@ void MagFieldUtils::GetSpaceChargeR2 ()
   scalers = new_scalers;
 
   SpaceChargeR2      = fSpaceChargeR2->getSpaceChargeCoulombs(cfg_) ;
-  SmearCoefSC        = (fCalibResolutions ? mRandom->Gaus(1, fCalibResolutions->SpaceCharge()) : 1.0);
+  SmearCoefSC        = (fCalibResolutions ? gRandom->Gaus(1, fCalibResolutions->SpaceCharge()) : 1.0);
   SpaceChargeEWRatio = fSpaceChargeR2->getEWRatio() ;
 }
 
@@ -463,7 +462,7 @@ void MagFieldUtils::GetGridLeak ( int mode )
   }
 
   SmearCoefGL = (fCalibResolutions && fCalibResolutions->GridLeak() > 0 ?
-                 mRandom->Gaus(1, fCalibResolutions->GridLeak()) : 1.0);
+                 gRandom->Gaus(1, fCalibResolutions->GridLeak()) : 1.0);
 }
 
 
