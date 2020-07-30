@@ -41,11 +41,9 @@ class Configurator
 {
  public:
 
-  Configurator(std::string cfgname = "");
+  Configurator(std::string cfgname, std::string filename = "");
 
-  std::string Locate(std::string filename = "") const;
-
-  std::string File() const { return Locate(name + ".yaml"); }
+  std::string Locate(std::string filename) const;
 
   YAML::Node YAML(std::string taxon) const { return yaml[taxon]; }
 

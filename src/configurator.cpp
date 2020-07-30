@@ -6,7 +6,7 @@
 
 namespace tpcrs {
 
-Configurator::Configurator(std::string configname) :
+Configurator::Configurator(std::string configname, std::string filename) :
   name(configname)
 {
   std::string paths(TPCRS_CONFIG_SEARCH_PATHS);
@@ -20,7 +20,10 @@ Configurator::Configurator(std::string configname) :
   }
   search_paths.push_back(paths.substr(last));
 
-  yaml = YAML::LoadFile(Configurator::File());
+  if (filename.empty())
+    filename = Locate(name + ".yaml");
+
+  yaml = YAML::LoadFile(filename);
 }
 
 
