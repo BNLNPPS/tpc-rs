@@ -191,7 +191,6 @@ class MagFieldUtils
   int    iterationFailCounter       ; // Count of number of iteration fails
   bool   doingDistortion            ; // Flag on whether doing or undoing distortions
   bool   usingCartesian             ; // Using Cartesian or cylindrical coordinates
-  TRandom* mRandom                    ; // Random number generator (used in distortion smearing)
   float  SmearCoefSC                ; // Distortion smearing coefficient for SpaceCharge
   float  SmearCoefGL                ; // Distortion smearing coefficient for GridLeak
   TArrayF* AbortGapCharges            ; // Charges deposited into the TPC due to Abort Gap Cleaning events
