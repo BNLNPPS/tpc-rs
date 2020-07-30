@@ -1,6 +1,8 @@
 #ifndef TPCRS_TPCRS_H_
 #define TPCRS_TPCRS_H_
 
+#include <iomanip>
+#include <iostream>
 #include <numeric>
 #include <vector>
 
@@ -122,6 +124,64 @@ struct SimulatedHit
   /// log_10(E_kin/mass) -- Deprecated
   float lgam;
 };
+
+
+inline std::istream& operator>>(std::istream& is, SimulatedHit& hit)
+{
+  int p = 6; // precision
+
+  is >> std::fixed >> std::setfill('0')
+     >> std::setw(4)      >> hit.volume_id
+     >> std::setfill(' ')
+     >> std::setw(6)      >> hit.track_id
+     >> std::setw(p + 6)  >> hit.s
+     >> std::setw(6)      >> hit.particle_id
+     >> std::setw(p + 6)  >> hit.x[0]
+     >> std::setw(p + 6)  >> hit.x[1]
+     >> std::setw(p + 6)  >> hit.x[2]
+     >> std::setw(p + 6)  >> hit.p[0]
+     >> std::setw(p + 6)  >> hit.p[1]
+     >> std::setw(p + 6)  >> hit.p[2]
+     >> std::scientific
+     >> std::setw(p + 10) >> hit.de
+     >> std::fixed
+     >> std::setw(p + 6)  >> hit.ds
+     >> std::scientific
+     >> std::setw(p + 10) >> hit.tof
+     >> std::fixed
+     >> std::setw(p + 6)  >> hit.lgam;
+
+  return is;
+}
+
+
+inline std::ostream& operator<<(std::ostream& os, const SimulatedHit& hit)
+{
+  int p = 6; // precision
+
+  os << std::fixed << std::setfill('0')
+     << std::setw(4)      << hit.volume_id%10000
+     << std::setfill(' ')
+     << std::setw(6)      << hit.track_id
+     << std::setw(p + 6)  << hit.s
+     << std::setw(6)      << hit.particle_id
+     << std::setw(p + 6)  << hit.x[0]
+     << std::setw(p + 6)  << hit.x[1]
+     << std::setw(p + 6)  << hit.x[2]
+     << std::setw(p + 6)  << hit.p[0]
+     << std::setw(p + 6)  << hit.p[1]
+     << std::setw(p + 6)  << hit.p[2]
+     << std::scientific
+     << std::setw(p + 10) << hit.de
+     << std::fixed
+     << std::setw(p + 6)  << hit.ds
+     << std::scientific
+     << std::setw(p + 10) << hit.tof
+     << std::fixed
+     << std::setw(p + 6)  << hit.lgam;
+
+  return os;
+}
 
 
 /**
