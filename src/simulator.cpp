@@ -422,12 +422,14 @@ void Simulator::Simulate(GeneratedHitIt first_hit, GeneratedHitIt last_hit, Digi
       nHitsInTheSector++;
     } // end do loop over segments for a given particle
 
+    int channels_with_charge = std::count_if(binned_charge.begin(), binned_charge.end(),
+        [](tpcrs::SimulatedCharge& ch) { return ch.Sum > 0; });
+
     if (nHitsInTheSector) {
       DigitizeSector(sector, binned_charge, digi_data);
-
     }
 
-    LOG_INFO << "Done with sector " << sector << ", total hits: " << nHitsInTheSector << '\n';
+    LOG_INFO << "Done with sector " << sector << ", total hits: " << nHitsInTheSector << " " << channels_with_charge << '\n';
     sector++;
   }
 
