@@ -1198,11 +1198,6 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
 
 namespace tpcrs {
 
-using SimuHitIt = std::vector<SimulatedHit>::iterator;
-using DigiInserter = std::back_insert_iterator<std::vector<DigiHit>>;
-using DistInserter = std::back_insert_iterator<std::vector<DistortedHit>>;
-
-
 template<>
 DistInserter distort(SimuHitIt first1, SimuHitIt last1, DistInserter d_first, const Configurator& cfg)
 {

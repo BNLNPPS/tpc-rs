@@ -15,6 +15,11 @@
 #include "mag_field_utils.h"
 
 
+using SimuHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
+using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiHit>>;
+using DistInserter = std::back_insert_iterator<std::vector<tpcrs::DistortedHit>>;
+
+
 class Simulator
 {
  public:
@@ -26,10 +31,6 @@ class Simulator
   void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digi_data, OutputIt2);
 
  private:
-
-  using SimuHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
-  using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiHit>>;
-  using DistInserter = std::back_insert_iterator<std::vector<tpcrs::DistortedHit>>;
 
   struct TrackSegment {
     int charge;
