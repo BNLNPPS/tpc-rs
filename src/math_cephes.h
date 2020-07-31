@@ -14,8 +14,7 @@
 //
 // root/math/mathcore/src/SpecFuncCephes.h
 
-#ifndef TPCRS_MATH_CEPHES_H_
-#define TPCRS_MATH_CEPHES_H_
+#pragma once
 
 namespace tpcrs {
 
@@ -105,5 +104,3 @@ double Polynomialeval(double x, double* a, unsigned int N);
 double Polynomial1eval(double x, double* a, unsigned int N);
 
 }
-
-#endif

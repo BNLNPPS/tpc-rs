@@ -1,5 +1,4 @@
-#ifndef TPCRS_CONFIGURATOR_H_
-#define TPCRS_CONFIGURATOR_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -89,5 +88,3 @@ class Configurator
 };
 
 }
-
-#endif

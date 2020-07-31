@@ -1,5 +1,4 @@
-#ifndef TPCRS_DEDX_CORRECTION_H_
-#define TPCRS_DEDX_CORRECTION_H_
+#pragma once
 
 #include "config_structs.h"
 #include "struct_containers.h"
@@ -170,5 +169,3 @@ struct dEdxY2_t
   int    npads; // cluster size in pads
   int    ntmbks;// clustre size in time buckets
 };
-
-#endif

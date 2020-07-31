@@ -1,5 +1,4 @@
-#ifndef TPCRS_STRUCT_CONTAINERS_H_
-#define TPCRS_STRUCT_CONTAINERS_H_
+#pragma once
 
 #include "TArrayF.h"
 #include "TArrayD.h"
@@ -870,5 +869,3 @@ bool IsInner(int row, const Configurator& cfg);
 double RadialDistanceAtRow(int row, const Configurator& cfg);
 
 }
-
-#endif

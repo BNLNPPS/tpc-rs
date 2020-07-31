@@ -1,5 +1,4 @@
-#ifndef TPCRS_COORDS_H_
-#define TPCRS_COORDS_H_
+#pragma once
 
 #include <array>
 #include <cmath>
@@ -435,5 +434,3 @@ struct CoordTransform
   const TGeoHMatrix &Pad2Tpc(int sector = 1, int row = 1)   const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2Tpc  : kPadOuter2Tpc;  return TpcRot(sector, k);}
   const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef TPCRS_CONFIG_STRUCTS_H_
-#define TPCRS_CONFIG_STRUCTS_H_
+#pragma once
 
 #include <cassert>
 #include <iostream>
@@ -74,5 +73,3 @@ struct ConfigStruct : Base_t
 };
 
 }
-
-#endif

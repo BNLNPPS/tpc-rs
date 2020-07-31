@@ -1,5 +1,4 @@
-#ifndef TPCRS_BICHSEL_H_
-#define TPCRS_BICHSEL_H_
+#pragma once
 
 #include "TString.h"
 
@@ -90,5 +89,3 @@ class Bichsel
   double IfitTrsB(int part, double log10bg) const {return m_dEdxParameterization->Get(IfitTrsB(part), log10bg);}  // Estimation for Ifit - Bichsel from TpcRS
   double IfitTrsS(int part, double log10bg) const {return m_dEdxParameterization->Get(IfitTrsS(part), log10bg);}  // Estimation for relative sigma beta*gamma dependence for Ifit from TpcRS normalized to MIP
 };
-
-#endif

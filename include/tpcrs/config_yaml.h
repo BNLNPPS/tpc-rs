@@ -1,5 +1,4 @@
-#ifndef TPCRS_CONFIG_YAML_H_
-#define TPCRS_CONFIG_YAML_H_
+#pragma once
 
 #include <algorithm>
 #include <array>
@@ -2234,5 +2233,3 @@ struct convert<tpcPadrowT0> {
   }
 };
 }
-
-#endif

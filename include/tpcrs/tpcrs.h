@@ -1,5 +1,4 @@
-#ifndef TPCRS_TPCRS_H_
-#define TPCRS_TPCRS_H_
+#pragma once
 
 #include <iomanip>
 #include <iostream>
@@ -259,5 +258,3 @@ struct DigiChannelMap
 };
 
 }
-
-#endif

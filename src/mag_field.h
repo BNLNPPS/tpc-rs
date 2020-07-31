@@ -4,8 +4,7 @@
  * Description: the STAR Magnetic Field
   ***********************************************************************/
 
-#ifndef TPCRS_MAG_FIELD_H_
-#define TPCRS_MAG_FIELD_H_
+#pragma once
 
 #include <cmath>
 
@@ -79,5 +78,3 @@ class MagField
   void    B3DField ( const float x[], float B[] ) ;
   const TGeoRotation &MagFieldRotation() {return * &fMagFieldRotation;}
 };
-
-#endif

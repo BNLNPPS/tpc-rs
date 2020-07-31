@@ -1,3 +1,5 @@
+#pragma once
+
 namespace TCL {
 
 #define TCL_MXMAD(n_,a,b,c,i,j,k)                       \

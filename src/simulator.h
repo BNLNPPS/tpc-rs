@@ -1,5 +1,4 @@
-#ifndef TPCRS_SIMULATOR_H_
-#define TPCRS_SIMULATOR_H_
+#pragma once
 
 #include <vector>
 #include <utility>
@@ -155,5 +154,3 @@ class Simulator
 
 template<>
 void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data, DistInserter);
-
-#endif

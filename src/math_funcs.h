@@ -1,5 +1,4 @@
-#ifndef TPCRS_MATH_FUNCS_H_
-#define TPCRS_MATH_FUNCS_H_
+#pragma once
 
 namespace tpcrs {
 
@@ -32,5 +31,3 @@ double Gamma(double a,double x);
 double GammaDist(double x, double gamma, double mu=0, double beta=1);
 
 }
-
-#endif

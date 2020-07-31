@@ -3,8 +3,7 @@
  *
  * Description: Utilities for the Magnetic Field
  ***********************************************************************/
-#ifndef TPCRS_MAG_FIELD_UTILS_H_
-#define TPCRS_MAG_FIELD_UTILS_H_
+#pragma once
 
 #include <cmath>
 
@@ -333,5 +332,3 @@ class MagFieldUtils
   /// Print out parameters
   void Print(float B[3], float OmegaTau);
 };
-
-#endif

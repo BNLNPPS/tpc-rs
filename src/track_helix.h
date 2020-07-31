@@ -1,5 +1,4 @@
-#ifndef TPCRS_TRACK_HELIX_H_
-#define TPCRS_TRACK_HELIX_H_
+#pragma once
 
 #include <cmath>
 #include <ostream>
@@ -162,5 +161,3 @@ class TrackHelix
 int operator== (const TrackHelix &, const TrackHelix &);
 int operator!= (const TrackHelix &, const TrackHelix &);
 std::ostream &operator<<(std::ostream &, const TrackHelix &);
-
-#endif

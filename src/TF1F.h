@@ -1,5 +1,4 @@
-#ifndef TPCRS_TF1F_H_
-#define TPCRS_TF1F_H_
+#pragma once
 
 #include "TF1.h"
 #include <string>
@@ -55,4 +54,3 @@ class TF1F : public TF1
   int    fStep;
 
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef TPCRS_DEDX_PARAMETERIZATION_H_
-#define TPCRS_DEDX_PARAMETERIZATION_H_
+#pragma once
 
 #include "TH1.h"
 #include "TH3.h"
@@ -149,5 +148,3 @@ class dEdxParameterization
   double IfitTrsB(int part, double log10bg) const {return Get(fTrs[part][4], log10bg);}  // Estimation for Ifit - Bichsel from TpcRS
   double IfitTrsS(int part, double log10bg) const {return Get(fTrs[part][5], log10bg);}  // Estimation for relative sigma beta*gamma dependence for Ifit from TpcRS normalized to MIP
 };
-
-#endif

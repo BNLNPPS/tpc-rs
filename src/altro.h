@@ -7,6 +7,8 @@
 	*
 	*	\verbinclude Altro/Altro.h.log
 */
+#pragma once
+
 #include <iostream>
 #include <string>
 

@@ -1,5 +1,4 @@
-#ifndef TPCRS_CONFIG_TYPE_H_
-#define TPCRS_CONFIG_TYPE_H_
+#pragma once
 
 struct asic_thresholds {
   int thresh_lo;
@@ -839,5 +838,3 @@ struct tss_tsspar {
   float y_laser; /* local y of laser point[cm] across row */
   float z_laser; /* z drift length of pointlaser source(cm) */
 };
-
-#endif
