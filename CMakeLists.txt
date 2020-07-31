@@ -6,7 +6,7 @@ include(CTest)
 
 set(TPCRS_VERSION_MAJOR 0 CACHE STRING "major version of tpc-rs" FORCE)
 set(TPCRS_VERSION_MINOR 0 CACHE STRING "minor version of tpc-rs" FORCE)
-set(TPCRS_VERSION_PATCH 11 CACHE STRING "patch version of tpc-rs" FORCE)
+set(TPCRS_VERSION_PATCH 12 CACHE STRING "patch version of tpc-rs" FORCE)
 set(TPCRS_VERSION "${TPCRS_VERSION_MAJOR}.${TPCRS_VERSION_MINOR}.${TPCRS_VERSION_PATCH}" CACHE STRING "version of tpc-rs" FORCE)
 
 # By default build shared libraries but allow the user to change if desired
