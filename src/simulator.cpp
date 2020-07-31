@@ -42,9 +42,9 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   num_sectors_(cfg_.S<tpcDimensions>().numberOfSectors),
   max_timebins_(512),
   options_(0),
-  mdNdx(nullptr),
-  mdNdxL10(nullptr),
-  mdNdEL10(nullptr),
+  dNdx_(),
+  dNdx_log10_(),
+  dNdE_log10_(),
   mShaperResponses{
     std::vector<TF1F>(num_sectors_, TF1F("ShaperFuncInner;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7)),
     std::vector<TF1F>(num_sectors_, TF1F("ShaperFuncOuter;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7))
@@ -72,22 +72,18 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   //SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
-    TFile inner(cfg_.Locate("dNdE_Bichsel.root").c_str());
-    mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
-    mdNdEL10->SetDirectory(0);
+    TFile file_dNdE(cfg_.Locate("dNdE_Bichsel.root").c_str());
+    dNdE_log10_ = *static_cast<TH1D*>(file_dNdE.Get("dNdEL10"));
 
-    TFile outer(cfg_.Locate("dNdx_Bichsel.root").c_str());
-    mdNdx = (TH1D*) outer.Get("dNdx"); assert(mdNdx);
-    mdNdx->SetDirectory(0);
+    TFile file_dNdx(cfg_.Locate("dNdx_Bichsel.root").c_str());
+    dNdx_ = *static_cast<TH1D*>(file_dNdx.Get("dNdx"));
   }
   else if (TESTBIT(options_, kHEED)) {
-    TFile inner(cfg_.Locate("dNdx_Heed.root").c_str());
-    mdNdEL10 = (TH1D*) inner.Get("dNdEL10"); assert(mdNdEL10);
-    mdNdEL10->SetDirectory(0);
+    TFile datfile(cfg_.Locate("dNdx_Heed.root").c_str());
+    dNdE_log10_ = *static_cast<TH1D*>(datfile.Get("dNdEL10"));
 
-    TFile outer(cfg_.Locate("dNdx_Heed.root").c_str());
-    mdNdxL10 = (TH1D*) outer.Get("dNdxL10"); assert(mdNdxL10);
-    mdNdxL10->SetDirectory(0);
+    TFile file_dNdx(cfg_.Locate("dNdx_Heed.root").c_str());
+    dNdx_log10_ = *static_cast<TH1D*>(file_dNdx.Get("dNdxL10"));
   }
 
   double t0IO[2];
@@ -205,14 +201,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
 
   // HEED function to generate Ec, default w = 26.2
   mHeed.SetParameter(0, cfg_.S<TpcResponseSimulator>().W);
-}
-
-
-Simulator::~Simulator()
-{
-  delete mdNdx;
-  delete mdNdxL10;
-  delete mdNdEL10;
 }
 
 
@@ -400,8 +388,10 @@ double Simulator::GetNoPrimaryClusters(double betaGamma, int charge)
   double beta = betaGamma / std::sqrt(1.0 + betaGamma * betaGamma);
   double dNdx = 0;
 
-  if      (mdNdx   ) dNdx = mdNdx->Interpolate(betaGamma);
-  else if (mdNdxL10) dNdx = mdNdxL10->Interpolate(std::log10(betaGamma));
+  if (TESTBIT(options_, kBICHSEL))
+    dNdx = dNdx_.Interpolate(betaGamma);
+  else if (TESTBIT(options_, kHEED))
+    dNdx = dNdx_log10_.Interpolate(std::log10(betaGamma));
 
   double Q_eff = std::abs(charge % 100);
 
@@ -917,14 +907,11 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
       if (Tmax <= cfg_.S<TpcResponseSimulator>().W / 2 * eV) break;
 
       NP = GetNoPrimaryClusters(betaGamma, segment.charge);
-      dE = std::exp(cLog10 * mdNdEL10->GetRandom());
+      dE = std::exp(cLog10 * dNdE_log10_.GetRandom());
     }
     else {
       dS = - std::log(gRandom->Rndm()) / NP;
-
-      if (mdNdEL10) dE = std::exp(cLog10 * mdNdEL10->GetRandom());
-      else          dE = cfg_.S<TpcResponseSimulator>().W *
-                         gRandom->Poisson(cfg_.S<TpcResponseSimulator>().Cluster);
+      dE = std::exp(cLog10 * dNdE_log10_.GetRandom());
     }
 
     double E = dE * eV;

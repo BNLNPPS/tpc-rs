@@ -24,7 +24,6 @@ class Simulator
  public:
 
   Simulator(const tpcrs::Configurator& cfg);
-  ~Simulator();
 
   template<typename InputIt, typename OutputIt1, typename OutputIt2>
   void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digi_data, OutputIt2);
@@ -132,13 +131,16 @@ class Simulator
   static TF1F fgTimeShape3[2];
   static TF1F fgTimeShape0[2];
   int    options_;
-  TH1D*  mdNdx;
-  TH1D*  mdNdxL10;
+
+  /// The number of primary electrons per unit length as a function of
+  /// beta*gamma
+  TH1D  dNdx_;
+  TH1D  dNdx_log10_;
 
   /// A probability distribution for energy lost by primary electrons.
   /// Can be parameterized as
-  /// dE = cfg_.S<TpcResponseSimulator>().W * gRandom->Poisson(cfg_.S<TpcResponseSimulator>().Cluster);
-  TH1D*  mdNdEL10;
+  /// dE = TpcResponseSimulator.W * gRandom->Poisson(TpcResponseSimulator.Cluster);
+  TH1D  dNdE_log10_;
 
   std::array<std::vector<TF1F>, 2>  mShaperResponses;
   std::array<std::vector<TF1F>, 2>  mChargeFraction;
