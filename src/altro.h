@@ -1,23 +1,13 @@
-/**		@file Altro.h
-	*	@brief This the header File for the Altro class
-	*
-	*	@author Roland Bramm
-	*	@version $LastChangedRevision: 397 $
-	*	@date    $LastChangedDate: 2004-05-11 10:11:49 +0200 (Tue, 11 May 2004) $
-	*
-	*	\verbinclude Altro/Altro.h.log
-*/
 #pragma once
 
 #include <iostream>
 #include <string>
 
-/*
-g++ -c -o Altro.o Altro.C
-g++  Altro.o -o Altromain.app Altromain.C
-g++ -o Altromain.app Altro.C Altromain.C
-*/
 
+/**
+ * @author Roland Bramm
+ * @date   11 May 2004)
+ */
 class Altro
 {
  public:

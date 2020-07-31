@@ -193,12 +193,11 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
 
   if (dx <= 0 || (dEU <= 0 && adcCF <= 0)) return 3;
 
-  int channel = cfg_.C<St_TpcAvgPowerSupplyC>().ChannelFromRow(sector, row);
-  CdEdx.channel = channel;
+  CdEdx.channel = cfg_.C<St_TpcAvgPowerSupplyC>().ChannelFromRow(sector, row);
 
   CdEdx.Voltage = cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
   CdEdx.Crow    = cfg_.C<St_TpcAvgCurrentC>().AvCurrRow(sector, row);
-  double    Qcm      = cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // C/cm
+  double Qcm    = cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // C/cm
   CdEdx.Qcm     = 1e6 * Qcm; // uC/cm
 
   double ZdriftDistance = CdEdx.ZdriftDistance;
@@ -336,9 +335,9 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
       l = std::min(nrows - 1, static_cast<int>(kTpcOutIn));
     else {
       if (nrows == cfg_.S<tpcPadPlanes>().padRows) l = row - 1;
-      else if (nrows == 192) {l = 8 * (sector - 1) + channel - 1; assert(l == (cor + l)->idx - 1);}
+      else if (nrows == 192) {l = 8 * (sector - 1) + CdEdx.channel - 1; assert(l == (cor + l)->idx - 1);}
       else if (nrows ==  48) {l = 2 * (sector - 1) + kTpcOutIn;}
-      else if (nrows ==   6) {l =            kTpcOutIn;     if (sector > 12) l += 3;}
+      else if (nrows ==   6) {l =                    kTpcOutIn;     if (sector > 12) l += 3;}
       else if (nrows ==   4) {l = std::min(static_cast<int>(kTpcOutIn), 1); if (sector > 12) l += 2;}
     }
 

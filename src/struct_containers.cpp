@@ -954,14 +954,18 @@ float GainCorrection(int sector, int row, const tpcrs::Configurator& cfg)
   double V_nominal = 1390;
   float V = 0;
   float gain = 0;
-  if (row <= cfg.C<St_tpcPadConfigC>().innerPadRows(sector)) {l = 1; V_nominal = 1170;}
+  if (IsInner(row, cfg)) {l = 1; V_nominal = 1170;}
   const St_tpcGainCorrectionC& gC = cfg.C<St_tpcGainCorrectionC>();
+
   int NRows = gC.GetNRows();
   if (l >= NRows) return gain;
+
   V = cfg.C<St_tpcAnodeHVavgC>().voltagePadrow(sector,row);
   if (V > 0) {
     double v = V - V_nominal;
-    if (v < gC.min(l) || v > gC.max(l)) return gain;
+    if (v < gC.min(l) || v > gC.max(l))
+      return 0;
+
     if (gC.min(l) < -450) {
       // if range was expanded below 150 V then use only the linear approximation
       gain  = std::exp(gC.CalcCorrection(l,v, 0., 2));

@@ -15,12 +15,12 @@ OPTION(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libr
 # Add to path in order to pick up the FindXXX.cmake files included in this project
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Our code requires a compiler with c++11 support
+# A compiler with c++11 support is required
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # This library depends on ROOT
-find_package(ROOT REQUIRED COMPONENTS Cint Table MathMore Geom)
+find_package(ROOT REQUIRED COMPONENTS Cint MathMore Geom)
 
 # In case of 32-bit ROOT add the compatible compiler flag
 if(${ROOT_CXX_FLAGS} MATCHES "-m32")

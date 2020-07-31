@@ -138,8 +138,8 @@ class Simulator
 
   void InitAlphaGainVariations(double t0IO[2]);
 
-  static TF1F fgTimeShape3[2];
-  static TF1F fgTimeShape0[2];
+  static TF1 fgTimeShape3[2];
+  static TF1 fgTimeShape0[2];
   int    options_;
 
   /// The number of primary electrons per unit length as a function of

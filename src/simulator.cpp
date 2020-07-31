@@ -23,12 +23,12 @@
 #include "track_helix.h"
 
 
-TF1F Simulator::fgTimeShape3[2] = {
+TF1 Simulator::fgTimeShape3[2] = {
   TF1F("TimeShape3Inner;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7),
   TF1F("TimeShape3Outer;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7)
 };
 
-TF1F Simulator::fgTimeShape0[2] = {
+TF1 Simulator::fgTimeShape0[2] = {
   TF1F("TimeShape0Inner;Time [s];Signal", Simulator::shapeEI, 0, 1, 7),
   TF1F("TimeShape0Outer;Time [s];Signal", Simulator::shapeEI, 0, 1, 7)
 };
@@ -83,11 +83,11 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
   double t0IO[2];
   InitAlphaGainVariations(t0IO);
 
-  double TimeBinWidth = 1. / cfg_.S<starClockOnl>().frequency;
+  double timebin_width = 1. / cfg_.S<starClockOnl>().frequency;
 
   // Shapers
-  double timeBinMin = -0.5;
-  double timeBinMax = 44.5;
+  double timebin_min = -0.5;
+  double timebin_max = 44.5;
 
   for (int io = 0; io < 2; io++) {// In/Out
     FuncParams_t params3{
@@ -95,17 +95,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
       {"tauF",  cfg_.S<TpcResponseSimulator>().tauF},
       {"tauP",  cfg_.S<TpcResponseSimulator>().tauP},
       {"tauI",  cfg_.S<TpcResponseSimulator>().tauIntegration},
-      {"width", TimeBinWidth},
-      {"tauC",  0},
-      {"io",    io}
-    };
-
-    FuncParams_t params0{
-      {"t0",    t0IO[io]},
-      {"tauF",  0},
-      {"tauP",  0},
-      {"tauI",  io ? cfg_.S<TpcResponseSimulator>().tauXO : cfg_.S<TpcResponseSimulator>().tauXI},
-      {"width", TimeBinWidth},
+      {"width", timebin_width},
       {"tauC",  0},
       {"io",    io}
     };
@@ -115,17 +105,26 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
       fgTimeShape3[io].SetParName(i, params3[i].first.c_str());
       fgTimeShape3[io].SetParameter(i, params3[i].second);
     }
-    fgTimeShape3[io].SetRange(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
-    params3[5].second = fgTimeShape3[io].Integral(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
+    fgTimeShape3[io].SetRange(timebin_min * timebin_width, timebin_max * timebin_width);
+    params3[5].second = fgTimeShape3[io].Integral(timebin_min * timebin_width, timebin_max * timebin_width);
 
     // new electronics only integration
-    params0[5].second = io ? cfg_.S<TpcResponseSimulator>().tauCO : cfg_.S<TpcResponseSimulator>().tauCI;
+    FuncParams_t params0{
+      {"t0",    t0IO[io]},
+      {"tauF",  0},
+      {"tauP",  0},
+      {"tauI",  io ? cfg_.S<TpcResponseSimulator>().tauXO : cfg_.S<TpcResponseSimulator>().tauXI},
+      {"width", timebin_width},
+      {"tauC",  io ? cfg_.S<TpcResponseSimulator>().tauCO : cfg_.S<TpcResponseSimulator>().tauCI},
+      {"io",    io}
+    };
+
     for (int i = 0; i != params0.size(); ++i) {
       fgTimeShape0[io].SetParName(i, params0[i].first.c_str());
       fgTimeShape0[io].SetParameter(i, params0[i].second);
     }
-    fgTimeShape0[io].SetRange(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
-    params0[5].second = fgTimeShape0[io].Integral(0, timeBinMax * TimeBinWidth);
+    fgTimeShape0[io].SetRange(timebin_min * timebin_width, timebin_max * timebin_width);
+    params0[5].second = fgTimeShape0[io].Integral(0, timebin_max * timebin_width);
 
     for (int sector = 1; sector <= num_sectors_; sector++)
     {
@@ -217,10 +216,10 @@ void Simulator::InitChargeFractionFuncs(int io, int sector)
 
 
 void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
-  double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax)
+  double (*shape)(double*, double*), FuncParams_t params, double timebin_min, double timebin_max)
 {
   funcs[io][sector - 1].SetFunction(shape);
-  funcs[io][sector - 1].SetRange(timeBinMin, timeBinMax);
+  funcs[io][sector - 1].SetRange(timebin_min, timebin_max);
 
   for (int i = 0; i != params.size(); ++i) {
     funcs[io][sector - 1].SetParName(i, params[i].first.c_str());
@@ -228,7 +227,7 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
   }
 
   // Cut tails
-  double t = timeBinMax;
+  double t = timebin_max;
   double ymax = funcs[io][sector - 1].Eval(0.5);
 
   for (; t > 5; t -= 1) {
@@ -236,8 +235,8 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
     if (r > 1e-2) break;
   }
 
-  funcs[io][sector - 1].SetRange(timeBinMin, t);
-  funcs[io][sector - 1].Save(timeBinMin, t, 0, 0, 0, 0);
+  funcs[io][sector - 1].SetRange(timebin_min, t);
+  funcs[io][sector - 1].Save(timebin_min, t, 0, 0, 0, 0);
 }
 
 
@@ -743,7 +742,7 @@ double Simulator::shapeEI_I(double t, double timebin_width, double norm, int io)
   double t1 = timebin_width * (t - 0.5);
   double t2 = t1 + timebin_width;
   assert(io >= 0 && io <= 1);
-  return sqrt2 * fgTimeShape0[io].Integral(t1, t2) / norm;
+  return std::sqrt(2.) * fgTimeShape0[io].Integral(t1, t2) / norm;
 }
 
 
@@ -758,7 +757,7 @@ double Simulator::shapeEI3_I(double t, double timebin_width, double norm, int io
   double t1 = timebin_width * (t - 0.5);
   double t2 = t1 + timebin_width;
   assert(io >= 0 && io <= 1);
-  return sqrt2 * fgTimeShape3[io].Integral(t1, t2) / norm;
+  return std::sqrt(2.) * fgTimeShape3[io].Integral(t1, t2) / norm;
 }
 
 
@@ -924,7 +923,6 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
 
   do {// Clusters
     float dS = 0;
-    float dE = 0;
 
     if (eKin >= 0.0) {
       if (eKin == 0.0) break;
@@ -935,13 +933,12 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
       if (Tmax <= cfg_.S<TpcResponseSimulator>().W / 2 * eV) break;
 
       NP = GetNoPrimaryClusters(betaGamma, segment.charge);
-      dE = std::exp(cLog10 * dNdE_log10_.GetRandom());
     }
     else {
-      dS = - std::log(gRandom->Rndm()) / NP;
-      dE = std::exp(cLog10 * dNdE_log10_.GetRandom());
+      dS = -std::log(gRandom->Rndm()) / NP;
     }
 
+    double dE = std::exp(cLog10 * dNdE_log10_.GetRandom());
     double E = dE * eV;
     newPosition += dS;
 
