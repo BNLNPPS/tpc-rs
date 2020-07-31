@@ -40,12 +40,26 @@ skips building of the tests.
 
 ## How to Use
 
-To use an installed tpc-rs library in another CMake project just include the
+To use an installed `tpcrs` library in another CMake project just include the
 following in your CMakeLists.txt:
 
     find_package(tpcrs [major.minor] [EXACT] [REQUIRED])
-    target_link_libraries(<your_target> PUBLIC tpcrs)
+    target_link_libraries(<your_target> tpcrs)
 
+A complete but very basic example demonstrating this is available in
+`tpc-rs/example`. It can be compiled and executed by doing the following:
+
+    cd tpc-rs/example/ && mkdir build && cd build
+    cmake ../
+    cmake --build .
+    wget https://raw.githubusercontent.com/plexoos/tpc-rs-data/master/data-64/starY15_pp200b.yaml
+    simple -c starY15_pp200b.yaml -f ../simple_simulated_hits.dat
+
+Note that depending on where the `tpcrs` library was installed you may need to
+help CMake to find the `tpcrs-config.cmake` file by setting
+`CMAKE_PREFIX_PATH` to the appropriate location, e.g.:
+
+    cmake ../ -DCMAKE_PREFIX_PATH=<path/to/installed/share/tpc-rs-X.Y.Z>
 
 ## Basic Test
 
