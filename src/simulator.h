@@ -127,6 +127,11 @@ class Simulator
 
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
+  /// Initializes the mPadResponseFunction
+  void InitPadResponseFuncs(int io, int sector);
+
+  void InitChargeFractionFuncs(int io, int sector);
+
   /// Initializes the mShaperResponses array with shape functions
   void InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>, 2>& funcs,
     double (*shape)(double*, double*), FuncParams_t params, double timeBinMin, double timeBinMax);

@@ -133,7 +133,44 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     fgTimeShape0[io].SetRange(timeBinMin * TimeBinWidth, timeBinMax * TimeBinWidth);
     params0[5].second = fgTimeShape0[io].Integral(0, timeBinMax * TimeBinWidth);
 
-    for (int sector = 1; sector <= num_sectors_; sector++) {
+    for (int sector = 1; sector <= num_sectors_; sector++)
+    {
+      InitPadResponseFuncs(io, sector);
+      InitChargeFractionFuncs(io, sector);
+
+      //  TF1F *func = new TF1F("funcP","x*sqrt(x)/exp(2.5*x)",0,10);
+      // see http://www4.rcf.bnl.gov/~lebedev/tec/polya.html
+      // Gain fluctuation in proportional counters follows Polya distribution.
+      // x = G/G_0
+      // P(m) = m(m(x)**(m-1)*exp(-m*x)/Gamma(m);
+      // original Polya  m = 1.5 (R.Bellazzini and M.A.Spezziga, INFN PI/AE-94/02).
+      // Valeri Cherniatin (cherniat@bnlarm.bnl.gov) recomends m=1.38
+      // Trs uses x**1.5/exp(x)
+      // tss used x**0.5/exp(1.5*x)
+      if (cfg_.S<tpcAltroParams>(sector - 1).N < 0) { // old TPC
+        InitShaperFuncs(io, sector, mShaperResponses, Simulator::shapeEI3_I, params3, timebin_min, timebin_max);
+      } else {//Altro
+        InitShaperFuncs(io, sector, mShaperResponses, Simulator::shapeEI_I,  params0, timebin_min, timebin_max);
+      }
+    }
+  }
+
+  //  mPolya = new TF1F("Polya;x = G/G_0;signal","sqrt(x)/exp(1.5*x)",0,10); // original Polya
+  //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
+  //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
+  //if (gamma <= 0) gamma = 1.38;
+  double gamma_inn = cfg_.S<TpcResponseSimulator>().PolyaInner;
+  double gamma_out = cfg_.S<TpcResponseSimulator>().PolyaOuter;
+  mPolya[kInner].SetParameters(gamma_inn, 0., 1. / gamma_inn);
+  mPolya[kOuter].SetParameters(gamma_out, 0., 1. / gamma_out);
+
+  // HEED function to generate Ec, default w = 26.2
+  mHeed.SetParameter(0, cfg_.S<TpcResponseSimulator>().W);
+}
+
+
+void Simulator::InitPadResponseFuncs(int io, int sector)
+{
       //                            w       h        s       a       l  i
       //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
       //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
@@ -154,12 +191,23 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
       mPadResponseFunction[io][sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
       mPadResponseFunction[io][sector - 1].SetRange(-2.5, 2.5); // Cut tails
       mPadResponseFunction[io][sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
+}
 
-      params[0] = io == kInner ? cfg_.C<St_tpcPadConfigC>().innerSectorPadLength(sector) :
-                                 cfg_.C<St_tpcPadConfigC>().outerSectorPadLength(sector);
-      params[3] = io == kInner ? cfg_.S<TpcResponseSimulator>().K3IR :
-                                 cfg_.S<TpcResponseSimulator>().K3OR;
-      params[5] = 1.;
+
+void Simulator::InitChargeFractionFuncs(int io, int sector)
+{
+
+      double params[6]{
+        io == kInner ? cfg_.C<St_tpcPadConfigC>().innerSectorPadLength(sector) :  // w = length of pad
+                       cfg_.C<St_tpcPadConfigC>().outerSectorPadLength(sector),
+        io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
+                       cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
+        cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
+        io == kInner ? cfg_.S<TpcResponseSimulator>().K3IR :
+                       cfg_.S<TpcResponseSimulator>().K3OR,
+        0,
+        1
+      };
 
       // Cut the tails
       double x_range = 2.5;
@@ -172,35 +220,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
       mChargeFraction[io][sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
       mChargeFraction[io][sector - 1].SetRange(-x_range, x_range);
       mChargeFraction[io][sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
-
-      //  TF1F *func = new TF1F("funcP","x*sqrt(x)/exp(2.5*x)",0,10);
-      // see http://www4.rcf.bnl.gov/~lebedev/tec/polya.html
-      // Gain fluctuation in proportional counters follows Polya distribution.
-      // x = G/G_0
-      // P(m) = m(m(x)**(m-1)*exp(-m*x)/Gamma(m);
-      // original Polya  m = 1.5 (R.Bellazzini and M.A.Spezziga, INFN PI/AE-94/02).
-      // Valeri Cherniatin (cherniat@bnlarm.bnl.gov) recomends m=1.38
-      // Trs uses x**1.5/exp(x)
-      // tss used x**0.5/exp(1.5*x)
-      if (cfg_.S<tpcAltroParams>(sector - 1).N < 0) { // old TPC
-        InitShaperFuncs(io, sector, mShaperResponses, Simulator::shapeEI3_I, params3, timeBinMin, timeBinMax);
-      } else {//Altro
-        InitShaperFuncs(io, sector, mShaperResponses, Simulator::shapeEI_I,  params0, timeBinMin, timeBinMax);
-      }
-    }
-  }
-
-  //  mPolya = new TF1F("Polya;x = G/G_0;signal","sqrt(x)/exp(1.5*x)",0,10); // original Polya
-  //  mPolya = new TF1F("Polya;x = G/G_0;signal","pow(x,0.38)*exp(-1.38*x)",0,10); //  Valeri Cherniatin
-  //   mPoly = new TH1D("Poly","polyaAvalanche",100,0,10);
-  //if (gamma <= 0) gamma = 1.38;
-  double gamma_inn = cfg_.S<TpcResponseSimulator>().PolyaInner;
-  double gamma_out = cfg_.S<TpcResponseSimulator>().PolyaOuter;
-  mPolya[kInner].SetParameters(gamma_inn, 0., 1. / gamma_inn);
-  mPolya[kOuter].SetParameters(gamma_out, 0., 1. / gamma_out);
-
-  // HEED function to generate Ec, default w = 26.2
-  mHeed.SetParameter(0, cfg_.S<TpcResponseSimulator>().W);
 }
 
 
