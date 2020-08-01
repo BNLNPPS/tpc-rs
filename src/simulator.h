@@ -61,14 +61,19 @@ class Simulator
   const int max_timebins_;
 
   static double shapeEI(double* x, double* par = 0);
+  static double shapeEI(double t, double t0, double tau_I, double tau_C);
   static double shapeEI_I(double* x, double* par = 0);
+  static double shapeEI_I(double t, double timebin_width, double norm, int io);
   static double shapeEI3(double* x, double* par = 0);
+  static double shapeEI3(double t, double t0, double tau_F, double tau_P, double tau_I, double tau_C);
   static double shapeEI3_I(double* x, double* par = 0);
+  static double shapeEI3_I(double x, double timebin_width, double norm, int io);
   static double fei(double t, double t0, double T);
   static double polya(double* x, double* par);
   static double Ec(double* x, double* p); // minimal energy to create an ion pair
   static double PadResponseFunc(double* x, double* p);
-  static double Gatti(double* x, double* p);
+  static double PadResponseFunc(double x, double w, double h, double K3, double cross_talk, double p);
+  static double Gatti(double x, double pad_width, double anode_cathode_gap, double K3);
   static double InducedCharge(double s, double h, double ra, double Va, double &t0);
   static void ParticleProperties(int particle_id, int& charge, double& mass);
 

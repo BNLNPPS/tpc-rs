@@ -409,25 +409,43 @@ double Simulator::GetNoPrimaryClusters(double betaGamma, int charge)
 
 double Simulator::PadResponseFunc(double* x, double* par)
 {
-  double cross_talk = 0;
+  return PadResponseFunc(x[0], par[0], par[1], par[3], par[4], par[5]);
+}
+
+
+/**
+ * x  distance to center of strip [cm]
+ * w  width/length of the pad
+ * h  anode-cathode spacing/gap
+ * k3
+ * p  pad/row pitch
+ */
+double Simulator::PadResponseFunc(double x, double w, double h, double K3, double cross_talk, double p)
+{
   double pad_response = 0;
-  double X = par[5] * x[0];
+  double X = p * x;
 
   if (cross_talk > 0) {
     for (int i = -1; i <= 1; i++) {
-      double xx = X + par[5] * i;
+      double xx = X + p * i;
 
-      if (i == 0) pad_response += (1. - 2.*cross_talk) * Gatti(&xx, par);
-      else        pad_response +=          cross_talk  * Gatti(&xx, par);
+      if (i == 0) pad_response += (1. - 2.*cross_talk) * Gatti(xx, w, h, K3);
+      else        pad_response +=          cross_talk  * Gatti(xx, w, h, K3);
     }
   }
-  else pad_response = Gatti(&X, par);
+  else pad_response = Gatti(X, w, h, K3);
 
   return pad_response;
 }
 
 
-double Simulator::Gatti(double* x, double* par)
+/**
+ * x  distance to center of strip [cm]
+ * w  width/length of the pad
+ * h  anode-cathode spacing/gap
+ * k3
+ */
+double Simulator::Gatti(double x, double w, double h, double K3)
 {
   /************************************************************************
    *  Function    : generates the cathode signal using                    *
@@ -446,23 +464,18 @@ double Simulator::Gatti(double* x, double* par)
    *  References  : E.Gatti, A.Longoni, NIM 163 (1979) 82-93.             *
    *  Authors : V.Balagura,V.Cherniatin,A.Chikanian                       *
    ************************************************************************/
-  double y = x[0];   // distance to center of strip [cm]
-  double w = par[0]; // w = width of pad
-  double h = par[1]; // h = Anode-Cathode gap
-  double K3  = par[3];
-  double lambda = y / h;
+  double lambda = x / h;
   double K2 = M_PI_2 * (1. - 0.5 * std::sqrt(K3));
   //  double K1 = K2*std::sqrt(K3)/(2*std::atan(std::sqrt(K3)));
   double sqK3 = std::sqrt(K3);
   double ATsqK3 = 0.5 / std::atan(sqK3);
   double Y1 = lambda - w / h / 2;
-  double Y2 = Y1 + w / h;
+  double Y2 = lambda + w / h / 2;
   double X1 = K2 * Y1;
   double X2 = K2 * Y2;
   double Z1 = sqK3 * std::tanh(X1);
   double Z2 = sqK3 * std::tanh(X2);
-  double val = ATsqK3 * (std::atan(Z2) - std::atan(Z1));
-  return val;
+  return ATsqK3 * (std::atan(Z2) - std::atan(Z1));
 }
 
 
@@ -656,13 +669,13 @@ double Simulator::fei(double t, double t0, double t1)
 
 double Simulator::shapeEI(double* x, double* par)
 {
-  double t  = x[0];
+ return shapeEI(x[0], par[0], par[3], par[5]);
+}
 
+
+double Simulator::shapeEI(double t, double t0, double tau_I, double tau_C)
+{
   if (t <= 0) return 0;
-
-  double t0    = par[0];
-  double tau_I = par[3];
-  double tau_C = par[5];
 
   if (std::abs((tau_I - tau_C) / (tau_I + tau_C)) < 1e-7) {
     return std::max(0., (t + t0) / tau_I * fei(t, t0, tau_I) + std::exp(-t / tau_I) - 1);
@@ -677,16 +690,14 @@ double Simulator::shapeEI(double* x, double* par)
 
 double Simulator::shapeEI3(double* x, double* par)
 {
-  double t  = x[0];
-  double value = 0;
+  return shapeEI3(x[0], par[0], par[1], par[2], par[3], par[5]);
+}
 
+
+double Simulator::shapeEI3(double t, double t0, double tau_F, double tau_P, double tau_I, double tau_C)
+{
   if (t <= 0) return 0;
 
-  double t0    = par[0];
-  double tau_F = par[1];
-  double tau_P = par[2];
-  double tau_I = par[3];
-  double tau_C = par[5];
   double d =   1. / tau_P;
   double a[3] = {- 1. / tau_I, - 1. / tau_F, 0};
   double A[3] = {(a[0] + d) / (a[0] - a[1]), (a[1] + d) / (a[1] - a[0]), 0};
@@ -700,6 +711,7 @@ double Simulator::shapeEI3(double* x, double* par)
     A[2] = (a[2] + d) / a[2] / (a[2] - a[0]) / (a[2] - a[1]);
   }
 
+  double value = 0;
   for (int i = 0; i < N; i++) {
     value += A[i] * std::exp(a[i] * (t + t0)) * (ROOT::Math::expint(-a[i] * (t + t0)) - ROOT::Math::expint(-a[i] * t0));
   }
@@ -710,12 +722,14 @@ double Simulator::shapeEI3(double* x, double* par)
 
 double Simulator::shapeEI_I(double* x, double* par)   //Integral of shape over time bin
 {
-  static double sqrt2 = std::sqrt(2.);
-  double TimeBinWidth = par[4];
-  double norm = par[5];
-  double t1 = TimeBinWidth * (x[0] - 0.5);
-  double t2 = t1 + TimeBinWidth;
-  int io = (int) par[6];
+ return shapeEI_I(x[0], par[4], par[5], par[6]);
+}
+
+
+double Simulator::shapeEI_I(double t, double timebin_width, double norm, int io)   //Integral of shape over time bin
+{
+  double t1 = timebin_width * (t - 0.5);
+  double t2 = t1 + timebin_width;
   assert(io >= 0 && io <= 1);
   return sqrt2 * fgTimeShape0[io].Integral(t1, t2) / norm;
 }
@@ -723,12 +737,14 @@ double Simulator::shapeEI_I(double* x, double* par)   //Integral of shape over t
 
 double Simulator::shapeEI3_I(double* x, double* par)   //Integral of shape over time bin
 {
-  static double sqrt2 = std::sqrt(2.);
-  double TimeBinWidth = par[4];
-  double norm = par[5];
-  double t1 = TimeBinWidth * (x[0] - 0.5);
-  double t2 = t1 + TimeBinWidth;
-  int io = (int) par[6];
+ return shapeEI3_I(x[0], par[4], par[5], par[6]);
+}
+
+
+double Simulator::shapeEI3_I(double t, double timebin_width, double norm, int io)   //Integral of shape over time bin
+{
+  double t1 = timebin_width * (t - 0.5);
+  double t2 = t1 + timebin_width;
   assert(io >= 0 && io <= 1);
   return sqrt2 * fgTimeShape3[io].Integral(t1, t2) / norm;
 }
