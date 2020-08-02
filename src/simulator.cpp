@@ -167,8 +167,8 @@ void Simulator::InitPadResponseFuncs(int io, int sector)
       //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
       //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
       double params[6]{
-        io == kInner ? cfg_.C<St_tpcPadConfigC>().innerSectorPadWidth(sector) :  // w = width of pad
-                       cfg_.C<St_tpcPadConfigC>().outerSectorPadWidth(sector),
+        io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadWidth :  // w = width of pad
+                       cfg_.S<tpcPadPlanes>().outerSectorPadWidth,
         io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
                        cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
         cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
@@ -189,8 +189,8 @@ void Simulator::InitPadResponseFuncs(int io, int sector)
 void Simulator::InitChargeFractionFuncs(int io, int sector)
 {
       double params[6]{
-        io == kInner ? cfg_.C<St_tpcPadConfigC>().innerSectorPadLength(sector) :  // w = length of pad
-                       cfg_.C<St_tpcPadConfigC>().outerSectorPadLength(sector),
+        io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadLength :  // w = length of pad
+                       cfg_.S<tpcPadPlanes>().outerSectorPadLength,
         io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
                        cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
         cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing

@@ -17,7 +17,6 @@ static int _debug = 0;
 MakeChairInstance(TpcEffectivedX,Calibrations/tpc/TpcEffectivedX);
 MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
 MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
-MakeChairInstance(tpcDriftVelocity,Calibrations/tpc/tpcDriftVelocity);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowBC,Calibrations/tpc/TpcSecRowB);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowCC,Calibrations/tpc/TpcSecRowC);
 MakeChairInstance(tpcCalibResolutions,Calibrations/tpc/tpcCalibResolutions);
@@ -167,6 +166,7 @@ double St_tpcCorrectionC::SumSeries(tpcCorrection *cor,  double x, double z, int
   }
   return Sum;
 }
+
 MakeChairInstance2(tpcCorrection,St_TpcRowQC,Calibrations/tpc/TpcRowQ);
 MakeChairInstance2(tpcCorrection,St_TpcDriftDistOxygenC,Calibrations/tpc/TpcDriftDistOxygen);
 MakeChairInstance2(tpcCorrection,St_TpcMultiplicityC,Calibrations/tpc/TpcMultiplicity);
@@ -336,8 +336,6 @@ int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return cfg_
 int 	         St_tpcPadConfigC::outerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerPadRows() 	   ;}
 int 	         St_tpcPadConfigC::superInnerPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superInnerPadRows()     ;}
 int 	         St_tpcPadConfigC::superOuterPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superOuterPadRows()     ;}
-double 	 St_tpcPadConfigC::innerSectorPadWidth(int sector)      {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadWidth()   ;}
-double 	 St_tpcPadConfigC::innerSectorPadLength(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadLength()  ;}
 double 	 St_tpcPadConfigC::innerSectorPadPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadPitch()   ;}
 double 	 St_tpcPadConfigC::innerSectorRowPitch1(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorRowPitch1()  ;}
 double 	 St_tpcPadConfigC::innerSectorRowPitch2(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorRowPitch2()  ;}
@@ -370,18 +368,6 @@ int            St_tpcPadConfigC::numberOfPadsAtRow(int sector, int row)       {
   int Ninner = innerPadRows(sector);
   if ( row<=Ninner ) return innerPadsPerRow(sector)[row-1];
   return outerPadsPerRow(sector)[row-1-Ninner];
-}
-double         St_tpcPadConfigC::PadWidthAtRow(int sector, int row)       {
-  if (! isRowInRange(sector,row)) return 0;
-  int Ninner = innerPadRows(sector);
-  if ( row<=Ninner) return innerSectorPadWidth(sector);
-  return outerSectorPadWidth(sector);
-}
-double         St_tpcPadConfigC::PadLengthAtRow(int sector, int row)       {
-  if (! isRowInRange(sector,row)) return 0;
-  int Ninner = innerPadRows(sector);
-  if ( row<=Ninner) return innerSectorPadLength(sector);
-  return outerSectorPadLength(sector);
 }
 
 
@@ -443,33 +429,6 @@ void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f
 }
 
 
-float St_tpcAnodeHVC::voltage(int i) const {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
-     LOG_ERROR << "St_tpcAnodeHVC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
-  }
-  return Struct(i)->voltage;
-}
-
-
-float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
-    return cfg_.C<St_TpcAvgPowerSupplyC>().voltagePadrow(sector,padrow);
-  }
-  int e1 = 0, e2 = 0;
-  float f2 = 0;
-  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
-  if (e1==0) return -99;
-  float v1=voltage(e1-1);
-  if (f2 < 0.1) return v1;
-  float v2=voltage(e2-1);
-  if (std::abs(v2 - v1) > 40) return -99;
-  if (std::abs(v2 - v1) <  1) return v1;
-  // different voltages on influencing HVs
-  // effective voltage is a sum of exponential gains
-  float B = (padrow <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
-  return v_eff;
-}
 MakeChairInstance(TpcAvgPowerSupply,Calibrations/tpc/TpcAvgPowerSupply);
 
 
@@ -520,33 +479,6 @@ float St_tpcAnodeHVavgC::voltage(int i) const {
   return Struct(i)->voltage;
 }
 
-
-bool St_tpcAnodeHVavgC::tripped(int sector, int padrow) const {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
-    return cfg_.C<St_TpcAvgPowerSupplyC>().tripped(sector,padrow);
-  }
-  return (voltage() < -100);
-}
-
-
-float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
-    return cfg_.C<St_TpcAvgPowerSupplyC>().voltagePadrow(sector,padrow);
-  }
-  int e1 = 0, e2 = 0;
-  float f2 = 0;
-  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
-  if (e1==0) return -99;
-  float v1=voltage(e1-1);
-  if (f2==0) return v1;
-  float v2=voltage(e2-1);
-  if (v2==v1) return v1;
-  // different voltages on influencing HVs
-  // effective voltage is a sum of exponential gains
-  float B = (padrow <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
-  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
-  return v_eff;
-}
 
 MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainCorrection);
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
@@ -651,8 +583,6 @@ MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 MakeChairInstance(richvoltages,Calibrations/rich/richvoltages);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
-//_________________RunLog_____________________________________________________________
-MakeChairInstance(MagFactor,RunLog/MagFactor);
 //_________________RunLog/onl_______________________________________________________________
 
 MakeChairInstance(starMagOnl,RunLog/onl/starMagOnl);
@@ -774,83 +704,6 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
     }
     return coulombs;
   }
-
-double St_tpcChargeEventC::timeDifference(unsigned long long bunchCrossingNumber, int idx) {
-    // time difference between the event # idx and bunchCrossingNumber
-    return ((double) (bunchCrossingNumber - eventBunchCrossing(idx))) /
-      (cfg_.S<starClockOnl>().frequency);
-  }
-
-int St_tpcChargeEventC::indexBeforeBunchCrossing(unsigned long long bunchCrossingNumber) {
-  // optimized search for typically looking for an index which
-  // is the same or very close to previously found index
-
-  int lastIndex = nChargeEvents() - 1;
-  if (lastIndex < 0) return -999;
-
-  if (localSearchUpperIndex < 0) { // no search yet
-    // start from the middle and move outwards
-    localSearchLowerIndex = nChargeEvents() / 2;
-    localSearchUpperIndex = localSearchLowerIndex;
-  }
-
-  // try the same one as before first
-  int direction = 0;
-  if (bunchCrossingNumber >= eventBunchCrossing(localSearchUpperIndex) &&
-      localSearchLowerIndex != lastIndex) direction = 1;
-  else if (bunchCrossingNumber < eventBunchCrossing(localSearchLowerIndex)) direction = -1;
-  else return localSearchLowerIndex;
-
-  int delta = 1; // look up or down just one first
-
-  while (direction > 0) { // look for higher indices
-    localSearchLowerIndex = localSearchUpperIndex;
-    localSearchUpperIndex = std::min(lastIndex,localSearchUpperIndex + delta);
-    delta = localSearchUpperIndex - localSearchLowerIndex;
-    if (bunchCrossingNumber < eventBunchCrossing(localSearchUpperIndex)) direction = 0;
-    else if (localSearchUpperIndex == lastIndex) {
-      localSearchLowerIndex = lastIndex;
-      return lastIndex; // local indices will be lastIndex,lastIndex
-    } else delta *= 2; // expand range and keep looking for higher indices
-  }
-  while (direction < 0) { // look for lower indices
-    localSearchUpperIndex = localSearchLowerIndex;
-    localSearchLowerIndex = std::max(0,localSearchLowerIndex - delta);
-    delta = localSearchUpperIndex - localSearchLowerIndex;
-    if (bunchCrossingNumber >= eventBunchCrossing(localSearchLowerIndex)) direction = 0;
-    else if (localSearchLowerIndex == 0) {
-      localSearchUpperIndex = 0;
-      return -1; // local indices will be 0,0
-    } else delta *= 2; // expand range and keep looking for lower indices
-  }
-
-  // already know that the result is within range
-  while (delta > 1) {
-    int tempIndex = localSearchLowerIndex + (delta/2);
-    if (bunchCrossingNumber < eventBunchCrossing(tempIndex)) localSearchUpperIndex = tempIndex;
-    else localSearchLowerIndex = tempIndex;
-    delta = localSearchUpperIndex - localSearchLowerIndex;
-  }
-  // found
-  return localSearchLowerIndex;
-}
-
-int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, unsigned long long bunchCrossingWindow) {
-  int idx2 = indexBeforeBunchCrossing(bunchCrossingNumber);
-  int idx1 = indexBeforeBunchCrossing(bunchCrossingNumber-bunchCrossingWindow);
-  int n = idx2-idx1;
-  idx1++; // start from after the bunchCrossingWindow starts
-  localStoreCharges.Set(n,&(eventCharges()[idx1]));
-  localStoreTimesSinceCharges.Set(n);
-  for (int i=0; i<n; i++) // must convert to times
-    localStoreTimesSinceCharges.AddAt(timeDifference(bunchCrossingNumber,idx1+i),i);
-  return n;
-}
-
-int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, double timeWindow) {
-  return findChargeTimes(bunchCrossingNumber,
-    (unsigned long long) (timeWindow*cfg_.S<starClockOnl>().frequency));
-}
 
 
 namespace tpcrs {

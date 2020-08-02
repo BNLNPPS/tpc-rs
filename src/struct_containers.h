@@ -10,10 +10,6 @@
 #include "config_structs.h"
 
 
-struct St_MagFactorC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_MagFactorC, MagFactor> {
-  float 	ScaleFactor(int i = 0) {return Struct(i)->ScaleFactor;}
-};
-
 struct St_MDFCorrectionC : tpcrs::IConfigStruct {
   virtual MDFCorrection* Struct(int i = 0) const = 0;
   enum EMDFPolyType {
@@ -209,26 +205,12 @@ struct St_TpcAdcCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcAdc
 struct St_tpcAnodeHVavgC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVavgC, tpcAnodeHVavg>
 {
   St_tpcAnodeHVavgC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVavgC, tpcAnodeHVavg>(cfg) {}
-  unsigned short          sector(int i = 0) 	const {return Struct(i)->sector;}
-  unsigned short          socket(int i = 0) 	const {return Struct(i)->socket;}
   float 	    voltage(int i = 0) 	const;
-  float 	    rms(int i = 0) 	        const {return Struct(i)->rms;}
-  int 	    numentries(int i = 0) 	const {return Struct(i)->numentries;}
-  int 	    numoutliers(int i = 0) 	const {return Struct(i)->numoutliers;}
-  bool	    livePadrow(int sec = 1, int padrow = 1) const { return voltagePadrow(sec, padrow) > 500; }
-  float	    voltagePadrow(int sec = 1, int padrow = 1) const; // sector=1..24 , padrow=1..100
-  bool            tripped(int sec = 1, int padrow = 1)       const;// { return (voltage() < -100); }
 };
 
 struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC, tpcAnodeHV>
 {
   St_tpcAnodeHVC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC, tpcAnodeHV>(cfg) {}
-  unsigned short 	 sector(int i = 0) 	const {return Struct(i)->sector;}
-  unsigned short 	 socket(int i = 0) 	const {return Struct(i)->socket;}
-  float 	 voltage(int i = 0) 	const;
-  bool	 livePadrow(int sector = 1, int padrow = 1) const { return voltagePadrow(sector, padrow) > 500; }
-  float	 voltagePadrow(int sector = 1, int padrow = 1) const ; // sector=1..24 , padrow=1..100
-  bool         tripped(int sector = 1, int padrow = 1) const { return (voltagePadrow(sector, padrow) < -100); }
   static  void   sockets(int sector, int padrow, int &e1, int &e2, float &f2);
 };
 
@@ -269,7 +251,6 @@ struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcA
   float* 	Charge(int i = 0) 	const {return Struct(i)->Charge;}
   float* 	Voltage(int i = 0) 	const {return Struct(i)->Voltage;}
   float	voltagePadrow(int sec = 1, int padrow = 1) const; // sector=1..24 , padrow=1..100
-  bool        tripped(int sec = 1, int row = 1) const {return voltagePadrow(sec, row) < -100;}
   static int  ChannelFromRow(int sector, int row) {return St_TpcAvgCurrentC::ChannelFromRow(sector, row);}
   static int  ChannelFromSocket(int socket) {return St_TpcAvgCurrentC::ChannelFromSocket(socket);}
   float       AvCurrent(int sector = 1, int channel = 1)
@@ -313,32 +294,9 @@ struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChar
                                                         + ((unsigned long long) (eventBunchCrossingLow(idx))); }
   float eventCharge(int idx)                     {return eventCharges()[idx];}
 
-  // user functions for getting the charge and time since charge
-
-  void lastChargeTime(unsigned long long bunchCrossingNumber, float& charge, double& timeSinceCharge) {
-    int idx = indexBeforeBunchCrossing(bunchCrossingNumber);
-    charge = eventCharge(idx);
-    timeSinceCharge = timeDifference(bunchCrossingNumber,idx);
-  }
-
-  // must call findLastChargeTime() before getLastChargeTime()
-  void findLastchargeTime(unsigned long long bunchCrossingNumber) {
-    lastChargeTime(bunchCrossingNumber, localStoreCharge, localStoreTimeSinceCharge);
-  }
-  void getLastChargeTime(float& charge, double& timeSinceCharge) {
-    charge = localStoreCharge;
-    timeSinceCharge = localStoreTimeSinceCharge;
-  }
-
-  // must call findChargeTimes() before getCharges() and getTimes()
-  int findChargeTimes(unsigned long long bunchCrossingNumber, unsigned long long bunchCrossingWindow);
-  int findChargeTimes(unsigned long long bunchCrossingNumber, double timeWindow=1.9);
   TArrayF* getCharges() { return &localStoreCharges; }
   TArrayD* getTimes() { return &localStoreTimesSinceCharges; }
 
- protected:
-  double timeDifference(unsigned long long bunchCrossingNumber, int idx);
-  int indexBeforeBunchCrossing(unsigned long long bunchCrossingNumber);
  private:
   int localSearchLowerIndex = 0;
   int localSearchUpperIndex = -1;
@@ -383,8 +341,6 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   int 	   outerPadRows(int sector);
   int 	   superInnerPadRows(int sector);
   int 	   superOuterPadRows(int sector);
-  double 	   innerSectorPadWidth(int sector);
-  double 	   innerSectorPadLength(int sector);
   double 	   innerSectorPadPitch(int sector);
   double 	   innerSectorRowPitch1(int sector);
   double 	   innerSectorRowPitch2(int sector);
@@ -408,21 +364,12 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   int            padsPerRow(int sector, int row = 1);
   bool           isRowInRange(int sector, int row);
   int            numberOfPadsAtRow(int sector, int row);
-  double         PadWidthAtRow(int sector, int row);
-  double 	   PadLengthAtRow(int sector, int row);
   bool             isInnerPadRow(int sector, int row) { return row <= innerPadRows(sector); }
   int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };
 
 struct St_TpcDriftDistOxygenC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcDriftDistOxygenC, tpcCorrection> {
   St_TpcDriftDistOxygenC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcDriftDistOxygenC, tpcCorrection>(cfg) {}
-};
-
-struct St_tpcDriftVelocityC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcDriftVelocityC, tpcDriftVelocity> {
-  float 	laserDriftVelocityEast(int i = 0) 	{return Struct(i)->laserDriftVelocityEast;}
-  float 	laserDriftVelocityWest(int i = 0) 	{return Struct(i)->laserDriftVelocityWest;}
-  float 	cathodeDriftVelocityEast(int i = 0) 	{return Struct(i)->cathodeDriftVelocityEast;}
-  float 	cathodeDriftVelocityWest(int i = 0) 	{return Struct(i)->cathodeDriftVelocityWest;}
 };
 
 struct St_TpcdXCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdXCorrectionBC, tpcCorrection> {
@@ -474,18 +421,11 @@ struct St_tpcGlobalPositionC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcG
   float 	LocalxShift(int i = 0)       const {return Struct(i)->LocalxShift;}
   float 	LocalyShift(int i = 0)       const {return Struct(i)->LocalyShift;}
   float 	LocalzShift(int i = 0)       const {return Struct(i)->LocalzShift;}
-  /*  float 	PhiXY(int i = 0)  	       const {return Struct(i)->PhiXY;}	   */
   float 	PhiXZ(int i = 0)  	       const {return Struct(i)->PhiXZ;}
   float 	PhiYZ(int i = 0)  	       const {return Struct(i)->PhiYZ;}
-  /*  float 	XX(int i = 0)  	       const {return Struct(i)->XX;}
-      float 	YY(int i = 0)  	       const {return Struct(i)->YY;}
-      float 	ZZ(int i = 0)  	       const {return Struct(i)->ZZ;}	    */
   float 	PhiXY_geom(int i = 0)        const {return Struct(i)->PhiXY_geom;}
   float 	PhiXZ_geom(int i = 0)        const {return Struct(i)->PhiXZ_geom;}
   float 	PhiYZ_geom(int i = 0)        const {return Struct(i)->PhiYZ_geom;}
-  /*  float 	XX_geom(int i = 0)  	       const {return Struct(i)->XX_geom;}
-      float 	YY_geom(int i = 0)  	       const {return Struct(i)->YY_geom;}
-      float 	ZZ_geom(int i = 0)  	       const {return Struct(i)->ZZ_geom;}   */
   double  	TpcCenterPositionX()           const {return LocalxShift();}
   double  	TpcCenterPositionY()           const {return LocalyShift();}
   double  	TpcCenterPositionZ()           const {return LocalzShift();}
@@ -496,7 +436,6 @@ struct St_tpcGlobalPositionC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcG
   double  	TpcEFieldRotationY() 	       const {return PhiXZ();} /* XTWIST */
   double      XTWIST()                       const {return  1e3 * TpcEFieldRotationY();}
   double      YTWIST()                       const {return -1e3 * TpcEFieldRotationX();}
-  /* double  	TpcEFieldRotationZ() 	       const {return PhiXY();}              */
   double      X0()                           const {return LocalxShift();}
   double      Y0()                           const {return LocalyShift();}
   double      Z0()                           const {return LocalzShift();}
@@ -603,8 +542,6 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
   int 	outerPadRows(int i = 0) 	 {return Struct(i)->outerPadRows;}
   int 	superInnerPadRows(int i = 0) 	 {return Struct(i)->superInnerPadRows;}
   int 	superOuterPadRows(int i = 0) 	 {return Struct(i)->superOuterPadRows;}
-  double 	innerSectorPadWidth(int i = 0) {return Struct(i)->innerSectorPadWidth;}
-  double 	innerSectorPadLength(int i = 0) {return Struct(i)->innerSectorPadLength;}
   double 	innerSectorPadPitch(int i = 0) {return Struct(i)->innerSectorPadPitch;}
   double 	innerSectorRowPitch1(int i = 0) {return Struct(i)->innerSectorRowPitch1;}
   double 	innerSectorRowPitch2(int i = 0) {return Struct(i)->innerSectorRowPitch2;}
@@ -648,22 +585,6 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
     if ( row <= innerPadRows() ) return innerPadsPerRow()[row - 1];
 
     return outerPadsPerRow()[row - 1 - innerPadRows()];
-  }
-  double PadWidthAtRow(int row)
-  {
-    if (! isRowInRange(row)) return 0;
-
-    if ( row <= innerPadRows()) return innerSectorPadWidth();
-
-    return outerSectorPadWidth();
-  }
-  double PadLengthAtRow(int row)
-  {
-    if (! isRowInRange(row)) return 0;
-
-    if ( row <= innerPadRows()) return innerSectorPadLength();
-
-    return outerSectorPadLength();
   }
 };
 
