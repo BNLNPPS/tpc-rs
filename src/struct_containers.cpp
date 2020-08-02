@@ -332,7 +332,6 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
 }
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
-unsigned char          St_tpcPadConfigC::iTpc(int sector)                     {unsigned char iTPC = Struct()->itpc[sector-1];  return iTPC;}
 int 	         St_tpcPadConfigC::padRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().padRows()               ;}
 int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().innerPadRows() 	   ;}
 int 	         St_tpcPadConfigC::outerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerPadRows() 	   ;}
@@ -387,14 +386,13 @@ double         St_tpcPadConfigC::PadLengthAtRow(int sector, int row)       {
 }
 
 
-void  St_tpcAnodeHVC::sockets(bool is_iTPC, int sector, int padrow, int &e1, int &e2, float &f2) {
+void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f2) {
   e1 = (sector-1)*19;
   e2 = e1;
   f2 = 0;
   // sector=1..24 , padrow=1..45
   // f2 represents signal couplings from neighboring HV sections
   // see: http://www.star.bnl.gov/public/tpc/hard/signals/signal_division.html
-  if (!is_iTPC) {
     switch (padrow) {
     case  1: e1+= 1; e2+= 2; f2 = 0.00197; break;
     case  2: e1+= 2; break;
@@ -443,83 +441,6 @@ void  St_tpcAnodeHVC::sockets(bool is_iTPC, int sector, int padrow, int &e1, int
     case 45: e1+=16; e2+=19; f2 = 0.40250; break;
     default: e1 = 0; e2 = 0; f2 = 0;
     }
-  } else { // iTPC
-    switch (padrow) {
-    case  1:
-    case  2:
-    case  3: e1+= 1; e2+= 1; break;
-    case  4: e1+= 1; e2+= 2; break;
-    case  5:
-    case  6:
-    case  7:
-    case  8: e1+= 2; e2+= 2; break;
-    case  9: e1+= 2; e2+= 3; break;
-    case 10: 
-    case 11:
-    case 12:
-    case 13: e1+= 3; e2+= 3; break;
-    case 14: e1+= 3; e2+= 4; break;
-    case 15:
-    case 16:
-    case 17:
-    case 18: e1+= 4; e2+= 4; break;
-    case 19: e1+= 4; e2+= 5; break;
-    case 20:
-    case 21:
-    case 22:
-    case 23: e1+= 5; e2+= 5; break;
-    case 24: e1+= 5; e2+= 6; break;
-    case 25:
-    case 26:
-    case 27:
-    case 28: e1+= 6; e2+= 6; break;
-    case 29: e1+= 6; e2+= 7; break;
-    case 30:
-    case 31:
-    case 32:
-    case 33: e1+= 7; e2+= 7; break;
-    case 34: e1+= 7; e2+= 8; break;
-    case 35:
-    case 36:
-    case 37:
-    case 38: e1+= 8; e2+= 8; break;
-    case 39:
-    case 40: e1+=17; e2+=17; break;
-    case 41: e1+= 9; e2+=18;  break;
-    case 42:
-    case 43: e1+= 9; break;
-    case 44: e1+= 9; e2+=10;  break;
-    case 45:
-    case 46:
-    case 47: e1+=10; break;
-    case 48: e1+=10; e2+=11;  break;
-    case 49:
-    case 50:
-    case 51: e1+=11; break;
-    case 52: e1+=11; e2+=12; f2 = 0.40250; break;
-    case 53:
-    case 54:
-    case 55: e1+=12; break;
-    case 56: e1+=12; e2+=13; f2 = 0.40250; break;
-    case 57:
-    case 58:
-    case 59: e1+=13; break;
-    case 60: e1+=13; e2+=14; f2 = 0.40250; break;
-    case 61:
-    case 62:
-    case 63: e1+=14; break;
-    case 64: e1+=14; e2+=15; f2 = 0.40250; break;
-    case 65:
-    case 66:
-    case 67: e1+=15; break;
-    case 68: e1+=15; e2+=16; f2 = 0.40250; break;
-    case 69:
-    case 70:
-    case 71: e1+=16; break;
-    case 72: e1+=16; e2+=19; f2 = 0.40250; break;
-    default: e1 = 0; e2 = 0; f2 = 0;
-    }
-  }
 }
 
 
@@ -537,7 +458,7 @@ float St_tpcAnodeHVC::voltagePadrow(int sector, int padrow) const {
   }
   int e1 = 0, e2 = 0;
   float f2 = 0;
-  St_tpcAnodeHVC::sockets(cfg_.C<St_tpcPadConfigC>().iTPC(sector), sector, padrow, e1, e2, f2);
+  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
   if (e1==0) return -99;
   float v1=voltage(e1-1);
   if (f2 < 0.1) return v1;
@@ -556,7 +477,7 @@ MakeChairInstance(TpcAvgPowerSupply,Calibrations/tpc/TpcAvgPowerSupply);
 float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
   int e1 = 0, e2 = 0;
   float f2 = 0;
-  St_tpcAnodeHVC::sockets(cfg_.C<St_tpcPadConfigC>().iTPC(sector), sector, padrow, e1, e2, f2);
+  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
   if (e1==0) return -99;
   int ch1 = St_TpcAvgCurrentC::ChannelFromSocket((e1-1)%19+1);
   float v1=Voltage()[8*(sector-1)+ch1-1] ;
@@ -615,7 +536,7 @@ float St_tpcAnodeHVavgC::voltagePadrow(int sector, int padrow) const {
   }
   int e1 = 0, e2 = 0;
   float f2 = 0;
-  St_tpcAnodeHVC::sockets(cfg_.C<St_tpcPadConfigC>().iTPC(sector), sector, padrow, e1, e2, f2);
+  St_tpcAnodeHVC::sockets(sector, padrow, e1, e2, f2);
   if (e1==0) return -99;
   float v1=voltage(e1-1);
   if (f2==0) return v1;
@@ -632,8 +553,7 @@ MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainC
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 
 
-int St_TpcAvgCurrentC::ChannelFromRow(int sector, int row, bool is_iTPC) {
-  if (!is_iTPC) {
+int St_TpcAvgCurrentC::ChannelFromRow(int sector, int row) {
     if (row <  3) return 1;
     if (row <  7) return 2;
     if (row < 10) return 3;
@@ -642,18 +562,6 @@ int St_TpcAvgCurrentC::ChannelFromRow(int sector, int row, bool is_iTPC) {
     if (row < 30) return 6;
     if (row < 38) return 7;
     return 8;
-  } else { // iTPC
-    // Jim Thomas, mail from 09/27/17
-    if (row < 10) return 1; //  9 shared 1&2
-    if (row < 20) return 2; // 19 shared 2&3
-    if (row < 30) return 3; // 29 shared 3&4
-    if (row < 14 - 13 + 40) return 4;
-    if (row < 22 - 13 + 40) return 5;
-    if (row < 30 - 13 + 40) return 6;
-    if (row < 38 - 13 + 40) return 7;
-    return 8;
-  }
-  return -1;
 }
 
 

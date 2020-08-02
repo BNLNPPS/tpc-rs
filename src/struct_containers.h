@@ -229,7 +229,7 @@ struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC
   bool	 livePadrow(int sector = 1, int padrow = 1) const { return voltagePadrow(sector, padrow) > 500; }
   float	 voltagePadrow(int sector = 1, int padrow = 1) const ; // sector=1..24 , padrow=1..100
   bool         tripped(int sector = 1, int padrow = 1) const { return (voltagePadrow(sector, padrow) < -100); }
-  static  void   sockets(bool is_iTPC, int sector, int padrow, int &e1, int &e2, float &f2);
+  static  void   sockets(int sector, int padrow, int &e1, int &e2, float &f2);
 };
 
 struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>
@@ -238,7 +238,7 @@ struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCu
   int 	run(int i = 0) 	const {return Struct(i)->run;}
   int 	start_time(int i = 0) 	const {return Struct(i)->start_time;}
   int 	stop_time(int i = 0) 	const {return Struct(i)->stop_time;}
-  static int  ChannelFromRow(int sector, int row, bool is_iTPC = false);
+  static int  ChannelFromRow(int sector, int row);
   static int  ChannelFromSocket(int socket);
   float       AvCurrent(int sector = 1, int channel = 1);
   /* {
@@ -382,8 +382,6 @@ struct St_TpcdEdxCorC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdEdxCorC, t
 struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>
 {
   St_tpcPadConfigC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>(cfg) {}
-  unsigned char          iTpc(int sector);
-  unsigned char          iTPC(int sector) {return iTpc(sector);}
   int 	   padRows(int sector);
   int 	   innerPadRows(int sector);
   int 	   outerPadRows(int sector);
@@ -416,8 +414,6 @@ struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadCon
   int            numberOfPadsAtRow(int sector, int row);
   double         PadWidthAtRow(int sector, int row);
   double 	   PadLengthAtRow(int sector, int row);
-  bool             isiTpcSector(int sector) { return iTpc(sector) == 1; }
-  bool             isiTpcPadRow(int sector, int row) { return iTpc(sector) && row >= 1 && row <= innerPadRows(sector); }
   bool             isInnerPadRow(int sector, int row) { return row <= innerPadRows(sector); }
   int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };

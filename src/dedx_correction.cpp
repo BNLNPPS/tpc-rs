@@ -203,12 +203,7 @@ int  StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx, bool doIT)
   double ZdriftDistance = CdEdx.ZdriftDistance;
   ESector kTpcOutIn = kTpcOuter;
 
-  if (! cfg_.C<St_tpcPadConfigC>().iTpc(sector)) {
-    if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) kTpcOutIn = kTpcInner;
-  }
-  else {
-    if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) kTpcOutIn = kiTpc;
-  }
+  if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) kTpcOutIn = kTpcInner;
 
   const tss_tsspar& tsspar = cfg_.S<tss_tsspar>();
   float gasGain = 1;
