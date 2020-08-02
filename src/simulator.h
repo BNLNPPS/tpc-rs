@@ -153,9 +153,9 @@ class Simulator
   TH1D  dNdE_log10_;
 
   std::array<std::vector<TF1F>, 2>  mShaperResponses;
-  std::array<std::vector<TF1F>, 2>  mChargeFraction;
-  std::array<std::vector<TF1F>, 2>  mPadResponseFunction;
-  TF1F   mPolya[2];
+  std::vector<TF1F>  mChargeFraction;
+  std::vector<TF1F>  mPadResponseFunction;
+  std::vector<TF1F>  mPolya;
   TF1    mHeed;
   StTpcdEdxCorrection dEdx_correction_;
 

@@ -49,14 +49,8 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     std::vector<TF1F>(num_sectors_, TF1F("ShaperFuncInner;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7)),
     std::vector<TF1F>(num_sectors_, TF1F("ShaperFuncOuter;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7))
   },
-  mChargeFraction{
-    std::vector<TF1F>(num_sectors_, TF1F("ChargeFractionInner;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
-    std::vector<TF1F>(num_sectors_, TF1F("ChargeFractionOuter;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6))
-  },
-  mPadResponseFunction{
-    std::vector<TF1F>(num_sectors_, TF1F("PadResponseFunctionInner;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
-    std::vector<TF1F>(num_sectors_, TF1F("PadResponseFunctionOuter;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6))
-  },
+  mChargeFraction(num_sectors_*2, TF1F("ChargeFraction;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
+  mPadResponseFunction(num_sectors_*2, TF1F("PadResponseFunction;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
   mPolya{
     TF1F("PolyaInner;x = G/G_0;signal", polya, 0, 10, 3),
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
@@ -187,16 +181,15 @@ void Simulator::InitPadResponseFuncs(int io, int sector)
                        cfg_.S<tpcPadPlanes>().outerSectorPadPitch
       };
 
-      mPadResponseFunction[io][sector - 1].SetParameters(params);
-      mPadResponseFunction[io][sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
-      mPadResponseFunction[io][sector - 1].SetRange(-2.5, 2.5); // Cut tails
-      mPadResponseFunction[io][sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
+      mPadResponseFunction[num_sectors_*io + sector - 1].SetParameters(params);
+      mPadResponseFunction[num_sectors_*io + sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
+      mPadResponseFunction[num_sectors_*io + sector - 1].SetRange(-2.5, 2.5); // Cut tails
+      mPadResponseFunction[num_sectors_*io + sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
 }
 
 
 void Simulator::InitChargeFractionFuncs(int io, int sector)
 {
-
       double params[6]{
         io == kInner ? cfg_.C<St_tpcPadConfigC>().innerSectorPadLength(sector) :  // w = length of pad
                        cfg_.C<St_tpcPadConfigC>().outerSectorPadLength(sector),
@@ -212,14 +205,14 @@ void Simulator::InitChargeFractionFuncs(int io, int sector)
       // Cut the tails
       double x_range = 2.5;
       for (; x_range > 1.5; x_range -= 0.05) {
-        double r = mChargeFraction[io][sector - 1].Eval(x_range) / mChargeFraction[io][sector - 1].Eval(0);
-        if (r > 1e-2) break;
+        double r = mChargeFraction[num_sectors_*io + sector - 1].Eval(x_range) / mChargeFraction[num_sectors_*io + sector - 1].Eval(0);
+        if (r > 0.01) break;
       }
 
-      mChargeFraction[io][sector - 1].SetParameters(params);
-      mChargeFraction[io][sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
-      mChargeFraction[io][sector - 1].SetRange(-x_range, x_range);
-      mChargeFraction[io][sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
+      mChargeFraction[num_sectors_*io + sector - 1].SetParameters(params);
+      mChargeFraction[num_sectors_*io + sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
+      mChargeFraction[num_sectors_*io + sector - 1].SetRange(-x_range, x_range);
+      mChargeFraction[num_sectors_*io + sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
 }
 
 
@@ -1036,7 +1029,7 @@ void Simulator::LoopOverElectronsInCluster(
     if (!is_ground_wire) gain_gas *= std::exp( alphaVariation);
     else                 gain_gas *= std::exp(-alphaVariation);
 
-    double dY     = mChargeFraction[io][sector - 1].GetXmax();
+    double dY     = mChargeFraction[num_sectors_*io + sector - 1].GetXmax();
     double yLmin  = at_readout.y - dY;
     double yLmax  = at_readout.y + dY;
 
@@ -1077,7 +1070,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
     InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
     double delta_y = transform_.yFromRow(sector, row) - at_readout.y;
-    double YDirectionCoupling = mChargeFraction[io][sector - 1].GetSaveL(delta_y);
+    double YDirectionCoupling = mChargeFraction[num_sectors_*io + sector - 1].GetSaveL(delta_y);
 
     if (YDirectionCoupling < cfg_.S<ResponseSimulator>().min_signal) continue;
 
@@ -1087,14 +1080,14 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
     if (CentralPad < 1 || CentralPad > PadsAtRow) continue;
 
-    int DeltaPad = tpcrs::irint(mPadResponseFunction[io][sector - 1].GetXmax()) + 1;
+    int DeltaPad = tpcrs::irint(mPadResponseFunction[num_sectors_*io + sector - 1].GetXmax()) + 1;
     int padMin   = std::max(CentralPad - DeltaPad, 1);
     int padMax   = std::min(CentralPad + DeltaPad, PadsAtRow);
     int Npads    = std::min(padMax - padMin + 1, static_cast<int>(kPadMax));
     double xPadMin = padMin - padX;
 
     static double XDirectionCouplings[kPadMax];
-    mPadResponseFunction[io][sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
+    mPadResponseFunction[num_sectors_*io + sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
     for (unsigned pad = padMin; pad <= padMax; pad++) {
       double gain = gain_local_gas;
