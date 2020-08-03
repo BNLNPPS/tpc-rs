@@ -12,8 +12,6 @@ template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT #
 #define MakeChairInstance2(STRUCT,CLASS,PATH) \
 template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::name(# PATH);
 
-static int _debug = 0;
-//__________________Calibrations/tpc______________________________________________________________
 MakeChairInstance(TpcEffectivedX,Calibrations/tpc/TpcEffectivedX);
 MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
 MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
@@ -267,8 +265,7 @@ double St_MDFCorrectionC::Eval(int k, double *x) const {
   for (int v = 0; v < NVariables(k); v++) {
     xx[v] = std::max(XMin(k)[v], std::min(XMin(k)[v]+0.999*(XMax(k)[v]-XMin(k)[v]), x[v]));
   }
-  double returnValue = fFunc[k]->GetSave(xx);
-  return returnValue;
+  return fFunc[k]->GetSave(xx);
 }
 
 
@@ -286,15 +283,13 @@ double St_MDFCorrectionC::EvalError(int k, double *x) const {
     for (j = 0; j < NVariables(k); j++) {
       // Evaluate the factor (polynomial) in the j-th variable.
       int    p  =  Powers(k)[i * NVariables(k) + j];
-      double y  =  1 + 2. / (XMax(k)[j] - XMin(k)[j])
-	* (x[j] - XMax(k)[j]);
-      term        *= EvalFactor(p,y);
+      double y  =  1 + 2. / (XMax(k)[j] - XMin(k)[j]) * (x[j] - XMax(k)[j]);
+      term     *= EvalFactor(p,y);
     }
     // Add this term to the final result
     returnValue += term*term;
   }
-  returnValue = std::sqrt(returnValue);
-  return returnValue;
+  return std::sqrt(returnValue);
 }
 
 
@@ -328,6 +323,7 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
   }
   return r;
 }
+
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 
@@ -521,14 +517,9 @@ int St_tpcRDOMapC::rdo(int padrow, int pad) const {
 
 MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 
-
-//__________________Calibrations/rich______________________________________________________________
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
-
-//___________________Conditions/trg_____________________________________________________________
 MakeChairInstance(trgTimeOffset,Conditions/trg/trgTimeOffset);
-//___________________Geometry/tpc_____________________________________________________________
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
 MakeChairInstance(tpcGlobalPosition,Geometry/tpc/tpcGlobalPosition);

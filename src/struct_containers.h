@@ -29,6 +29,7 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
     kChebyshev,
     kLegendre
   };
+
   St_MDFCorrectionC();
 
   void Initialize()

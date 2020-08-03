@@ -303,10 +303,10 @@ int StTpcdEdxCorrection::dEdxCorrection(int sector, int row, dEdxY2_t &CdEdx)
       goto ENDL;
     }
     else if (k == kSpaceCharge) {
-      if (cor[2 * l  ].min <= CdEdx.QRatio && CdEdx.QRatio <= cor[2 * l  ].max &&
+      if (cor[2 * l    ].min <= CdEdx.QRatio && CdEdx.QRatio <= cor[2 * l    ].max &&
           cor[2 * l + 1].min <= CdEdx.DeltaZ && CdEdx.DeltaZ <= cor[2 * l + 1].max)
-        dE *= std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 * l, CdEdx.QRatio)
-                         - ((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 * l + 1, CdEdx.DeltaZ));
+        dE *= std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 * l,     CdEdx.QRatio)
+                       -((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 * l + 1, CdEdx.DeltaZ));
       goto ENDL;
     }
     else if (k == kEdge) {

@@ -1163,8 +1163,7 @@ Coords Simulator::TransportToReadout(const Coords c, double OmegaTau, bool& miss
 
 double Simulator::dEdxCorrection(const TrackSegment &segment)
 {
-  dEdxY2_t CdEdx;
-  memset(&CdEdx, 0, sizeof(dEdxY2_t));
+  dEdxY2_t CdEdx{};
   CdEdx.DeltaZ  = 5.2;
   CdEdx.QRatio  = -2;
   CdEdx.QRatioA = -2.;

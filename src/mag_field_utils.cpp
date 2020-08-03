@@ -85,6 +85,7 @@ To do:  <br>
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TCanvas.h"
@@ -894,10 +895,9 @@ void MagFieldUtils::UndoBDistortion( const float x[], float Xprime[], int Sector
 */
 void MagFieldUtils::Undo2DBDistortion( const float x[], float Xprime[], int Sector )
 {
-
   // NOTE: x[],Xprime[] must be Cartesian for this function!
-
-  double ah ;                             // ah carries the sign opposite of E (for forward integration)
+  // ah carries the sign opposite of E (for forward integration)
+  double ah ;
   float  B[3] ;
   int    sign, index = 1, NSTEPS ;
 
@@ -926,10 +926,8 @@ void MagFieldUtils::Undo2DBDistortion( const float x[], float Xprime[], int Sect
 
     if ( index != 4 ) index = 4; else index = 2 ;
   }
-
-
-
 }
+
 
 /// 3D - B field distortions (Table) - calculate the distortions due to the shape of the B field
 /*!
@@ -939,7 +937,6 @@ void MagFieldUtils::Undo2DBDistortion( const float x[], float Xprime[], int Sect
 */
 void MagFieldUtils::FastUndoBDistortion( const float x[], float Xprime[], int Sector )
 {
-
   static  float dx3D[EMap_nPhi][EMap_nR][EMap_nZ], dy3D[EMap_nPhi][EMap_nR][EMap_nZ] ;
   static  int   ilow = 0, jlow = 0, klow = 0 ;
   const   int   PHIORDER = 1 ;                    // Linear interpolation = 1, Quadratic = 2 ... PHI Table is crude so use linear interp
@@ -982,15 +979,11 @@ void MagFieldUtils::FastUndoBDistortion( const float x[], float Xprime[], int Se
   mag_field_.Search( EMap_nZ,   eZList,   z,   jlow ) ;
 
   if ( klow < 0 ) klow = 0 ;
-
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
   if ( jlow < 0 ) jlow = 0 ;
 
   if ( klow + ORDER  >=  EMap_nPhi - 1 ) klow =  EMap_nPhi - 1 - ORDER ;
-
   if ( ilow + ORDER  >=  EMap_nR - 1   ) ilow =  EMap_nR   - 1 - ORDER ;
-
   if ( jlow + ORDER  >=  EMap_nZ - 1   ) jlow =  EMap_nZ   - 1 - ORDER ;
 
   for ( k = klow ; k < klow + ORDER + 1 ; k++ ) {
@@ -1015,7 +1008,6 @@ void MagFieldUtils::FastUndoBDistortion( const float x[], float Xprime[], int Se
   }
 
   Xprime[2] = x[2] ;
-
 }
 
 

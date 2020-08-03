@@ -426,11 +426,11 @@ struct CoordTransform
   const TGeoHMatrix &PadInner2Glob(int sector = 1)  const {return TpcRot(sector, kPadInner2Glob);}
   const TGeoHMatrix &PadOuter2Glob(int sector = 1)  const {return TpcRot(sector, kPadOuter2Glob);}
 
-  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector, k);}
-  const TGeoHMatrix &SubS2Tpc(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kSubSInner2Tpc  : kSubSOuter2Tpc;  return TpcRot(sector, k);}
-  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kSubSInner2Glob : kSubSOuter2Glob; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {int k = tpcrs::IsInner(row, cfg_) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2Tpc(int sector = 1, int row = 1)  const {int k = tpcrs::IsInner(row, cfg_) ? kSubSInner2Tpc  : kSubSOuter2Tpc;  return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {int k = tpcrs::IsInner(row, cfg_) ? kSubSInner2Glob : kSubSOuter2Glob; return TpcRot(sector, k);}
 
-  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
-  const TGeoHMatrix &Pad2Tpc(int sector = 1, int row = 1)   const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2Tpc  : kPadOuter2Tpc;  return TpcRot(sector, k);}
-  const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {int k = (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {int k = tpcrs::IsInner(row, cfg_) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2Tpc(int sector = 1, int row = 1)   const {int k = tpcrs::IsInner(row, cfg_) ? kPadInner2Tpc  : kPadOuter2Tpc;  return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {int k = tpcrs::IsInner(row, cfg_) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
 };
