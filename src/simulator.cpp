@@ -1048,7 +1048,6 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
                                                 cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
   for (unsigned row = rowMin; row <= rowMax; row++) {
-    if ( !cfg_.C<St_tpcAnodeHVavgC>().livePadrow(sector, row) )  continue;
 
     StTpcLocalSectorCoordinate xyzW{at_readout.x, at_readout.y, at_readout.z, sector, row};
     StTpcPadCoordinate Pad;
