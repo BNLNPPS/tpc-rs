@@ -38,7 +38,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int opt
     {"TpcLengthCorrectionB",   "Variation vs Track length and relative error in Ionization"		, &cfg_.C<St_TpcLengthCorrectionBC>(), 0, 0},
     {"TpcLengthCorrectionMDF", "Variation vs Track length and <log2(dX)> and rel. error in dE/dx"	, &cfg_.C<St_TpcLengthCorrectionMDF>(), 0, 0},
     {"TpcNoAnodeVGainC",       "Remove tpc Anode Voltage gain correction"				, 0, 0, 0},
-    {"TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"                           , &cfg_.C<St_TpcdEdxCorC>(), 0, 0}
+    {"TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"                           , 0, 0, 0}
   }
 {
   InitCorrections();
@@ -198,7 +198,6 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
   VarXs[kTpcCurrentCorrection] = CdEdx.Crow;
   VarXs[kTpcrCharge]           = CdEdx.rCharge;
   VarXs[kTpcRowQ]              = CdEdx.Qcm;
-  VarXs[kTpcPadTBins]          = CdEdx.Npads * CdEdx.Ntbins;
   VarXs[ktpcPressure]          = std::log(tpc_gas.barometricPressure);
   VarXs[kDrift]                = ZdriftDistanceO2;      // Blair correction
   VarXs[kMultiplicity]         = CdEdx.QRatio;
@@ -404,7 +403,6 @@ ENDL:
 void StTpcdEdxCorrection::Print(const dEdxY2_t& mdEdx) const
 {
   LOG_INFO << "StTpcdEdxCorrection:: Sector/row/pad " << mdEdx.sector << "/" << mdEdx.row << "/" << mdEdx.pad << '\n'
-           << "Npads/Ntbins " << mdEdx.Npads << "/" << mdEdx.Ntbins
            << "\tdrift distance / O2 / O2W " << mdEdx.ZdriftDistance << "/" << mdEdx.ZdriftDistanceO2 << "/" << mdEdx.ZdriftDistanceO2W << '\n'
            << "Local xyz " << mdEdx.xyz[0] << "\t" << mdEdx.xyz[1] << "\t" << mdEdx.xyz[2] << '\n'
            << "Local xyzD " << mdEdx.xyzD[0] << "\t" << mdEdx.xyzD[1] << "\t" << mdEdx.xyzD[2] << '\n';

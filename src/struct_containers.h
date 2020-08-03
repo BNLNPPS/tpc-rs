@@ -375,10 +375,6 @@ struct St_TpcdChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdChargeC, t
   St_TpcdChargeC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdChargeC, tpcCorrection>(cfg) {}
 };
 
-struct St_TpcdEdxCorC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdEdxCorC, tpcCorrection> {
-  St_TpcdEdxCorC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdEdxCorC, tpcCorrection>(cfg) {}
-};
-
 struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>
 {
   St_tpcPadConfigC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>(cfg) {}

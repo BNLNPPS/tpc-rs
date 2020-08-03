@@ -87,14 +87,12 @@ class StTpcdEdxCorrection
       kTanL                   = 1u << 20,
       kdXCorrection           = 1u << 21,
       kTpcEffectivedX         = 1u << 22,
-      kTpcPadTBins            = 1u << 23,
       kTpcZDC                 = 1u << 24,
       kTpcPadMDF              = 1u << 25,
       kTpcLast                = 1u << 26,
       kTpcNoAnodeVGainC       = 1u << 27,
       kTpcLengthCorrection    = 1u << 28,
       kTpcLengthCorrectionMDF = 1u << 29,
-      kTpcdEdxCor             = 1u << 30,
       kTpcAllCorrections      = 1u << 31
     };
   };
@@ -127,8 +125,6 @@ struct dEdxY2_t
   int    row;
   int    channel;
   float  pad;
-  int    Npads;
-  int    Ntbins;
   float  ZdriftDistance;     // drift distance
   float  ZdriftDistanceO2;   // ZdriftDistance*ppmOxygenIn
   float  ZdriftDistanceO2W;  // ZdriftDistance*ppmOxygenIn*ppmWaterOut
