@@ -254,11 +254,11 @@ void Simulator::InitAlphaGainVariations(double t0IO[2])
     for (int row = 1; row <= cfg_.S<tpcPadPlanes>().padRows; row++) {
       if (tpcrs::IsInner(row, cfg_)) {
         n_inner++;
-        avg_anode_voltage[num_sectors_*0 + sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
+        avg_anode_voltage[num_sectors_*0 + sector - 1] += tpcrs::VoltagePadrow(sector, row, cfg_);
       }
       else {
         n_outer++;
-        avg_anode_voltage[num_sectors_*1 + sector - 1] += cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
+        avg_anode_voltage[num_sectors_*1 + sector - 1] += tpcrs::VoltagePadrow(sector, row, cfg_);
       }
     }
 

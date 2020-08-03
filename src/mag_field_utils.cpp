@@ -284,7 +284,6 @@ void MagFieldUtils::GetTPCVoltages (int mode)
   } // else don't touch GLW voltages
 
   GetE() ;
-  St_tpcAnodeHVavgC* anodeVolts = &cfg_.C<St_tpcAnodeHVavgC>() ;
 
   if (mode & k3DGridLeak) {
     // For now, a bit complicated, but assign 1 to those with most common
@@ -298,8 +297,8 @@ void MagFieldUtils::GetTPCVoltages (int mode)
 
     for (int i = 1 ; i < 25; i++ ) {
       int inner = cfg_.C<St_tpcPadConfigC>().innerPadRows(i);
-      innerVs.Fill(anodeVolts->voltagePadrow(i, inner));
-      outerVs.Fill(anodeVolts->voltagePadrow(i, inner + 1));
+      innerVs.Fill(tpcrs::VoltagePadrow(i, inner, cfg_));
+      outerVs.Fill(tpcrs::VoltagePadrow(i, inner + 1, cfg_));
     }
 
     double cmnInner = innerVs.GetBinCenter(innerVs.GetMaximumBin());
@@ -307,8 +306,8 @@ void MagFieldUtils::GetTPCVoltages (int mode)
     LOG_INFO << "MagFieldUtils assigning common anode voltages as " << cmnInner << " , " << cmnOuter << '\n';
 
     for (int i = 1 ; i < 25; i++ ) {
-      GLWeights[i] = ( ( std::abs(anodeVolts->voltagePadrow(i, INNER[i - 1]  ) - cmnInner) < stepsInner / 2. ) &&
-                       ( std::abs(anodeVolts->voltagePadrow(i, INNER[i - 1] + 1) - cmnOuter) < stepsOuter / 2. ) ? 1 : -1 );
+      GLWeights[i] = ( ( std::abs(tpcrs::VoltagePadrow(i, INNER[i - 1]    , cfg_) - cmnInner) < stepsInner / 2. ) &&
+                       ( std::abs(tpcrs::VoltagePadrow(i, INNER[i - 1] + 1, cfg_) - cmnOuter) < stepsOuter / 2. ) ? 1 : -1 );
     }
   }
   else if (mode & kFullGridLeak) {
@@ -322,10 +321,10 @@ void MagFieldUtils::GetTPCVoltages (int mode)
                    (GL_charge_y_hi[2] * GL_charge_y_hi[2] - GL_charge_y_lo[2] * GL_charge_y_lo[2]) ) ;
 
     for (int i = 0 ; i < 24; i++ ) {
-      GLWeights[i   ] = GL_rho_inner_of_innerSec(anodeVolts->voltagePadrow(i + 1,         1)) * norm ;
-      GLWeights[i + 24] = GL_rho_outer_of_innerSec(anodeVolts->voltagePadrow(i + 1, INNER[i]  )) * norm ;
-      GLWeights[i + 48] = GL_rho_inner_of_outerSec(anodeVolts->voltagePadrow(i + 1, INNER[i] + 1)) * norm ;
-      GLWeights[i + 72] = GL_rho_outer_of_outerSec(anodeVolts->voltagePadrow(i + 1, TPCROWS[i])) * norm ;
+      GLWeights[i     ] = GL_rho_inner_of_innerSec(tpcrs::VoltagePadrow(i + 1,            1, cfg_)) * norm ;
+      GLWeights[i + 24] = GL_rho_outer_of_innerSec(tpcrs::VoltagePadrow(i + 1, INNER[i]    , cfg_)) * norm ;
+      GLWeights[i + 48] = GL_rho_inner_of_outerSec(tpcrs::VoltagePadrow(i + 1, INNER[i] + 1, cfg_)) * norm ;
+      GLWeights[i + 72] = GL_rho_outer_of_outerSec(tpcrs::VoltagePadrow(i + 1, TPCROWS[i]  , cfg_)) * norm ;
     }
   }
 

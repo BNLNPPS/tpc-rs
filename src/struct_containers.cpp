@@ -855,6 +855,26 @@ int St_tpcChargeEventC::findChargeTimes(unsigned long long bunchCrossingNumber, 
 
 namespace tpcrs {
 
+float VoltagePadrow(int sector, int row, const Configurator& cfg)
+{
+  if (! cfg.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+    return cfg.C<St_TpcAvgPowerSupplyC>().voltagePadrow(sector,row);
+  }
+  int e1 = 0, e2 = 0;
+  float f2 = 0;
+  St_tpcAnodeHVC::sockets(sector, row, e1, e2, f2);
+  if (e1==0) return -99;
+  float v1=cfg.S<tpcAnodeHVavg>(e1-1).voltage;
+  if (f2==0) return v1;
+  float v2=cfg.S<tpcAnodeHVavg>(e2-1).voltage;
+  if (v2==v1) return v1;
+  // different voltages on influencing HVs
+  // effective voltage is a sum of exponential gains
+  float B = tpcrs::IsInner(row, cfg) ? 13.05e-3 : 10.26e-3;
+  float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
+  return v_eff;
+}
+
 float GainCorrection(int sector, int row, const tpcrs::Configurator& cfg)
 {
   int l = 0;
@@ -867,7 +887,7 @@ float GainCorrection(int sector, int row, const tpcrs::Configurator& cfg)
   int NRows = gC.GetNRows();
   if (l >= NRows) return gain;
 
-  V = cfg.C<St_tpcAnodeHVavgC>().voltagePadrow(sector,row);
+  V = VoltagePadrow(sector, row, cfg);
   if (V > 0) {
     double v = V - V_nominal;
     if (v < gC.min(l) || v > gC.max(l))

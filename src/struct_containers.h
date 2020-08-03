@@ -852,6 +852,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
 
 namespace tpcrs {
 
+float VoltagePadrow(int sector, int row, const Configurator& cfg);
 float GainCorrection(int sector, int row, const Configurator& cfg);
 float DriftVelocity(int sector, const Configurator& cfg);
 bool IsInner(int row, const Configurator& cfg);
