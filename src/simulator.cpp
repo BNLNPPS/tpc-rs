@@ -284,12 +284,6 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-  double vminI = cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min;
-  double vminO = cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min;
-
-  cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = -500;
-  cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = -500;
-
   std::vector< std::vector<TrackSegment> > segments_by_sector(num_sectors_);
   std::vector<TrackSegment> segments_in_sector;
 
@@ -374,9 +368,6 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
 
     sector++;
   }
-
-  cfg_.C<St_tpcGainCorrectionC>().Struct(1)->min = vminI;
-  cfg_.C<St_tpcGainCorrectionC>().Struct(0)->min = vminO;
 }
 
 
