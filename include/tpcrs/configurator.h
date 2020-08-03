@@ -16,6 +16,8 @@ template<> std::string ConfigNodeName<trigDetSums>();
 template<> std::string ConfigNodeName<asic_thresholds>();
 template<> std::string ConfigNodeName<ResponseSimulator>();
 template<> std::string ConfigNodeName<tpcAltroParams>();
+template<> std::string ConfigNodeName<tpcAnodeHVavg>();
+template<> std::string ConfigNodeName<tpcCalibResolutions>();
 template<> std::string ConfigNodeName<tpcDriftVelocity>();
 template<> std::string ConfigNodeName<tpcEffectiveGeom>();
 template<> std::string ConfigNodeName<tpcElectronics>();
