@@ -1065,13 +1065,12 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
     float padX = Pad.pad;
     int CentralPad = tpcrs::irint(padX);
-    int PadsAtRow = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(sector, row);
 
-    if (CentralPad < 1 || CentralPad > PadsAtRow) continue;
+    if (CentralPad < 1 || CentralPad > digi_.n_pads(row)) continue;
 
     int DeltaPad = tpcrs::irint(mPadResponseFunction[num_sectors_*io + sector - 1].GetXmax()) + 1;
     int padMin   = std::max(CentralPad - DeltaPad, 1);
-    int padMax   = std::min(CentralPad + DeltaPad, PadsAtRow);
+    int padMax   = std::min(CentralPad + DeltaPad, digi_.n_pads(row));
     int Npads    = std::min(padMax - padMin + 1, static_cast<int>(kPadMax));
     double xPadMin = padMin - padX;
 
@@ -1171,15 +1170,15 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
   CdEdx.QRatioA = -2.;
   CdEdx.edge    = tpcrs::irint(segment.Pad.pad);
 
-  if (CdEdx.edge > 0.5 * cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(segment.Pad.sector, segment.Pad.row))
-    CdEdx.edge += 1 - cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(segment.Pad.sector, segment.Pad.row);
+  if (CdEdx.edge > 0.5 * digi_.n_pads(segment.Pad.row))
+    CdEdx.edge += 1 - digi_.n_pads(segment.Pad.row);
 
   CdEdx.F.dE   = 1;
   CdEdx.F.dx   = std::abs(segment.simu_hit->ds);
   CdEdx.xyz[0] = segment.coorLS.position.x;
   CdEdx.xyz[1] = segment.coorLS.position.y;
   CdEdx.xyz[2] = segment.coorLS.position.z;
-  double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(segment.Pad.sector, segment.Pad.row) / 2;
+  double probablePad = digi_.n_pads(segment.Pad.row) / 2;
   double pitch = tpcrs::IsInner(segment.Pad.row, cfg_) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                                                    cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
   double PhiMax = std::atan2(probablePad * pitch, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_));
