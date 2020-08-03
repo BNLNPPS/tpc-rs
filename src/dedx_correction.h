@@ -9,15 +9,13 @@ struct dE_t {
   float dx;
   float dEdx;
   float dEdxL;
-  float dEdxN;
 };
 
 
-struct dEdxCorrection_t {
-  dEdxCorrection_t(const char* name = "", const  char* title = "", tpcrs::IConfigStruct* chair = 0, int n = 0) :
-    Name(name), Title(title), Chair(chair), nrows(n), dE(0) {}
-  const char* Name;
-  const char* Title;
+struct dEdxCorrection_t
+{
+  std::string name;
+  std::string title;
   tpcrs::IConfigStruct* Chair;
   int   nrows;
   float dE;
@@ -28,7 +26,7 @@ class dEdxY2_t;
 class StTpcdEdxCorrection
 {
  public:
-  enum ESector : int {kTpcOuter = 0, kTpcInner = 1, kiTpc = 2};
+
   enum EOptions : int {
     kUncorrected           =  0,//U
     kAdcCorrection         =  1,//R
@@ -101,23 +99,21 @@ class StTpcdEdxCorrection
     };
   };
 
-  StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int Option = 0, int debug = 0);
-  ~StTpcdEdxCorrection();
-  int dEdxCorrection(dEdxY2_t &dEdx, bool doIT = true);
+  StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options = -1, int debug = 0);
 
-  void ReSetCorrections();
-  //  St_trigDetSums    *trigDetSums()         {return m_trigDetSums;}
+  int dEdxCorrection(dEdxY2_t &dEdx);
 
-  float           Adc2GeV()              {return mAdc2GeV;}
-  void Print(Option_t* opt = "") const;
+  void Print(const dEdxY2_t& dEdx) const;
+
  private:
 
+  enum ESector : int {kTpcOuter = 0, kTpcInner = 1, kiTpc = 2};
+
+  void InitCorrections();
+
   const tpcrs::Configurator& cfg_;
-  int                m_Mask;                  //!
-  dEdxY2_t*            mdEdx;
-  float              mAdc2GeV;                //! Outer/Inner conversion factors from ADC -> GeV
-  dEdxCorrection_t     m_Corrections[kTpcAllCorrections];//!
-  int                m_Debug;                 //!
+  int               options_;
+  dEdxCorrection_t  corrections_[kTpcAllCorrections];
 };
 
 
@@ -164,8 +160,8 @@ struct dEdxY2_t
   float  xpad;    // relative position in pad [-1.0,1.0]
   float  yrow;    // relative position in row [-0.5,0.0] inner, and [0.0,0.5] outer
   float  tpcTime;
-  dE_t     C[StTpcdEdxCorrection::kTpcAllCorrections + 1];
-  dE_t     F;     //!
+  dE_t   C[StTpcdEdxCorrection::kTpcAllCorrections + 1];
+  dE_t   F;     // Final overall correction
   int    npads; // cluster size in pads
   int    ntmbks;// clustre size in time buckets
 };
