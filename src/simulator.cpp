@@ -56,7 +56,31 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(cfg, dEdxCorr::kAll & ~dEdxCorr::kAdcCorrection & ~dEdxCorr::kAdcCorrectionMDF & ~dEdxCorr::kdXCorrection, 0),
+  dEdx_correction_(cfg, 
+    dEdxCorr::kEdge                   |
+    dEdxCorr::kTpcdCharge             |
+    dEdxCorr::kTpcrCharge             |
+    dEdxCorr::kTpcCurrentCorrection   |
+    dEdxCorr::kTpcSecRowB             |
+    dEdxCorr::kTpcSecRowC             |
+    dEdxCorr::kTpcRowQ                |
+    dEdxCorr::ktpcPressure            |
+    dEdxCorr::ktpcTime                |
+    dEdxCorr::kDrift                  |
+    dEdxCorr::kMultiplicity           |
+    dEdxCorr::kzCorrection            |
+    dEdxCorr::ktpcMethaneIn           |
+    dEdxCorr::ktpcGasTemperature      |
+    dEdxCorr::ktpcWaterOut            |
+    dEdxCorr::kSpaceCharge            |
+    dEdxCorr::kPhiDirection           |
+    dEdxCorr::kTanL                   |
+    dEdxCorr::kTpcEffectivedX         |
+    dEdxCorr::kTpcZDC                 |
+    dEdxCorr::kTpcPadMDF              |
+    dEdxCorr::kTpcLengthCorrection    |
+    dEdxCorr::kTpcLengthCorrectionMDF
+  ),
   digi_(cfg_),
   alpha_gain_variations_()
 {
@@ -1193,7 +1217,6 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
   CdEdx.xyzD[1] = segment.dirLS.position.y;
   CdEdx.xyzD[2] = segment.dirLS.position.z;
   CdEdx.zG      = CdEdx.xyz[2];
-  CdEdx.Zdc     = cfg_.S<trigDetSums>().zdcX;
   CdEdx.ZdriftDistance = segment.coorLS.position.z; // drift length
   CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * cfg_.S<tpcGas>().ppmOxygenIn;
 

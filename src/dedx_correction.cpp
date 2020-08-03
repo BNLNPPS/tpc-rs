@@ -4,7 +4,7 @@
 #include "struct_containers.h"
 
 
-StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options, int debug) :
+StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options) :
   cfg_(cfg),
   options_(options),
   corrections_{
@@ -53,7 +53,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int opt
 
     if (!corrections_[k].Chair) continue;
 
-    if (!TESTBIT(options_, k) || corrections_[k].Chair->IsMarked()) {
+    if ( !(options_ & (1u << k)) || corrections_[k].Chair->IsMarked()) {
       // correction is missing
       goto CLEAR;
     }
@@ -69,8 +69,8 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int opt
 
     npar = 0;
 
-    if (chair) {
-
+    if (chair)
+    {
       cor = chair->Struct();
       N = chair->GetNRows();
 
@@ -83,7 +83,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int opt
       for (int i = 0; i < N; i++, cor++) {
         if (cor->nrows == 0 && cor->idx == 0) continue;
 
-        if (std::abs(cor->npar) > 0       ||
+        if (std::abs(cor->npar)   > 0     ||
             std::abs(cor->OffSet) > 1.e-7 ||
             std::abs(cor->min)    > 1.e-7 ||
             std::abs(cor->max)    > 1.e-7) {
@@ -127,7 +127,6 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int opt
 EMPTY:
     // correction is empty
 CLEAR:
-    CLRBIT(options_, k);
     corrections_[k].Chair = 0;
   }
 
@@ -144,85 +143,69 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
 {
   if (CdEdx.F.dE <= 0.) CdEdx.F.dE = 1;
 
-  double dEU   = CdEdx.F.dE;
-  double dE    = dEU;
+  double dE    = CdEdx.F.dE;
   int sector   = CdEdx.sector;
   int row      = CdEdx.row;
   double dx    = CdEdx.F.dx;
-  double adcCF = CdEdx.adc;
 
-  if (dx <= 0 || (dEU <= 0 && adcCF <= 0)) return 3;
+  if (dx <= 0) return 3;
 
   CdEdx.channel = cfg_.C<St_TpcAvgPowerSupplyC>().ChannelFromRow(sector, row);
-
-  CdEdx.Voltage = cfg_.C<St_tpcAnodeHVavgC>().voltagePadrow(sector, row);
   CdEdx.Crow    = cfg_.C<St_TpcAvgCurrentC>().AvCurrRow(sector, row);
-  double Qcm    = cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // C/cm
-  CdEdx.Qcm     = 1e6 * Qcm; // uC/cm
+  CdEdx.Qcm     = 1e6 * cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // uC/cm
 
   double ZdriftDistance = CdEdx.ZdriftDistance;
   ESector kTpcOutIn = kTpcOuter;
 
-  if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) kTpcOutIn = kTpcInner;
+  if (tpcrs::IsInner(row, cfg_)) kTpcOutIn = kTpcInner;
 
   const tss_tsspar& tsspar = cfg_.S<tss_tsspar>();
-  float gasGain = 1;
+  double gasGain = 1;
 
-  if (row > cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) {
-    gasGain = tpcrs::GainCorrection(sector, row, cfg_) * tsspar.wire_coupling_out;
-  }
-  else {
+  if (tpcrs::IsInner(row, cfg_))
     gasGain = tpcrs::GainCorrection(sector, row, cfg_) * tsspar.wire_coupling_in;
-  }
+  else
+    gasGain = tpcrs::GainCorrection(sector, row, cfg_) * tsspar.wire_coupling_out;
 
-  if (gasGain <= 0.0) return 4;
+  if (gasGain <= 0) return 4;
 
   double Adc2GeVReal = tsspar.ave_ion_pot * tsspar.scale / gasGain;
-  const tpcGas& tpc_gas = cfg_.S<tpcGas>();
-  double ZdriftDistanceO2 = ZdriftDistance * tpc_gas.ppmOxygenIn;
-  double ZdriftDistanceO2W = ZdriftDistanceO2 * tpc_gas.ppmWaterOut;
+  double ZdriftDistanceO2 = ZdriftDistance * cfg_.S<tpcGas>().ppmOxygenIn;
+  double ZdriftDistanceO2W = ZdriftDistanceO2 * cfg_.S<tpcGas>().ppmWaterOut;
   CdEdx.ZdriftDistanceO2 = ZdriftDistanceO2;
   CdEdx.ZdriftDistanceO2W = ZdriftDistanceO2W;
   double gc, ADC, xL2, dXCorr;
-  double iCut = 0;
-  double slope = 0;
   int nrows = 0;
   double VarXs[kTpcLast] = {-999.};
-  VarXs[kTpcZDC]               = (CdEdx.Zdc > 0) ? std::log10(CdEdx.Zdc) : 0;
+  VarXs[kTpcZDC]               = (cfg_.S<trigDetSums>().zdcX > 0) ? std::log10(cfg_.S<trigDetSums>().zdcX) : 0;
   VarXs[kTpcCurrentCorrection] = CdEdx.Crow;
   VarXs[kTpcrCharge]           = CdEdx.rCharge;
   VarXs[kTpcRowQ]              = CdEdx.Qcm;
-  VarXs[ktpcPressure]          = std::log(tpc_gas.barometricPressure);
+  VarXs[ktpcPressure]          = std::log(cfg_.S<tpcGas>().barometricPressure);
   VarXs[kDrift]                = ZdriftDistanceO2;      // Blair correction
   VarXs[kMultiplicity]         = CdEdx.QRatio;
   VarXs[kzCorrection]          = ZdriftDistance;
-  VarXs[ktpcMethaneIn]         = tpc_gas.percentMethaneIn * 1000. / tpc_gas.barometricPressure;
-  VarXs[ktpcGasTemperature]    = tpc_gas.outputGasTemperature;
-  VarXs[ktpcWaterOut]          = tpc_gas.ppmWaterOut;
+  VarXs[ktpcMethaneIn]         = cfg_.S<tpcGas>().percentMethaneIn * 1000. / cfg_.S<tpcGas>().barometricPressure;
+  VarXs[ktpcGasTemperature]    = cfg_.S<tpcGas>().outputGasTemperature;
+  VarXs[ktpcWaterOut]          = cfg_.S<tpcGas>().ppmWaterOut;
   VarXs[kEdge]                 = CdEdx.PhiR;
 
   if (VarXs[kEdge] < -1) VarXs[kEdge] = -1;
   if (VarXs[kEdge] >  1) VarXs[kEdge] =  1;
 
   VarXs[kPhiDirection]     = (std::abs(CdEdx.xyzD[0]) > 1.e-7) ? std::abs(CdEdx.xyzD[1] / CdEdx.xyzD[0]) : 999.;
-  VarXs[kTanL]             = CdEdx.TanL;
+  VarXs[kTanL]             = CdEdx.TanL; // used in adc correction
   VarXs[ktpcTime]          = CdEdx.tpcTime;
-  VarXs[kAdcCorrection]    = adcCF;
-  VarXs[kAdcCorrectionMDF] = adcCF;
+  VarXs[kAdcCorrection]    = CdEdx.adc;
+  VarXs[kAdcCorrectionMDF] = CdEdx.adc;
 
   for (int k = kUncorrected; k <= kTpcLast; k++) {
     int l = 0;
+    bool do_cut = false;
     tpcCorrection* cor = 0;
     tpcCorrection* corl = 0;
 
-    if (CdEdx.lSimulated) {
-      if (k == kAdcCorrection) dE *= 2.116;//  1.75; // 1.25 is in Trs already <<<< !!!!!!
-
-      goto ENDL;
-    }
-
-    if (! TESTBIT(options_, k)) goto ENDL;
-
+    if (!(options_ & (1u << k))) goto ENDL;
     if (! corrections_[k].Chair) goto ENDL;
 
     if (k == kTpcSecRowB || k == kTpcSecRowC ) {
@@ -236,16 +219,12 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
       if (gc <= 0.0) return 1;
 
       dE *= gc;
-      CdEdx.Weight = 1;
-
-      if (gain->GainRms[row - 1] > 0.1) CdEdx.Weight = 1. / (gain->GainRms[row - 1] * gain->GainRms[row - 1]);
 
       goto ENDL;
     }
     else if (k == kTpcEffectivedX) {
       if      (kTpcOutIn == kTpcOuter) dx *= ((const St_TpcEffectivedXC* ) corrections_[k].Chair)->scaleOuter();
-      else if (kTpcOutIn == kTpcInner ||
-               kTpcOutIn == kiTpc )    dx *= ((const St_TpcEffectivedXC* ) corrections_[k].Chair)->scaleInner();
+      else if (kTpcOutIn == kTpcInner) dx *= ((const St_TpcEffectivedXC* ) corrections_[k].Chair)->scaleInner();
 
       goto ENDL;
     }
@@ -253,14 +232,14 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     if (k == kTpcPadMDF) {
       l = 2 * (sector - 1);
 
-      if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) l += kTpcInner; // for both tpc and iTPC inner sectors
+      if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) l += kTpcInner;
 
       dE *= std::exp(-((St_TpcPadCorrectionMDF*)corrections_[k].Chair)->Eval(l, CdEdx.yrow, CdEdx.xpad));
       goto ENDL;
     }
 
     if (k == kAdcCorrectionMDF) {
-      ADC = adcCF;
+      ADC = CdEdx.adc;
 
       if (ADC <= 0) return 3; //HACK to avoid FPE (VP)
 
@@ -291,10 +270,9 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     }
 
     corl = cor + l;
-    iCut = 0;
 
     if (k == kAdcCorrection) {
-      ADC = adcCF;
+      ADC = CdEdx.adc;
 
       if (ADC <= 0) return 3; //HACK to avoid FPE (VP)
 
@@ -310,13 +288,13 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     else if (k == kTpcdCharge) {
       if (l > 2) l = 1;
 
-      slope = ((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, row + 0.5);
+      double slope = ((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, row + 0.5);
       dE *=  std::exp(-slope * CdEdx.dCharge);
       dE *=  std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 + l, CdEdx.dCharge));
       goto ENDL;
     }
     else if (k == kzCorrection) {
-      iCut = 1; // Always cut
+      do_cut = true; // Always cut
     }
     else if (k == kdXCorrection) {
       xL2 = std::log2(dx);
@@ -338,29 +316,26 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
           cor[2 * l + 1].min <= CdEdx.DeltaZ && CdEdx.DeltaZ <= cor[2 * l + 1].max)
         dE *= std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 * l, CdEdx.QRatio)
                          - ((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(2 * l + 1, CdEdx.DeltaZ));
-
       goto ENDL;
     }
     else if (k == kEdge) {
       if (corl->type == 200) VarXs[kEdge] = std::abs(CdEdx.edge);
 
-      if (corl->min > 0 && corl->min > VarXs[kEdge]    ) return 2;
+      if (corl->min > 0 && corl->min > VarXs[kEdge]) return 2;
     }
     else if (k == ktpcTime) {   // use the correction if you have xmin < xmax && xmin <= x <= xmax
-      if (corl->min >= corl->max || corl->min > VarXs[ktpcTime] ||  VarXs[ktpcTime] > corl->max) goto ENDL;
+      if (corl->min >= corl->max || corl->min > VarXs[ktpcTime] || VarXs[ktpcTime] > corl->max) goto ENDL;
 
-      double xx = VarXs[ktpcTime];
-      dE *= std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, xx));
+      dE *= std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, VarXs[ktpcTime]));
       goto ENDL;
     }
 
     if (corl->type == 300) {
-      if (corl->min > 0 && corl->min > VarXs[k]    ) VarXs[k] = corl->min;
-
-      if (corl->max > 0 && VarXs[k]     > corl->max) VarXs[k] = corl->max;
+      if (corl->min > 0 && VarXs[k] < corl->min) VarXs[k] = corl->min;
+      if (corl->max > 0 && VarXs[k] > corl->max) VarXs[k] = corl->max;
     }
 
-    if (std::abs(corl->npar) >= 100 || iCut) {
+    if (std::abs(corl->npar) >= 100 || do_cut) {
       int iok = 2;
 
       if (corl->min >= corl->max) {
@@ -378,15 +353,12 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     }
 
     if (corl->npar % 100) {
-      double dECor = std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, VarXs[k]));
-      dE *= dECor;
+      dE *= std::exp(-((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, VarXs[k]));
     }
 
 ENDL:
     CdEdx.C[k].dE = dE;
     CdEdx.C[k].dx = dx;
-    CdEdx.C[k].dEdx  = dE/dx;
-    CdEdx.C[k].dEdxL = std::log(CdEdx.C[k].dEdx);
   }
 
   CdEdx.F = CdEdx.C[kTpcLast];
@@ -408,16 +380,12 @@ void StTpcdEdxCorrection::Print(const dEdxY2_t& mdEdx) const
     if (k <= (int) kTpcLast) {
       LOG_INFO << "\tdE "         << mdEdx.C[k].dE
                << "\tdx "         << mdEdx.C[k].dx
-               << "\tdE/dx "      << mdEdx.C[k].dEdx
-               << "\tlog(dE/dx) " << mdEdx.C[k].dEdxL
                << '\t'            << corrections_[k].name
                << '\t'            << corrections_[k].title;
     }
     else {
       LOG_INFO << "\tdE "         << mdEdx.F.dE
                << "\tdx "         << mdEdx.F.dx
-               << "\tdE/dx "      << mdEdx.F.dEdx
-               << "\tlog(dE/dx) " << mdEdx.F.dEdxL
                << "\tFinal \t ";
     }
 

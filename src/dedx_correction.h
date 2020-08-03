@@ -7,8 +7,6 @@
 struct dE_t {
   float dE;
   float dx;
-  float dEdx;
-  float dEdxL;
 };
 
 
@@ -64,7 +62,6 @@ class StTpcdEdxCorrection
 
   struct Corrections {
     enum Bits : unsigned {
-      kAll                    = ~(0u),
       kAdcCorrection          = 1u <<  1,
       kEdge                   = 1u <<  2,
       kAdcCorrectionMDF       = 1u <<  3,
@@ -89,15 +86,13 @@ class StTpcdEdxCorrection
       kTpcEffectivedX         = 1u << 22,
       kTpcZDC                 = 1u << 24,
       kTpcPadMDF              = 1u << 25,
-      kTpcLast                = 1u << 26,
       kTpcNoAnodeVGainC       = 1u << 27,
       kTpcLengthCorrection    = 1u << 28,
-      kTpcLengthCorrectionMDF = 1u << 29,
-      kTpcAllCorrections      = 1u << 31
+      kTpcLengthCorrectionMDF = 1u << 29
     };
   };
 
-  StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options = -1, int debug = 0);
+  StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options = -1);
 
   int dEdxCorrection(dEdxY2_t &dEdx);
 
@@ -105,10 +100,10 @@ class StTpcdEdxCorrection
 
  private:
 
-  enum ESector : int {kTpcOuter = 0, kTpcInner = 1, kiTpc = 2};
+  enum ESector : int {kTpcOuter = 0, kTpcInner = 1};
 
   const tpcrs::Configurator& cfg_;
-  int               options_;
+  const int         options_;
   dEdxCorrection_t  corrections_[kTpcAllCorrections];
 };
 
@@ -136,26 +131,19 @@ struct dEdxY2_t
   float  edge;    // distance to sector edge
   float  PhiR;    // relative phi
   float  resXYZ[3]; // track SectorLocal residual wrt local track
-  float  Prob;
-  float  zdev;
-  float  zP;      // the most probable value from Bichsel
   float  zG;      // global z oh Hit
-  float  sigmaP;  // sigma from Bichsel
   float  dCharge; // d_undershoot_Q/Q = ratio of modified - original charge normalized on original charge
   float  rCharge; // d_rounding_Q/Q   = estimated rounding normalized on original charge
-  int    lSimulated;
   float  Qcm;     // accumulated charge uC/cm
   float  Crow;    // Current per row;
   float  Zdc;     // ZDC rate from trigger
-  float  Weight;  // 1/.sigma^2 of TpcSecRow gas gain correction
   float  adc;     //  adc count from cluster finder
   float  TanL;
-  float  Voltage; // Anode Voltage
-  float  xpad;    // relative position in pad [-1.0,1.0]
-  float  yrow;    // relative position in row [-0.5,0.0] inner, and [0.0,0.5] outer
+  float  xpad;    // Used in kTpcPadMDF: relative position in pad [-1.0,1.0]
+  float  yrow;    // Used in kTpcPadMDF: relative position in row [-0.5,0.0] inner, and [0.0,0.5] outer
   float  tpcTime;
   dE_t   C[StTpcdEdxCorrection::kTpcAllCorrections + 1];
   dE_t   F;     // Final overall correction
-  int    npads; // cluster size in pads
-  int    ntmbks;// clustre size in time buckets
+  int    npads; // Used in kAdcCorrectionMDF cluster size in pads
+  int    ntmbks;// Used in kAdcCorrectionMDF clustre size in time buckets
 };
