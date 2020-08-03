@@ -51,6 +51,8 @@ template<> std::string ConfigNodeName<tpcDriftVelocity>()     { return "Calibrat
 template<> std::string ConfigNodeName<tpcEffectiveGeom>()     { return "Calibrations/tpc/tpcEffectiveGeom"; };
 template<> std::string ConfigNodeName<tpcElectronics>()       { return "Calibrations/tpc/tpcElectronics"; };
 template<> std::string ConfigNodeName<tpcGas>()               { return "Calibrations/tpc/tpcGas"; };
+template<> std::string ConfigNodeName<tpcHighVoltages>()      { return "Calibrations/tpc/tpcHighVoltages"; };
+template<> std::string ConfigNodeName<tpcOmegaTau>()          { return "Calibrations/tpc/tpcOmegaTau"; };
 template<> std::string ConfigNodeName<tpcPadGainT0>()         { return "Calibrations/tpc/tpcPadGainT0"; };
 template<> std::string ConfigNodeName<tpcPadrowT0>()          { return "Calibrations/tpc/tpcPadrowT0"; };
 template<> std::string ConfigNodeName<tpcSectorT0offset>()    { return "Calibrations/tpc/tpcSectorT0offset"; };

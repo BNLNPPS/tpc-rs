@@ -22,6 +22,8 @@ template<> std::string ConfigNodeName<tpcDriftVelocity>();
 template<> std::string ConfigNodeName<tpcEffectiveGeom>();
 template<> std::string ConfigNodeName<tpcElectronics>();
 template<> std::string ConfigNodeName<tpcGas>();
+template<> std::string ConfigNodeName<tpcHighVoltages>();
+template<> std::string ConfigNodeName<tpcOmegaTau>();
 template<> std::string ConfigNodeName<tpcPadGainT0>();
 template<> std::string ConfigNodeName<tpcPadrowT0>();
 template<> std::string ConfigNodeName<tpcSectorT0offset>();
