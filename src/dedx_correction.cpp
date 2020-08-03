@@ -41,12 +41,6 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int opt
     {"TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"                           , 0, 0, 0}
   }
 {
-  InitCorrections();
-}
-
-
-void StTpcdEdxCorrection::InitCorrections()
-{
   const St_tpcCorrectionC* chair = 0;
   const St_MDFCorrectionC* chairMDF = 0;
   const tpcCorrection* cor = 0;

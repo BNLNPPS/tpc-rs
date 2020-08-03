@@ -107,8 +107,6 @@ class StTpcdEdxCorrection
 
   enum ESector : int {kTpcOuter = 0, kTpcInner = 1, kiTpc = 2};
 
-  void InitCorrections();
-
   const tpcrs::Configurator& cfg_;
   int               options_;
   dEdxCorrection_t  corrections_[kTpcAllCorrections];
