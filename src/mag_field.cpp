@@ -7,24 +7,16 @@
 
 
 /**
- * A package of Bfield. Methods included to read the correct Bfield map and
- * scale it according to a scale factor provided during instantiation. The
- * Bfield map accuracy FWHM = 1 G.
+ * Reads the magnetic field map from a file and scales it according to a scale
+ * factor provided during instantiation. The field map accuracy = 1 G.
  *
- * The enumerations for the manual settings are:
- * enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2 };
- * "kConstant = 1" means you wish to work with a constant, uniform, field
- * "kMapped = 2"   means you want to read values from the measured magnet maps
- *
- * This code works in kGauss, cm - but note that the Bfield maps on disk are in
- * gauss, cm.
+ * This code works in kGauss, cm - but note that the field maps read from files
+ * are expected to be in gauss, cm.
  */
-MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float rescale) :
+MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, double scale) :
   cfg_(cfg),
-  fMap(map),
-  fFactor(cfg.S<MagFactor>().ScaleFactor),
-  fRescale(rescale),
-  fMagFieldRotation("MagFieldRotation")
+  field_type_(field_type),
+  scale_factor_(scale)
 {
   ReadField();
 }
@@ -33,42 +25,34 @@ MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float rescale) :
 /**
  * B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
  */
-void MagField::BField( const double x[], float B[] )
+void MagField::BField(const double x[3], float B[3])
 {
   float Br_value = 0, Bz_value = 0, Bphi_value = 0;
 
   B[0] = B[1] = B[2] = 0;
 
-  float r   = std::sqrt(x[0]*x[0] + x[1]*x[1]);
-  float phi = std::atan2(x[1], x[0]);
-  float z   = x[2];
-
-  // Table uses phi from 0 to 2*Pi
-  if (phi < 0) phi += 2*M_PI ;
-
-  float za = std::abs(z);
+  float r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+  float z = x[2];
 
   // within map
   if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1])
   {
-    Interpolate2DBfield( r, z, Br_value, Bz_value ) ;
-    double BL[3] = {0, 0, Bz_value};
+    InterpolateField2D(r, z, Br_value, Bz_value);
 
-    if ( r != 0.0 )      {
-      BL[0] = Br_value * (x[0] / r) ;
-      BL[1] = Br_value * (x[1] / r) ;
+    if (r != 0) {
+      B[0] = Br_value * (x[0] / r) ;
+      B[1] = Br_value * (x[1] / r) ;
     }
 
-    double BG[3];
-    fMagFieldRotation.LocalToMaster(BL, BG);
-
-    for (int i = 0; i < 3; i++) B[i] = BG[i];
+    B[2] = Bz_value;
   }
 }
 
 
-/// B field in Cartesian coordinates - 3D field
-void MagField::B3DField( const float x[], float B[] )
+/**
+ * B field in Cartesian coordinates - 3D field
+ */
+void MagField::B3DField(const float x[3], float B[3])
 {
   float r, z, phi, Br_value, Bz_value, Bphi_value ;
   Bphi_value = 0;
@@ -82,24 +66,18 @@ void MagField::B3DField( const float x[], float B[] )
 
     if ( phi < 0 ) phi += 2 * M_PI ;           // Table uses phi from 0 to 2*Pi
 
-    Interpolate3DBfield( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
+    InterpolateField3D( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
     B[0] = Br_value * (x[0] / r) - Bphi_value * (x[1] / r) ;
     B[1] = Br_value * (x[1] / r) + Bphi_value * (x[0] / r) ;
     B[2] = Bz_value ;
   }
   else {
     phi = 0 ;
-    Interpolate3DBfield( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
+    InterpolateField3D( r, z, phi, Br_value, Bz_value, Bphi_value ) ;
     B[0] = Br_value ;
     B[1] = Bphi_value ;
     B[2] = Bz_value ;
   }
-
-  double BL[3] = {B[0], B[1], B[2]};
-  double BG[3];
-  fMagFieldRotation.LocalToMaster(BL, BG);
-
-  for (int i = 0; i < 3; i++) B[i] = BG[i];
 }
 
 
@@ -111,32 +89,20 @@ void MagField::ReadField()
   FILE*    magfile, *b3Dfile ;
   std::string filename, filename3D ;
 
-  if ( fMap == kMapped ) {                  	// Mapped field values
-    if ( std::abs(fFactor) > 0.8 ) {    		// Scale from full field data
-      if ( fFactor > 0 ) {
-        filename   = "bfield_full_positive_2D.dat" ;
-        filename3D = "bfield_full_positive_3D.dat" ;
-        fRescale   = 1 ;                // Normal field
-      }
-      else {
-        filename   = "bfield_full_negative_2D.dat" ;
-        filename3D = "bfield_full_negative_3D.dat" ;
-        fRescale   = -1 ;               // Reversed field
-      }
+  if ( field_type_ == MagFieldType::kMapped ) {                  	// Mapped field values
+    if ( scale_factor_ > 0 ) {
+      filename   = "bfield_full_positive_2D.dat" ;
+      filename3D = "bfield_full_positive_3D.dat" ;
     }
-    else {                                // Scale from half field data
-      filename   = "bfield_half_positive_2D.dat" ;
-      filename3D = "bfield_half_positive_3D.dat" ;
-      fRescale   = 2 ;                    // Adjust scale factor to use half field data
+    else {
+      filename   = "bfield_full_negative_2D.dat" ;
+      filename3D = "bfield_full_negative_3D.dat" ;
+      // The values read from file already reflect the sign
+      scale_factor_ = std::abs(scale_factor_);
     }
   }
-  else if ( fMap == kConstant ) {           // Constant field values
+  else if ( field_type_ == MagFieldType::kConstant ) {           // Constant field values
     filename = "const_full_positive_2D.dat" ;
-    fRescale = 1 ;                        // Normal field
-  }
-  else {
-    LOG_ERROR << "MagField::ReadField  No map available - you must choose a mapped field or a constant field\n";
-    exit(1) ;
   }
 
   std::string MapLocation = cfg_.Locate(filename);
@@ -189,7 +155,7 @@ void MagField::ReadField()
       }
     }
   }
-  else if ( fMap == kConstant )             // Constant field values
+  else if ( field_type_ == MagFieldType::kConstant )             // Constant field values
   {
     for ( int i = 0 ; i < nPhi ; i++ ) {
       for ( int j = 0 ; j < nZ ; j++ ) {
@@ -212,10 +178,10 @@ void MagField::ReadField()
 /**
  * Interpolate the B field map - 2D interpolation
  */
-void MagField::Interpolate2DBfield( const float r, const float z, float &Br_value, float &Bz_value )
+void MagField::InterpolateField2D(float r, float z, float &Br_value, float &Bz_value)
 {
   // Scale maps to work in kGauss, cm
-  float fscale = 0.001 * fFactor * fRescale;
+  float fscale = 0.001 * scale_factor_;
 
   const  int ORDER = 1; // Linear interpolation = 1, Quadratic = 2
   static int jlow = 0, klow = 0 ;
@@ -244,11 +210,11 @@ void MagField::Interpolate2DBfield( const float r, const float z, float &Br_valu
 /**
  * Interpolate the B field map - 3D interpolation
  */
-void MagField::Interpolate3DBfield( const float r, const float z, const float phi,
-                                        float &Br_value, float &Bz_value, float &Bphi_value )
+void MagField::InterpolateField3D(float r, float z, float phi,
+                                  float &Br_value, float &Bz_value, float &Bphi_value)
 {
   // Scale maps to work in kGauss, cm
-  float fscale = 0.001 * fFactor * fRescale;
+  float fscale = 0.001 * scale_factor_;
 
   const   int ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
   static  int ilow = 0, jlow = 0, klow = 0 ;
