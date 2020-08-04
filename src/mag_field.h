@@ -1,6 +1,5 @@
 #pragma once
 
-#include "TH2.h"
 #include "TGeoMatrix.h"
 #include "tpcrs/configurator.h"
 
@@ -12,12 +11,6 @@ class MagField
   enum  EBField {kUndefined = 0, kConstant = 1, kMapped = 2};
 
   MagField (const tpcrs::Configurator& cfg, EBField map = kMapped, float Rescale = 1);
-
-  ~MagField ()
-  {
-    SafeDelete(fBzdZCorrection);
-    SafeDelete(fBrdZCorrection);
-  }
 
   void BField  (const double x[], float B[]);
   void B3DField(const float x[], float B[]);
@@ -36,8 +29,6 @@ class MagField
   const tpcrs::Configurator& cfg_;
 
   TGeoRotation fMagFieldRotation;
-  TH2F* fBzdZCorrection; // correction due to endcap calomiter
-  TH2F* fBrdZCorrection; // correction due to endcap calomiter
 
   EBField  fMap;     // (D) = kMapped; Global flag to indicate static arrays are full
   float  fFactor;    // (D) = 1.0    ; Multiplicative factor (allows scaling and sign reversal)

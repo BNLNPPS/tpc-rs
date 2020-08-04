@@ -1,10 +1,6 @@
 #include <string>
 #include <cmath>
 
-#include "TFile.h"
-#include "TError.h"
-#include "TEnv.h"
-
 #include "tpcrs/configurator.h"
 #include "logger.h"
 #include "mag_field.h"
@@ -25,8 +21,6 @@
  */
 MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float rescale) :
   cfg_(cfg),
-  fBzdZCorrection(0),
-  fBrdZCorrection(0),
   fMap(map),
   fFactor(cfg.S<MagFactor>().ScaleFactor),
   fRescale(rescale),
@@ -117,30 +111,6 @@ void MagField::ReadField()
   FILE*    magfile, *b3Dfile ;
   std::string filename, filename3D ;
 
-  if (gEnv->GetValue("NewTpcAlignment", 0) != 0) {
-    TFile pFile(cfg_.Locate("StarFieldZ.root").c_str());
-    TH2F* Br0 = (TH2F*) pFile.Get("Br0");
-    TH2F* Bz0 = (TH2F*) pFile.Get("Bz0");
-
-    if (Br0 && Bz0) {
-      TH2F* Br5cm = (TH2F*) pFile.Get("Br5cm");
-      TH2F* Bz5cm = (TH2F*) pFile.Get("Bz5cm");
-      assert(Br5cm && Bz5cm);
-      TH2F* Br10cm = (TH2F*) pFile.Get("Br10cm");
-      TH2F* Bz10cm = (TH2F*) pFile.Get("Bz10cm");
-      assert(Br10cm && Bz10cm);
-      fBzdZCorrection = new TH2F(*Bz5cm); fBzdZCorrection->SetDirectory(0);
-      fBzdZCorrection->Scale(0.5);
-      fBzdZCorrection->Add(Bz10cm, 0.5);
-      fBzdZCorrection->Add(Bz0, -1.0);
-      fBrdZCorrection = new TH2F(*Br5cm); fBrdZCorrection->SetDirectory(0);
-      fBrdZCorrection->Scale(0.5);
-      fBrdZCorrection->Add(Br10cm, 0.5);
-      fBrdZCorrection->Add(Br0, -1.0);
-      Warning("MagField::ReadField", "Use effective PMT box dZ = 7.5 cm");
-    }
-  }
-
   if ( fMap == kMapped ) {                  	// Mapped field values
     if ( std::abs(fFactor) > 0.8 ) {    		// Scale from full field data
       if ( fFactor > 0 ) {
@@ -185,11 +155,6 @@ void MagField::ReadField()
       for ( int k = 0 ; k < nR ; k++ ) {
         fgets  ( cname, sizeof(cname), magfile ) ;
         sscanf ( cname, " %f %f %f %f ", &Radius[k], &ZList[j], &Br[j][k], &Bz[j][k] ) ;
-
-        if (fBzdZCorrection && fBrdZCorrection) {
-          Br[j][k] += fFactor * fBrdZCorrection->Interpolate(ZList[j], Radius[k]);
-          Bz[j][k] += fFactor * fBzdZCorrection->Interpolate(ZList[j], Radius[k]);
-        }
       }
     }
   } else {
@@ -220,11 +185,6 @@ void MagField::ReadField()
           sscanf ( cname, " %f %f %f %f %f %f ",
                    &R3D[k], &Z3D[j], &Phi3D[i], &Br3D[i][j][k], &Bz3D[i][j][k], &Bphi3D[i][j][k] ) ;
           Phi3D[i] *= M_PI / 180. ;   // Convert to Radians  phi = 0 to 2*Pi
-
-          if (fBzdZCorrection && fBrdZCorrection) {
-            Br3D[i][j][k] += fFactor * fBrdZCorrection->Interpolate(Z3D[j], R3D[k]);
-            Bz3D[i][j][k] += fFactor * fBzdZCorrection->Interpolate(Z3D[j], R3D[k]);
-          }
         }
       }
     }
