@@ -111,11 +111,11 @@ void MagField::ReadField()
   if (magfile)
   {
     char cname[128] ;
-    fgets  ( cname, sizeof(cname), magfile ) ;     // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), magfile ) ;
-    fgets  ( cname, sizeof(cname), magfile ) ;
-    fgets  ( cname, sizeof(cname), magfile ) ;
-    fgets  ( cname, sizeof(cname), magfile ) ;
+    fgets(cname, sizeof(cname), magfile);    // Read comment lines at begining of file
+    fgets(cname, sizeof(cname), magfile);
+    fgets(cname, sizeof(cname), magfile);
+    fgets(cname, sizeof(cname), magfile);
+    fgets(cname, sizeof(cname), magfile);
 
     for ( int j = 0 ; j < nZ ; j++ ) {
       for ( int k = 0 ; k < nR ; k++ ) {

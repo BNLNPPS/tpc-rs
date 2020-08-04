@@ -34,10 +34,10 @@ TF1 Simulator::fgTimeShape0[2] = {
 };
 
 
-Simulator::Simulator(const tpcrs::Configurator& cfg):
+Simulator::Simulator(const tpcrs::Configurator& cfg) :
   cfg_(cfg),
-  transform_(cfg),
-  mag_field_utils_(cfg, transform_),
+  transform_(cfg_),
+  mag_field_utils_(cfg_, transform_),
   num_sectors_(cfg_.S<tpcDimensions>().numberOfSectors),
   max_timebins_(512),
   options_(0),
@@ -55,7 +55,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(cfg),
+  dEdx_correction_(cfg_),
   digi_(cfg_),
   alpha_gain_variations_()
 {
@@ -163,54 +163,54 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
 
 void Simulator::InitPadResponseFuncs(int io, int sector)
 {
-      //                            w       h        s       a       l  i
-      //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
-      //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
-      double params[6]{
-        io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadWidth :  // w = width of pad
-                       cfg_.S<tpcPadPlanes>().outerSectorPadWidth,
-        io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
-                       cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
-        cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
-        io == kInner ? cfg_.S<TpcResponseSimulator>().K3IP :
-                       cfg_.S<TpcResponseSimulator>().K3OP,
-        0,
-        io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
-                       cfg_.S<tpcPadPlanes>().outerSectorPadPitch
-      };
+  //                            w       h        s       a       l  i
+  //  double paramsI[6] = {0.2850, 0.2000,  0.4000, 0.0010, 1.1500, 0};
+  //  double paramsO[6] = {0.6200, 0.4000,  0.4000, 0.0010, 1.1500, 0};
+  double params[6]{
+    io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadWidth :  // w = width of pad
+                   cfg_.S<tpcPadPlanes>().outerSectorPadWidth,
+    io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
+                   cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
+    cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
+    io == kInner ? cfg_.S<TpcResponseSimulator>().K3IP :
+                   cfg_.S<TpcResponseSimulator>().K3OP,
+    0,
+    io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+                   cfg_.S<tpcPadPlanes>().outerSectorPadPitch
+  };
 
-      mPadResponseFunction[num_sectors_*io + sector - 1].SetParameters(params);
-      mPadResponseFunction[num_sectors_*io + sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
-      mPadResponseFunction[num_sectors_*io + sector - 1].SetRange(-2.5, 2.5); // Cut tails
-      mPadResponseFunction[num_sectors_*io + sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
+  mPadResponseFunction[num_sectors_*io + sector - 1].SetParameters(params);
+  mPadResponseFunction[num_sectors_*io + sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
+  mPadResponseFunction[num_sectors_*io + sector - 1].SetRange(-2.5, 2.5); // Cut tails
+  mPadResponseFunction[num_sectors_*io + sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
 }
 
 
 void Simulator::InitChargeFractionFuncs(int io, int sector)
 {
-      double params[6]{
-        io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadLength :  // w = length of pad
-                       cfg_.S<tpcPadPlanes>().outerSectorPadLength,
-        io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
-                       cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
-        cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
-        io == kInner ? cfg_.S<TpcResponseSimulator>().K3IR :
-                       cfg_.S<TpcResponseSimulator>().K3OR,
-        0,
-        1
-      };
+  double params[6]{
+    io == kInner ? cfg_.S<tpcPadPlanes>().innerSectorPadLength :  // w = length of pad
+                   cfg_.S<tpcPadPlanes>().outerSectorPadLength,
+    io == kInner ? cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep :            // h = Anode-Cathode gap
+                   cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep,
+    cfg_.S<tpcWirePlanes>().anodeWirePitch,                                        // s = wire spacing
+    io == kInner ? cfg_.S<TpcResponseSimulator>().K3IR :
+                   cfg_.S<TpcResponseSimulator>().K3OR,
+    0,
+    1
+  };
 
-      // Cut the tails
-      double x_range = 2.5;
-      for (; x_range > 1.5; x_range -= 0.05) {
-        double r = mChargeFraction[num_sectors_*io + sector - 1].Eval(x_range) / mChargeFraction[num_sectors_*io + sector - 1].Eval(0);
-        if (r > 0.01) break;
-      }
+  // Cut the tails
+  double x_range = 2.5;
+  for (; x_range > 1.5; x_range -= 0.05) {
+    double r = mChargeFraction[num_sectors_*io + sector - 1].Eval(x_range) / mChargeFraction[num_sectors_*io + sector - 1].Eval(0);
+    if (r > 0.01) break;
+  }
 
-      mChargeFraction[num_sectors_*io + sector - 1].SetParameters(params);
-      mChargeFraction[num_sectors_*io + sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
-      mChargeFraction[num_sectors_*io + sector - 1].SetRange(-x_range, x_range);
-      mChargeFraction[num_sectors_*io + sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
+  mChargeFraction[num_sectors_*io + sector - 1].SetParameters(params);
+  mChargeFraction[num_sectors_*io + sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
+  mChargeFraction[num_sectors_*io + sector - 1].SetRange(-x_range, x_range);
+  mChargeFraction[num_sectors_*io + sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
 }
 
 
@@ -293,9 +293,9 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
   {
     auto next_hit = next(curr_hit);
 
-    int  next_direction  =  next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
-    bool sector_boundary = (next_hit->volume_id % 10000) / 100 !=
-                           (curr_hit->volume_id % 10000) / 100;
+    int  next_direction  = next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
+    bool sector_boundary = next_hit->volume_id % 10000 / 100 !=
+                           curr_hit->volume_id % 10000 / 100;
     bool track_boundary  = (next_hit->track_id != curr_hit->track_id || curr_hit->track_id == 0);
 
     bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
@@ -764,8 +764,7 @@ double Simulator::Ec(double* x, double* p)
 
 Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
 {
-  int volId = hit.volume_id % 10000;
-  int sector = volId / 100;
+  int sector = hit.volume_id % 10000 / 100;
 
   TrackSegment segment;
   StGlobalCoordinate xyzG{hit.x[0], hit.x[1], hit.x[2]};

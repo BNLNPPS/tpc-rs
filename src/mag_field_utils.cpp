@@ -126,12 +126,16 @@ float GL_q_inner_of_innerSec(float voltage = 1100.0) { return -42.15 + std::exp(
 float GL_q_outer_of_innerSec(float voltage = 1100.0) { return -21.76 + std::exp(0.005123 * voltage); }
 float GL_q_inner_of_outerSec(float voltage = 1390.0) { return -16.68 + std::exp(0.004731 * voltage); }
 float GL_q_outer_of_outerSec(float voltage = 1390.0) { return -23.38 + std::exp(0.004751 * voltage); }
+
 float GL_rho_inner_of_innerSec(float voltage = 1100.0)
 { return GL_q_inner_of_innerSec(voltage) / (GL_charge_y_hi[0] - GL_charge_y_lo[0]) ; }
+
 float GL_rho_outer_of_innerSec(float voltage = 1100.0)
 { return GL_q_outer_of_innerSec(voltage) / (GL_charge_y_hi[1] - GL_charge_y_lo[1]) ; }
+
 float GL_rho_inner_of_outerSec(float voltage = 1390.0)
 { return GL_q_inner_of_outerSec(voltage) / (GL_charge_y_hi[2] - GL_charge_y_lo[2]) ; }
+
 float GL_rho_outer_of_outerSec(float voltage = 1390.0)
 { return GL_q_outer_of_outerSec(voltage) / (GL_charge_y_hi[3] - GL_charge_y_lo[3]) ; }
 
@@ -4799,6 +4803,7 @@ int MagFieldUtils::SectorSide( int &Sector, const float x[] )
 {
   return SectorSide(Sector, x[2]) ;
 }
+
 int MagFieldUtils::SectorSide( int &Sector, const float z )
 {
   if ( Sector <= 0 ) SectorNumber(Sector, 0, z);
@@ -4807,15 +4812,11 @@ int MagFieldUtils::SectorSide( int &Sector, const float z )
 }
 
 
-
-
-
 /// Limit z based on Sector Number
 /*!
   Use this function to protect against discontinuity at the CM
   by doing calculations no closer than 0.2 cm from it
 */
-
 float MagFieldUtils::LimitZ( int &Sector, const float x[] )
 {
   float z = x[2];
@@ -5443,9 +5444,6 @@ void MagFieldUtils::UndoFullGridLeakDistortion( const float x[], float Xprime[],
 }
 
 
-
-
-
 /// 3D Sector Alignment Distortion Calculation
 /*!
   Calculate the 3D distortions due to z displacements caused by mis-alignment of the inner and outer sectors.
@@ -5459,7 +5457,6 @@ void MagFieldUtils::UndoFullGridLeakDistortion( const float x[], float Xprime[],
 */
 void MagFieldUtils::UndoSectorAlignDistortion( const float x[], float Xprime[], int Sector )
 {
-
   const int   ORDER       =    1  ;  // Linear interpolation = 1, Quadratic = 2
   const int   neR3D       =   73  ;  // Number of rows in the interpolation table for the Electric field
   const int   ITERATIONS  =  100  ;  // Depends on setting for the OverRelaxation parameter ... check results carefully
@@ -5593,9 +5590,6 @@ void MagFieldUtils::UndoSectorAlignDistortion( const float x[], float Xprime[], 
           transform_.local_sector_to_local(lSec, locP);
           oOffsetLast  = (TPC_Z0 + m * master[2]) * StarMagE;
 
-
-
-
         for ( int i = 1 ; i < ROWS - 1 ; i++ ) {
           double Radius = IFCRadius + i * GRIDSIZER ;
           double local_y  = Radius * cosSecPhi ;
@@ -5674,24 +5668,6 @@ void MagFieldUtils::UndoSectorAlignDistortion( const float x[], float Xprime[], 
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
-}
-
-
-
-
-
-// Must call IterationFailCount once to initialize it
-// before it starts counting (will return a negative number)
-// Each call resets the count to zero, so it gives the counts
-// since the last time it was called.
-int MagFieldUtils::IterationFailCount()
-{
-
-  int temp = iterationFailCounter;
-  iterationFailCounter = 0;
-  return temp;
-
 }
 
 

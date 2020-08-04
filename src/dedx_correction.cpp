@@ -8,36 +8,36 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigne
   cfg_(cfg),
   options_(options),
   corrections_{
-    {"UnCorrected",            ""									, 0, 0, 0},
-    {"TpcAdcCorrectionB",      "ADC/Clustering nonlinearity correction"					, &cfg_.C<St_TpcAdcCorrectionBC>(), 0, 0},
-    {"TpcEdge",                "Gain on distance from Chamber edge"					, &cfg_.C<St_TpcEdgeC>(), 0, 0},
-    {"TpcAdcCorrectionMDF",    "ADC/Clustering nonlinearity correction MDF"				, &cfg_.C<St_TpcAdcCorrectionMDF>(), 0, 0},
-    {"TpcdCharge",             "ADC/Clustering undershoot correction"					, &cfg_.C<St_TpcdChargeC>(), 0, 0},
-    {"TpcrCharge",             "ADC/Clustering rounding correction"					, &cfg_.C<St_TpcrChargeC>(), 0, 0},
-    {"TpcCurrentCorrection",   "Correction due to sagg of Voltage due to anode current"			, &cfg_.C<St_TpcCurrentCorrectionC>(), 0, 0},
-    {"TpcSecRowB",             "Gas gain correction for sector/row"					, &cfg_.C<St_TpcSecRowBC>(), 0, 0},
-    {"TpcSecRowC",             "Additional Gas gain correction for sector/row"				, &cfg_.C<St_TpcSecRowCC>(), 0, 0},
-    {"TpcRowQ",                "Gas gain correction for row versus accumulated charge,"			, &cfg_.C<St_TpcRowQC>(), 0, 0},
-    {"tpcPressureB",           "Gain on Gas Density due to Pressure"					, &cfg_.C<St_tpcPressureBC>(), 0, 0},
-    {"tpcTime"       ,         "Unregognized time dependce"						, &cfg_.C<St_tpcTimeDependenceC>(), 0, 0},
-    {"TpcDriftDistOxygen",     "Correction for Electron Attachment due to O2"				, &cfg_.C<St_TpcDriftDistOxygenC>(), 0, 0},
-    {"TpcMultiplicity",        "Global track multiplicity dependence"					, &cfg_.C<St_TpcMultiplicityC>(), 0, 0},
-    {"TpcZCorrectionB",        "Variation on drift distance"						, &cfg_.C<St_TpcZCorrectionBC>(), 0, 0},
-    {"tpcMethaneIn",           "Gain on Methane content"						, &cfg_.C<St_tpcMethaneInC>(), 0, 0},
-    {"tpcGasTemperature",      "Gain on Gas Dens. due to Temperature"					, &cfg_.C<St_tpcGasTemperatureC>(), 0, 0},
-    {"tpcWaterOut",            "Gain on Water content"							, &cfg_.C<St_tpcWaterOutC>(), 0, 0},
-    {"TpcSpaceCharge",         "Gain on space charge near the wire"					, &cfg_.C<St_TpcSpaceChargeC>(), 0, 0},
-    {"TpcPhiDirection",        "Gain on interception angle"						, &cfg_.C<St_TpcPhiDirectionC>(), 0, 0},
-    {"TpcTanL",                "Gain on Tan(lambda)"							, &cfg_.C<St_TpcTanLC>(), 0, 0},
-    {"TpcdXCorrectionB",       "dX correction"								, &cfg_.C<St_TpcdXCorrectionBC>(), 0, 0},
-    {"TpcEffectivedX",         "dEdx correction wrt Bichsel parameterization"				, &cfg_.C<St_TpcEffectivedXC>(), 0, 0},
-    {"TpcPadTBins",            "Variation on cluster size"						, 0, 0, 0},
-    {"TpcZDC"        ,         "Gain on Zdc CoincidenceRate"						, &cfg_.C<St_TpcZDCC>(), 0, 0},
-    {"TpcPadCorrectionMDF",    "Gain Variation along the anode wire"					, &cfg_.C<St_TpcPadCorrectionMDF>(), 0, 0},
-    {"Final"        ,          ""									, 0, 0, 0},
-    {"TpcLengthCorrectionB",   "Variation vs Track length and relative error in Ionization"		, &cfg_.C<St_TpcLengthCorrectionBC>(), 0, 0},
-    {"TpcLengthCorrectionMDF", "Variation vs Track length and <log2(dX)> and rel. error in dE/dx"	, &cfg_.C<St_TpcLengthCorrectionMDF>(), 0, 0},
-    {"TpcNoAnodeVGainC",       "Remove tpc Anode Voltage gain correction"				, 0, 0, 0},
+    {"UnCorrected",            ""                                                                       , 0, 0, 0},
+    {"TpcAdcCorrectionB",      "ADC/Clustering nonlinearity correction"                                 , &cfg_.C<St_TpcAdcCorrectionBC>(), 0, 0},
+    {"TpcEdge",                "Gain on distance from Chamber edge"                                     , &cfg_.C<St_TpcEdgeC>(), 0, 0},
+    {"TpcAdcCorrectionMDF",    "ADC/Clustering nonlinearity correction MDF"                             , &cfg_.C<St_TpcAdcCorrectionMDF>(), 0, 0},
+    {"TpcdCharge",             "ADC/Clustering undershoot correction"                                   , &cfg_.C<St_TpcdChargeC>(), 0, 0},
+    {"TpcrCharge",             "ADC/Clustering rounding correction"                                     , &cfg_.C<St_TpcrChargeC>(), 0, 0},
+    {"TpcCurrentCorrection",   "Correction due to sagg of Voltage due to anode current"                 , &cfg_.C<St_TpcCurrentCorrectionC>(), 0, 0},
+    {"TpcSecRowB",             "Gas gain correction for sector/row"                                     , &cfg_.C<St_TpcSecRowBC>(), 0, 0},
+    {"TpcSecRowC",             "Additional Gas gain correction for sector/row"                          , &cfg_.C<St_TpcSecRowCC>(), 0, 0},
+    {"TpcRowQ",                "Gas gain correction for row versus accumulated charge,"                 , &cfg_.C<St_TpcRowQC>(), 0, 0},
+    {"tpcPressureB",           "Gain on Gas Density due to Pressure"                                    , &cfg_.C<St_tpcPressureBC>(), 0, 0},
+    {"tpcTime"       ,         "Unregognized time dependce"                                             , &cfg_.C<St_tpcTimeDependenceC>(), 0, 0},
+    {"TpcDriftDistOxygen",     "Correction for Electron Attachment due to O2"                           , &cfg_.C<St_TpcDriftDistOxygenC>(), 0, 0},
+    {"TpcMultiplicity",        "Global track multiplicity dependence"                                   , &cfg_.C<St_TpcMultiplicityC>(), 0, 0},
+    {"TpcZCorrectionB",        "Variation on drift distance"                                            , &cfg_.C<St_TpcZCorrectionBC>(), 0, 0},
+    {"tpcMethaneIn",           "Gain on Methane content"                                                , &cfg_.C<St_tpcMethaneInC>(), 0, 0},
+    {"tpcGasTemperature",      "Gain on Gas Dens. due to Temperature"                                   , &cfg_.C<St_tpcGasTemperatureC>(), 0, 0},
+    {"tpcWaterOut",            "Gain on Water content"                                                  , &cfg_.C<St_tpcWaterOutC>(), 0, 0},
+    {"TpcSpaceCharge",         "Gain on space charge near the wire"                                     , &cfg_.C<St_TpcSpaceChargeC>(), 0, 0},
+    {"TpcPhiDirection",        "Gain on interception angle"                                             , &cfg_.C<St_TpcPhiDirectionC>(), 0, 0},
+    {"TpcTanL",                "Gain on Tan(lambda)"                                                    , &cfg_.C<St_TpcTanLC>(), 0, 0},
+    {"TpcdXCorrectionB",       "dX correction"                                                          , &cfg_.C<St_TpcdXCorrectionBC>(), 0, 0},
+    {"TpcEffectivedX",         "dEdx correction wrt Bichsel parameterization"                           , &cfg_.C<St_TpcEffectivedXC>(), 0, 0},
+    {"TpcPadTBins",            "Variation on cluster size"                                              , 0, 0, 0},
+    {"TpcZDC"        ,         "Gain on Zdc CoincidenceRate"                                            , &cfg_.C<St_TpcZDCC>(), 0, 0},
+    {"TpcPadCorrectionMDF",    "Gain Variation along the anode wire"                                    , &cfg_.C<St_TpcPadCorrectionMDF>(), 0, 0},
+    {"Final"        ,          ""                                                                       , 0, 0, 0},
+    {"TpcLengthCorrectionB",   "Variation vs Track length and relative error in Ionization"             , &cfg_.C<St_TpcLengthCorrectionBC>(), 0, 0},
+    {"TpcLengthCorrectionMDF", "Variation vs Track length and <log2(dX)> and rel. error in dE/dx"       , &cfg_.C<St_TpcLengthCorrectionMDF>(), 0, 0},
+    {"TpcNoAnodeVGainC",       "Remove tpc Anode Voltage gain correction"                               , 0, 0, 0},
     {"TpcdEdxCor",             "dEdx correction wrt Bichsel parameterization"                           , 0, 0, 0}
   }
 {
@@ -53,7 +53,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigne
 
     if (!corrections_[k].Chair) continue;
 
-    if ( !(options_ & (1u << k)) || corrections_[k].Chair->IsMarked()) {
+    if (!(options_ & (1u << k)) || corrections_[k].Chair->IsMarked()) {
       // correction is missing
       goto CLEAR;
     }
@@ -61,7 +61,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigne
     chair    = dynamic_cast<St_tpcCorrectionC*>(corrections_[k].Chair);
     chairMDF = dynamic_cast<St_MDFCorrectionC*>(corrections_[k].Chair);
 
-    if (! chair && ! chairMDF) {
+    if (!chair && !chairMDF) {
       // This correction is not tpcCorrection or MDFCorrection type
       corrections_[k].nrows = corrections_[k].Chair->GetNRows();
       continue; // not St_tpcCorrectionC
@@ -72,9 +72,9 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigne
     if (chair)
     {
       cor = chair->Struct();
-      N = chair->GetNRows();
+      N   = chair->GetNRows();
 
-      if (! cor || ! N) {
+      if (!cor || !N) {
         goto EMPTY;
       }
 
@@ -143,11 +143,10 @@ int StTpcdEdxCorrection::dEdxCorrection(int sector, int row, dEdxY2_t &CdEdx)
 {
   if (CdEdx.F.dE <= 0.) CdEdx.F.dE = 1;
 
-  double dE    = CdEdx.F.dE;
-  double dx    = CdEdx.F.dx;
+  double dE = CdEdx.F.dE;
+  double dx = CdEdx.F.dx;
 
   if (dx <= 0) return 3;
-
 
   ESector kTpcOutIn = kTpcOuter;
 
@@ -196,7 +195,7 @@ int StTpcdEdxCorrection::dEdxCorrection(int sector, int row, dEdxY2_t &CdEdx)
     tpcCorrection* corl = 0;
 
     if (!(options_ & (1u << k))) goto ENDL;
-    if (! corrections_[k].Chair) goto ENDL;
+    if (!corrections_[k].Chair) goto ENDL;
 
     if (k == kTpcSecRowB || k == kTpcSecRowC ) {
       const St_TpcSecRowCorC* chair = (const St_TpcSecRowCorC*) corrections_[k].Chair;

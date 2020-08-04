@@ -303,7 +303,6 @@ class MagFieldUtils
   bool   UpdateTPCHighVoltages();
   bool   UpdateShortedRing();
   void     UseIterativeUndoDistortion(bool flag = true) { iterateDistortion = flag; }
-  int    IterationFailCount(); // must be called once before first actual use
   float  GetConst_0() { return Const_0; }
   float  GetConst_1() { return Const_1; }
   float  GetConst_2() { return Const_2; }
