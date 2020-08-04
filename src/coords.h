@@ -351,8 +351,6 @@ struct CoordTransform
 
   double xFromPad(int sector, int row, double pad) const;
 
-  static bool          IsOldScheme()    {return mOldScheme;}
-
  private:
 
   const tpcrs::Configurator& cfg_;
@@ -391,10 +389,8 @@ struct CoordTransform
   TGeoTranslation*      mSwap[2];       //!
   TGeoHMatrix*          mFlip;          //!
   TGeoHMatrix*          mTpc2GlobMatrix;//!
-  TGeoHMatrix*          mHalf[2];       //!
   TGeoHMatrix*          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
   double              mzGG;           //! Gating Grid z
-  static bool         mOldScheme;     //! switch between Old and New alignment scheme
 
   float                triggerTimeOffset() const    {return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset();}
   void SetTpcRotations();

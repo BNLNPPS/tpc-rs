@@ -1,4 +1,3 @@
-#include "TEnv.h"
 #include "TGeoManager.h"
 #include "TVector3.h"
 #include "TString.h"
@@ -65,8 +64,6 @@ CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
   mFlip->SetName("Flip"); mFlip->SetRotation(Rotation);// mFlip->SetTranslation(Translation);
   mSwap[0] = new TGeoTranslation("Signed Drift distance to z for East", 0, 0, -mzGG);
   mSwap[1] = new TGeoTranslation("Signed Drift distance to z for West", 0, 0,  mzGG);
-  mHalf[0] = new TGeoHMatrix("Default for east part of TPC");
-  mHalf[1] = new TGeoHMatrix("Default for west part of TPC");
 
   SetTpcRotations();
 }
@@ -269,7 +266,6 @@ void CoordTransform::local_to_local_sector(const StTpcLocalCoordinate &a, StTpcL
   b.sector = a.sector;
 }
 
-bool CoordTransform::mOldScheme = true;
 
 CoordTransform::~CoordTransform()
 {
@@ -278,8 +274,6 @@ CoordTransform::~CoordTransform()
       SafeDelete(mTpcSectorRotations[i][k]);
   }
 
-  SafeDelete(mHalf[0]);
-  SafeDelete(mHalf[1]);
   SafeDelete(mSwap[0]);
   SafeDelete(mSwap[1]);
   SafeDelete(mTpc2GlobMatrix);
@@ -324,14 +318,11 @@ void CoordTransform::SetTpcRotations()
    */
   //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
   assert(cfg_.S<tpcDimensions>().numberOfSectors == 24);
-  float gFactor = cfg_.S<MagFactor>().ScaleFactor;
   double phi, theta, psi;
   int iphi;
   TGeoRotation* rotm = 0;
   TObjArray* listOfMatrices = 0;
   TString Rot;
-
-  if (gEnv->GetValue("NewTpcAlignment", 0) != 0) mOldScheme = false;
 
   for (int sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors
     int k;
@@ -345,7 +336,6 @@ void CoordTransform::SetTpcRotations()
       TGeoHMatrix rotA; // After alignment
 
       if (!sector) { // TPC Reference System
-        if (mOldScheme) { // old scheme
           St_tpcGlobalPositionC& tpcGlobalPosition = cfg_.C<St_tpcGlobalPositionC>();
           Id = 1;
           phi   = 0.0;                                               // -gamma large uncertainty, so set to 0
@@ -358,12 +348,6 @@ void CoordTransform::SetTpcRotations()
                                       tpcGlobalPosition.LocalyShift(),
                                       tpcGlobalPosition.LocalzShift() };
           rotA.SetTranslation(transTpcRefSys);
-        }
-        else {
-          rotA = cfg_.C<StTpcPosition>().GetMatrix();
-          *mHalf[tpcrs::TPC::Half::first]  = cfg_.C<StTpcHalfPosition>().GetEastMatrix();
-          *mHalf[tpcrs::TPC::Half::second] = cfg_.C<StTpcHalfPosition>().GetWestMatrix();
-        }
       }
       else {
         Id = 10 * sector + k;
@@ -390,7 +374,7 @@ void CoordTransform::SetTpcRotations()
             rotm->RotateZ(iphi);
           }
 
-          rotA = (*mSwap[part]) * (*mHalf[part]) * (*rotm);
+          rotA = (*mSwap[part]) * (*rotm);
           rotA *= cfg_.C<StTpcSuperSectorPosition>().GetMatrix(sector - 1);
 
           if (gGeoManager) rotm->RegisterYourself();
@@ -403,27 +387,12 @@ void CoordTransform::SetTpcRotations()
           break;
 
         case kSubSInner2SupS:
-          if (mOldScheme) rotA = Flip();
-          else            rotA = Flip() * cfg_.C<StTpcInnerSectorPosition>().GetMatrix(sector - 1);
+          rotA = flip_matrix;
 
           break;
 
         case kSubSOuter2SupS:
-          if (mOldScheme)
-            rotA = Flip() * cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1);
-          else
-          {
-            rotA = Flip() * cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1);
-
-            if (cfg_.C<StTpcOuterSectorPosition>().GetNRows() > 24) {
-              if (gFactor > 0.2) {
-                rotA *= cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1 + 24);
-              }
-              else if (gFactor < -0.2) {
-                rotA *= cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1 + 24).Inverse();
-              }
-            }
-          }
+          rotA = flip_matrix * cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1);
 
           break;
 

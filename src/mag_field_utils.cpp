@@ -190,21 +190,12 @@ void MagFieldUtils::GetTPCParams ()
 {
   St_tpcFieldCageC*     cages = &cfg_.C<St_tpcFieldCageC>();
 
-  if (! CoordTransform::IsOldScheme()) { // new schema
-    XTWIST = 0;
-    YTWIST = 0;
-    EASTCLOCKERROR = 0;
-    WESTCLOCKERROR = 0;
-    mDistortionMode = kDisableTwistClock;
-  }
-  else {   // old schema
-    St_tpcGlobalPositionC* glob = &cfg_.C<St_tpcGlobalPositionC>();
-    XTWIST         =   1e3 * glob->TpcEFieldRotationY() ;
-    YTWIST         =  -1e3 * glob->TpcEFieldRotationX() ;
-    EASTCLOCKERROR =   1e3 * cages->EastClockError();
-    WESTCLOCKERROR =   1e3 * cages->WestClockError();
-    mDistortionMode = 0;
-  }
+  St_tpcGlobalPositionC* glob = &cfg_.C<St_tpcGlobalPositionC>();
+  XTWIST         =   1e3 * glob->TpcEFieldRotationY() ;
+  YTWIST         =  -1e3 * glob->TpcEFieldRotationX() ;
+  EASTCLOCKERROR =   1e3 * cages->EastClockError();
+  WESTCLOCKERROR =   1e3 * cages->WestClockError();
+  mDistortionMode = 0;
 
   StarDriftV     =  1e-6 * tpcrs::DriftVelocity(24, cfg_);
   TPC_Z0         =  cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
@@ -5706,24 +5697,7 @@ int MagFieldUtils::IterationFailCount()
 
 void MagFieldUtils::BFieldTpc ( const double xTpc[], float BTpc[], int Sector )
 {
-  if (CoordTransform::IsOldScheme()) {
-    mag_field_.BField( xTpc, BTpc) ;
-  }
-  else {
-    // mag. field in Tpc local coordinate system
-    double Tpc[3] =  {xTpc[0], xTpc[1], xTpc[2]};
-    double coorG[3];
-    transform_.Tpc2GlobalMatrix().LocalToMaster(Tpc, coorG);
-    double xyzG[3] = {coorG[0], coorG[1], coorG[2]};
-    float BG[3];
-    mag_field_.BField( xyzG, BG) ;
-    double    BGD[3] = {BG[0], BG[1], BG[2]};
-    double    BTpcL[3];
-    transform_.Tpc2GlobalMatrix().MasterToLocalVect(BGD, BTpcL);
-    BTpc[0] = BTpcL[0];
-    BTpc[1] = BTpcL[1];
-    BTpc[2] = BTpcL[2];
-  }
+  mag_field_.BField(xTpc, BTpc);
 }
 
 
