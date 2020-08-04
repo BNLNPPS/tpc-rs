@@ -252,7 +252,7 @@ int StTpcdEdxCorrection::dEdxCorrection(int sector, int row, dEdxY2_t &CdEdx)
     if (nrows <= 3)
       l = std::min(nrows - 1, static_cast<int>(kTpcOutIn));
     else {
-      int channel = cfg_.C<St_TpcAvgCurrentC>().ChannelFromRow(sector, row);
+      int channel = tpcrs::ChannelFromRow(row);
       if (nrows == cfg_.S<tpcPadPlanes>().padRows) l = row - 1;
       else if (nrows == 192) {l = 8 * (sector - 1) + channel - 1; assert(l == (cor + l)->idx - 1);}
       else if (nrows ==  48) {l = 2 * (sector - 1) + kTpcOutIn;}

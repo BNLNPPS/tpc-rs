@@ -442,18 +442,6 @@ MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainC
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 
 
-int St_TpcAvgCurrentC::ChannelFromRow(int sector, int row) {
-    if (row <  3) return 1;
-    if (row <  7) return 2;
-    if (row < 10) return 3;
-    if (row < 14) return 4;
-    if (row < 22) return 5;
-    if (row < 30) return 6;
-    if (row < 38) return 7;
-    return 8;
-}
-
-
 int St_TpcAvgCurrentC::ChannelFromSocket(int socket) {
   int channel = -1;
   switch (socket) {
@@ -631,6 +619,18 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
 
 
 namespace tpcrs {
+
+int ChannelFromRow(int row)
+{
+    if (row <  3) return 1;
+    if (row <  7) return 2;
+    if (row < 10) return 3;
+    if (row < 14) return 4;
+    if (row < 22) return 5;
+    if (row < 30) return 6;
+    if (row < 38) return 7;
+    return 8;
+}
 
 float VoltagePadrow(int sector, int row, const Configurator& cfg)
 {

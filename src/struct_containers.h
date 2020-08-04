@@ -10,6 +10,18 @@
 #include "config_structs.h"
 
 
+namespace tpcrs {
+
+int ChannelFromRow(int row);
+float VoltagePadrow(int sector, int row, const Configurator& cfg);
+float GainCorrection(int sector, int row, const Configurator& cfg);
+float DriftVelocity(int sector, const Configurator& cfg);
+bool IsInner(int row, const Configurator& cfg);
+double RadialDistanceAtRow(int row, const Configurator& cfg);
+
+}
+
+
 struct St_MDFCorrectionC : tpcrs::IConfigStruct {
   virtual MDFCorrection* Struct(int i = 0) const = 0;
   enum EMDFPolyType {
@@ -153,13 +165,12 @@ struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC
 struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>
 {
   St_TpcAvgCurrentC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>(cfg) {}
-  static int  ChannelFromRow(int sector, int row);
   static int  ChannelFromSocket(int socket);
   float       AvCurrent(int sector = 1, int channel = 1);
-  float       AvCurrRow(int sector = 1, int row = 1) {return AvCurrent(sector, ChannelFromRow(sector, row));}
+  float       AvCurrRow(int sector = 1, int row = 1) {return AvCurrent(sector, tpcrs::ChannelFromRow(row));}
   float       AcCharge(int sector = 1, int channel = 1);
   float       AcChargeL(int sector = 1, int channel = 1); // C/cm
-  float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, ChannelFromRow(sector, row));}
+  float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, tpcrs::ChannelFromRow(row));}
 };
 
 struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgPowerSupplyC, TpcAvgPowerSupply>
@@ -182,9 +193,9 @@ struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcA
            0;
   }
   float       AcChargeSocket(int sector = 1, int socket = 1) {return AcCharge(sector, St_TpcAvgCurrentC::ChannelFromSocket(socket));}
-  float       AcChargeRow(int sector = 1, int row = 1) {return AcCharge(sector, St_TpcAvgCurrentC::ChannelFromRow(sector, row));}
+  float       AcChargeRow(int sector = 1, int row = 1) {return AcCharge(sector, tpcrs::ChannelFromRow(row));}
   float       AcChargeL(int sector = 1, int channel = 1); // C/cm
-  float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, St_TpcAvgCurrentC::ChannelFromRow(sector, row));}
+  float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, tpcrs::ChannelFromRow(row));}
 };
 
 struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent> {
@@ -604,14 +615,3 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   double 	pvpdWest(int i = 0) 	        {return Struct(i)->pvpdWest;}
   double 	pvpdEast(int i = 0) 	        {return Struct(i)->pvpdEast;}
 };
-
-
-namespace tpcrs {
-
-float VoltagePadrow(int sector, int row, const Configurator& cfg);
-float GainCorrection(int sector, int row, const Configurator& cfg);
-float DriftVelocity(int sector, const Configurator& cfg);
-bool IsInner(int row, const Configurator& cfg);
-double RadialDistanceAtRow(int row, const Configurator& cfg);
-
-}
