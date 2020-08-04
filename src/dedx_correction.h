@@ -94,7 +94,7 @@ class StTpcdEdxCorrection
 
   StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options = -1);
 
-  int dEdxCorrection(dEdxY2_t &dEdx);
+  int dEdxCorrection(int sector, int row, dEdxY2_t &dEdx);
 
   void Print(const dEdxY2_t& dEdx) const;
 
@@ -114,28 +114,18 @@ struct dEdxY2_t
      U->R (TpcAdcCorrection) -> P (tpcPressure) ->
      S (TpcSecRowB/TpcSecRowC) ->  O (TpcDriftDistOxygen) ->
      Z (TpcZCorrection) -> X(TpcdXCorrection) */
-  int    sector;
-  int    row;
-  int    channel;
-  float  pad;
   float  ZdriftDistance;     // drift distance
-  float  ZdriftDistanceO2;   // ZdriftDistance*ppmOxygenIn
-  float  ZdriftDistanceO2W;  // ZdriftDistance*ppmOxygenIn*ppmWaterOut
   float  DeltaZ;             // distance to privious cluster
   float  QRatio;             // Ratio to previous cluster Charge
   float  QRatioA;            // Ratio to Sum of all previous cluster Charge
-  float  QSumA;              // Sum of all previous cluster Charge
   float  dxC;                // corrected dx which should be used with FitN
   float  xyz[3];  // local
   float  xyzD[3]; // local direction
   float  edge;    // distance to sector edge
   float  PhiR;    // relative phi
-  float  resXYZ[3]; // track SectorLocal residual wrt local track
   float  zG;      // global z oh Hit
   float  dCharge; // d_undershoot_Q/Q = ratio of modified - original charge normalized on original charge
   float  rCharge; // d_rounding_Q/Q   = estimated rounding normalized on original charge
-  float  Qcm;     // accumulated charge uC/cm
-  float  Crow;    // Current per row;
   float  Zdc;     // ZDC rate from trigger
   float  adc;     //  adc count from cluster finder
   float  TanL;

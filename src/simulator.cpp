@@ -1194,33 +1194,28 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
   CdEdx.DeltaZ  = 5.2;
   CdEdx.QRatio  = -2;
   CdEdx.QRatioA = -2.;
-  CdEdx.QSumA   = 0;
-  CdEdx.sector  = segment.Pad.sector;
-  CdEdx.row     = segment.Pad.row;
-  CdEdx.pad     = tpcrs::irint(segment.Pad.pad);
-  CdEdx.edge    = CdEdx.pad;
+  CdEdx.edge    = tpcrs::irint(segment.Pad.pad);
 
-  if (CdEdx.edge > 0.5 * cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row))
-    CdEdx.edge += 1 - cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row);
+  if (CdEdx.edge > 0.5 * cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(segment.Pad.sector, segment.Pad.row))
+    CdEdx.edge += 1 - cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(segment.Pad.sector, segment.Pad.row);
 
   CdEdx.F.dE   = 1;
   CdEdx.F.dx   = std::abs(segment.simu_hit->ds);
   CdEdx.xyz[0] = segment.coorLS.position.x;
   CdEdx.xyz[1] = segment.coorLS.position.y;
   CdEdx.xyz[2] = segment.coorLS.position.z;
-  double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(CdEdx.sector, CdEdx.row) / 2;
-  double pitch = tpcrs::IsInner(CdEdx.row, cfg_) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
+  double probablePad = cfg_.C<St_tpcPadConfigC>().numberOfPadsAtRow(segment.Pad.sector, segment.Pad.row) / 2;
+  double pitch = tpcrs::IsInner(segment.Pad.row, cfg_) ? cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                                                    cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
-  double PhiMax = std::atan2(probablePad * pitch, tpcrs::RadialDistanceAtRow(CdEdx.row, cfg_));
+  double PhiMax = std::atan2(probablePad * pitch, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_));
   CdEdx.PhiR    = std::atan2(CdEdx.xyz[0], CdEdx.xyz[1]) / PhiMax;
   CdEdx.xyzD[0] = segment.dirLS.position.x;
   CdEdx.xyzD[1] = segment.dirLS.position.y;
   CdEdx.xyzD[2] = segment.dirLS.position.z;
   CdEdx.zG      = CdEdx.xyz[2];
   CdEdx.ZdriftDistance = segment.coorLS.position.z; // drift length
-  CdEdx.ZdriftDistanceO2 = CdEdx.ZdriftDistance * cfg_.S<tpcGas>().ppmOxygenIn;
 
-  return dEdx_correction_.dEdxCorrection(CdEdx) ? 1 : CdEdx.F.dE;
+  return dEdx_correction_.dEdxCorrection(segment.Pad.sector, segment.Pad.row, CdEdx) ? 1 : CdEdx.F.dE;
 }
 
 

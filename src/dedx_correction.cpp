@@ -139,22 +139,16 @@ CLEAR:
 }
 
 
-int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
+int StTpcdEdxCorrection::dEdxCorrection(int sector, int row, dEdxY2_t &CdEdx)
 {
   if (CdEdx.F.dE <= 0.) CdEdx.F.dE = 1;
 
   double dE    = CdEdx.F.dE;
-  int sector   = CdEdx.sector;
-  int row      = CdEdx.row;
   double dx    = CdEdx.F.dx;
 
   if (dx <= 0) return 3;
 
-  CdEdx.channel = cfg_.C<St_TpcAvgPowerSupplyC>().ChannelFromRow(sector, row);
-  CdEdx.Crow    = cfg_.C<St_TpcAvgCurrentC>().AvCurrRow(sector, row);
-  CdEdx.Qcm     = 1e6 * cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // uC/cm
 
-  double ZdriftDistance = CdEdx.ZdriftDistance;
   ESector kTpcOutIn = kTpcOuter;
 
   if (tpcrs::IsInner(row, cfg_)) kTpcOutIn = kTpcInner;
@@ -170,21 +164,17 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
   if (gasGain <= 0) return 4;
 
   double Adc2GeVReal = tsspar.ave_ion_pot * tsspar.scale / gasGain;
-  double ZdriftDistanceO2 = ZdriftDistance * cfg_.S<tpcGas>().ppmOxygenIn;
-  double ZdriftDistanceO2W = ZdriftDistanceO2 * cfg_.S<tpcGas>().ppmWaterOut;
-  CdEdx.ZdriftDistanceO2 = ZdriftDistanceO2;
-  CdEdx.ZdriftDistanceO2W = ZdriftDistanceO2W;
-  double gc, ADC, xL2, dXCorr;
+  double gc, ADC, xL2;
   int nrows = 0;
   double VarXs[kTpcLast] = {-999.};
   VarXs[kTpcZDC]               = (cfg_.S<trigDetSums>().zdcX > 0) ? std::log10(cfg_.S<trigDetSums>().zdcX) : 0;
-  VarXs[kTpcCurrentCorrection] = CdEdx.Crow;
+  VarXs[kTpcCurrentCorrection] = cfg_.C<St_TpcAvgCurrentC>().AvCurrRow(sector, row);
   VarXs[kTpcrCharge]           = CdEdx.rCharge;
-  VarXs[kTpcRowQ]              = CdEdx.Qcm;
+  VarXs[kTpcRowQ]              = 1e6 * cfg_.C<St_TpcAvgCurrentC>().AcChargeRowL(sector, row); // uC/cm
   VarXs[ktpcPressure]          = std::log(cfg_.S<tpcGas>().barometricPressure);
-  VarXs[kDrift]                = ZdriftDistanceO2;      // Blair correction
+  VarXs[kDrift]                = CdEdx.ZdriftDistance * cfg_.S<tpcGas>().ppmOxygenIn;      // Blair correction
   VarXs[kMultiplicity]         = CdEdx.QRatio;
-  VarXs[kzCorrection]          = ZdriftDistance;
+  VarXs[kzCorrection]          = CdEdx.ZdriftDistance;
   VarXs[ktpcMethaneIn]         = cfg_.S<tpcGas>().percentMethaneIn * 1000. / cfg_.S<tpcGas>().barometricPressure;
   VarXs[ktpcGasTemperature]    = cfg_.S<tpcGas>().outputGasTemperature;
   VarXs[ktpcWaterOut]          = cfg_.S<tpcGas>().ppmWaterOut;
@@ -232,7 +222,7 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     if (k == kTpcPadMDF) {
       l = 2 * (sector - 1);
 
-      if (row <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector)) l += kTpcInner;
+      if (tpcrs::IsInner(row, cfg_)) l += kTpcInner;
 
       dE *= std::exp(-((St_TpcPadCorrectionMDF*)corrections_[k].Chair)->Eval(l, CdEdx.yrow, CdEdx.xpad));
       goto ENDL;
@@ -262,8 +252,9 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     if (nrows <= 3)
       l = std::min(nrows - 1, static_cast<int>(kTpcOutIn));
     else {
+      int channel = cfg_.C<St_TpcAvgCurrentC>().ChannelFromRow(sector, row);
       if (nrows == cfg_.S<tpcPadPlanes>().padRows) l = row - 1;
-      else if (nrows == 192) {l = 8 * (sector - 1) + CdEdx.channel - 1; assert(l == (cor + l)->idx - 1);}
+      else if (nrows == 192) {l = 8 * (sector - 1) + channel - 1; assert(l == (cor + l)->idx - 1);}
       else if (nrows ==  48) {l = 2 * (sector - 1) + kTpcOutIn;}
       else if (nrows ==   6) {l =                    kTpcOutIn;             if (sector > 12) l += 3;}
       else if (nrows ==   4) {l = std::min(static_cast<int>(kTpcOutIn), 1); if (sector > 12) l += 2;}
@@ -298,7 +289,7 @@ int StTpcdEdxCorrection::dEdxCorrection(dEdxY2_t &CdEdx)
     }
     else if (k == kdXCorrection) {
       xL2 = std::log2(dx);
-      dXCorr = ((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, xL2);
+      double dXCorr = ((St_tpcCorrectionC*)corrections_[k].Chair)->CalcCorrection(l, xL2);
 
       if (std::abs(dXCorr) > 10) return 3;
 
@@ -368,8 +359,7 @@ ENDL:
 
 void StTpcdEdxCorrection::Print(const dEdxY2_t& mdEdx) const
 {
-  LOG_INFO << "StTpcdEdxCorrection:: Sector/row/pad " << mdEdx.sector << "/" << mdEdx.row << "/" << mdEdx.pad << '\n'
-           << "\tdrift distance / O2 / O2W " << mdEdx.ZdriftDistance << "/" << mdEdx.ZdriftDistanceO2 << "/" << mdEdx.ZdriftDistanceO2W << '\n'
+  LOG_INFO << "StTpcdEdxCorrection:: "
            << "Local xyz " << mdEdx.xyz[0] << "\t" << mdEdx.xyz[1] << "\t" << mdEdx.xyz[2] << '\n'
            << "Local xyzD " << mdEdx.xyzD[0] << "\t" << mdEdx.xyzD[1] << "\t" << mdEdx.xyzD[2] << '\n';
 
