@@ -91,6 +91,7 @@ To do:  <br>
 #include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
+#include "TH1.h"
 #include "TRandom.h"
 
 #include "tpcrs/configurator.h"
@@ -167,7 +168,7 @@ void MagFieldUtils::SetUnDoDistortionT(TFile* f)
 MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode) :
   cfg_(cfg),
   transform_(trans),
-  mag_field_(cfg)
+  mag_field_(cfg, MagField::MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor)
 {
   GetDistoSmearing(mode);    // Get distortion smearing from the DB
   // Get the magnetic field scale factor from the DB
@@ -182,25 +183,6 @@ MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransfor
   GetGridLeak( mode )   ;    // Get the parameters that describe the gating grid leaks
   GetAbortGapCharge()   ;    // Get the parameters that describe the Abort Gap charge events
   CommonStart( mode )   ;    // Read the Magnetic and Electric Field Data Files, set constants
-}
-
-
-/// MagFieldUtils constructor not using the DataBase
-MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode) :
-  cfg_(cfg),
-  transform_(trans),
-  mag_field_(cfg)
-{
-  GetDistoSmearing(0)   ;        // Do not get distortion smearing out of the DB
-  // Get the magnetic field scale factor from the MagField
-  gFactor = cfg_.S<MagFactor>().ScaleFactor;
-  fTpcVolts      =  0   ;        // Do not get TpcVoltages out of the DB   - use defaults in CommonStart
-  fOmegaTau      =  0   ;        // Do not get OmegaTau out of the DB      - use defaults in CommonStart
-  fAbortGapCharge =  0   ;       // Do not get AbortGap out of the DB      - use defaults in CommonStart
-  ManualSpaceChargeR2(0, 1) ;    // Do not get SpaceChargeR2 out of the DB - use defaults inserted here, SpcChg and EWRatio
-  fGridLeak      =  0   ;        // Do not get Grid Leak data from the DB  - use defaults in CommonStart
-  fHVPlanes      =  0   ;        // Do not get GGVoltErr data from the DB  - use defaults in CommonStart
-  CommonStart( mode )   ;        // Read the Magnetic and Electric Field Data Files, set constants
 }
 
 

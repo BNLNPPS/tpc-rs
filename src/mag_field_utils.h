@@ -75,9 +75,8 @@ class TRandom;
 
 class MagFieldUtils
 {
-
-
  private:
+
   const tpcrs::Configurator& cfg_;
   const CoordTransform& transform_;
   MagField mag_field_;
@@ -210,10 +209,10 @@ class MagFieldUtils
   static   float eZList[EMap_nZ]     ;
   static   TNtuple* fgDoDistortion;
   static   TNtuple* fgUnDoDistortion;
+
  public:
 
   MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
-  MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, const MagField::EBField map, const float factor, int mode);
 
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
   void    BFieldTpc ( const double xTpc[], float BTpc[], int Sector = -1 );
