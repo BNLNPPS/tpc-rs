@@ -19,7 +19,6 @@ MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
 MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowBC,Calibrations/tpc/TpcSecRowB);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowCC,Calibrations/tpc/TpcSecRowC);
-MakeChairInstance(tpcCalibResolutions,Calibrations/tpc/tpcCalibResolutions);
 MakeChairInstance(tpcChargeEvent,Calibrations/tpc/tpcChargeEvent);
 MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
 
@@ -453,8 +452,6 @@ float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
 
 
 float St_TpcAvgPowerSupplyC::AcChargeL(int sector, int channel) {
-  //  static const double RA[2]        = { 154.484, 81.42}; // Outer/ Inner average Radii
-  //  static const double WireLenth[2] = {   3.6e5, 1.6e5};
   // L Inner = 190222, Outer = 347303
   static float Length[8] = {
     1307.59, //   Channel 1
@@ -528,9 +525,6 @@ float St_TpcAvgCurrentC::AcChargeL(int sector, int channel) {
   if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
     return cfg_.C<St_TpcAvgPowerSupplyC>().AcChargeL(sector,channel);
   }
-  //  static const double RA[2]        = { 154.484, 81.42}; // Outer/ Inner average Radii
-  //  static const double WireLenth[2] = {   3.6e5, 1.6e5};
-  // L Inner = 190222, Outer = 347303
   static float Length[8] = {
     1307.59, //   Channel 1
     1650.57, //   Channel 2
@@ -633,60 +627,34 @@ const TGeoHMatrix &St_SurveyC::GetMatrix(int i) {
 }
 
 
-void St_SurveyC::GetAngles(double &phi, double &the, double &psi, int i) {
-  phi = the = psi = 0;  // Korn 14.10-5
-  double cosDelta = (r00(i) + r11(i) + r22(i) - 1)/2; // (Tr(R) - 1)/2
-  double Delta = std::acos(cosDelta);
-  if (Delta < 0) Delta += 2*M_PI;
-  double sinDelta2 = std::sin(Delta/2);
-  if (std::abs(sinDelta2) < 1.e-7) return;
-  double c[3] = {
-    (r21(i) - r12(i))/(2*sinDelta2), // a32-a23
-    (r02(i) - r20(i))/(2*sinDelta2), // a13-a31
-    (r10(i) - r01(i))/(2*sinDelta2)  // a21-a12
-  };
-  double u = std::atan2(c[0],c[1]);
-  double v = std::atan(c[2]*std::tan(Delta/2));
-  phi = (v - u)/2 - M_PI_2;
-  psi = (v + u)/2 - M_PI_2;
-  the = 2*std::atan2(c[0]*std::sin(v),c[2]*std::sin(u));
-  double raddeg = 180./M_PI;
-  phi   *= raddeg;
-  the   *= raddeg;
-  psi   *= raddeg;
-}
-
-
 double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg)
   {
     double scaleFactor = cfg.S<MagFactor>().ScaleFactor;
     St_trigDetSumsC* scalers = &cfg.C<St_trigDetSumsC>();
     if (! scalers ) return 0;
-    double zf = zeroField(0); // potential validity margin for scalers
-    if (zf>0 && zf<1) scalers->setValidityMargin(zf);
-    double coulombs = 0;
 
+    double coulombs = 0;
     bool use_powers = true;
 
     for (int row=0;row< (int) GetNRows();row++) {
       double mult = 0;
       switch ((int) getSpaceChargeDetector(row)) {
-        case (0) : mult = scalers->getMult(); break; // vpdx as of 2007-12-19
-        case (1) : mult = scalers->getBBCX(); break;
-        case (2) : mult = scalers->getZDCX(); break;
-        case (3) : mult = scalers->getZDCEast()+scalers->getZDCWest(); break;
-        case (4) : mult = scalers->getBBCEast()+scalers->getBBCWest(); break;
-        case (5) : mult = scalers->getZDCEast(); break;
-        case (6) : mult = scalers->getZDCWest(); break;
-        case (7) : mult = scalers->getBBCEast(); break;
-        case (8) : mult = scalers->getBBCWest(); break;
-        case (9) : mult = scalers->getBBCYellowBkg(); break;
-        case (10): mult = scalers->getBBCBlueBkg(); break;
-        case (11): mult = scalers->getPVPDEast(); break;
-        case (12): mult = scalers->getPVPDWest(); break;
-        case (13) : mult = scalers->getCTBOrTOFp(); break; // zdcx-no-killer as of 2011
-        case (14) : mult = scalers->getCTBEast(); break; // zdce-no-killer as of 2011
-        case (15) : mult = scalers->getCTBWest(); break; // zdcw-no-killer as of 2011
+        case (0) : mult = scalers->mult(); break; // vpdx as of 2007-12-19
+        case (1) : mult = scalers->bbcX(); break;
+        case (2) : mult = scalers->zdcX(); break;
+        case (3) : mult = scalers->zdcEast()+scalers->zdcWest(); break;
+        case (4) : mult = scalers->bbcEast()+scalers->bbcWest(); break;
+        case (5) : mult = scalers->zdcEast(); break;
+        case (6) : mult = scalers->zdcWest(); break;
+        case (7) : mult = scalers->bbcEast(); break;
+        case (8) : mult = scalers->bbcWest(); break;
+        case (9) : mult = scalers->bbcYellowBkg(); break;
+        case (10): mult = scalers->bbcBlueBkg(); break;
+        case (11): mult = scalers->pvpdEast(); break;
+        case (12): mult = scalers->pvpdWest(); break;
+        case (13): mult = scalers->ctbTOFp(); break; // zdcx-no-killer as of 2011
+        case (14): mult = scalers->ctbEast(); break; // zdce-no-killer as of 2011
+        case (15): mult = scalers->ctbWest(); break; // zdcw-no-killer as of 2011
 
         default  : mult = 0.;
       }

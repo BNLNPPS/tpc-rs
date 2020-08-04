@@ -52,7 +52,6 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
 struct St_richvoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages>
 {
   St_richvoltagesC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages>(cfg) {}
-  unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
   unsigned int 	startStatusTime(int i = 0) 	{return Struct(i)->startStatusTime;}
   unsigned int 	endStatusTime(int i = 0) 	{return Struct(i)->endStatusTime;}
   unsigned int 	status(int i = 0) 	        {return Struct(i)->status;}
@@ -186,7 +185,6 @@ struct St_SurveyC : tpcrs::IConfigStruct {
   double 	sigmaTrY(int i = 0) 	const {return Struct(i)->sigmaTrY;}
   double 	sigmaTrZ(int i = 0) 	const {return Struct(i)->sigmaTrZ;}
   char* 	comment(int i = 0) 	const {return Struct(i)->comment;}
-  void          GetAngles(double &phi, double &the, double &psi, int i = 0);
   const double  *Rotation(int i = 0)     const {return &Struct(i)->r00;} 
   const double  *Translation(int i = 0)  const {return &Struct(i)->t0;} 
   const TGeoHMatrix  &GetMatrix(int i = 0);
@@ -217,26 +215,11 @@ struct St_tpcAnodeHVC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcAnodeHVC
 struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>
 {
   St_TpcAvgCurrentC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCurrentC, TpcAvgCurrent>(cfg) {}
-  int 	run(int i = 0) 	const {return Struct(i)->run;}
-  int 	start_time(int i = 0) 	const {return Struct(i)->start_time;}
-  int 	stop_time(int i = 0) 	const {return Struct(i)->stop_time;}
   static int  ChannelFromRow(int sector, int row);
   static int  ChannelFromSocket(int socket);
   float       AvCurrent(int sector = 1, int channel = 1);
-  /* {
-     return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
-     Struct()->AvCurrent[8*(sector-1)+channel-1] :
-     0;} */
-  float       AvCurrSocket(int sector = 1, int socket = 1) {return AvCurrent(sector, ChannelFromSocket(socket));}
   float       AvCurrRow(int sector = 1, int row = 1) {return AvCurrent(sector, ChannelFromRow(sector, row));}
   float       AcCharge(int sector = 1, int channel = 1);
-  /* {
-     return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
-     Struct()->AcCharge[8*(sector-1)+channel-1] :
-     0;
-     } */
-  float       AcChargeSocket(int sector = 1, int socket = 1) {return AcCharge(sector, ChannelFromSocket(socket));}
-  float       AcChargeRow(int sector = 1, int row = 1) {return AcCharge(sector, ChannelFromRow(sector, row));}
   float       AcChargeL(int sector = 1, int channel = 1); // C/cm
   float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, ChannelFromRow(sector, row));}
 };
@@ -244,40 +227,26 @@ struct St_TpcAvgCurrentC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgCu
 struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgPowerSupplyC, TpcAvgPowerSupply>
 {
   St_TpcAvgPowerSupplyC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcAvgPowerSupplyC, TpcAvgPowerSupply>(cfg) {}
-  int 	run(int i = 0) 	const {return Struct(i)->run;}
-  int 	start_time(int i = 0) 	const {return Struct(i)->start_time;}
-  int 	stop_time(int i = 0) 	const {return Struct(i)->stop_time;}
   float* 	Current(int i = 0) 	const {return Struct(i)->Current;}
   float* 	Charge(int i = 0) 	const {return Struct(i)->Charge;}
   float* 	Voltage(int i = 0) 	const {return Struct(i)->Voltage;}
-  float	voltagePadrow(int sec = 1, int padrow = 1) const; // sector=1..24 , padrow=1..100
-  static int  ChannelFromRow(int sector, int row) {return St_TpcAvgCurrentC::ChannelFromRow(sector, row);}
-  static int  ChannelFromSocket(int socket) {return St_TpcAvgCurrentC::ChannelFromSocket(socket);}
-  float       AvCurrent(int sector = 1, int channel = 1)
+  float	    voltagePadrow(int sec = 1, int padrow = 1) const; // sector=1..24 , padrow=1..100
+  float     AvCurrent(int sector = 1, int channel = 1)
   {
     return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
            Struct()->Current[8 * (sector - 1) + channel - 1] :
            0;
   }
-  float       AvCurrSocket(int sector = 1, int socket = 1) {return AvCurrent(sector, ChannelFromSocket(socket));}
-  float       AvCurrRow(int sector = 1, int row = 1) {return AvCurrent(sector, ChannelFromRow(sector, row));}
   float       AcCharge(int sector = 1, int channel = 1)
   {
     return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
            Struct()->Charge[8 * (sector - 1) + channel - 1] :
            0;
   }
-  float       AcChargeSocket(int sector = 1, int socket = 1) {return AcCharge(sector, ChannelFromSocket(socket));}
-  float       AcChargeRow(int sector = 1, int row = 1) {return AcCharge(sector, ChannelFromRow(sector, row));}
+  float       AcChargeSocket(int sector = 1, int socket = 1) {return AcCharge(sector, St_TpcAvgCurrentC::ChannelFromSocket(socket));}
+  float       AcChargeRow(int sector = 1, int row = 1) {return AcCharge(sector, St_TpcAvgCurrentC::ChannelFromRow(sector, row));}
   float       AcChargeL(int sector = 1, int channel = 1); // C/cm
-  float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, ChannelFromRow(sector, row));}
-  bool        livePadrow(int sec = 1, int padrow = 1) const { return voltagePadrow(sec, padrow) >  500;}
-};
-
-struct St_tpcCalibResolutionsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcCalibResolutionsC, tpcCalibResolutions> {
-  St_tpcCalibResolutionsC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcCalibResolutionsC, tpcCalibResolutions>(cfg) {}
-  float 	SpaceCharge(int i = 0) 	{return Struct(i)->SpaceCharge;}
-  float 	GridLeak(int i = 0)	 	{return Struct(i)->GridLeak;}
+  float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, St_TpcAvgCurrentC::ChannelFromRow(sector, row));}
 };
 
 struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent> {
@@ -713,7 +682,6 @@ struct St_trgTimeOffsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeO
 struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>
 {
   St_trigDetSumsC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>(cfg) {}
-  unsigned int 	runNumber(int i = 0) 	        {return Struct(i)->runNumber;}
   unsigned int 	timeOffset(int i = 0) 	{return Struct(i)->timeOffset;}
   double 	ctbWest(int i = 0) 	        {return Struct(i)->ctbWest;}
   double 	ctbEast(int i = 0) 	        {return Struct(i)->ctbEast;}
@@ -732,42 +700,7 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   double 	bbcBlueBkg(int i = 0) 	{return Struct(i)->bbcBlueBkg;}
   double 	pvpdWest(int i = 0) 	        {return Struct(i)->pvpdWest;}
   double 	pvpdEast(int i = 0) 	        {return Struct(i)->pvpdEast;}
-  double 	zdcCoin(int i = 0)            {return Nc(zdcX(i), zdcEast(i), zdcWest(i));}
-  double 	bbcCoin(int i = 0)            {return Nc(bbcX(i), bbcEast(i), bbcWest(i));}
-  void		validityMargin(double margin = 0) {fMargin = margin;}
-  double getCTBWest() {return ctbWest();}
-  double getCTBEast() {return ctbEast();}
-  double getCTBOrTOFp() {return ctbTOFp();}
-  double getTOFp() {return tofp();}
-  double getZDCWest() {return zdcWest();}
-  double getZDCEast() {return zdcEast();}
-  double getZDCX() {return zdcX();}
-  double getZDCCoin() {return zdcCoin();}
-  double getMult() {return mult();}
-  double getL0() {return L0();}
-  double getBBCX() {return bbcX();}
-  double getBBCCoin() {return bbcCoin();}
-  double getBBCXCTB() {return bbcXctbTOFp();}
-  double getBBCWest() {return bbcWest();}
-  double getBBCEast() {return bbcEast();}
-  double getBBCYellowBkg() {return bbcYellowBkg();}
-  double getBBCBlueBkg() {return bbcBlueBkg();}
-  double getPVPDWest() {return pvpdWest();}
-  double getPVPDEast() {return pvpdEast();}
   unsigned int   getRichHVStatus() {return cfg_.C<St_richvoltagesC>().status();}
-  void     setValidityMargin(double margin = 0) {validityMargin(margin);}
-
-  // The following code attempts to correct coincidence rates for accidentals and multiples
-  // See STAR Note 528
-  double Nc(double New, double Ne, double Nw, int n_bunches = 111)
-  {
-    // 111 is a guess using the maximum seen filled bunches in RHIC so far
-    // (not always the case, but we don't have access to this number)
-    double Nbc = cfg_.S<starClockOnl>().frequency * ((double) n_bunches) / 120.;
-    return -Nbc * TMath::Log(1. - ((New - (Ne * Nw / Nbc)) / (Nbc + New - Ne - Nw)));
-  }
- private:
-  double	fMargin;
 };
 
 
