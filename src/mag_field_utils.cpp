@@ -170,7 +170,6 @@ MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransfor
   transform_(trans),
   mag_field_(cfg, MagField::MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor)
 {
-  GetDistoSmearing(mode);    // Get distortion smearing from the DB
   // Get the magnetic field scale factor from the DB
   gFactor = cfg_.S<MagFactor>().ScaleFactor;
   GetTPCParams()        ;    // Get the TPC parameters from the DB
@@ -186,15 +185,8 @@ MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransfor
 }
 
 
-void MagFieldUtils::GetDistoSmearing (int mode)
-{
-  fCalibResolutions = ((mode & kDistoSmearing) > 0 ? &cfg_.C<St_tpcCalibResolutionsC>() : 0);
-}
-
-
 void MagFieldUtils::GetTPCParams ()
 {
-  St_tpcPadConfigC*      pads = &cfg_.C<St_tpcPadConfigC>();
   St_tpcFieldCageC*     cages = &cfg_.C<St_tpcFieldCageC>();
 
   if (! CoordTransform::IsOldScheme()) { // new schema
@@ -218,8 +210,8 @@ void MagFieldUtils::GetTPCParams ()
   IFCShift       =  cages->InnerFieldCageShift();
 
   for (int sec = 1; sec <= 24; sec++) {
-    INNER[sec - 1]          =  pads->innerPadRows(sec);
-    TPCROWS[sec - 1]        =  pads->padRows(sec);
+    INNER[sec - 1]   = cfg_.S<tpcPadPlanes>().innerPadRows;
+    TPCROWS[sec - 1] = cfg_.S<tpcPadPlanes>().padRows;
 
     for ( int row = 1 ; row <= TPCROWS[sec - 1] ; row++ )
       TPCROWR[sec - 1][row - 1] = tpcrs::RadialDistanceAtRow(row, cfg_);
@@ -296,7 +288,7 @@ void MagFieldUtils::GetTPCVoltages (int mode)
     TH1I outerVs("outerVs", "outerVs", 5, maxOuter - 3.5 * stepsOuter, maxOuter + 1.5 * stepsOuter);
 
     for (int i = 1 ; i < 25; i++ ) {
-      int inner = cfg_.C<St_tpcPadConfigC>().innerPadRows(i);
+      int inner = cfg_.S<tpcPadPlanes>().innerPadRows;
       innerVs.Fill(tpcrs::VoltagePadrow(i, inner, cfg_));
       outerVs.Fill(tpcrs::VoltagePadrow(i, inner + 1, cfg_));
     }
@@ -378,7 +370,7 @@ void MagFieldUtils::GetSpaceChargeR2 ()
   scalers = new_scalers;
 
   SpaceChargeR2      = fSpaceChargeR2->getSpaceChargeCoulombs(cfg_) ;
-  SmearCoefSC        = (fCalibResolutions ? gRandom->Gaus(1, fCalibResolutions->SpaceCharge()) : 1.0);
+  SmearCoefSC        = (mDistortionMode & kDistoSmearing ? gRandom->Gaus(1, cfg_.S<tpcCalibResolutions>().SpaceCharge) : 1.0);
   SpaceChargeEWRatio = fSpaceChargeR2->getEWRatio() ;
 }
 
@@ -442,8 +434,8 @@ void MagFieldUtils::GetGridLeak ( int mode )
     if (OuterGridLeakWidth <= 0) memset(&(GLWeights[72]), 0, 24 * sizeof(float));
   }
 
-  SmearCoefGL = (fCalibResolutions && fCalibResolutions->GridLeak() > 0 ?
-                 gRandom->Gaus(1, fCalibResolutions->GridLeak()) : 1.0);
+  SmearCoefGL = (mDistortionMode & kDistoSmearing) && cfg_.S<tpcCalibResolutions>().GridLeak > 0 ?
+                 gRandom->Gaus(1, cfg_.S<tpcCalibResolutions>().GridLeak) : 1.0;
 }
 
 

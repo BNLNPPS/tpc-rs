@@ -86,10 +86,8 @@ class MagFieldUtils
   St_tpcOmegaTauC*           fOmegaTau      ;
   St_tpcGridLeakC*           fGridLeak      ;
   St_tpcHVPlanesC*           fHVPlanes      ;
-  St_tpcCalibResolutionsC*   fCalibResolutions ;
   St_tpcChargeEventC*        fAbortGapCharge;
 
-  void    GetDistoSmearing ( int mode) ;
   void    GetMagFactor ()     ;
   void    GetTPCParams ()     ;
   void    GetTPCVoltages ( int mode ) ;

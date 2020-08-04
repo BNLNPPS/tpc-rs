@@ -446,7 +446,7 @@ float St_TpcAvgPowerSupplyC::voltagePadrow(int sector, int padrow) const {
   if (v2==v1) return v1;
   // different voltages on influencing HVs
   // effective voltage is a sum of exponential gains
-  float B = (padrow <= cfg_.C<St_tpcPadConfigC>().innerPadRows(sector) ? 13.05e-3 : 10.26e-3);
+  float B = tpcrs::IsInner(padrow, cfg_) ? 13.05e-3 : 10.26e-3;
   float v_eff = std::log((1.0-f2)*std::exp(B*v1) + f2*std::exp(B*v2)) / B;
   return v_eff;
 }
