@@ -1,46 +1,4 @@
-/***********************************************************************
- * Author: Jim Thomas   11/1/2000
- *
- * Description: the STAR Magnetic Field
- ***********************************************************************/
-
-/*!
-
-\class MagField
-
-\author Jim Thomas 10 October 2000
-
-A package of Bfield. Methods included to read the correct Bfield map and scale it
-according to a scale factor provided during instantiation.
-The statement from W.Love is that the Bfield map accuracy FWHM = 1 G.
-<p>
-
-An enumerated argument provided at the time of instantiation selects
-a constant magnetic field (value=1) or the measured magnetic field (value=2)
-at a field setting that you select manually.  Alternatively, you can use the
-database to determine the magnetic field setting but you must then provide a
-a time stamp and use a different instantiation (this is usually done in the chain).
-
-The enumerations for the manual settings are:
-enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
-"kConstant = 1" means you wish to work with a constant, uniform, field.
-"kMapped = 2"   means you want to read values from the measured magnet maps.
-The other enumerations are undefined and reserved for future expansion.
-
-<p>
-
-This code works in kGauss, cm - but note that the Bfield maps on disk
-are in gauss, cm.
-
-To do:  <br>
-- Finish pulling parameters out of DB rather than from #define.
-- Use Magnet current rather than MafFactor
-- Add a routine to distort the track if we are given a Geant Vector full of points == a track
-- Add simulated B field map in the regions where the field is not mapped.
-
-*/
 #include <string>
-#include <cassert>
 #include <cmath>
 
 #include "TFile.h"
@@ -50,7 +8,6 @@ To do:  <br>
 #include "tpcrs/configurator.h"
 #include "logger.h"
 #include "mag_field.h"
-#include "struct_containers.h"
 
 
 struct BFLD_t {
@@ -339,65 +296,65 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
 };
 
 
-MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float factor,
-                             bool lock, float rescale,
+/**
+ * A package of Bfield. Methods included to read the correct Bfield map and
+ * scale it according to a scale factor provided during instantiation. The
+ * Bfield map accuracy FWHM = 1 G.
+ *
+ * The enumerations for the manual settings are:
+ * enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2 };
+ * "kConstant = 1" means you wish to work with a constant, uniform, field
+ * "kMapped = 2"   means you want to read values from the measured magnet maps
+ *
+ * This code works in kGauss, cm - but note that the Bfield maps on disk are in
+ * gauss, cm.
+ */
+MagField::MagField(const tpcrs::Configurator& cfg, EBField map,
+                             float rescale,
                              float BDipole, float RmaxDip,
                              float ZminDip, float ZmaxDip) :
   cfg_(cfg),
-  mConstBz(false),
   fBzdZCorrection(0),
   fBrdZCorrection(0),
   fMap(map),
-  fFactor(factor),   fRescale(rescale),
+  fFactor(cfg.S<MagFactor>().ScaleFactor),
+  fRescale(rescale),
   fBDipole(BDipole), fRmaxDip(RmaxDip),
   fZminDip(ZminDip), fZmaxDip(ZmaxDip),
-  fLock(lock)
+  fMagFieldRotation("MagFieldRotation")
 {
-  if (fMap == kUndefined) {
-    LOG_INFO << "MagField is instantiated with predefined factor " << fFactor << " and map " << fMap << '\n';
-  }
-  else {
-    if (fLock) LOG_INFO << "MagField is locked, no modification from DB will be accepted\n";
-  }
-
-  fFactor = cfg_.S<MagFactor>().ScaleFactor;
-
-  ReadField() ;                       // Read the Magnetic
-  fMagFieldRotation = TGeoRotation("MagFieldRotation");
+  ReadField();
 }
 
 
-/// B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
+/**
+ * B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
+ */
 void MagField::BField( const double x[], float B[] )
 {
-  float r, z, Br_value, Bz_value ;
-  float phi, Bphi_value, phi1;
-  Bphi_value = 0;
-  Br_value =  Bz_value = 0;
+  float Br_value = 0, Bz_value = 0, Bphi_value = 0;
+
   B[0] = B[1] = B[2] = 0;
-  z  = x[2] ;
-  r  = std::sqrt( x[0] * x[0] + x[1] * x[1] ) ;
-  phi = std::atan2( x[1], x[0] ) ;
 
-  if ( phi < 0 ) phi += 2 * M_PI ;           // Table uses phi from 0 to 2*Pi
+  float r   = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+  float phi = std::atan2(x[1], x[0]);
+  float z   = x[2];
 
-  if ( mConstBz ) {
-    B[0] = B[1] = B[2] = 0.;
-
-    if ( abs(z) < 380.0 && r < 300.0 ) B[2] = +5.0;
-
-    return;
-  }
+  // Table uses phi from 0 to 2*Pi
+  if (phi < 0) phi += 2*M_PI ;
 
   float za = std::abs(z);
 
-  if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {//     beam Dipole
+  // Beam dipole
+  if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {
     B[1] = std::copysign(fBDipole, z);
     B[2] = std::abs(B[1] / 1000.);
     return;
   }
 
-  if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1]) { // within Map
+  // within map
+  if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1])
+  {
     Interpolate2DBfield( r, z, Br_value, Bz_value ) ;
     double BL[3] = {0, 0, Bz_value};
 
@@ -410,14 +367,12 @@ void MagField::BField( const double x[], float B[] )
     fMagFieldRotation.LocalToMaster(BL, BG);
 
     for (int i = 0; i < 3; i++) B[i] = BG[i];
-
-    return;
   }
 
   // added by Lijuan within the steel
   if (za <= 342.20  && r >= 303.29 && r <= 364.25) { // within Map
 
-    phi1 = phi * 180.0 / M_PI;
+    float phi1 = phi * 180.0 / M_PI;
 
     if (phi1 > 12) phi1 = phi1 - int(phi1 / 12) * 12;
 
@@ -460,7 +415,7 @@ void MagField::BField( const double x[], float B[] )
 }
 
 
-/// Bfield in Cartesian coordinates - 3D field
+/// B field in Cartesian coordinates - 3D field
 void MagField::B3DField( const float x[], float B[] )
 {
   float r, z, phi, Br_value, Bz_value, Bphi_value ;
@@ -496,11 +451,13 @@ void MagField::B3DField( const float x[], float B[] )
 }
 
 
-/// Read the electric and magnetic field maps stored on disk
+/**
+ * Read the electric and magnetic field maps stored on disk
+ */
 void MagField::ReadField()
 {
   FILE*    magfile, *b3Dfile ;
-  std::string comment, filename, filename3D ;
+  std::string filename, filename3D ;
 
   if (gEnv->GetValue("NewTpcAlignment", 0) != 0) {
     TFile pFile(cfg_.Locate("StarFieldZ.root").c_str());
@@ -531,26 +488,22 @@ void MagField::ReadField()
       if ( fFactor > 0 ) {
         filename   = "bfield_full_positive_2D.dat" ;
         filename3D = "bfield_full_positive_3D.dat" ;
-        comment    = "Measured Full Field" ;
         fRescale   = 1 ;                // Normal field
       }
       else {
         filename   = "bfield_full_negative_2D.dat" ;
         filename3D = "bfield_full_negative_3D.dat" ;
-        comment    = "Measured Full Field Reversed" ;
         fRescale   = -1 ;               // Reversed field
       }
     }
     else {                                // Scale from half field data
       filename   = "bfield_half_positive_2D.dat" ;
       filename3D = "bfield_half_positive_3D.dat" ;
-      comment    = "Measured Half Field" ;
       fRescale   = 2 ;                    // Adjust scale factor to use half field data
     }
   }
   else if ( fMap == kConstant ) {           // Constant field values
     filename = "const_full_positive_2D.dat" ;
-    comment  = "Constant Full Field" ;
     fRescale = 1 ;                        // Normal field
   }
   else {
@@ -594,12 +547,13 @@ void MagField::ReadField()
   if (b3Dfile)
   {
     char cname[128] ;
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;     // Read comment lines at begining of file
+    // Read comment lines at begining of file
+    fgets  ( cname, sizeof(cname), b3Dfile ) ;
+    fgets  ( cname, sizeof(cname), b3Dfile ) ;
+    fgets  ( cname, sizeof(cname), b3Dfile ) ;
+    fgets  ( cname, sizeof(cname), b3Dfile ) ;
+    fgets  ( cname, sizeof(cname), b3Dfile ) ;
+    fgets  ( cname, sizeof(cname), b3Dfile ) ;
 
     for ( int i = 0 ; i < nPhi ; i++ ) {
       for ( int j = 0 ; j < nZ ; j++ ) {
@@ -617,9 +571,7 @@ void MagField::ReadField()
       }
     }
   }
-
   else if ( fMap == kConstant )             // Constant field values
-
   {
     for ( int i = 0 ; i < nPhi ; i++ ) {
       for ( int j = 0 ; j < nZ ; j++ ) {
@@ -656,7 +608,6 @@ void MagField::ReadField()
           sscanf ( cname, " %f %f %f %f %f %f ",
                    &R3DSteel[k], &Z3DSteel[j], &Phi3DSteel[i], &Bx3DSteel[i][j][k], &Bz3DSteel[i][j][k], &By3DSteel[i][j][k] ) ;
 
-          //added by Lijuan
           Br3DSteel[i][j][k] = std::cos(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::sin(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
           Bphi3DSteel[i][j][k] = 0 - std::sin(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::cos(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
         }
@@ -668,41 +619,35 @@ void MagField::ReadField()
 }
 
 
-/// Interpolate the B field map - 2D interpolation
-
+/**
+ * Interpolate the B field map - 2D interpolation
+ */
 void MagField::Interpolate2DBfield( const float r, const float z, float &Br_value, float &Bz_value )
-
 {
+  // Scale maps to work in kGauss, cm
+  float fscale = 0.001 * fFactor * fRescale;
 
-  float fscale ;
+  const  int ORDER = 1; // Linear interpolation = 1, Quadratic = 2
+  static int jlow = 0, klow = 0 ;
+  float save_Br[ORDER + 1];
+  float save_Bz[ORDER + 1];
 
-  fscale = 0.001 * fFactor * fRescale ;           // Scale STAR maps to work in kGauss, cm
+  Search(nZ, ZList,  z, jlow);
+  Search(nR, Radius, r, klow);
 
+  if (jlow < 0) jlow = 0;
+  if (klow < 0) klow = 0;
 
-  const   int ORDER = 1  ;                      // Linear interpolation = 1, Quadratic = 2
-  static  int jlow = 0, klow = 0 ;
-  float save_Br[ORDER + 1] ;
-  float save_Bz[ORDER + 1] ;
+  if (jlow + ORDER >= nZ - 1) jlow = nZ - 1 - ORDER;
+  if (klow + ORDER >= nR - 1) klow = nR - 1 - ORDER;
 
-  Search ( nZ, ZList,  z, jlow ) ;
-  Search ( nR, Radius, r, klow ) ;
-
-  if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
-  if ( klow < 0 ) klow = 0 ;
-
-  if ( jlow + ORDER  >=    nZ - 1 ) jlow =   nZ - 1 - ORDER ;
-
-  if ( klow + ORDER  >=    nR - 1 ) klow =   nR - 1 - ORDER ;
-
-  for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-    save_Br[j - jlow]   = Interpolate( &Radius[klow], &Br[j][klow], ORDER, r )   ;
-    save_Bz[j - jlow]   = Interpolate( &Radius[klow], &Bz[j][klow], ORDER, r )   ;
+  for (int j = jlow; j < jlow + ORDER + 1; j++) {
+    save_Br[j - jlow] = Interpolate( &Radius[klow], &Br[j][klow], ORDER, r )   ;
+    save_Bz[j - jlow] = Interpolate( &Radius[klow], &Bz[j][klow], ORDER, r )   ;
   }
 
-  Br_value  = fscale * Interpolate( &ZList[jlow], save_Br, ORDER, z )   ;
-  Bz_value  = fscale * Interpolate( &ZList[jlow], save_Bz, ORDER, z )   ;
-
+  Br_value = fscale * Interpolate( &ZList[jlow], save_Br, ORDER, z )   ;
+  Bz_value = fscale * Interpolate( &ZList[jlow], save_Bz, ORDER, z )   ;
 }
 
 
@@ -713,7 +658,6 @@ void MagField::Interpolate2ExtDBfield( const float r, const float z, float &Br_v
 
   if (first) {
     for (int j = 0; j < nZext; j++) ZExtList[j] = BDAT[j].Zi;
-
     first = false;
   }
 
@@ -725,11 +669,10 @@ void MagField::Interpolate2ExtDBfield( const float r, const float z, float &Br_v
 
   //added by Lijuan
   if (za <= 342.20  && r >= 303.29 && r <= 363.29) return;
-
   //end added by Lijuan
 
-
-  float fscale  = 0.001 * fFactor; // Scale STAR maps to work in kGauss, cm. Table only for Full Field, no Rescale !
+  // Scale maps to work in kGauss, cm. Table only for Full Field, no Rescale !
+  float fscale  = 0.001 * fFactor;
 
   const   int ORDER = 1  ;                      // Linear interpolation = 1, Quadratic = 2
   static  int jlow = 0, klow = 0 ;
@@ -759,15 +702,15 @@ void MagField::Interpolate2ExtDBfield( const float r, const float z, float &Br_v
   if (z < 0) Br_value  = - Br_value;
 }
 
-/// Interpolate the B field map - 3D interpolation
 
+/**
+ * Interpolate the B field map - 3D interpolation
+ */
 void MagField::Interpolate3DBfield( const float r, const float z, const float phi,
                                         float &Br_value, float &Bz_value, float &Bphi_value )
 {
-
-  float fscale ;
-
-  fscale = 0.001 * fFactor * fRescale ;           // Scale STAR maps to work in kGauss, cm
+  // Scale maps to work in kGauss, cm
+  float fscale = 0.001 * fFactor * fRescale;
 
   const   int ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
   static  int ilow = 0, jlow = 0, klow = 0 ;
@@ -775,25 +718,18 @@ void MagField::Interpolate3DBfield( const float r, const float z, const float ph
   float save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
   float save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
 
-
-
-  //LOG_INFO<<"r===  "<<r<<"  z===  "<<z<<"  phi===  "<<phi<<'\n';
   if (r < 0) return;
 
-  Search( nPhi, Phi3D, phi, ilow ) ;
-  Search( nZ,   Z3D,   z,   jlow ) ;
-  Search( nR,   R3D,   r,   klow ) ;
+  Search(nPhi, Phi3D, phi, ilow);
+  Search(nZ,   Z3D,   z,   jlow);
+  Search(nR,   R3D,   r,   klow);
 
-  if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
+  if ( ilow < 0 ) ilow = 0 ;
   if ( jlow < 0 ) jlow = 0 ;
-
   if ( klow < 0 ) klow = 0 ;
 
   if ( ilow + ORDER  >=  nPhi - 1 ) ilow = nPhi - 1 - ORDER ;
-
   if ( jlow + ORDER  >=    nZ - 1 ) jlow =   nZ - 1 - ORDER ;
-
   if ( klow + ORDER  >=    nR - 1 ) klow =   nR - 1 - ORDER ;
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
@@ -811,25 +747,13 @@ void MagField::Interpolate3DBfield( const float r, const float z, const float ph
   Br_value   = fscale * Interpolate( &Phi3D[ilow], saved_Br, ORDER, phi )   ;
   Bz_value   = fscale * Interpolate( &Phi3D[ilow], saved_Bz, ORDER, phi )   ;
   Bphi_value = fscale * Interpolate( &Phi3D[ilow], saved_Bphi, ORDER, phi ) ;
-
 }
 
 
-
-
-
-
-
-
-//added by Lijuan for the magnetic field in steel.
-
-
 /// Interpolate the B field map - 3D interpolation
-
 void MagField::Interpolate3DBSteelfield( const float r, const float z, const float phi,
     float &Br_value, float &Bz_value, float &Bphi_value )
 {
-
   float fscale ;
 
   //This is different from the usual bfield map, changed by Lijuan
@@ -842,22 +766,17 @@ void MagField::Interpolate3DBSteelfield( const float r, const float z, const flo
   float save_Br[ORDER + 1],   saved_Br[ORDER + 1] ;
   float save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
   float save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
-  //  phi=phi+1;
 
   Search( nPhiSteel, Phi3DSteel, phi, ilow ) ;
   Search( nZSteel,   Z3DSteel,   z,   jlow ) ;
   Search( nRSteel,   R3DSteel,   r,   klow ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
   if ( jlow < 0 ) jlow = 0 ;
-
   if ( klow < 0 ) klow = 0 ;
 
   if ( ilow + ORDER  >=  nPhiSteel - 1 ) ilow = nPhiSteel - 1 - ORDER ;
-
   if ( jlow + ORDER  >=    nZSteel - 1 ) jlow =   nZSteel - 1 - ORDER ;
-
   if ( klow + ORDER  >=    nRSteel - 1 ) klow =   nRSteel - 1 - ORDER ;
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
@@ -879,52 +798,46 @@ void MagField::Interpolate3DBSteelfield( const float r, const float z, const flo
 }
 
 
-/// Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
+/**
+ * Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
+ */
 float MagField::Interpolate( const float Xarray[], const float Yarray[],
                                    const int ORDER, const float x )
-
 {
+  float y;
 
-  float y ;
-
-
-  if ( ORDER == 2 )                // Quadratic Interpolation = 2
-
+  if (ORDER == 2) // Quadratic Interpolation = 2
   {
     y  = (x - Xarray[1]) * (x - Xarray[2]) * Yarray[0] / ( (Xarray[0] - Xarray[1]) * (Xarray[0] - Xarray[2]) ) ;
     y += (x - Xarray[2]) * (x - Xarray[0]) * Yarray[1] / ( (Xarray[1] - Xarray[2]) * (Xarray[1] - Xarray[0]) ) ;
     y += (x - Xarray[0]) * (x - Xarray[1]) * Yarray[2] / ( (Xarray[2] - Xarray[0]) * (Xarray[2] - Xarray[1]) ) ;
-
   }
-
-  else                             // Linear Interpolation = 1
-
+  else            // Linear Interpolation = 1
   {
     y  = Yarray[0] + ( Yarray[1] - Yarray[0] ) * ( x - Xarray[0] ) / ( Xarray[1] - Xarray[0] ) ;
   }
 
-  return (y) ;
-
+  return y;
 }
 
 
-
-
-
-/// Search an ordered table by starting at the most recently used point
-
-void MagField::Search( int N, const float Xarray[], float x, int &low )
-
+/**
+ * Search an ordered table by starting at the most recently used point
+ */
+void MagField::Search(int N, const float Xarray[], float x, int &low)
 {
-  assert(! std::isnan(x));
-  long middle, high ;
+  long high ;
   int  ascend = 0, increment = 1 ;
 
-  if ( Xarray[N - 1] >= Xarray[0] ) ascend = 1 ; // Ascending ordered table if true
+  if ( Xarray[N - 1] >= Xarray[0] )
+    ascend = 1 ; // Ascending ordered table if true
 
-  if ( low < 0 || low > N - 1 ) { low = -1 ; high = N ; }
-
-  else {                                          // Ordered Search phase
+  if ( low < 0 || low > N - 1 ) {
+    low = -1;
+    high = N;
+  }
+  else  // Ordered search phase
+  {
     if ( (int)( x >= Xarray[low] ) == ascend ) {
       if ( low == N - 1 ) return ;
 
@@ -953,8 +866,9 @@ void MagField::Search( int N, const float Xarray[], float x, int &low )
     }
   }
 
-  while ( (high - low) != 1 ) {                  // Binary Search Phase
-    middle = ( high + low ) / 2 ;
+  // Binary search phase
+  while ( (high - low) != 1 ) {
+    long middle = ( high + low ) / 2 ;
 
     if ( (int)( x >= Xarray[middle] ) == ascend )
       low = middle ;
@@ -963,7 +877,5 @@ void MagField::Search( int N, const float Xarray[], float x, int &low )
   }
 
   if ( x == Xarray[N - 1] ) low = N - 2 ;
-
-  if ( x == Xarray[0]   ) low = 0 ;
-
+  if ( x == Xarray[0]     ) low = 0 ;
 }
