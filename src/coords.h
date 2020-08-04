@@ -396,6 +396,7 @@ struct CoordTransform
   double              mzGG;           //! Gating Grid z
   static bool         mOldScheme;     //! switch between Old and New alignment scheme
 
+  float                triggerTimeOffset() const    {return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset();}
   void SetTpcRotations();
   void SetTpcRotationMatrix(TGeoHMatrix* m, int sector = 0, int k = kSupS2Tpc)
   {
