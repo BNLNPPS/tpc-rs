@@ -160,13 +160,6 @@ struct MDFCorrection {
 	double CoefficientsRMS[50]; 
 };
 
-struct richvoltages {
-  unsigned int runNumber; /*   */
-  unsigned int startStatusTime; /*   */
-  unsigned int endStatusTime; /*   */
-  unsigned int status; /*   */
-};
-
 /** Table for Space Charge Corrections */
 struct spaceChargeCor {
 	double fullFieldB; /* Negative Full Field Correction  */
@@ -185,12 +178,6 @@ struct starClockOnl {
   unsigned int runNumber; /*   run number  */
   unsigned int time; /*   unix time of entry  */
   double frequency; /*   frequency in Hz  */
-};
-
-struct starMagOnl {
-	unsigned int runNumber; /*   run number  */
-	unsigned int time; /*   unix time of entry  */
-	double current; /*   magnet current (- means B polarity)  */
 };
 
 /** Survey data
@@ -569,14 +556,6 @@ struct tpcOmegaTau {
 	float tensorV1; /* tensor for OmegaTau           */
 	float tensorV2; /* tensor for OmegaTau    */
 	unsigned short distortionCorrectionsMode; /* modes for field distortion and non-uniformity corrections  */
-};
-
-/**
-TPC padrow configurations (tpcitpc) for 24 sectors
- sector status 0 => tpc, 1 => itpc
- */
-struct tpcPadConfig {
-  unsigned char itpc[24];
 };
 
 struct tpcPadGainT0 {

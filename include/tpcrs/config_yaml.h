@@ -279,34 +279,6 @@ struct convert<tss_tsspar> {
 }
 
 
-
-
-namespace YAML {
-template<>
-struct convert<starMagOnl> {
-  static Node encode(const starMagOnl& st) {
-    Node node;
-    
-    node["runNumber"] = st.runNumber;
-    node["time"] = st.time;
-    node["current"] = st.current;
-    return node;
-  };
-
-  static bool decode(const Node& node, starMagOnl& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.runNumber = node["runNumber"].as<unsigned int>();
-    st.time = node["time"].as<unsigned int>();
-    st.current = node["current"].as<double>();
-    return true;
-  }
-};
-}
-
-
 namespace YAML {
 template<>
 struct convert<tpcOmegaTau> {
@@ -1265,30 +1237,6 @@ struct convert<tpcHVPlanes> {
 
 namespace YAML {
 template<>
-struct convert<tpcPadConfig> {
-  static Node encode(const tpcPadConfig& st) {
-    Node node;
-    
-    node["itpc"] = vector<int>(st.itpc, st.itpc + 24);
-    node["itpc"].SetStyle(YAML::EmitterStyle::Flow);
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcPadConfig& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    auto itpc = node["itpc"].as< vector<int> >();
-    copy(begin(itpc), end(itpc), st.itpc);
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
 struct convert<tpcAltroParams> {
   static Node encode(const tpcAltroParams& st) {
     Node node;
@@ -1673,34 +1621,6 @@ struct convert<ResponseSimulator> {
 
     st.min_signal = node["min_signal"].as<double>();
     st.electron_cutoff_energy = node["electron_cutoff_energy"].as<double>();
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
-struct convert<richvoltages> {
-  static Node encode(const richvoltages& st) {
-    Node node;
-    
-    node["runNumber"] = st.runNumber;
-    node["startStatusTime"] = st.startStatusTime;
-    node["endStatusTime"] = st.endStatusTime;
-    node["status"] = st.status;
-    return node;
-  };
-
-  static bool decode(const Node& node, richvoltages& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.runNumber = node["runNumber"].as<unsigned int>();
-    st.startStatusTime = node["startStatusTime"].as<unsigned int>();
-    st.endStatusTime = node["endStatusTime"].as<unsigned int>();
-    st.status = node["status"].as<unsigned int>();
     return true;
   }
 };

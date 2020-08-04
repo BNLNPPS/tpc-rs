@@ -330,45 +330,6 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
 }
 MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
-int 	         St_tpcPadConfigC::padRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().padRows()               ;}
-int 	         St_tpcPadConfigC::innerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().innerPadRows() 	   ;}
-int 	         St_tpcPadConfigC::outerPadRows(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().outerPadRows() 	   ;}
-int 	         St_tpcPadConfigC::superInnerPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superInnerPadRows()     ;}
-int 	         St_tpcPadConfigC::superOuterPadRows(int sector)        {return cfg_.C<St_tpcPadPlanesC>().superOuterPadRows()     ;}
-double 	 St_tpcPadConfigC::innerSectorPadPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadPitch()   ;}
-double 	 St_tpcPadConfigC::innerSectorRowPitch1(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorRowPitch1()  ;}
-double 	 St_tpcPadConfigC::innerSectorRowPitch2(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorRowPitch2()  ;}
-double 	 St_tpcPadConfigC::firstPadRow(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().firstPadRow() 	   ;}
-double 	 St_tpcPadConfigC::firstOuterSectorPadRow(int sector)   {return cfg_.C<St_tpcPadPlanesC>().firstOuterSectorPadRow();}
-double 	 St_tpcPadConfigC::lastOuterSectorPadRow(int sector)    {return cfg_.C<St_tpcPadPlanesC>().lastOuterSectorPadRow() ;}
-double 	 St_tpcPadConfigC::firstRowWidth(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().firstRowWidth()         ;}
-double 	 St_tpcPadConfigC::lastRowWidth(int sector) 	          {return cfg_.C<St_tpcPadPlanesC>().lastRowWidth()          ;}
-double 	 St_tpcPadConfigC::outerSectorPadWidth(int sector)      {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadWidth()   ;}
-double 	 St_tpcPadConfigC::outerSectorPadLength(int sector)     {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadLength()  ;}
-double 	 St_tpcPadConfigC::outerSectorPadPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadPitch()   ;}
-double 	 St_tpcPadConfigC::outerSectorRowPitch(int sector)      {return cfg_.C<St_tpcPadPlanesC>().outerSectorRowPitch()   ;}
-double 	 St_tpcPadConfigC::outerSectorLength(int sector)        {return cfg_.C<St_tpcPadPlanesC>().outerSectorLength()     ;}
-double 	 St_tpcPadConfigC::ioSectorSeparation(int sector)       {return cfg_.C<St_tpcPadPlanesC>().ioSectorSeparation()    ;}
-double 	 St_tpcPadConfigC::innerSectorEdge(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerSectorEdge()       ;}
-double 	 St_tpcPadConfigC::outerSectorEdge(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().outerSectorEdge() 	   ;}
-double 	 St_tpcPadConfigC::innerSectorPadPlaneZ(int sector)     {return cfg_.C<St_tpcPadPlanesC>().innerSectorPadPlaneZ()  ;}
-double 	 St_tpcPadConfigC::outerSectorPadPlaneZ(int sector)     {return cfg_.C<St_tpcPadPlanesC>().outerSectorPadPlaneZ()  ;}
-int* 	         St_tpcPadConfigC::innerPadsPerRow(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().innerPadsPerRow()       ;}
-int* 	         St_tpcPadConfigC::outerPadsPerRow(int sector) 	  {return cfg_.C<St_tpcPadPlanesC>().outerPadsPerRow()       ;}
-int            St_tpcPadConfigC::padsPerRow(int sector, int row)    {
-  int Ninner = innerPadRows(sector);
-  return (row <= Ninner) ?
-    innerPadsPerRow(sector)[row-1] :
-    outerPadsPerRow(sector)[row-1-Ninner];
-}
-bool           St_tpcPadConfigC::isRowInRange(int sector, int row)  {return (row >= 1 && row<=padRows(sector)) ? true: false;}
-int            St_tpcPadConfigC::numberOfPadsAtRow(int sector, int row)       {
-  if (! isRowInRange(sector, row)) return 0;
-  int Ninner = innerPadRows(sector);
-  if ( row<=Ninner ) return innerPadsPerRow(sector)[row-1];
-  return outerPadsPerRow(sector)[row-1-Ninner];
-}
-
 
 void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f2) {
   e1 = (sector-1)*19;
@@ -574,19 +535,14 @@ MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 
 
 //__________________Calibrations/rich______________________________________________________________
-MakeChairInstance(richvoltages,Calibrations/rich/richvoltages);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
-//_________________RunLog/onl_______________________________________________________________
-
-MakeChairInstance(starMagOnl,RunLog/onl/starMagOnl);
 
 //___________________Conditions/trg_____________________________________________________________
 MakeChairInstance(trgTimeOffset,Conditions/trg/trgTimeOffset);
 //___________________Geometry/tpc_____________________________________________________________
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
-MakeChairInstance(tpcPadConfig,Geometry/tpc/tpcPadConfig);
 MakeChairInstance(tpcGlobalPosition,Geometry/tpc/tpcGlobalPosition);
 MakeChairInstance(tpcFieldCageShort,Geometry/tpc/tpcFieldCageShort);
 MakeChairInstance(tpcHVPlanes,Geometry/tpc/tpcHVPlanes);

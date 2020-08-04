@@ -49,72 +49,10 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
   TF1         **fFunc;
 };
 
-struct St_richvoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages>
-{
-  St_richvoltagesC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_richvoltagesC, richvoltages>(cfg) {}
-  unsigned int 	startStatusTime(int i = 0) 	{return Struct(i)->startStatusTime;}
-  unsigned int 	endStatusTime(int i = 0) 	{return Struct(i)->endStatusTime;}
-  unsigned int 	status(int i = 0) 	        {return Struct(i)->status;}
-};
 
 enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,
                        eZeroMField, eHalfMFieldPolA, eFullMFieldPolA
                       };
-
-struct St_starMagOnlC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC, starMagOnl>
-{
-  St_starMagOnlC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_starMagOnlC, starMagOnl>(cfg) {}
-  unsigned int 	runNumber(int i = 0) 	{return Struct(i)->runNumber;}
-  unsigned int 	time(int i = 0) 	{return Struct(i)->time;}
-  double 	current(int i = 0) 	{return Struct(i)->current;}
-  double      getScaleFactor(unsigned int time = 0) {return currentToScaleFactor(getMagnetCurrent(time));}
-  double      getMagnetCurrent(unsigned int time = 0)
-  {
-    if (GetNRows() == 1 || time == 0) return current();
-
-    double tempCurrent = -9999;
-
-    for (unsigned int i = 0; i < GetNRows() - 1; i++)
-      if ( time >= getTimeEntry(i) && time <= getTimeEntry(i + 1) )
-        if ( TMath::Abs(getMagnetCurrentEntry(i) - getMagnetCurrentEntry(i + 1)) < 50 )
-          tempCurrent = getMagnetCurrentEntry(i);
-
-    return tempCurrent;
-  }
-  StMagnetPolarity           getMagneticField(unsigned int time = 0)
-  {
-    StMagnetPolarity value = eUnknownMField;
-
-    double scaleFactor = getScaleFactor(time);
-
-    if (scaleFactor == 1.0)	value = eFullMFieldPolA;
-
-    if (scaleFactor == 0.5)	value = eHalfMFieldPolA;
-
-    if (scaleFactor == 0.0)	value = eZeroMField;
-
-    if (scaleFactor == -0.5)	value = eHalfMFieldPolB;
-
-    if (scaleFactor == -1.0)	value = eFullMFieldPolB;
-
-    return value;
-  }
-  unsigned int        getRunNumber() {return runNumber();}
-  unsigned int        getTimeEntry(unsigned int i = 0) {return time(i);}
-  double      getMagnetCurrentEntry(unsigned int i = 0) {return current(i);}
-  static double  currentToScaleFactor(double current)
-  {
-    double value = -9999;
-
-    if     (current < -4450 && current > -4550)	value = -1.0;
-    else if (current < -2200 && current > -2300)	value = -0.5;
-    else if (current >   -50 && current <    50)	value =  0.0;
-    else if (current >  2200 && current <  2300)	value =  0.5;
-    else if (current >  4450 && current <  4550)	value =  1.0;
-
-    return value;
-  }
-};
 
 struct St_spaceChargeCorC : tpcrs::IConfigStruct {
   virtual spaceChargeCor* Struct(int i = 0) const = 0;
@@ -300,41 +238,6 @@ struct St_TpcCurrentCorrectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcC
 
 struct St_TpcdChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdChargeC, tpcCorrection> {
   St_TpcdChargeC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcdChargeC, tpcCorrection>(cfg) {}
-};
-
-struct St_tpcPadConfigC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>
-{
-  St_tpcPadConfigC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadConfigC, tpcPadConfig>(cfg) {}
-  int 	   padRows(int sector);
-  int 	   innerPadRows(int sector);
-  int 	   outerPadRows(int sector);
-  int 	   superInnerPadRows(int sector);
-  int 	   superOuterPadRows(int sector);
-  double 	   innerSectorPadPitch(int sector);
-  double 	   innerSectorRowPitch1(int sector);
-  double 	   innerSectorRowPitch2(int sector);
-  double 	   firstPadRow(int sector);
-  double 	   firstOuterSectorPadRow(int sector);
-  double 	   lastOuterSectorPadRow(int sector);
-  double 	   firstRowWidth(int sector);
-  double 	   lastRowWidth(int sector);
-  double 	   outerSectorPadWidth(int sector);
-  double 	   outerSectorPadLength(int sector);
-  double 	   outerSectorPadPitch(int sector);
-  double 	   outerSectorRowPitch(int sector);
-  double 	   outerSectorLength(int sector);
-  double 	   ioSectorSeparation(int sector);
-  double 	   innerSectorEdge(int sector);
-  double 	   outerSectorEdge(int sector);
-  double 	   innerSectorPadPlaneZ(int sector);
-  double 	   outerSectorPadPlaneZ(int sector);
-  int* 	   innerPadsPerRow(int sector);
-  int* 	   outerPadsPerRow(int sector);
-  int            padsPerRow(int sector, int row = 1);
-  bool           isRowInRange(int sector, int row);
-  int            numberOfPadsAtRow(int sector, int row);
-  bool             isInnerPadRow(int sector, int row) { return row <= innerPadRows(sector); }
-  int            IsRowInner(int sector, int row) {return (row <= innerPadRows(sector)) ? 1 : 0;}
 };
 
 struct St_TpcDriftDistOxygenC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcDriftDistOxygenC, tpcCorrection> {
@@ -700,7 +603,6 @@ struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSum
   double 	bbcBlueBkg(int i = 0) 	{return Struct(i)->bbcBlueBkg;}
   double 	pvpdWest(int i = 0) 	        {return Struct(i)->pvpdWest;}
   double 	pvpdEast(int i = 0) 	        {return Struct(i)->pvpdEast;}
-  unsigned int   getRichHVStatus() {return cfg_.C<St_richvoltagesC>().status();}
 };
 
 
