@@ -29,7 +29,6 @@ class MagField
 
   void ReadField();
   void Interpolate2DBfield(const float r, const float z, float &Br_value, float &Bz_value);
-  void  Interpolate2ExtDBfield ( const float r, const float z, float &Br_value, float &Bz_value ) ;
   void Interpolate3DBfield(const float r, const float z, const float phi, float &Br_value, float &Bz_value, float &Bphi_value);
 
   enum  ESmFSizes {nZ = 57, nR = 28, nPhi = 37};
