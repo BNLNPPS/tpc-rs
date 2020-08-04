@@ -519,7 +519,6 @@ MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
 
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
-MakeChairInstance(trgTimeOffset,Conditions/trg/trgTimeOffset);
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
 MakeChairInstance(tpcGlobalPosition,Geometry/tpc/tpcGlobalPosition);

@@ -581,19 +581,6 @@ struct St_TpcZDCC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZDCC, tpcCorrec
   St_TpcZDCC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZDCC, tpcCorrection>(cfg) {}
 };
 
-struct St_trgTimeOffsetC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeOffsetC, trgTimeOffset>
-{
-  St_trgTimeOffsetC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trgTimeOffsetC, trgTimeOffset>(cfg) {}
-  float 	offset(int i = 0)     	   {return Struct(i)->offset;}
-  float 	laserOffset(int i = 0) 	   {return Struct(i)->laserOffset;}
-  float 	laserOffsetW(int i = 0) 	   {return Struct(i)->laserOffsetW;}
-  float       triggerTimeOffset(int i = 0)     {return 1e-6 * (mLaser ? laserOffset(i)  : offset(i));} // usec
-  float       triggerTimeOffsetWest(int i = 0) {return 1e-6 * (mLaser ? laserOffsetW(i) :         0);} // usec
-  void          SetLaser(bool k = kTRUE)         {mLaser = k;}
- private:
-  bool        mLaser;
-};
-
 struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>
 {
   St_trigDetSumsC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>(cfg) {}

@@ -26,6 +26,7 @@ template<> std::string ConfigNodeName<tpcPadGainT0>();
 template<> std::string ConfigNodeName<tpcPadrowT0>();
 template<> std::string ConfigNodeName<tpcSectorT0offset>();
 template<> std::string ConfigNodeName<TpcResponseSimulator>();
+template<> std::string ConfigNodeName<trgTimeOffset>();
 template<> std::string ConfigNodeName<tpcDimensions>();
 template<> std::string ConfigNodeName<tpcPadPlanes>();
 template<> std::string ConfigNodeName<tpcWirePlanes>();
