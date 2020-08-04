@@ -908,7 +908,7 @@ void MagFieldUtils::Undo2DBDistortion( const float x[], float Xprime[], int Sect
     if ( i == NSTEPS ) index = 1 ;
 
     Xprime[2] +=  index * (ah / 3) ;
-    BFieldTpc( std::array<double, 3>{Xprime[0], Xprime[1], Xprime[2]}.data(), B, Sector);                   // Work in kGauss, cm (uses Cartesian coordinates)
+    BFieldTpc( std::array<double, 3>{Xprime[0], Xprime[1], Xprime[2]}.data(), B);                   // Work in kGauss, cm (uses Cartesian coordinates)
 
     if ( std::abs(B[2]) > 0.001 ) {                // Protect From Divide by Zero Faults
       Xprime[0] +=  index * (ah / 3) * ( Const_2 * B[0] - Const_1 * B[1] ) / B[2] ;
@@ -5695,7 +5695,7 @@ int MagFieldUtils::IterationFailCount()
 }
 
 
-void MagFieldUtils::BFieldTpc ( const double xTpc[], float BTpc[], int Sector )
+void MagFieldUtils::BFieldTpc ( const double xTpc[], float BTpc[])
 {
   mag_field_.BField(xTpc, BTpc);
 }
@@ -5707,7 +5707,7 @@ void MagFieldUtils::B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector )
     mag_field_.B3DField( xTpc, BTpc) ;
   }
   else {
-    BFieldTpc(std::array<double, 3>{xTpc[0], xTpc[1], xTpc[2]}.data(), BTpc, Sector);
+    BFieldTpc(std::array<double, 3>{xTpc[0], xTpc[1], xTpc[2]}.data(), BTpc);
   }
 }
 

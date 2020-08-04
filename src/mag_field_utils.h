@@ -213,7 +213,7 @@ class MagFieldUtils
   MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
 
   void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
-  void    BFieldTpc ( const double xTpc[], float BTpc[], int Sector = -1 );
+  void    BFieldTpc ( const double xTpc[], float BTpc[]);
 
   void    DoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
   void    UndoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
