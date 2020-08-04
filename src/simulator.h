@@ -106,7 +106,7 @@ class Simulator
   TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit);
 
   double CalcBaseGain(int sector, int row);
-  double CalcLocalGain(int sector, int row, double gain_base, double dedx_corr);
+  double CalcLocalGain(const TrackSegment& segment);
 
   void SignalFromSegment(const TrackSegment& segment, TrackHelix track,
     double gain_local,

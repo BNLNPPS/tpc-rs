@@ -320,14 +320,10 @@ void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter d
     ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
     for (TrackSegment& segment : segments_in_sector) {
-      double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
 
-      // dE/dx correction
-      double dEdxCor = dEdxCorrection(segment);
-      dEdxCor *= GatingGridTransparency(segment.Pad.timeBucket);
-      if (dEdxCor < cfg_.S<ResponseSimulator>().min_signal) continue;
-
-      double gain_local = CalcLocalGain(segment.Pad.sector, segment.Pad.row, gain_base, dEdxCor);
+      // Calculate local gain corrected for dE/dx
+      double gain_local = CalcLocalGain(segment);
+      if (gain_local == 0) continue;
 
       // Initialize propagation
       // Magnetic field BField must be in kilogauss
@@ -861,9 +857,16 @@ double Simulator::CalcBaseGain(int sector, int row)
 }
 
 
-double Simulator::CalcLocalGain(int sector, int row, double gain_base, double dedx_corr)
+double Simulator::CalcLocalGain(const TrackSegment& segment)
 {
-  return gain_base / dedx_corr / cfg_.S<TpcResponseSimulator>().NoElPerAdc;
+  double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
+  double dedx_corr = dEdxCorrection(segment);
+  dedx_corr *= GatingGridTransparency(segment.Pad.timeBucket);
+
+  if (dedx_corr < cfg_.S<ResponseSimulator>().min_signal)
+    return 0;
+  else
+    return gain_base / dedx_corr / cfg_.S<TpcResponseSimulator>().NoElPerAdc;
 }
 
 
