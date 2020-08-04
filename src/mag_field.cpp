@@ -309,18 +309,13 @@ static const BDAT_t BDAT[nZext] = { // calculated STAR field
  * This code works in kGauss, cm - but note that the Bfield maps on disk are in
  * gauss, cm.
  */
-MagField::MagField(const tpcrs::Configurator& cfg, EBField map,
-                             float rescale,
-                             float BDipole, float RmaxDip,
-                             float ZminDip, float ZmaxDip) :
+MagField::MagField(const tpcrs::Configurator& cfg, EBField map, float rescale) :
   cfg_(cfg),
   fBzdZCorrection(0),
   fBrdZCorrection(0),
   fMap(map),
   fFactor(cfg.S<MagFactor>().ScaleFactor),
   fRescale(rescale),
-  fBDipole(BDipole), fRmaxDip(RmaxDip),
-  fZminDip(ZminDip), fZmaxDip(ZmaxDip),
   fMagFieldRotation("MagFieldRotation")
 {
   ReadField();
@@ -345,13 +340,6 @@ void MagField::BField( const double x[], float B[] )
 
   float za = std::abs(z);
 
-  // Beam dipole
-  if (za > fZminDip && za < fZmaxDip && r < fRmaxDip) {
-    B[1] = std::copysign(fBDipole, z);
-    B[2] = std::abs(B[1] / 1000.);
-    return;
-  }
-
   // within map
   if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1])
   {
@@ -368,27 +356,6 @@ void MagField::BField( const double x[], float B[] )
 
     for (int i = 0; i < 3; i++) B[i] = BG[i];
   }
-
-  // added by Lijuan within the steel
-  if (za <= 342.20  && r >= 303.29 && r <= 364.25) { // within Map
-
-    float phi1 = phi * 180.0 / M_PI;
-
-    if (phi1 > 12) phi1 = phi1 - int(phi1 / 12) * 12;
-
-    Interpolate3DBSteelfield( r, za, phi1, Br_value, Bz_value, Bphi_value ) ;
-    B[0] = Br_value * (x[0] / r) - Bphi_value * (x[1] / r) ;
-    B[1] = Br_value * (x[1] / r) + Bphi_value * (x[0] / r) ;
-    B[2] = Bz_value ;
-
-    if (z < 0) {
-      B[0] = -B[0];
-      B[1] = -B[1];
-    }
-
-    return;
-  }
-  //end added by Lijuan within the steel
 
   Interpolate2ExtDBfield( r, z, Br_value, Bz_value ) ;
 
@@ -588,34 +555,6 @@ void MagField::ReadField()
   }
 
   fclose(b3Dfile) ;
-  MapLocation = cfg_.Locate("steel_magfieldmap.dat");
-  magfile = fopen(MapLocation.c_str(), "r") ;
-
-  if (magfile) {
-    char cname[128] ;
-
-    for (;;) {
-      fgets(cname, sizeof(cname), magfile);     // Read comment lines at begining of file
-      if (cname[0] == '#') continue;
-      break;
-    }
-
-    for ( int i = 0 ; i < nPhiSteel ; i++ ) {
-      for ( int k = 0 ; k < nRSteel ; k++ ) {
-        for ( int j = 0 ; j < nZSteel ; j++ ) {
-
-          fgets  ( cname, sizeof(cname), magfile ) ;
-          sscanf ( cname, " %f %f %f %f %f %f ",
-                   &R3DSteel[k], &Z3DSteel[j], &Phi3DSteel[i], &Bx3DSteel[i][j][k], &Bz3DSteel[i][j][k], &By3DSteel[i][j][k] ) ;
-
-          Br3DSteel[i][j][k] = std::cos(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::sin(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
-          Bphi3DSteel[i][j][k] = 0 - std::sin(Phi3DSteel[i] * M_PI / 180.) * Bx3DSteel[i][j][k] + std::cos(Phi3DSteel[i] * M_PI / 180.) * By3DSteel[i][j][k];
-        }
-      }
-    }
-
-    fclose(magfile);
-  }
 }
 
 
@@ -747,54 +686,6 @@ void MagField::Interpolate3DBfield( const float r, const float z, const float ph
   Br_value   = fscale * Interpolate( &Phi3D[ilow], saved_Br, ORDER, phi )   ;
   Bz_value   = fscale * Interpolate( &Phi3D[ilow], saved_Bz, ORDER, phi )   ;
   Bphi_value = fscale * Interpolate( &Phi3D[ilow], saved_Bphi, ORDER, phi ) ;
-}
-
-
-/// Interpolate the B field map - 3D interpolation
-void MagField::Interpolate3DBSteelfield( const float r, const float z, const float phi,
-    float &Br_value, float &Bz_value, float &Bphi_value )
-{
-  float fscale ;
-
-  //This is different from the usual bfield map, changed by Lijuan
-
-  //   fscale = 0.001*fFactor*fRescale ;               // Scale STAR maps to work in kGauss, cm
-  fscale = 0.001 * fFactor;             // Scale STAR maps to work in kGauss, cm
-
-  const   int ORDER = 1 ;                       // Linear interpolation = 1, Quadratic = 2
-  static  int ilow = 0, jlow = 0, klow = 0 ;
-  float save_Br[ORDER + 1],   saved_Br[ORDER + 1] ;
-  float save_Bz[ORDER + 1],   saved_Bz[ORDER + 1] ;
-  float save_Bphi[ORDER + 1], saved_Bphi[ORDER + 1] ;
-
-  Search( nPhiSteel, Phi3DSteel, phi, ilow ) ;
-  Search( nZSteel,   Z3DSteel,   z,   jlow ) ;
-  Search( nRSteel,   R3DSteel,   r,   klow ) ;
-
-  if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-  if ( jlow < 0 ) jlow = 0 ;
-  if ( klow < 0 ) klow = 0 ;
-
-  if ( ilow + ORDER  >=  nPhiSteel - 1 ) ilow = nPhiSteel - 1 - ORDER ;
-  if ( jlow + ORDER  >=    nZSteel - 1 ) jlow =   nZSteel - 1 - ORDER ;
-  if ( klow + ORDER  >=    nRSteel - 1 ) klow =   nRSteel - 1 - ORDER ;
-
-  for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
-    for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
-      save_Br[j - jlow]   = Interpolate( &R3DSteel[klow], &Br3DSteel[i][j][klow], ORDER, r )   ;
-      save_Bz[j - jlow]   = Interpolate( &R3DSteel[klow], &Bz3DSteel[i][j][klow], ORDER, r )   ;
-      save_Bphi[j - jlow] = Interpolate( &R3DSteel[klow], &Bphi3DSteel[i][j][klow], ORDER, r ) ;
-    }
-
-    saved_Br[i - ilow]   = Interpolate( &Z3DSteel[jlow], save_Br, ORDER, z )   ;
-    saved_Bz[i - ilow]   = Interpolate( &Z3DSteel[jlow], save_Bz, ORDER, z )   ;
-    saved_Bphi[i - ilow] = Interpolate( &Z3DSteel[jlow], save_Bphi, ORDER, z ) ;
-  }
-
-  Br_value   = fscale * Interpolate( &Phi3DSteel[ilow], saved_Br, ORDER, phi )   ;
-  Bz_value   = fscale * Interpolate( &Phi3DSteel[ilow], saved_Bz, ORDER, phi )   ;
-  Bphi_value = fscale * Interpolate( &Phi3DSteel[ilow], saved_Bphi, ORDER, phi ) ;
-
 }
 
 
