@@ -15,6 +15,9 @@
 #include "mag_field_utils.h"
 
 
+namespace tpcrs { namespace detail {
+
+
 class Simulator
 {
  public:
@@ -338,3 +341,5 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
     *digitized = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->TrackId};
   }
 }
+
+} }

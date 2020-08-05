@@ -3,7 +3,7 @@
 #include <numeric>
 #include <vector>
 
-#include "simulator.h"
+#include "tpcrs/detail/simulator.h"
 
 #include "Math/SpecFuncMathMore.h"
 #include "TFile.h"
@@ -21,6 +21,7 @@
 #include "struct_containers.h"
 #include "track_helix.h"
 
+namespace tpcrs { namespace detail {
 
 TF1 Simulator::fgTimeShape3[2] = {
   TF1F("TimeShape3Inner;Time [s];Signal", Simulator::shapeEI3, 0, 1, 7),
@@ -1037,3 +1038,5 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
 
   return dEdx_correction_.dEdxCorrection(segment.Pad.sector, segment.Pad.row, CdEdx) ? 1 : CdEdx.F.dE;
 }
+
+} }
