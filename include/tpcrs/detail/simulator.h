@@ -7,7 +7,7 @@
 #include "TH1.h"
 #include "TRandom.h"
 
-#include "tpcrs/tpcrs.h"
+#include "tpcrs/tpcrs_core.h"
 #include "coords.h"
 #include "dedx_correction.h"
 #include "struct_containers.h"
