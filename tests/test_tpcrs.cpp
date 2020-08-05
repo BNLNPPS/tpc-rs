@@ -27,7 +27,7 @@ int main(int argc, char **argv)
             << "max_records: " << max_records << "\n";
 
   tpcrs::Configurator cfg(test_name);
-
+  tpcrs::Simulator simulator(cfg);
 
   TChain trsTreeChain("t", "tpcrs test TTree");
   trsTreeChain.AddFile( cfg.Locate(test_name + ".root").c_str() );
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     std::stable_sort(begin(hits), end(hits));
 
     std::vector<tpcrs::DigiHit>  digi_data;
-    tpcrs::digitize(std::begin(hits), std::end(hits), back_inserter(digi_data), cfg);
+    simulator.Digitize(std::begin(hits), std::end(hits), back_inserter(digi_data));
 
     geantEvent_out.Fill(digi_data);
     geantEvent_out.Print(logFile_out);
