@@ -6,7 +6,6 @@
 #include "simulator.h"
 
 #include "Math/SpecFuncMathMore.h"
-#include "TRandom.h"
 #include "TFile.h"
 #include "tcl.h"
 
@@ -277,109 +276,6 @@ void Simulator::InitAlphaGainVariations(double t0IO[2])
 }
 
 
-template<>
-void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data, DistInserter distorted)
-{
-  static int nCalls = 0;
-  gRandom->SetSeed(2345 + nCalls++);
-
-  std::vector< std::vector<TrackSegment> > segments_by_sector(num_sectors_);
-  std::vector<TrackSegment> segments_in_sector;
-
-  auto first_hit_on_track = first_hit;
-  int curr_direction = 0; // 0 - increase no of row, 1 - decrease no of. row.
-
-  for (auto curr_hit = first_hit; curr_hit != last_hit; ++curr_hit)
-  {
-    auto next_hit = next(curr_hit);
-
-    int  next_direction  = next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
-    bool sector_boundary = next_hit->volume_id % 10000 / 100 !=
-                           curr_hit->volume_id % 10000 / 100;
-    bool track_boundary  = (next_hit->track_id != curr_hit->track_id || curr_hit->track_id == 0);
-
-    bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
-
-    if (start_new_track || next_hit == last_hit) {
-      CreateTrackSegments(first_hit_on_track, next_hit, segments_in_sector);
-      first_hit_on_track = next_hit;
-
-      if ( (sector_boundary || next_hit == last_hit ) && segments_in_sector.size() != 0) {
-        segments_by_sector[(curr_hit->volume_id % 10000) / 100 - 1] = segments_in_sector;
-        segments_in_sector.clear();
-      }
-    }
-
-    curr_direction = next_direction;
-  }
-
-  unsigned int sector = 1;
-  for (auto segments_in_sector : segments_by_sector) {
-    int nHitsInTheSector = 0;
-    ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
-
-    for (TrackSegment& segment : segments_in_sector) {
-
-      // Calculate local gain corrected for dE/dx
-      double gain_local = CalcLocalGain(segment);
-      if (gain_local == 0) continue;
-
-      // Initialize propagation
-      // Magnetic field BField must be in kilogauss
-      // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-      TrackHelix track(segment.dirLS.position,
-                       segment.coorLS.position,
-                       segment.BLS.position.z * 1e-14 * segment.charge, 1);
-      // Propagate track to middle of the pad row plane by the nominal center point and the normal
-      // in this sector coordinate system
-      double sR = track.pathLength({0, transform_.yFromRow(segment.Pad.sector, segment.Pad.row), 0}, {0, 1, 0});
-
-      // Update hit position based on the new track crossing the middle of pad row
-      if (sR < 1e10) {
-        segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-        transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
-      }
-
-      int nP = 0;
-      double dESum = 0;
-      double dSSum = 0;
-
-      SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
-
-      *distorted = tpcrs::DistortedHit{
-        {segment.coorLS.position.x, segment.coorLS.position.y, segment.coorLS.position.z},
-        {segment.dirLS.position.x,  segment.dirLS.position.y,  segment.dirLS.position.z},
-        dESum * 1e-9, // electronvolt in GeV
-        dSSum,
-        nP
-      };
-
-      nHitsInTheSector++;
-    } // end do loop over segments for a given particle
-
-    if (nHitsInTheSector) {
-      DigitizeSector(sector, binned_charge, digi_data);
-    }
-
-    sector++;
-  }
-}
-
-
-void Simulator::CreateTrackSegments(SimuHitIt first_hit, SimuHitIt last_hit, std::vector<TrackSegment>& segments)
-{
-  for (auto ihit = first_hit; ihit != last_hit; ++ihit)
-  {
-    TrackSegment curr_segment = CreateTrackSegment(*ihit);
-
-    if (curr_segment.charge == 0) continue;
-    if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
-
-    segments.push_back(curr_segment);
-  }
-}
-
-
 double Simulator::GetNoPrimaryClusters(double betaGamma, int charge)
 {
   double beta = betaGamma / std::sqrt(1.0 + betaGamma * betaGamma);
@@ -473,54 +369,6 @@ double Simulator::Gatti(double x, double w, double h, double K3)
   double Z1 = sqK3 * std::tanh(X1);
   double Z2 = sqK3 * std::tanh(X2);
   return ATsqK3 * (std::atan(Z2) - std::atan(Z1));
-}
-
-
-void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, DigiInserter digi_data)
-{
-  double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
-  double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
-
-  std::vector<short> ADCs_(binned_charge.size(), 0);
-
-  auto bc = binned_charge.begin();
-  auto adcs_iter = ADCs_.begin();
-
-  for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += max_timebins_)
-  {
-    double gain = cfg_.S<tpcPadGainT0>().Gain[sector-1][ch->row-1][ch->pad-1];
-
-    if (gain <= 0) {
-      bc        += max_timebins_;
-      adcs_iter += max_timebins_;
-      continue;
-    }
-
-    for (int i=0; i != max_timebins_; ++i, ++bc, ++adcs_iter)
-    {
-      int adc = int(bc->Sum / gain + gRandom->Gaus(ped, pedRMS) - ped);
-      // Zero negative values
-      adc = adc & ~(adc >> 31);
-      // Select minimum between adc and 1023, i.e. overflow at 1023
-      adc = adc - !(((adc - 1023) >> 31) & 0x1) * (adc - 1023);
-
-      *adcs_iter = adc;
-    }
-  }
-
-  for (auto adcs_iter = ADCs_.begin(); adcs_iter != ADCs_.end(); adcs_iter += max_timebins_)
-  {
-    SimulateAltro(adcs_iter, adcs_iter + max_timebins_, true);
-  }
-
-  auto ch = digi_.channels.begin();
-  adcs_iter = ADCs_.begin();
-
-  for (auto bc = binned_charge.begin(); bc != binned_charge.end(); ++bc, ++ch, ++adcs_iter)
-  {
-    if (*adcs_iter == 0) continue;
-    *digi_data = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->TrackId};
-  }
 }
 
 
