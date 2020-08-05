@@ -1037,28 +1037,3 @@ double Simulator::dEdxCorrection(const TrackSegment &segment)
 
   return dEdx_correction_.dEdxCorrection(segment.Pad.sector, segment.Pad.row, CdEdx) ? 1 : CdEdx.F.dE;
 }
-
-
-namespace tpcrs {
-
-template<>
-DistInserter distort(SimuHitIt first1, SimuHitIt last1, DistInserter d_first, const Configurator& cfg)
-{
-  static Simulator simu(cfg);
-  std::vector<DigiHit>  dummy;
-  simu.Simulate(first1, last1, std::back_inserter(dummy), d_first);
-
-  return d_first;
-}
-
-template<>
-DigiInserter digitize(SimuHitIt first1, SimuHitIt last1, DigiInserter d_first, const Configurator& cfg)
-{
-  static Simulator simu(cfg);
-  std::vector<DistortedHit>  dummy;
-  simu.Simulate(first1, last1, d_first, std::back_inserter(dummy));
-
-  return d_first;
-}
-
-}

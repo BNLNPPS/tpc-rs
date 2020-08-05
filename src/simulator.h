@@ -15,21 +15,22 @@
 #include "mag_field_utils.h"
 
 
-using SimuHitIt = std::vector<tpcrs::SimulatedHit>::iterator;
-using DigiInserter = std::back_insert_iterator<std::vector<tpcrs::DigiHit>>;
-using DistInserter = std::back_insert_iterator<std::vector<tpcrs::DistortedHit>>;
-
-
 class Simulator
 {
  public:
 
   Simulator(const tpcrs::Configurator& cfg);
 
-  template<typename InputIt, typename OutputIt1, typename OutputIt2>
-  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digi_data, OutputIt2);
+  template<typename InputIt, typename OutputIt>
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized);
+
+  template<typename InputIt, typename OutputIt>
+  OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted);
 
  private:
+
+  template<typename InputIt, typename OutputIt1, typename OutputIt2>
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted);
 
   struct TrackSegment {
     int charge;
@@ -168,8 +169,22 @@ class Simulator
 };
 
 
-template<>
-void Simulator::Simulate(SimuHitIt first_hit, SimuHitIt last_hit, DigiInserter digi_data, DistInserter);
+template<typename InputIt, typename OutputIt>
+OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized)
+{
+  std::vector<tpcrs::DistortedHit> dummy;
+  Simulate(first_hit, last_hit, digitized, std::back_inserter(dummy));
+  return digitized;
+}
+
+
+template<typename InputIt, typename OutputIt>
+OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted)
+{
+  std::vector<tpcrs::DigiHit> dummy;
+  Simulate(first_hit, last_hit, std::back_inserter(dummy), distorted);
+  return distorted;
+}
 
 
 template<typename InputIt, typename OutputIt1, typename OutputIt2>
