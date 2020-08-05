@@ -55,13 +55,6 @@ enum   EBMapSizes {
   EMap_nPhi  =          13            // Number of Phi points in table ( add one for 360 == 0 )
 };
 
-// DO NOT change the numbering of these constants. StBFChain depends
-// on these values to build an option flag. The option flag used in
-// the chain is 2x larger than shown here in order to allow the first
-// bit to be used as an on/off flag.  It is shifted away before entering
-// MagFieldUtils.  So, this can be summarized by saying:
-// Bit counting starts at 0 for the chain option flag (...,3,2,1,0)
-
 class TDataSet ;
 class St_tpcHVPlanesC;
 class St_tpcCalibResolutionsC;
@@ -212,8 +205,8 @@ class MagFieldUtils
 
   MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode = 0);
 
-  void    B3DFieldTpc ( const float xTpc[], float BTpc[], int Sector = -1 );
-  void    BFieldTpc ( const double xTpc[], float BTpc[]);
+  void    GetFieldValue3D(const float xTpc[], float BTpc[]);
+  void    GetFieldValue(const double xTpc[], float BTpc[]);
 
   void    DoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;
   void    UndoDistortion ( const float x[], float Xprime[], int Sector = -1 ) ;

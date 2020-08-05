@@ -25,7 +25,7 @@ MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, doub
 /**
  * B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
  */
-void MagField::BField(const double x[3], float B[3])
+void MagField::GetFieldValue(const double x[3], float B[3]) const
 {
   float Br_value = 0, Bz_value = 0, Bphi_value = 0;
 
@@ -52,7 +52,7 @@ void MagField::BField(const double x[3], float B[3])
 /**
  * B field in Cartesian coordinates - 3D field
  */
-void MagField::B3DField(const float x[3], float B[3])
+void MagField::GetFieldValue3D(const float x[3], float B[3]) const
 {
   float r, z, phi, Br_value, Bz_value, Bphi_value ;
   Bphi_value = 0;
@@ -178,7 +178,7 @@ void MagField::ReadField()
 /**
  * Interpolate the B field map - 2D interpolation
  */
-void MagField::InterpolateField2D(float r, float z, float &Br_value, float &Bz_value)
+void MagField::InterpolateField2D(float r, float z, float &Br_value, float &Bz_value) const
 {
   // Scale maps to work in kGauss, cm
   float fscale = 0.001 * scale_factor_;
@@ -211,7 +211,7 @@ void MagField::InterpolateField2D(float r, float z, float &Br_value, float &Bz_v
  * Interpolate the B field map - 3D interpolation
  */
 void MagField::InterpolateField3D(float r, float z, float phi,
-                                  float &Br_value, float &Bz_value, float &Bphi_value)
+                                  float &Br_value, float &Bz_value, float &Bphi_value) const
 {
   // Scale maps to work in kGauss, cm
   float fscale = 0.001 * scale_factor_;
@@ -257,12 +257,11 @@ void MagField::InterpolateField3D(float r, float z, float phi,
 /**
  * Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
  */
-float MagField::Interpolate( const float Xarray[], const float Yarray[],
-                                   const int ORDER, const float x )
+float MagField::Interpolate(const float Xarray[], const float Yarray[], int order, const float x ) const
 {
   float y;
 
-  if (ORDER == 2) // Quadratic Interpolation = 2
+  if (order == 2) // Quadratic Interpolation = 2
   {
     y  = (x - Xarray[1]) * (x - Xarray[2]) * Yarray[0] / ( (Xarray[0] - Xarray[1]) * (Xarray[0] - Xarray[2]) ) ;
     y += (x - Xarray[2]) * (x - Xarray[0]) * Yarray[1] / ( (Xarray[1] - Xarray[2]) * (Xarray[1] - Xarray[0]) ) ;

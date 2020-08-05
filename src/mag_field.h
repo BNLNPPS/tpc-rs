@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tpcrs/configurator.h"
+class Configurator;
 
 
 class MagField
@@ -11,17 +11,17 @@ class MagField
 
   MagField(const tpcrs::Configurator& cfg, MagFieldType field_type = MagFieldType::kMapped, double scale = 1);
 
-  void BField  (const double x[3], float B[3]);
-  void B3DField(const float x[3], float B[3]);
+  void GetFieldValue(const double x[3], float B[3]) const;
+  void GetFieldValue3D(const float x[3], float B[3]) const;
 
   static void Search(int N, const float Xarray[], float x, int &low);
-  float Interpolate(const float Xarray[], const float Yarray[], const int ORDER, const float x);
+  float Interpolate(const float Xarray[], const float Yarray[], int order, const float x) const;
 
  private:
 
   void ReadField();
-  void InterpolateField2D(float r, float z, float &Br_value, float &Bz_value);
-  void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value);
+  void InterpolateField2D(float r, float z, float &Br_value, float &Bz_value) const;
+  void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value) const;
 
   enum ESmFSizes {nZ = 57, nR = 28, nPhi = 37};
 

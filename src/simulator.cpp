@@ -628,13 +628,13 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   transform_.global_to_local(xyzG, coorLT, sector, coorS.row);
 
   // move up, calculate field at center of TPC
-  static float BFieldG[3];
-  mag_field_utils_.BFieldTpc(hit.x, BFieldG);
+  float B_field[3];
+  mag_field_utils_.GetFieldValue(hit.x, B_field);
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
   StGlobalDirection dirG{pxyzG.unit()};
-  StGlobalDirection BG{BFieldG[0], BFieldG[1], BFieldG[2]};
+  StGlobalDirection BG{B_field[0], B_field[1], B_field[2]};
   transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);
   transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
 
