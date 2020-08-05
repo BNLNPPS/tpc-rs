@@ -5,6 +5,7 @@ set(header_files
     ${TPCRS_SOURCE_DIR}/include/tpcrs/config_type.h
     ${TPCRS_SOURCE_DIR}/include/tpcrs/config_yaml.h
     ${TPCRS_SOURCE_DIR}/include/tpcrs/tpcrs.h
+    ${TPCRS_SOURCE_DIR}/include/tpcrs/detail/simulator.h
 )
 
 set(source_files
