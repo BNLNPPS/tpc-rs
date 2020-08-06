@@ -33,7 +33,6 @@ TF1 Simulator::fgTimeShape0[2] = {
   TF1F("TimeShape0Outer;Time [s];Signal", Simulator::shapeEI, 0, 1, 7)
 };
 
-using dEdxCorr = StTpcdEdxCorrection::Corrections;
 
 Simulator::Simulator(const tpcrs::Configurator& cfg):
   cfg_(cfg),
@@ -56,31 +55,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg):
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(cfg, 
-    dEdxCorr::kEdge                   |
-    dEdxCorr::kTpcdCharge             |
-    dEdxCorr::kTpcrCharge             |
-    dEdxCorr::kTpcCurrentCorrection   |
-    dEdxCorr::kTpcSecRowB             |
-    dEdxCorr::kTpcSecRowC             |
-    dEdxCorr::kTpcRowQ                |
-    dEdxCorr::ktpcPressure            |
-    dEdxCorr::ktpcTime                |
-    dEdxCorr::kDrift                  |
-    dEdxCorr::kMultiplicity           |
-    dEdxCorr::kzCorrection            |
-    dEdxCorr::ktpcMethaneIn           |
-    dEdxCorr::ktpcGasTemperature      |
-    dEdxCorr::ktpcWaterOut            |
-    dEdxCorr::kSpaceCharge            |
-    dEdxCorr::kPhiDirection           |
-    dEdxCorr::kTanL                   |
-    dEdxCorr::kTpcEffectivedX         |
-    dEdxCorr::kTpcZDC                 |
-    dEdxCorr::kTpcPadMDF              |
-    dEdxCorr::kTpcLengthCorrection    |
-    dEdxCorr::kTpcLengthCorrectionMDF
-  ),
+  dEdx_correction_(cfg),
   digi_(cfg_),
   alpha_gain_variations_()
 {

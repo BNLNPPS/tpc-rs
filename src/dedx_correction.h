@@ -92,7 +92,32 @@ class StTpcdEdxCorrection
     };
   };
 
-  StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options = -1);
+  StTpcdEdxCorrection(const tpcrs::Configurator& cfg,
+    unsigned options =
+      Corrections::kEdge                   |
+      Corrections::kTpcdCharge             |
+      Corrections::kTpcrCharge             |
+      Corrections::kTpcCurrentCorrection   |
+      Corrections::kTpcSecRowB             |
+      Corrections::kTpcSecRowC             |
+      Corrections::kTpcRowQ                |
+      Corrections::ktpcPressure            |
+      Corrections::ktpcTime                |
+      Corrections::kDrift                  |
+      Corrections::kMultiplicity           |
+      Corrections::kzCorrection            |
+      Corrections::ktpcMethaneIn           |
+      Corrections::ktpcGasTemperature      |
+      Corrections::ktpcWaterOut            |
+      Corrections::kSpaceCharge            |
+      Corrections::kPhiDirection           |
+      Corrections::kTanL                   |
+      Corrections::kTpcEffectivedX         |
+      Corrections::kTpcZDC                 |
+      Corrections::kTpcPadMDF              |
+      Corrections::kTpcLengthCorrection    |
+      Corrections::kTpcLengthCorrectionMDF
+  );
 
   int dEdxCorrection(int sector, int row, dEdxY2_t &dEdx);
 

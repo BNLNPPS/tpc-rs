@@ -4,7 +4,7 @@
 #include "struct_containers.h"
 
 
-StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, int options) :
+StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigned options) :
   cfg_(cfg),
   options_(options),
   corrections_{
