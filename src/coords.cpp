@@ -41,12 +41,12 @@ Coords operator/(const Coords &c, double v)
 
 CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
   cfg_(cfg),
-  tpc2global_("Default Tpc2Glob")
+  timebin_width_ (1e6 / cfg_.S<starClockOnl>().frequency),
+  z_inner_offset_(cfg_.S<tpcEffectiveGeom>().z_inner_offset),
+  z_outer_offset_(cfg_.S<tpcEffectiveGeom>().z_outer_offset),
+  tpc2global_("Tpc2Glob"),
+  sector_rotations_()
 {
-  mTimeBinWidth = 1e6 / cfg_.S<starClockOnl>().frequency;
-  mInnerSectorzOffset = cfg_.S<tpcEffectiveGeom>().z_inner_offset;
-  mOuterSectorzOffset = cfg_.S<tpcEffectiveGeom>().z_outer_offset;
-
   SetTpcRotations();
 }
 
@@ -61,9 +61,9 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
     row = rowFromLocalY(a.position.y, a.sector);
 
   double probablePad = padFromX(a.position.x, a.sector, a.row);
-  double zoffset = (row > cfg_.S<tpcPadPlanes>().innerPadRows) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double zoffset = (row > cfg_.S<tpcPadPlanes>().innerPadRows) ? z_outer_offset_ : z_inner_offset_;
   double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][row-1][tpcrs::irint(probablePad)-1] : 0;
-  t0offset *= mTimeBinWidth;
+  t0offset *= timebin_width_;
 
   if (!useT0 && useTau) // for cluster
     t0offset -= 3.0 * cfg_.S<tss_tsspar>().tau;   // correct for convolution lagtime
@@ -78,9 +78,9 @@ void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpc
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and = false for MC
   Coords  tmp{xFromPad(a.sector, a.row, a.pad), yFromRow(a.sector, a.row), 0};
-  double zoffset =  (a.row > cfg_.S<tpcPadPlanes>().innerPadRows) ? mOuterSectorzOffset : mInnerSectorzOffset;
+  double zoffset =  (a.row > cfg_.S<tpcPadPlanes>().innerPadRows) ? z_outer_offset_ : z_inner_offset_;
   double t0offset = useT0 ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][a.row-1][tpcrs::irint(a.pad)-1] : 0;
-  t0offset *= mTimeBinWidth;
+  t0offset *= timebin_width_;
 
   if (!useT0 && useTau) // for cluster
     t0offset -= 3.0 * cfg_.S<tss_tsspar>().tau;   // correct for convolution lagtime
@@ -145,7 +145,7 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 
   double tbx = tb + cfg_.S<tpcSectorT0offset>().t0[l-1];
 
-  double time = t0 + tbx * mTimeBinWidth;
+  double time = t0 + tbx * timebin_width_;
   double z = tpcrs::DriftVelocity(sector, cfg_) * 1e-6 * time;
   return z;
 }
@@ -164,7 +164,7 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 
   if (tpcrs::IsInner(row, cfg_)) l += 24;
 
-  double tb = (time - t0) / mTimeBinWidth - cfg_.S<tpcSectorT0offset>().t0[l-1];
+  double tb = (time - t0) / timebin_width_ - cfg_.S<tpcSectorT0offset>().t0[l-1];
 
   return tb;
 }
@@ -253,38 +253,41 @@ void CoordTransform::SetTpcRotations()
 {
   // Pad [== sector12 == localsector (SecL, ideal)] => subsector (SubS,local sector aligned) => flip => sector (SupS) => tpc => global
   //                                    ------
-  //old:  global = tpc2global_ * SupS2Tpc(sector) *                                    flip_matrix * {SubSInner2SupS(sector) | SubSOuter2SupS(sector)}
-  //new:  global = tpc2global_ * SupS2Tpc(sector) * StTpcSuperSectorPosition(sector) * flip_matrix * {                     I | StTpcOuterSectorPosition(sector)}
+  // old:
+  //  global = tpc2global_ * SupS2Tpc(sector) *                                    flip_matrix * {SubSInner2SupS(sector) | SubSOuter2SupS(sector)}
+  // new:
+  //  global = tpc2global_ * SupS2Tpc(sector) * StTpcSuperSectorPosition(sector) * flip_matrix * {                     I | StTpcOuterSectorPosition(sector)}
+  //
   //      StTpcSuperSectorPosition(sector) * flip_matrix = flip_matrix * SubSInner2SupS(sector)
-  // =>  StTpcSuperSectorPosition(sector) = flip_matrix * SubSInner2SupS(sector) * mFlip1
-  //      StTpcSuperSectorPosition(sector) * flip_matrix * StTpcOuterSectorPosition(sector) = flip_matrix *  SubSOuter2SupS(sector)
-  // =>  StTpcOuterSectorPosition(sector) = mFlip1 * StTpcSuperSectorPosition(sector)^-1 *  flip_matrix *  SubSOuter2SupS(sector)
-  /*
-    .                                                                                             <-- the system of coordinate where Outer to Inner Alignment done -->
-    global = tpc2global_ * SupS2Tpc(sector) * StTpcSuperSectorPosition(sector) * flip_matrix * {                     I | StTpcOuterSectorPosition(sector)} * local
-    .                                                result of super sector alignment                                      result of Outer to Inner sub sector alignment
-  */
-  /* 03/07/14
-     StTpcPadCoordinate P(sector,row,pad,timebacket);
-     x = xFromPad()
-     z = zFromTB() - drift distance
-     StTpcLocalSectorCoordinate LS(position(x,y,z),sector,row);
+  //  =>  StTpcSuperSectorPosition(sector) = flip_matrix * SubSInner2SupS(sector) * flip_matri1
+  //
+  //      StTpcSuperSectorPosition(sector) * flip_matrix * StTpcOuterSectorPosition(sector) =    flip_matrix * SubSOuter2SupS(sector)
+  //  =>  StTpcOuterSectorPosition(sector) = flip_matri1 * StTpcSuperSectorPosition(sector)^-1 * flip_matrix * SubSOuter2SupS(sector)
+  //
+  //         <-- the system of coordinate where Outer to Inner Alignment done -->
+  //
+  //  global = tpc2global_ * SupS2Tpc(sector) * StTpcSuperSectorPosition(sector) * flip_matrix * {                     I | StTpcOuterSectorPosition(sector)} * local
+  //                         result of super sector alignment                                      result of Outer to Inner sub sector alignment
+  //
+  // Additonal note:
+  //
+  //  StTpcPadCoordinate P(sector,row,pad,timebacket);
+  //  x = xFromPad()
+  //  z = zFromTB() - drift distance
+  //  StTpcLocalSectorCoordinate LS(position(x,y,z),sector,row);
+  //
+  //  StTpcLocalCoordinate  Tpc(position(x,y,z),sector,row);
+  //  Pad2Tpc(sector,row).LocalToMaster(LS.position().xyz(), Tpc.postion().xyz())
+  //  Flip transformation from Pad Coordinate system
+  //    (xFromPad(pad), yFromRow(row), DriftDistance(timebacket)) => (y, x, -z) : local sector CS => super sectoe CS
+  //
+  //          (0 1  0 0  ) ( x )    ( y )
+  //  Flip ;  (1 0  0 0  ) ( y ) =  ( x )
+  //          (0 0 -1 zGG) ( z )    ( zGG - z)
+  //          (0 0  0 1  ) ( 1 )    ( 1 )
+  //
+  // Z_tpc is not changed during any sector transformation!!!
 
-     StTpcLocalCoordinate  Tpc(position(x,y,z),sector,row);
-     Pad2Tpc(sector,row).LocalToMaster(LS.position().xyz(), Tpc.postion().xyz())
-     Flip transformation from Pad Coordinate system (xFromPad(pad), yFromRow(row), DriftDistance(timebacket)) => (y, x, -z): local sector CS => super sectoe CS
-
-
-
-             (0 1  0 0  ) ( x )    ( y )
-     Flip ;  (1 0  0 0  ) ( y ) =  ( x )
-             (0 0 -1 zGG) ( z )    ( zGG - z)
-             (0 0  0 1  ) ( 1 )    ( 1 )
-     Z_tpc is not changed during any sector transformation  !!!
-
-
-   */
-  //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
   TGeoHMatrix mHalf[2] = {
     TGeoHMatrix("Default for first half of TPC"),
     TGeoHMatrix("Default for second half of TPC")
@@ -296,21 +299,6 @@ void CoordTransform::SetTpcRotations()
                         0, 0, -1};
   flip_matrix.SetRotation(Rotation);
 
-  // Gating grid z
-  double mzGG = cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
-
-  TGeoTranslation mSwap[2] = {
-    TGeoTranslation("Signed Drift distance to z for first half", 0, 0, -mzGG),
-    TGeoTranslation("Signed Drift distance to z for second half", 0, 0,  mzGG)
-  };
-
-  assert(cfg_.S<tpcDimensions>().numberOfSectors == 24);
-  double phi, theta, psi;
-  int iphi;
-  TGeoRotation* rotm = 0;
-  TObjArray* listOfMatrices = 0;
-  TString Rot;
-
   for (int sector = 0; sector <= 24; sector++) {// loop over Tpc as whole, sectors, inner and outer subsectors
     int k;
     int k1 = kSupS2Tpc;
@@ -318,90 +306,76 @@ void CoordTransform::SetTpcRotations()
 
     if (sector == 0) {k2 = k1; k1 = kUndefSector;}
 
-    for (k = k1; k < k2; k++) {
-      int Id = 0;
+    for (k = k1; k < k2; k++)
+    {
       TGeoHMatrix rotA; // After alignment
 
       if (!sector) { // TPC Reference System
-          St_tpcGlobalPositionC& tpcGlobalPosition = cfg_.C<St_tpcGlobalPositionC>();
-          Id = 1;
-          phi   = 0.0;                                               // -gamma large uncertainty, so set to 0
-          theta = tpcGlobalPosition.PhiXZ_geom() * 180.0 / M_PI; // -beta
-          psi   = tpcGlobalPosition.PhiYZ_geom() * 180.0 / M_PI; // -alpha
-          rotA.RotateX(-psi);
-          rotA.RotateY(-theta);
-          rotA.RotateZ(-phi);
-          double transTpcRefSys[3] = {tpcGlobalPosition.LocalxShift(),
-                                      tpcGlobalPosition.LocalyShift(),
-                                      tpcGlobalPosition.LocalzShift() };
-          rotA.SetTranslation(transTpcRefSys);
+        St_tpcGlobalPositionC& tpcGlobalPosition = cfg_.C<St_tpcGlobalPositionC>();
+        double phi   = 0.0;                                           // -gamma large uncertainty, so set to 0
+        double theta = tpcGlobalPosition.PhiXZ_geom() * 180.0 / M_PI; // -beta
+        double psi   = tpcGlobalPosition.PhiYZ_geom() * 180.0 / M_PI; // -alpha
+        rotA.RotateX(-psi);
+        rotA.RotateY(-theta);
+        rotA.RotateZ(-phi);
+        double transTpcRefSys[3] = {tpcGlobalPosition.LocalxShift(),
+                                    tpcGlobalPosition.LocalyShift(),
+                                    tpcGlobalPosition.LocalzShift() };
+        rotA.SetTranslation(transTpcRefSys);
       }
       else {
-        Id = 10 * sector + k;
-        tpcrs::TPC::Half part = tpcrs::TPC::Half::first;
 
-        if (sector <= 12) part = tpcrs::TPC::Half::second;
-
-        switch (k) {
+        switch (k)
+        {
         case kSupS2Tpc: // SupS => Tpc
-          if (sector <= 12) {iphi = (360 + 90 - 30 * sector      ) % 360; Rot = Form("R%03i", iphi);}
-          else              {iphi = (      90 + 30 * (sector - 12)) % 360; Rot = Form("Y%03i", iphi);}
-
-          rotm = 0;
-
-          if (gGeoManager) {
-            listOfMatrices =  gGeoManager->GetListOfMatrices();
-            rotm = (TGeoRotation*) listOfMatrices->FindObject(Rot);
+        {
+          // Rotation around x, y, and z axes
+          TGeoRotation rotm("temp_matrix");
+          // Sector phi angle
+          int iphi = (360 + 90 - 30 * sector) % 360;
+          // Account for signed drift distance along z
+          double drift_dist_z = cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ -
+                                cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
+          if (sector > 12) {
+            rotm.SetAngles(90.0,    0.0,  90.0,  -90.0,  180.0,    0.00);// Flip (x,y,z) => ( x,-y,-z)
+            drift_dist_z *= -1;
+          //iphi = (360 + 90 - 30 *  sector      ) % 360;
+            iphi = (      90 + 30 * (sector - 12)) % 360;
           }
 
-          if (!rotm) {
-            if (sector <= 12) rotm = new TGeoRotation(Rot);
-            else              rotm = new TGeoRotation(Rot,   90.0,    0.0,  90.0,  -90.0,  180.0,    0.00); // Flip (x,y,z) => ( x,-y,-z)
+          rotm.RotateZ(iphi);
 
-            rotm->RotateZ(iphi);
-          }
-
-          rotA = mSwap[part] * (*rotm);
+          rotA = TGeoTranslation(0, 0, drift_dist_z) * rotm;
           rotA *= cfg_.C<StTpcSuperSectorPosition>().GetMatrix(sector - 1);
-
-          if (gGeoManager) rotm->RegisterYourself();
-          else             SafeDelete(rotm);
-
           break;
-
+        }
         case kSupS2Glob:      // SupS => Tpc => Glob
           rotA = tpc2global_ * SupS2Tpc(sector);
           break;
 
         case kSubSInner2SupS:
           rotA = flip_matrix;
-
           break;
 
         case kSubSOuter2SupS:
           rotA = flip_matrix * cfg_.C<StTpcOuterSectorPosition>().GetMatrix(sector - 1);
-
           break;
 
-        case kSubSInner2Tpc:  rotA = SupS2Tpc(sector) * SubSInner2SupS(sector); break; // (Subs[io] => SupS) => Tpc
-
-        case kSubSOuter2Tpc:  rotA = SupS2Tpc(sector) * SubSOuter2SupS(sector); break; // -"-
-
-        case kSubSInner2Glob: rotA = tpc2global_ * SubSInner2Tpc(sector);  break; // Subs[io] => SupS => Tpc) => Glob
-
-        case kSubSOuter2Glob: rotA = tpc2global_ * SubSOuter2Tpc(sector);  break; // -"-
-
-        case kPadInner2SupS:  rotA = SubSInner2SupS(sector); break; // (Pad == SecL) => (SubS[io] => SupS)
-
-        case kPadOuter2SupS:  rotA = SubSOuter2SupS(sector); break; // -"-
-
-        case kPadInner2Tpc:   rotA = SupS2Tpc(sector) * PadInner2SupS(sector); break; // (Pad == SecL) => (SubS[io] => SupS => Tpc)
-
-        case kPadOuter2Tpc:   rotA = SupS2Tpc(sector) * PadOuter2SupS(sector); break; // -"-
-
-        case kPadInner2Glob:  rotA = tpc2global_ * PadInner2Tpc(sector); break; // (Pad == SecL) => (SubS[io] => SupS => Tpc => Glob)
-
-        case kPadOuter2Glob:  rotA = tpc2global_ * PadOuter2Tpc(sector); break; // -"-
+        // (Subs[io] => SupS) => Tpc
+        case kSubSInner2Tpc:  rotA = SupS2Tpc(sector) * SubSInner2SupS(sector); break;
+        case kSubSOuter2Tpc:  rotA = SupS2Tpc(sector) * SubSOuter2SupS(sector); break;
+        // Subs[io] => SupS => Tpc) => Glob
+        case kSubSInner2Glob: rotA = tpc2global_ * SubSInner2Tpc(sector);  break;
+        case kSubSOuter2Glob: rotA = tpc2global_ * SubSOuter2Tpc(sector);  break;
+        // (Pad == SecL) => (SubS[io] => SupS)
+        case kPadInner2SupS:  rotA = SubSInner2SupS(sector); break;
+        case kPadOuter2SupS:  rotA = SubSOuter2SupS(sector); break;
+        // (Pad == SecL) => (SubS[io] => SupS => Tpc)
+        case kPadInner2Tpc:   rotA = SupS2Tpc(sector) * PadInner2SupS(sector); break;
+        case kPadOuter2Tpc:   rotA = SupS2Tpc(sector) * PadOuter2SupS(sector); break;
+        // (Pad == SecL) => (SubS[io] => SupS => Tpc => Glob)
+        case kPadInner2Glob:  rotA = tpc2global_ * PadInner2Tpc(sector); break;
+        case kPadOuter2Glob:  rotA = tpc2global_ * PadOuter2Tpc(sector); break;
 
         default:
           assert(0);
@@ -424,6 +398,7 @@ void CoordTransform::SetTpcRotations()
         d[2], c[2], t[2]
       };
       rotA.SetRotation(rot);
+
       const char* names[kTotalTpcSectorRotaions] = {
         "SupS_%02itoTpc",
         "SupS_%02itoGlob",
@@ -447,7 +422,7 @@ void CoordTransform::SetTpcRotations()
       }
       else {
         rotA.SetName(Form(names[k], sector));
-        mTpcSectorRotations[sector - 1][k] = rotA;
+        sector_rotations_[sector - 1][k] = rotA;
       }
     }
   }

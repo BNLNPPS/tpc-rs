@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cmath>
 #include <stdexcept>
 
@@ -352,11 +351,6 @@ struct CoordTransform
 
  private:
 
-  const tpcrs::Configurator& cfg_;
-  double mTimeBinWidth;
-  double mInnerSectorzOffset;
-  double mOuterSectorzOffset;
-
   // Glob     = Global coordinate
   // Tpc      = Tpc    -"-                survey
   // Half     = Tpc Half west / east -"-  survey
@@ -385,13 +379,18 @@ struct CoordTransform
                                kTotalTpcSectorRotaions = 14
                               };
 
-  TGeoHMatrix          tpc2global_;
-  TGeoHMatrix          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
+  const tpcrs::Configurator& cfg_;
+  double timebin_width_;
+  double z_inner_offset_;
+  double z_outer_offset_;
 
-  float                triggerTimeOffset() const    {return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset();}
+  TGeoHMatrix tpc2global_;
+  TGeoHMatrix sector_rotations_[24][kTotalTpcSectorRotaions];
+
+  float triggerTimeOffset() const { return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset(); }
   void SetTpcRotations();
 
-  const TGeoHMatrix &TpcRot(int sector, int k)      const {return mTpcSectorRotations[sector - 1][k];}
+  const TGeoHMatrix &TpcRot(int sector, int k)      const {return sector_rotations_[sector - 1][k];}
   const TGeoHMatrix &SupS2Tpc(int sector = 1)       const {return TpcRot(sector, kSupS2Tpc);}
   const TGeoHMatrix &SupS2Glob(int sector = 1)      const {return TpcRot(sector, kSupS2Glob);}
   const TGeoHMatrix &SubSInner2SupS(int sector = 1) const {return TpcRot(sector, kSubSInner2SupS);}
@@ -409,11 +408,11 @@ struct CoordTransform
   const TGeoHMatrix &PadInner2Glob(int sector = 1)  const {return TpcRot(sector, kPadInner2Glob);}
   const TGeoHMatrix &PadOuter2Glob(int sector = 1)  const {return TpcRot(sector, kPadOuter2Glob);}
 
-  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {int k = tpcrs::IsInner(row, cfg_) ? kSubSInner2SupS : kSubSOuter2SupS; return TpcRot(sector, k);}
-  const TGeoHMatrix &SubS2Tpc(int sector = 1, int row = 1)  const {int k = tpcrs::IsInner(row, cfg_) ? kSubSInner2Tpc  : kSubSOuter2Tpc;  return TpcRot(sector, k);}
-  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {int k = tpcrs::IsInner(row, cfg_) ? kSubSInner2Glob : kSubSOuter2Glob; return TpcRot(sector, k);}
+  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kSubSInner2SupS : kSubSOuter2SupS);}
+  const TGeoHMatrix &SubS2Tpc (int sector = 1, int row = 1) const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kSubSInner2Tpc  : kSubSOuter2Tpc );}
+  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kSubSInner2Glob : kSubSOuter2Glob);}
 
-  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {int k = tpcrs::IsInner(row, cfg_) ? kPadInner2SupS : kPadOuter2SupS; return TpcRot(sector, k);}
-  const TGeoHMatrix &Pad2Tpc(int sector = 1, int row = 1)   const {int k = tpcrs::IsInner(row, cfg_) ? kPadInner2Tpc  : kPadOuter2Tpc;  return TpcRot(sector, k);}
-  const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {int k = tpcrs::IsInner(row, cfg_) ? kPadInner2Glob : kPadOuter2Glob; return TpcRot(sector, k);}
+  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kPadInner2SupS : kPadOuter2SupS);}
+  const TGeoHMatrix &Pad2Tpc (int sector = 1, int row = 1)  const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kPadInner2Tpc  : kPadOuter2Tpc );}
+  const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kPadInner2Glob : kPadOuter2Glob);}
 };
