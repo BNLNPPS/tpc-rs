@@ -230,7 +230,6 @@ using StTpcLocalSectorDirection = TCoordinate<5>;
 struct CoordTransform
 {
   CoordTransform(const tpcrs::Configurator& cfg);
-  ~CoordTransform();
 
   // Raw Data <--> Tpc Local Sector Coordinates
   void local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true) const;
@@ -299,24 +298,24 @@ struct CoordTransform
   // Internal TpcCoordinate <-->  Global Coordinate
   void local_to_global(const StTpcLocalCoordinate &a, StGlobalCoordinate &b) const
   {
-    Tpc2GlobalMatrix().LocalToMaster(a.position.xyz(), b.position.xyz());
+    tpc2global_.LocalToMaster(a.position.xyz(), b.position.xyz());
   }
 
   void global_to_local(const StGlobalCoordinate &a, StTpcLocalCoordinate &b, int sector, int row) const
   {
-    Tpc2GlobalMatrix().MasterToLocal(a.position.xyz(), b.position.xyz());
+    tpc2global_.MasterToLocal(a.position.xyz(), b.position.xyz());
     b.sector = sector;
     b.row = row;
   }
 
   void local_to_global_dir(const StTpcLocalDirection &a, StGlobalDirection &b) const
   {
-    Tpc2GlobalMatrix().LocalToMasterVect(a.position.xyz(), b.position.xyz());
+    tpc2global_.LocalToMasterVect(a.position.xyz(), b.position.xyz());
   }
 
   void global_to_local_dir(const StGlobalDirection &a, StTpcLocalDirection &b, int sector, int row) const
   {
-    Tpc2GlobalMatrix().MasterToLocalVect(a.position.xyz(), b.position.xyz());
+    tpc2global_.MasterToLocalVect(a.position.xyz(), b.position.xyz());
     b.sector = sector;
     b.row = row;
   }
@@ -365,7 +364,7 @@ struct CoordTransform
   // SubS[io] = SubSector[io] misalignment
   // SecL     = sector -"- coordinate (y_p, x_p, DriftDistance - z_p);
   // Pad      = Pad -"- (x_p,y_p,z_p) (Sector12 coordinate system)
-  // Tpc => Global is mTpc2GlobMatrix
+  // Tpc => Global is tpc2global_
   // Pad => SecL   is internal Flip matrix
   enum ETpcSectorRotationType {kUndefSector     = -2,
                                kFlip            = -1, // Flip * Subs[io] => SupS
@@ -386,25 +385,13 @@ struct CoordTransform
                                kTotalTpcSectorRotaions = 14
                               };
 
-  TGeoTranslation*      mSwap[2];       //!
-  TGeoHMatrix*          mFlip;          //!
-  TGeoHMatrix*          mTpc2GlobMatrix;//!
+  TGeoHMatrix          tpc2global_;
   TGeoHMatrix          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
-  double              mzGG;           //! Gating Grid z
 
   float                triggerTimeOffset() const    {return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset();}
   void SetTpcRotations();
-  void SetTpcRotationMatrix(TGeoHMatrix* m, int sector = 0, int k = kSupS2Tpc)
-  {
-    if (sector == 0)  {if (m) *mTpc2GlobMatrix = *m;}
-    else              {if (m) mTpcSectorRotations[sector - 1][k] = *m;}
-  }
 
-  const TGeoHMatrix &Flip()                           const {return *mFlip;}
- public:
-  const TGeoHMatrix &Tpc2GlobalMatrix()               const {return *mTpc2GlobMatrix;}
- private:
-  const TGeoHMatrix &TpcRot(int sector, int k)    const {return mTpcSectorRotations[sector - 1][k];}
+  const TGeoHMatrix &TpcRot(int sector, int k)      const {return mTpcSectorRotations[sector - 1][k];}
   const TGeoHMatrix &SupS2Tpc(int sector = 1)       const {return TpcRot(sector, kSupS2Tpc);}
   const TGeoHMatrix &SupS2Glob(int sector = 1)      const {return TpcRot(sector, kSupS2Glob);}
   const TGeoHMatrix &SubSInner2SupS(int sector = 1) const {return TpcRot(sector, kSubSInner2SupS);}
