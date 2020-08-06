@@ -389,7 +389,7 @@ struct CoordTransform
   TGeoTranslation*      mSwap[2];       //!
   TGeoHMatrix*          mFlip;          //!
   TGeoHMatrix*          mTpc2GlobMatrix;//!
-  TGeoHMatrix*          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
+  TGeoHMatrix          mTpcSectorRotations[24][kTotalTpcSectorRotaions]; //!
   double              mzGG;           //! Gating Grid z
 
   float                triggerTimeOffset() const    {return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset();}
@@ -397,14 +397,14 @@ struct CoordTransform
   void SetTpcRotationMatrix(TGeoHMatrix* m, int sector = 0, int k = kSupS2Tpc)
   {
     if (sector == 0)  {if (m) *mTpc2GlobMatrix = *m;}
-    else              {if (m) *mTpcSectorRotations[sector - 1][k] = *m;}
+    else              {if (m) mTpcSectorRotations[sector - 1][k] = *m;}
   }
 
   const TGeoHMatrix &Flip()                           const {return *mFlip;}
  public:
   const TGeoHMatrix &Tpc2GlobalMatrix()               const {return *mTpc2GlobMatrix;}
  private:
-  const TGeoHMatrix &TpcRot(int sector, int k)    const {return *mTpcSectorRotations[sector - 1][k];}
+  const TGeoHMatrix &TpcRot(int sector, int k)    const {return mTpcSectorRotations[sector - 1][k];}
   const TGeoHMatrix &SupS2Tpc(int sector = 1)       const {return TpcRot(sector, kSupS2Tpc);}
   const TGeoHMatrix &SupS2Glob(int sector = 1)      const {return TpcRot(sector, kSupS2Glob);}
   const TGeoHMatrix &SubSInner2SupS(int sector = 1) const {return TpcRot(sector, kSubSInner2SupS);}

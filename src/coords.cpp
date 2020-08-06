@@ -48,12 +48,6 @@ CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
 
   mTpc2GlobMatrix = new TGeoHMatrix("Default Tpc2Glob");
 
-  for (int i = 1; i <= 24; i++) {
-    for (int k = 0; k < kTotalTpcSectorRotaions; k++) {
-      mTpcSectorRotations[i - 1][k] = new TGeoHMatrix(Form("Default %02i %i", i, k));
-    }
-  }
-
   mFlip = new TGeoHMatrix;
   mzGG = cfg_.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg_.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
 
@@ -269,10 +263,6 @@ void CoordTransform::local_to_local_sector(const StTpcLocalCoordinate &a, StTpcL
 
 CoordTransform::~CoordTransform()
 {
-  for (int i = 0; i < 24; i++) {
-    for (int k = 0; k < kTotalTpcSectorRotaions; k++)
-      SafeDelete(mTpcSectorRotations[i][k]);
-  }
 
   SafeDelete(mSwap[0]);
   SafeDelete(mSwap[1]);
@@ -317,6 +307,11 @@ void CoordTransform::SetTpcRotations()
 
    */
   //  TGeoTranslation T123(0,123,0); T123.SetName("T123"); if (Debug() > 1) T123.Print();
+  TGeoHMatrix mHalf[2] = {
+    TGeoHMatrix("Default for east part of TPC"),
+    TGeoHMatrix("Default for west part of TPC")
+  };
+
   assert(cfg_.S<tpcDimensions>().numberOfSectors == 24);
   double phi, theta, psi;
   int iphi;
