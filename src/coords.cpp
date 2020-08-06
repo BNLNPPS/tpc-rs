@@ -45,7 +45,7 @@ CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
   z_inner_offset_(cfg_.S<tpcEffectiveGeom>().z_inner_offset),
   z_outer_offset_(cfg_.S<tpcEffectiveGeom>().z_outer_offset),
   tpc2global_("Tpc2Glob"),
-  sector_rotations_()
+  sector_rotations_(12*2*kTotalTpcSectorRotaions)
 {
   SetTpcRotations();
 }
@@ -422,7 +422,7 @@ void CoordTransform::SetTpcRotations()
       }
       else {
         rotA.SetName(Form(names[k], sector));
-        sector_rotations_[sector - 1][k] = rotA;
+        sector_rotations_[kTotalTpcSectorRotaions*(sector - 1) + k] = rotA;
       }
     }
   }

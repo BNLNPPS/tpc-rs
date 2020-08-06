@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <vector>
 
 #include "TGeoMatrix.h"
 
@@ -385,12 +386,12 @@ struct CoordTransform
   double z_outer_offset_;
 
   TGeoHMatrix tpc2global_;
-  TGeoHMatrix sector_rotations_[24][kTotalTpcSectorRotaions];
+  std::vector<TGeoHMatrix> sector_rotations_;
 
   float triggerTimeOffset() const { return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset(); }
   void SetTpcRotations();
 
-  const TGeoHMatrix &TpcRot(int sector, int k)      const {return sector_rotations_[sector - 1][k];}
+  const TGeoHMatrix &TpcRot(int sector, int k)      const {return sector_rotations_[kTotalTpcSectorRotaions*(sector - 1) + k];}
   const TGeoHMatrix &SupS2Tpc(int sector = 1)       const {return TpcRot(sector, kSupS2Tpc);}
   const TGeoHMatrix &SupS2Glob(int sector = 1)      const {return TpcRot(sector, kSupS2Glob);}
   const TGeoHMatrix &SubSInner2SupS(int sector = 1) const {return TpcRot(sector, kSubSInner2SupS);}
