@@ -3,61 +3,45 @@
 #include "config_structs.h"
 #include "struct_containers.h"
 
-
-struct dE_t {
-  float dE;
-  float dx;
-};
-
-
-struct dEdxCorrection_t
-{
-  std::string name;
-  std::string title;
-  tpcrs::IConfigStruct* Chair;
-  int   nrows;
-  float dE;
-};
-
-
 class dEdxY2_t;
+
 class StTpcdEdxCorrection
 {
  public:
 
   enum EOptions : int {
-    kUncorrected           =  0,//U
-    kAdcCorrection         =  1,//R
-    kEdge                  =  2,//E   correction near edge of chamber
-    kAdcCorrectionMDF      =  3,//RMDF
-    kTpcdCharge            =  4,//D
-    kTpcrCharge            =  5,//D
-    kTpcCurrentCorrection  =  6,//
-    kTpcSecRowB            =  7,//S
-    kTpcSecRowC            =  8,//S
-    kTpcRowQ               =  9,//
-    ktpcPressure           = 10,//P
-    ktpcTime               = 11,//t
-    kDrift                 = 12,//O
-    kMultiplicity          = 13,//M
-    kzCorrection           = 14,//Z
-    ktpcMethaneIn          = 15,//m
-    ktpcGasTemperature     = 16,//T
-    ktpcWaterOut           = 17,//W   				7
-    kSpaceCharge           = 18,//C   space charge near the wire
-    kPhiDirection          = 19,//p   correction wrt local interception angle
-    kTanL                  = 20,//p   correction wrt local tan(lambda)
-    kdXCorrection          = 21,//X
-    kTpcEffectivedX        = 22,//X   Effective pad row height
-    kTpcPadTBins           = 23,//d
-    kTpcZDC                = 24,//
-    kTpcPadMDF             = 25,
-    kTpcLast               = 26,//
-    kTpcNoAnodeVGainC      = 27,//
-    kTpcLengthCorrection   = 28,//
-    kTpcLengthCorrectionMDF = 29, //
-    kTpcdEdxCor            = 30,//
-    kTpcAllCorrections     = 31 //
+    kUncorrected            =  0, //U
+    kAdcCorrection          =  1, //R
+    kEdge                   =  2, //E   correction near edge of chamber
+    kAdcCorrectionMDF       =  3, //RMDF
+    kTpcdCharge             =  4, //D
+    kTpcrCharge             =  5, //D
+    kTpcCurrentCorrection   =  6,
+    kTpcSecRowB             =  7, //S
+    kTpcSecRowC             =  8, //S
+    kTpcRowQ                =  9,
+    ktpcPressure            = 10, //P
+    ktpcTime                = 11, //t
+    kDrift                  = 12, //O
+    kMultiplicity           = 13, //M
+    kzCorrection            = 14, //Z
+    ktpcMethaneIn           = 15, //m
+    ktpcGasTemperature      = 16, //T
+    ktpcWaterOut            = 17, //W   7
+    kSpaceCharge            = 18, //C   space charge near the wire
+    kPhiDirection           = 19, //p   correction wrt local interception angle
+    kTanL                   = 20, //p   correction wrt local tan(lambda)
+    kdXCorrection           = 21, //X
+    kTpcEffectivedX         = 22, //X   Effective pad row height
+    kTpcPadTBins            = 23, //d
+    kTpcZDC                 = 24,
+    kTpcPadMDF              = 25,
+    kTpcLast                = 26,
+    kTpcNoAnodeVGainC       = 27,
+    kTpcLengthCorrection    = 28,
+    kTpcLengthCorrectionMDF = 29,
+    kTpcdEdxCor             = 30,
+    kTpcAllCorrections      = 31 
   };
 
   struct Corrections {
@@ -127,6 +111,15 @@ class StTpcdEdxCorrection
 
   enum ESector : int {kTpcOuter = 0, kTpcInner = 1};
 
+  struct dEdxCorrection_t
+  {
+    std::string name;
+    std::string title;
+    tpcrs::IConfigStruct* Chair;
+    int   nrows;
+    float dE;
+  };
+
   const tpcrs::Configurator& cfg_;
   const int         options_;
   dEdxCorrection_t  corrections_[kTpcAllCorrections];
@@ -135,6 +128,11 @@ class StTpcdEdxCorrection
 
 struct dEdxY2_t
 {
+  struct dE_t {
+    float dE;
+    float dx;
+  };
+
   /* U->R->S->P->O->Z->X
      U->R (TpcAdcCorrection) -> P (tpcPressure) ->
      S (TpcSecRowB/TpcSecRowC) ->  O (TpcDriftDistOxygen) ->
