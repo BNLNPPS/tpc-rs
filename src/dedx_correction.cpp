@@ -355,30 +355,3 @@ ENDL:
   CdEdx.F = CdEdx.C[kTpcLast];
   return 0;
 }
-
-
-void StTpcdEdxCorrection::Print(const dEdxY2_t& mdEdx) const
-{
-  LOG_INFO << "StTpcdEdxCorrection:: "
-           << "Local xyz " << mdEdx.xyz[0] << "\t" << mdEdx.xyz[1] << "\t" << mdEdx.xyz[2] << '\n'
-           << "Local xyzD " << mdEdx.xyzD[0] << "\t" << mdEdx.xyzD[1] << "\t" << mdEdx.xyzD[2] << '\n';
-
-  for (int k = (int)kUncorrected; k <= ((int)kTpcLast) + 1; k++)
-  {
-    LOG_INFO << k;
-
-    if (k <= (int) kTpcLast) {
-      LOG_INFO << "\tdE "         << mdEdx.C[k].dE
-               << "\tdx "         << mdEdx.C[k].dx
-               << '\t'            << corrections_[k].name
-               << '\t'            << corrections_[k].title;
-    }
-    else {
-      LOG_INFO << "\tdE "         << mdEdx.F.dE
-               << "\tdx "         << mdEdx.F.dx
-               << "\tFinal \t ";
-    }
-
-    LOG_INFO << '\n';
-  }
-}

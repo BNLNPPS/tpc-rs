@@ -105,8 +105,6 @@ class StTpcdEdxCorrection
 
   int dEdxCorrection(int sector, int row, dEdxY2_t &dEdx);
 
-  void Print(const dEdxY2_t& dEdx) const;
-
  private:
 
   enum ESector : int {kTpcOuter = 0, kTpcInner = 1};
