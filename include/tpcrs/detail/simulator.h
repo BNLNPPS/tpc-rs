@@ -61,9 +61,8 @@ class Simulator
 
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
+  tpcrs::DigiChannelMap digi_;
   MagFieldUtils mag_field_utils_;
-  const int num_sectors_;
-  const int max_timebins_;
 
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI(double t, double t0, double tau_I, double tau_C);
@@ -167,7 +166,6 @@ class Simulator
   TF1    mHeed;
   StTpcdEdxCorrection dEdx_correction_;
 
-  tpcrs::DigiChannelMap digi_;
   std::vector<double> alpha_gain_variations_;
 };
 
@@ -196,7 +194,7 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-  std::vector< std::vector<TrackSegment> > segments_by_sector(num_sectors_);
+  std::vector< std::vector<TrackSegment> > segments_by_sector(digi_.n_sectors);
   std::vector<TrackSegment> segments_in_sector;
 
   auto first_hit_on_track = first_hit;
@@ -287,7 +285,7 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::ve
     TrackSegment curr_segment = CreateTrackSegment(*ihit);
 
     if (curr_segment.charge == 0) continue;
-    if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > max_timebins_) continue;
+    if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > digi_.n_timebins) continue;
 
     segments.push_back(curr_segment);
   }
@@ -305,17 +303,17 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
   auto bc = binned_charge.begin();
   auto adcs_iter = ADCs_.begin();
 
-  for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += max_timebins_)
+  for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += digi_.n_timebins)
   {
     double gain = cfg_.S<tpcPadGainT0>().Gain[sector-1][ch->row-1][ch->pad-1];
 
     if (gain <= 0) {
-      bc        += max_timebins_;
-      adcs_iter += max_timebins_;
+      bc        += digi_.n_timebins;
+      adcs_iter += digi_.n_timebins;
       continue;
     }
 
-    for (int i=0; i != max_timebins_; ++i, ++bc, ++adcs_iter)
+    for (int i=0; i != digi_.n_timebins; ++i, ++bc, ++adcs_iter)
     {
       int adc = int(bc->Sum / gain + gRandom->Gaus(ped, pedRMS) - ped);
       // Zero negative values
@@ -327,9 +325,9 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
     }
   }
 
-  for (auto adcs_iter = ADCs_.begin(); adcs_iter != ADCs_.end(); adcs_iter += max_timebins_)
+  for (auto adcs_iter = ADCs_.begin(); adcs_iter != ADCs_.end(); adcs_iter += digi_.n_timebins)
   {
-    SimulateAltro(adcs_iter, adcs_iter + max_timebins_, true);
+    SimulateAltro(adcs_iter, adcs_iter + digi_.n_timebins, true);
   }
 
   auto ch = digi_.channels.begin();

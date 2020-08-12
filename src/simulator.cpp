@@ -37,26 +37,24 @@ TF1 Simulator::fgTimeShape0[2] = {
 Simulator::Simulator(const tpcrs::Configurator& cfg) :
   cfg_(cfg),
   transform_(cfg_),
+  digi_(cfg_),
   mag_field_utils_(cfg_, transform_),
-  num_sectors_(cfg_.S<tpcDimensions>().numberOfSectors),
-  max_timebins_(512),
   options_(0),
   dNdx_(),
   dNdx_log10_(),
   dNdE_log10_(),
   mShaperResponses{
-    std::vector<TF1F>(num_sectors_, TF1F("ShaperFuncInner;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7)),
-    std::vector<TF1F>(num_sectors_, TF1F("ShaperFuncOuter;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7))
+    std::vector<TF1F>(digi_.n_sectors, TF1F("ShaperFuncInner;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7)),
+    std::vector<TF1F>(digi_.n_sectors, TF1F("ShaperFuncOuter;Time [bin];Signal", Simulator::shapeEI_I, 0, 1, 7))
   },
-  mChargeFraction(num_sectors_*2, TF1F("ChargeFraction;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
-  mPadResponseFunction(num_sectors_*2, TF1F("PadResponseFunction;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
+  mChargeFraction(digi_.n_sectors*2, TF1F("ChargeFraction;Distance [cm];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
+  mPadResponseFunction(digi_.n_sectors*2, TF1F("PadResponseFunction;Distance [pads];Signal", Simulator::PadResponseFunc, 0, 1, 6)),
   mPolya{
     TF1F("PolyaInner;x = G/G_0;signal", polya, 0, 10, 3),
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
   dEdx_correction_(cfg_),
-  digi_(cfg_),
   alpha_gain_variations_()
 {
   //SETBIT(options_, kHEED);
@@ -125,7 +123,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
     fgTimeShape0[io].SetRange(timebin_min * timebin_width, timebin_max * timebin_width);
     params0[5].second = fgTimeShape0[io].Integral(0, timebin_max * timebin_width);
 
-    for (int sector = 1; sector <= num_sectors_; sector++)
+    for (int sector = 1; sector <= digi_.n_sectors; sector++)
     {
       InitPadResponseFuncs(io, sector);
       InitChargeFractionFuncs(io, sector);
@@ -179,10 +177,10 @@ void Simulator::InitPadResponseFuncs(int io, int sector)
                    cfg_.S<tpcPadPlanes>().outerSectorPadPitch
   };
 
-  mPadResponseFunction[num_sectors_*io + sector - 1].SetParameters(params);
-  mPadResponseFunction[num_sectors_*io + sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
-  mPadResponseFunction[num_sectors_*io + sector - 1].SetRange(-2.5, 2.5); // Cut tails
-  mPadResponseFunction[num_sectors_*io + sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
+  mPadResponseFunction[digi_.n_sectors*io + sector - 1].SetParameters(params);
+  mPadResponseFunction[digi_.n_sectors*io + sector - 1].SetParNames("PadWidth", "Anode-Cathode gap", "wire spacing", "K3OP", "CrossTalk", "PadPitch");
+  mPadResponseFunction[digi_.n_sectors*io + sector - 1].SetRange(-2.5, 2.5); // Cut tails
+  mPadResponseFunction[digi_.n_sectors*io + sector - 1].Save(-4.5, 4.5, 0, 0, 0, 0);
 }
 
 
@@ -203,14 +201,14 @@ void Simulator::InitChargeFractionFuncs(int io, int sector)
   // Cut the tails
   double x_range = 2.5;
   for (; x_range > 1.5; x_range -= 0.05) {
-    double r = mChargeFraction[num_sectors_*io + sector - 1].Eval(x_range) / mChargeFraction[num_sectors_*io + sector - 1].Eval(0);
+    double r = mChargeFraction[digi_.n_sectors*io + sector - 1].Eval(x_range) / mChargeFraction[digi_.n_sectors*io + sector - 1].Eval(0);
     if (r > 0.01) break;
   }
 
-  mChargeFraction[num_sectors_*io + sector - 1].SetParameters(params);
-  mChargeFraction[num_sectors_*io + sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
-  mChargeFraction[num_sectors_*io + sector - 1].SetRange(-x_range, x_range);
-  mChargeFraction[num_sectors_*io + sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
+  mChargeFraction[digi_.n_sectors*io + sector - 1].SetParameters(params);
+  mChargeFraction[digi_.n_sectors*io + sector - 1].SetParNames("PadLength", "Anode-Cathode gap", "wire spacing", "K3IR", "CrossTalk", "RowPitch");
+  mChargeFraction[digi_.n_sectors*io + sector - 1].SetRange(-x_range, x_range);
+  mChargeFraction[digi_.n_sectors*io + sector - 1].Save(-2.5, 2.5, 0, 0, 0, 0);
 }
 
 
@@ -241,37 +239,37 @@ void Simulator::InitShaperFuncs(int io, int sector, std::array<std::vector<TF1F>
 
 void Simulator::InitAlphaGainVariations(double t0IO[2])
 {
-  alpha_gain_variations_.resize(num_sectors_*2, 0);
+  alpha_gain_variations_.resize(digi_.n_sectors*2, 0);
 
   double anode_wire_pitch  = cfg_.S<tpcWirePlanes>().anodeWirePitch;
   double anode_wire_radius = cfg_.S<tpcWirePlanes>().anodeWireRadius;
   double cathod_anode_gap[2] = {0.2, 0.4};
-  std::vector<double> avg_anode_voltage(num_sectors_*2, 0);
+  std::vector<double> avg_anode_voltage(digi_.n_sectors*2, 0);
 
-  for (int sector = 1; sector <= num_sectors_; sector++)
+  for (int sector = 1; sector <= digi_.n_sectors; sector++)
   {
     int n_inner = 0, n_outer = 0;
     for (int row = 1; row <= cfg_.S<tpcPadPlanes>().padRows; row++) {
       if (tpcrs::IsInner(row, cfg_)) {
         n_inner++;
-        avg_anode_voltage[num_sectors_*0 + sector - 1] += tpcrs::VoltagePadrow(sector, row, cfg_);
+        avg_anode_voltage[digi_.n_sectors*0 + sector - 1] += tpcrs::VoltagePadrow(sector, row, cfg_);
       }
       else {
         n_outer++;
-        avg_anode_voltage[num_sectors_*1 + sector - 1] += tpcrs::VoltagePadrow(sector, row, cfg_);
+        avg_anode_voltage[digi_.n_sectors*1 + sector - 1] += tpcrs::VoltagePadrow(sector, row, cfg_);
       }
     }
 
-    avg_anode_voltage[num_sectors_*0 + sector - 1] /= n_inner;
-    avg_anode_voltage[num_sectors_*1 + sector - 1] /= n_outer;
+    avg_anode_voltage[digi_.n_sectors*0 + sector - 1] /= n_inner;
+    avg_anode_voltage[digi_.n_sectors*1 + sector - 1] /= n_outer;
 
     for (int io = kInner; io <= kOuter; io++)
     {
-      double volt   = avg_anode_voltage[num_sectors_*io + sector - 1];
+      double volt   = avg_anode_voltage[digi_.n_sectors*io + sector - 1];
       double charge = InducedCharge(anode_wire_pitch, cathod_anode_gap[io],
                                     anode_wire_radius, volt, t0IO[io]);
 
-      alpha_gain_variations_[num_sectors_*io + sector - 1] = charge;
+      alpha_gain_variations_[digi_.n_sectors*io + sector - 1] = charge;
     }
   }
 }
@@ -861,13 +859,13 @@ void Simulator::LoopOverElectronsInCluster(
     if (missed_readout) continue;
 
     double alphaVariation = (xyzE.position.y <= cfg_.S<tpcWirePlanes>().lastInnerSectorAnodeWire) ?
-                             alpha_gain_variations_[num_sectors_*0 + sector - 1] :
-                             alpha_gain_variations_[num_sectors_*1 + sector - 1];
+                             alpha_gain_variations_[digi_.n_sectors*0 + sector - 1] :
+                             alpha_gain_variations_[digi_.n_sectors*1 + sector - 1];
 
     if (!is_ground_wire) gain_gas *= std::exp( alphaVariation);
     else                 gain_gas *= std::exp(-alphaVariation);
 
-    double dY     = mChargeFraction[num_sectors_*io + sector - 1].GetXmax();
+    double dY     = mChargeFraction[digi_.n_sectors*io + sector - 1].GetXmax();
     double yLmin  = at_readout.y - dY;
     double yLmax  = at_readout.y + dY;
 
@@ -896,7 +894,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
     float bin = Pad.timeBucket;//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 
-    if (binT < 0 || binT >= max_timebins_) continue;
+    if (binT < 0 || binT >= digi_.n_timebins) continue;
 
     double dT = bin - binT + cfg_.S<TpcResponseSimulator>().T0offset;
     dT += tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().T0offsetI :
@@ -907,7 +905,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
     InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
     double delta_y = transform_.yFromRow(sector, row) - at_readout.y;
-    double YDirectionCoupling = mChargeFraction[num_sectors_*io + sector - 1].GetSaveL(delta_y);
+    double YDirectionCoupling = mChargeFraction[digi_.n_sectors*io + sector - 1].GetSaveL(delta_y);
 
     if (YDirectionCoupling < cfg_.S<ResponseSimulator>().min_signal) continue;
 
@@ -916,14 +914,14 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
     if (CentralPad < 1 || CentralPad > digi_.n_pads(row)) continue;
 
-    int DeltaPad = tpcrs::irint(mPadResponseFunction[num_sectors_*io + sector - 1].GetXmax()) + 1;
+    int DeltaPad = tpcrs::irint(mPadResponseFunction[digi_.n_sectors*io + sector - 1].GetXmax()) + 1;
     int padMin   = std::max(CentralPad - DeltaPad, 1);
     int padMax   = std::min(CentralPad + DeltaPad, digi_.n_pads(row));
     int Npads    = std::min(padMax - padMin + 1, static_cast<int>(kPadMax));
     double xPadMin = padMin - padX;
 
     static double XDirectionCouplings[kPadMax];
-    mPadResponseFunction[num_sectors_*io + sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
+    mPadResponseFunction[digi_.n_sectors*io + sector - 1].GetSaveL(Npads, xPadMin, XDirectionCouplings);
 
     for (unsigned pad = padMin; pad <= padMax; pad++) {
       double gain = gain_local_gas;
@@ -942,13 +940,13 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
       if (XYcoupling < cfg_.S<ResponseSimulator>().min_signal) continue;
 
       int tbin_first = std::max(0, binT + tpcrs::irint(dt + shaper->GetXmin() - 0.5));
-      int tbin_last  = std::min(max_timebins_ - 1, binT + tpcrs::irint(dt + shaper->GetXmax() + 0.5));
+      int tbin_last  = std::min(digi_.n_timebins - 1, binT + tpcrs::irint(dt + shaper->GetXmax() + 0.5));
       int num_tbins  = std::min(tbin_last - tbin_first + 1, static_cast<int>(kTimeBacketMax));
 
       static double TimeCouplings[kTimeBacketMax];
       shaper->GetSaveL(num_tbins, tbin_first - binT - dt, TimeCouplings);
 
-      int index = max_timebins_ * (digi_.total_pads(row) + pad - 1) + tbin_first;
+      int index = digi_.n_timebins * (digi_.total_pads(row) + pad - 1) + tbin_first;
 
       for (unsigned itbin = tbin_first; itbin <= tbin_last; itbin++, index++) {
         double signal = XYcoupling * TimeCouplings[itbin - tbin_first];
