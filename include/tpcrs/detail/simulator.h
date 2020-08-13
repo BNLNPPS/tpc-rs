@@ -27,6 +27,9 @@ class Simulator
   template<typename InputIt, typename OutputIt>
   OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized);
 
+  template<typename InputIt, typename OutputIt, typename MagField>
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field);
+
   template<typename InputIt, typename OutputIt>
   OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted);
 
@@ -172,6 +175,14 @@ class Simulator
 
 template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized)
+{
+  MagField mag_field(cfg_);
+  return Digitize(first_hit, last_hit, digitized, mag_field);
+}
+
+
+template<typename InputIt, typename OutputIt, typename MagField>
+OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field)
 {
   std::vector<tpcrs::DistortedHit> dummy;
   Simulate(first_hit, last_hit, digitized, std::back_inserter(dummy));

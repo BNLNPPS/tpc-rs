@@ -30,6 +30,12 @@ class Simulator : detail::Simulator
     return detail::Simulator::Digitize(first_hit, last_hit, digitized);
   }
 
+  template<typename InputIt, typename OutputIt, typename MagField>
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field)
+  {
+    return detail::Simulator::Digitize(first_hit, last_hit, digitized, mag_field);
+  }
+
   template<typename InputIt, typename OutputIt>
   OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted)
   {
