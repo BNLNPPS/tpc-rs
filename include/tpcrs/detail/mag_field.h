@@ -14,7 +14,36 @@ class MagField
 
   MagField(const tpcrs::Configurator& cfg, MagFieldType field_type = MagFieldType::kMapped, double scale = 1);
 
-  void GetFieldValue(const double x[3], float B[3]) const;
+
+  /**
+   * Returns the value of magnetic field in Cartesian coordinates
+   */
+  template<typename Vec3>
+  Vec3 ValueAt(Vec3 p) const
+  {
+    Vec3 B{};
+
+    double Br_value = 0;
+    double Bz_value = 0;
+    double r = std::sqrt(p.x*p.x + p.y*p.y);
+    double z = p.z;
+
+    // within map
+    if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1])
+    {
+      InterpolateField2D(r, z, Br_value, Bz_value);
+
+      if (r != 0) {
+        B.x = Br_value * (p.x / r) ;
+        B.y = Br_value * (p.y / r) ;
+      }
+
+      B.z = Bz_value;
+    }
+
+    return B;
+  }
+
   void GetFieldValue3D(const float x[3], float B[3]) const;
 
   static void Search(int N, const float Xarray[], float x, int &low);

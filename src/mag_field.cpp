@@ -26,33 +26,6 @@ MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, doub
 
 
 /**
- * B field in Cartesian coordinates - 2D field (ie. Phi symmetric)
- */
-void MagField::GetFieldValue(const double x[3], float B[3]) const
-{
-  float Br_value = 0, Bz_value = 0, Bphi_value = 0;
-
-  B[0] = B[1] = B[2] = 0;
-
-  float r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
-  float z = x[2];
-
-  // within map
-  if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1])
-  {
-    InterpolateField2D(r, z, Br_value, Bz_value);
-
-    if (r != 0) {
-      B[0] = Br_value * (x[0] / r) ;
-      B[1] = Br_value * (x[1] / r) ;
-    }
-
-    B[2] = Bz_value;
-  }
-}
-
-
-/**
  * B field in Cartesian coordinates - 3D field
  */
 void MagField::GetFieldValue3D(const float x[3], float B[3]) const
