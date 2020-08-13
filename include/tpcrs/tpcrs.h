@@ -1,9 +1,22 @@
 #pragma once
 
 #include "tpcrs/tpcrs_core.h"
+#include "tpcrs/detail/mag_field.h"
 #include "tpcrs/detail/simulator.h"
 
 namespace tpcrs {
+
+
+class MagField : detail::MagField
+{
+ public:
+
+  MagField(const tpcrs::Configurator& cfg) : detail::MagField(cfg) {}
+
+  template<typename Vec3>
+  Vec3 ValueAt(Vec3 p) const { return detail::MagField::ValueAt(p); }
+};
+
 
 class Simulator : detail::Simulator
 {
