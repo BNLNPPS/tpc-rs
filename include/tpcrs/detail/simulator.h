@@ -303,6 +303,59 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::ve
 }
 
 
+Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
+{
+  int sector = hit.volume_id % 10000 / 100;
+
+  TrackSegment segment;
+  StGlobalCoordinate xyzG{hit.x[0], hit.x[1], hit.x[2]};
+  segment.simu_hit = &hit;
+  ParticleProperties(hit.particle_id, segment.charge, segment.mass);
+
+  StTpcLocalSectorCoordinate coorS;
+  // GlobalCoord -> LocalSectorCoord. This transformation can result in a row
+  // that is not the same as (volId % 100)
+  transform_.global_to_local_sector(xyzG, coorS, sector, 0);
+  StTpcLocalCoordinate coorLT;  // before distortions
+  transform_.global_to_local(xyzG, coorLT, sector, coorS.row);
+
+  // Get magnetic field at the hit position
+  float B_field[3];
+  mag_field_utils_.GetFieldValue(hit.x, B_field);
+  // distortion and misalignment
+  // replace pxy => direction and try linear extrapolation
+  Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
+  StGlobalDirection dirG{pxyzG.unit()};
+  StGlobalDirection BG{B_field[0], B_field[1], B_field[2]};
+  transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);
+  transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
+
+  // Distortions
+  if (TESTBIT(options_, kDistortion)) {
+    float pos[3] = {(float ) coorLT.position.x, (float ) coorLT.position.y, (float ) coorLT.position.z};
+    float posMoved[3];
+    mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
+    coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
+    transform_.local_to_global(coorLT, xyzG);
+  }
+
+  transform_.local_to_local_sector(coorLT, segment.coorLS);
+
+  double driftLength = segment.coorLS.position.z + hit.tof * tpcrs::DriftVelocity(sector, cfg_);
+
+  if (driftLength > -1.0 && driftLength <= 0) {
+    if ((!tpcrs::IsInner(coorS.row, cfg_) && driftLength > - cfg_.S<tpcWirePlanes>().outerSectorAnodeWirePadSep) ||
+        ( tpcrs::IsInner(coorS.row, cfg_) && driftLength > - cfg_.S<tpcWirePlanes>().innerSectorAnodeWirePadSep))
+      driftLength = std::abs(driftLength);
+  }
+
+  segment.coorLS.position.z = driftLength;
+  transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
+
+  return segment;
+}
+
+
 template<typename OutputIt>
 void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized)
 {
