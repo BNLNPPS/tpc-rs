@@ -154,7 +154,7 @@ void MagField::ReadField()
 /**
  * Interpolate the B field map - 2D interpolation
  */
-void MagField::InterpolateField2D(float r, float z, float &Br_value, float &Bz_value) const
+void MagField::InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const
 {
   // Scale maps to work in kGauss, cm
   float fscale = 0.001 * scale_factor_;
@@ -164,8 +164,8 @@ void MagField::InterpolateField2D(float r, float z, float &Br_value, float &Bz_v
   float save_Br[ORDER + 1];
   float save_Bz[ORDER + 1];
 
-  Search(nZ, ZList,  z, jlow);
-  Search(nR, Radius, r, klow);
+  Search(nZ, ZList,  float(z), jlow);
+  Search(nR, Radius, float(r), klow);
 
   if (jlow < 0) jlow = 0;
   if (klow < 0) klow = 0;

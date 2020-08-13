@@ -52,7 +52,7 @@ class MagField
  private:
 
   void ReadField();
-  void InterpolateField2D(float r, float z, float &Br_value, float &Bz_value) const;
+  void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
   void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value) const;
 
   enum ESmFSizes {nZ = 57, nR = 28, nPhi = 37};
