@@ -173,7 +173,7 @@ void MagFieldUtils::SetUnDoDistortionT(TFile* f)
 MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode) :
   cfg_(cfg),
   transform_(trans),
-  mag_field_(cfg, MagField::MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor)
+  mag_field_(cfg, tpcrs::detail::MagField::MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor)
 {
   // Get the magnetic field scale factor from the DB
   gFactor = cfg_.S<MagFactor>().ScaleFactor;

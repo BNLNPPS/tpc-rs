@@ -1,5 +1,8 @@
 #pragma once
 
+
+namespace tpcrs { namespace detail {
+
 class Configurator;
 
 
@@ -37,3 +40,5 @@ class MagField
   float Bz3D[nPhi][nZ][nR], Br3D[nPhi][nZ][nR], Bphi3D[nPhi][nZ][nR] ;
   float R3D[nR], Z3D[nZ], Phi3D[nPhi] ;
 };
+
+} }

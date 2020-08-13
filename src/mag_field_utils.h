@@ -10,7 +10,7 @@
 #include "TArrayF.h"
 #include "TArrayD.h"
 #include "TMatrix.h"
-#include "mag_field.h"
+#include "tpcrs/detail/mag_field.h"
 
 class TFile;
 class TNtuple;
@@ -72,7 +72,7 @@ class MagFieldUtils
 
   const tpcrs::Configurator& cfg_;
   const CoordTransform& transform_;
-  MagField mag_field_;
+  tpcrs::detail::MagField mag_field_;
   St_spaceChargeCorC*        fSpaceCharge   ;
   St_spaceChargeCorC*        fSpaceChargeR2 ;
   St_tpcHighVoltagesC*       fTpcVolts      ;

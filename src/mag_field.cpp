@@ -2,8 +2,11 @@
 #include <cmath>
 
 #include "tpcrs/configurator.h"
+#include "tpcrs/detail/mag_field.h"
 #include "logger.h"
-#include "mag_field.h"
+
+
+namespace tpcrs { namespace detail {
 
 
 /**
@@ -334,3 +337,5 @@ void MagField::Search(int N, const float Xarray[], float x, int &low)
   if ( x == Xarray[N - 1] ) low = N - 2 ;
   if ( x == Xarray[0]     ) low = 0 ;
 }
+
+} }
