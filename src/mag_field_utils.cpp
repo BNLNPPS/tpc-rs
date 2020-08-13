@@ -597,9 +597,8 @@ void MagFieldUtils::CommonStart ( int mode )
 
   usingCartesian = true; // default
 
-  double X[3] = { 0, 0, 0 } ;
-  float  B[3] = { 0, 0, 0 } ;
-  mag_field_.GetFieldValue(X, B) ;                            // Work in kGauss, cm and assume Bz dominates
+  Coords X{0, 0, 0};
+  auto B = mag_field_.ValueAt(X) ;                            // Work in kGauss, cm and assume Bz dominates
 
   // Theoretically, OmegaTau is defined as shown in the next line.
   // OmegaTau   =  -10. * B[2] * StarDriftV / StarMagE ;  // cm/microsec, Volts/cm
@@ -616,7 +615,7 @@ void MagFieldUtils::CommonStart ( int mode )
   // float TensorV2    =  1.10 ;  // Drift velocity tensor term: direction perpendicular to Z and ExB
 
   // For an electron, OmegaTau carries the sign opposite of B
-  float OmegaTau   =  -10.0 * B[2] * StarDriftV / StarMagE ;     // B in kGauss, note the sign of B is important
+  float OmegaTau   =  -10.0 * B.z * StarDriftV / StarMagE ;     // B in kGauss, note the sign of B is important
 
   Const_0    =  1. / ( 1. +  TensorV2 * TensorV2 * OmegaTau * OmegaTau ) ;
   Const_1    =  TensorV1 * OmegaTau / ( 1. + TensorV1 * TensorV1 * OmegaTau * OmegaTau ) ;
@@ -5673,7 +5672,10 @@ void MagFieldUtils::UndoSectorAlignDistortion( const float x[], float Xprime[], 
 
 void MagFieldUtils::GetFieldValue(const double xTpc[], float BTpc[])
 {
-  mag_field_.GetFieldValue(xTpc, BTpc);
+  auto B = mag_field_.ValueAt( Coords{xTpc[0], xTpc[1], xTpc[2]} );
+  BTpc[0] = B.x;
+  BTpc[1] = B.y;
+  BTpc[2] = B.z;
 }
 
 
