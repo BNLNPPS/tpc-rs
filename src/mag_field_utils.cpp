@@ -1,14 +1,6 @@
 /***********************************************************************
  * Author: Jim Thomas   11/1/2000
- *
- * Description: Utilities for the Magnetic Field
  ***********************************************************************/
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// MagFieldUtils Class                                                 //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
 
 /*!
 
@@ -80,16 +72,11 @@ To do:  <br>
 - Add simulated B field map in the regions where the field is not mapped.
 - Tilted CM and endcap parameters from DB
 - Spacecharge blob at negative X parameters from DB
-
 */
-#include <cassert>
+
 #include <iomanip>
 #include <iostream>
 
-#include "TFile.h"
-#include "TNtuple.h"
-#include "TCanvas.h"
-#include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
 #include "TH1.h"
@@ -102,11 +89,10 @@ To do:  <br>
 #include "math_funcs.h"
 #include "struct_containers.h"
 
-static float  gFactor  = 1.0 ;        // Multiplicative factor (allows scaling and sign reversal)
-static const float  PiOver12 = M_PI / 12. ; // Commonly used constant
-static const float  PiOver6 = M_PI / 6. ; // Commonly used constant
-TNtuple* MagFieldUtils::fgDoDistortion = 0;
-TNtuple* MagFieldUtils::fgUnDoDistortion = 0;
+
+// Commonly used constants
+static const float  PiOver12 = M_PI / 12.;
+static const float  PiOver6 = M_PI / 6.;
 static const size_t threeFloats = 3 * sizeof(float);
 
 
@@ -122,6 +108,7 @@ static const size_t threeFloats = 3 * sizeof(float);
 // The GL_rho functions convert the total charge to a charge density
 const float GL_charge_y_lo[4] {52.04, 121.80 - 0.85, 121.80, 191.49} ;
 const float GL_charge_y_hi[4] {52.85, 121.80, 121.80 + 0.99, 192.53} ;
+
 float GL_q_inner_of_innerSec(float voltage = 1100.0) { return -42.15 + std::exp(0.005345 * voltage); }
 float GL_q_outer_of_innerSec(float voltage = 1100.0) { return -21.76 + std::exp(0.005123 * voltage); }
 float GL_q_inner_of_outerSec(float voltage = 1390.0) { return -16.68 + std::exp(0.004731 * voltage); }
@@ -144,39 +131,12 @@ double SpaceChargeRadialDependence(double Radius)
   return ( 3191. / (Radius * Radius) + 122.5 / Radius - 0.395 ) / 15823. ;
 }
 
-struct Distortion_t {
-  float sector, xL, yL, zL, xLC, yLC, zLC;
-};
 
-static Distortion_t D;
-static const char* Dnames = {"sector:xL:yL:zL:xLC:yLC:zLC"};
-
-
-void MagFieldUtils::SetDoDistortionT  (TFile* f)
-{
-  if (! f) return;
-
-  f->cd();
-  fgDoDistortion = new TNtuple("DoDist", "Result of DoDistrotion in TPC CS", Dnames);
-}
-
-void MagFieldUtils::SetUnDoDistortionT(TFile* f)
-{
-  if (! f) return;
-
-  f->cd();
-  fgUnDoDistortion = new TNtuple("UnDoDist", "Result of UnDoDistrotion in TPC CS", Dnames);
-}
-
-
-/// MagFieldUtils constructor using the DataBase
-MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, int mode) :
+MagFieldUtils::MagFieldUtils(const tpcrs::Configurator& cfg, const CoordTransform& trans, const int mode) :
   cfg_(cfg),
   transform_(trans),
   mag_field_(cfg, tpcrs::detail::MagField::MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor)
 {
-  // Get the magnetic field scale factor from the DB
-  gFactor = cfg_.S<MagFactor>().ScaleFactor;
   GetTPCParams()        ;    // Get the TPC parameters from the DB
   GetTPCVoltages( mode );    // Get the TPC Voltages from the DB! (after GetTPCParams!)
   GetHVPlanes()         ;    // Get the parameters that describe the HV plane errors (after GetTPCVoltages!)
@@ -227,14 +187,15 @@ void MagFieldUtils::GetTPCParams ()
   WIREGAP        =  OUTERGGFirst - INNERGGLast;
 }
 
+
 void MagFieldUtils::GetE()
 {
-  RPitch         =  1.150 ;            // Field Cage Ring to Ring pitch (cm)
+  RPitch       =  1.150 ;            // Field Cage Ring to Ring pitch (cm)
   float R_0    =  2.130 ;            // First resistor (R0) between CM and ring number one (Mohm)
   float RStep  =  2.000 ;            // Resistor chain value (except the first one) (Mohm)
   float R_182  =  0.310 ;            // Last resistor in the IFC chain
-  Rtot           =  R_0 + 181 * RStep + R_182 ;  // Total resistance of the (normal) resistor chain
-  Rfrac          =  TPC_Z0 * RStep / (Rtot * RPitch) ; // Fraction of full resistor chain inside TPC drift volume (~1.0)
+  Rtot         =  R_0 + 181 * RStep + R_182 ;  // Total resistance of the (normal) resistor chain
+  Rfrac        =  TPC_Z0 * RStep / (Rtot * RPitch) ; // Fraction of full resistor chain inside TPC drift volume (~1.0)
 
   // Effectivenesses determined from voltage tuning tool at:
   // http://www.star.bnl.gov/public/tpc/hard/tpcrings/page6.html
@@ -250,6 +211,7 @@ void MagFieldUtils::GetE()
     exit(1);
   }
 }
+
 
 void MagFieldUtils::GetTPCVoltages (int mode)
 {
@@ -318,6 +280,7 @@ void MagFieldUtils::GetTPCVoltages (int mode)
 
 }
 
+
 bool MagFieldUtils::UpdateTPCHighVoltages ()
 {
   static tpcHighVoltages* voltagesTable = 0;
@@ -332,23 +295,24 @@ bool MagFieldUtils::UpdateTPCHighVoltages ()
   return update;
 }
 
-void MagFieldUtils::GetSpaceCharge ()
+
+void MagFieldUtils::GetSpaceCharge()
 {
   static spaceChargeCor* spaceTable = 0;
   static St_trigDetSumsC* scalers = 0;
 
   St_spaceChargeCorC* spaceChair = dynamic_cast<St_spaceChargeCorC*>(&cfg_.C<St_spaceChargeCorR1C>());
   spaceChargeCor* new_spaceTable = spaceChair->Struct();
-  St_trigDetSumsC* new_scalers = &cfg_.C<St_trigDetSumsC>();
+  St_trigDetSumsC*   new_scalers = &cfg_.C<St_trigDetSumsC>();
 
   if (new_spaceTable == spaceTable && new_scalers == scalers) return;
 
-  fSpaceCharge =  spaceChair;
-  spaceTable = new_spaceTable;
-  scalers = new_scalers;
-
-  SpaceCharge    =  fSpaceCharge->getSpaceChargeCoulombs(cfg_) ;
+  fSpaceCharge = spaceChair;
+  spaceTable   = new_spaceTable;
+  scalers      = new_scalers;
+  SpaceCharge  = fSpaceCharge->getSpaceChargeCoulombs(cfg_) ;
 }
+
 
 void MagFieldUtils::GetSpaceChargeR2 ()
 {
@@ -370,6 +334,7 @@ void MagFieldUtils::GetSpaceChargeR2 ()
   SpaceChargeEWRatio = fSpaceChargeR2->getEWRatio() ;
 }
 
+
 void MagFieldUtils::GetShortedRing ()
 {
   St_tpcFieldCageShortC* shortedRingsChair = &cfg_.C<St_tpcFieldCageShortC>();
@@ -385,6 +350,7 @@ void MagFieldUtils::GetShortedRing ()
     Resistor[i]          =  (float) shortedRingsChair->resistor(i)          ;   // Amount of compensating resistance added for this short
   }
 }
+
 
 bool MagFieldUtils::UpdateShortedRing ()
 {
@@ -456,8 +422,6 @@ void MagFieldUtils::GetAbortGapCharge()
 }
 
 
-
-
 //  Standard maps for E and B Field Distortions ... Note: These are no longer read from a file but are listed here (JT, 2009).
 //  These maps have enough resolution for all fields except the Grid Leak Calculations.  So note that the Grid Leak calculations
 //  (and PadRow13 calculations) don't use these tables but have custom lists of eRList[] built into each function.
@@ -508,7 +472,7 @@ float MagFieldUtils::eZList[EMap_nZ] = { -208.5, -208.0, -207.0, -206.0, -205.0,
 //  End of standard map parameter lists
 
 /// Initialization method.  This will sort and apply the options received by the tpt Maker
-void MagFieldUtils::CommonStart ( int mode )
+void MagFieldUtils::CommonStart(int mode)
 {
     StarDriftV  =     5.54 ;      // Drift Velocity (cm/microSec) Magnitude
     TPC_Z0      =    208.7 ;      // Z location of STAR TPC Gated Grid (cm)
@@ -598,7 +562,7 @@ void MagFieldUtils::CommonStart ( int mode )
   usingCartesian = true; // default
 
   Coords X{0, 0, 0};
-  auto B = mag_field_.ValueAt(X) ;                            // Work in kGauss, cm and assume Bz dominates
+  auto B = mag_field_.ValueAt(X);  // Work in kGauss, cm and assume Bz dominates
 
   // Theoretically, OmegaTau is defined as shown in the next line.
   // OmegaTau   =  -10. * B[2] * StarDriftV / StarMagE ;  // cm/microsec, Volts/cm
@@ -635,7 +599,6 @@ void MagFieldUtils::UndoDistortion( const float x[], float Xprime[], int Sector 
 
   if (!x) {
     // dummy call, e.g. UndoDistortion(0,0,0)
-    // makes sure everything is initialized for current timestamp
     const float Xtemp1[3] = {100., 0., 100.};
     float Xtemp2[3];
     bool tempIterDist = iterateDistortion;
@@ -784,37 +747,24 @@ void MagFieldUtils::UndoDistortion( const float x[], float Xprime[], int Sector 
     memcpy(Xprime1, Xprime2, threeFloats);
   }
 
-
-  // Return it
-
   //memcpy(Xprime,Xprime1,threeFloats);
   Polar2Cart(Xprime1[0], Xprime1[1], Xprime);
   Xprime[2] = Xprime1[2];
   usingCartesian = true;
 
   DoOnce = false;
-
-  if (!iterateDistortion && fgUnDoDistortion) {
-    D.sector = Sector;
-    D.xL = x[0];
-    D.yL = x[1];
-    D.zL = x[2];
-    D.xLC = Xprime[0];
-    D.yLC = Xprime[1];
-    D.zLC = Xprime[2];
-    fgUnDoDistortion->Fill(&D.sector);
-  }
 }
 
 
 /// Main Entry Point for requests to DO the E and B field distortions (for simulations)
 void MagFieldUtils::DoDistortion( const float x[], float Xprime[], int Sector )
 {
-  // NOTE: x[],Xprime[] must be Cartesian for this function!
-  bool tempIterDist = iterateDistortion;
+  // NOTE: x[], Xprime[] must be Cartesian for this function!
+  bool tempIterDist  = iterateDistortion;
   bool tempDoingDist = doingDistortion;
+
   iterateDistortion = false; // Do not iterate for DoDistortion()
-  doingDistortion = true;
+  doingDistortion   = true;
 
   UndoDistortion(x, Xprime, Sector) ;
 
@@ -824,29 +774,18 @@ void MagFieldUtils::DoDistortion( const float x[], float Xprime[], int Sector )
 
   iterateDistortion = tempIterDist;
 
-  if (fgDoDistortion) {
-    D.sector = Sector;
-    D.xL = x[0];
-    D.yL = x[1];
-    D.zL = x[2];
-    D.xLC = Xprime[0];
-    D.yLC = Xprime[1];
-    D.zLC = Xprime[2];
-    fgDoDistortion->Fill(&D.sector);
-  }
-
   doingDistortion = tempDoingDist;
 }
 
-/// B field distortions in 3D ( no Table ) - calculate the distortions due to the shape of the B field
-/*!
-    Distortions are calculated point by point and integrated in real time.
-    This avoids the time required to set up a table of distorted values but
-    is slow for a very large number of points ( > 10,000 ).
-*/
+
+/**
+ * B field distortions in 3D - calculate the distortions due to the shape of the
+ * B field. Distortions are calculated point by point and integrated in real
+ * time. This avoids the time required to set up a table of distorted values but
+ * is slow for a very large number of points ( > 10,000 ).
+ */
 void MagFieldUtils::UndoBDistortion( const float x[], float Xprime[], int Sector )
 {
-
   // NOTE: x[],Xprime[] must be Cartesian for this function!
 
   double ah ;                                        // ah carries the sign opposite of E (for forward integration)
@@ -878,8 +817,8 @@ void MagFieldUtils::UndoBDistortion( const float x[], float Xprime[], int Sector
 
     if ( index != 4 ) index = 4; else index = 2 ;
   }
-
 }
+
 
 /// 2D - faster - B field distortions ( no Table ) - calculate the distortions due to the shape of the B field
 /*!
@@ -1017,7 +956,6 @@ void MagFieldUtils::FastUndoBDistortion( const float x[], float Xprime[], int Se
 */
 void MagFieldUtils::FastUndo2DBDistortion( const float x[], float Xprime[], int Sector )
 {
-
   static  float dR[EMap_nR][EMap_nZ], dRPhi[EMap_nR][EMap_nZ] ;
   static  int   ilow = 0, jlow = 0 ;
   const   int   ORDER  = 1 ;                      // Linear interpolation = 1, Quadratic = 2
@@ -1083,12 +1021,7 @@ void MagFieldUtils::FastUndo2DBDistortion( const float x[], float Xprime[], int 
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
-
-
 
 
 /// Twist distortion
@@ -1099,7 +1032,6 @@ void MagFieldUtils::FastUndo2DBDistortion( const float x[], float Xprime[], int 
  */
 void MagFieldUtils::UndoTwistDistortion( const float x[], float Xprime[], int Sector )
 {
-
   double        Zdrift ;
   int           sign ;
 
@@ -1125,6 +1057,7 @@ void MagFieldUtils::UndoTwistDistortion( const float x[], float Xprime[], int Se
 
   Xprime[2] = x[2] ;                                   // Subtract to undo the distortion
 }
+
 
 /// Pad row 13 distortion
 /*!
@@ -1236,6 +1169,7 @@ void MagFieldUtils::UndoPad13Distortion( const float x[], float Xprime[], int Se
   Xprime[2] = x[2] ;
 }
 
+
 /// PadRow 40 and/or PadRow 13 distortion correction
 /*!
     There is a gap between the inner and outer sectors that allow E field lines to
@@ -1280,7 +1214,6 @@ void MagFieldUtils::UndoPad13Distortion( const float x[], float Xprime[], int Se
 */
 void MagFieldUtils::UndoPad40Distortion( const float x[], float Xprime[], int Sector )
 {
-
   const int   ROWS           =   5401              ;   // Number of ROWS in the relaxation grid that created DataInTheGap. (must be ODD)
   const int   COLUMNS        =  10001              ;   // Number of COLUMNS in the relaxation grid that created DataInTheGap. (must be ODD)
   const int   SAVEDCOLUMNS   =   1001              ;   // Number of saved COLUMNS from DataInTheGap[].  The remainder are zeros. (must be ODD)
@@ -1335,9 +1268,9 @@ void MagFieldUtils::UndoPad40Distortion( const float x[], float Xprime[], int Se
     LOG_INFO << "MagFieldUtils::PadRow40   Filling tables ...\n" ;
     int OFFSET = (COLUMNS - SAVEDCOLUMNS) / 2 ;                                        // Explicitly plan for zero'd out data
 
-    for ( int MapID = 0 ; MapID < nMAPS ; MapID++ ) {                                  // Read maps and store locally
+    for (int MapID = 0; MapID < nMAPS; MapID++) {                                  // Read maps and store locally
 
-      GetGLWallData ( MapID, DataInTheGap ) ;
+      GetGLWallData(MapID, DataInTheGap);
 
       for ( int n = 1 ; n <= nTERMS ; n++ ) {                                        // Calculate Bn[] coefficients
         // Integrate by Simpsons Rule
@@ -1345,7 +1278,6 @@ void MagFieldUtils::UndoPad40Distortion( const float x[], float Xprime[], int Se
         sum = DataInTheGap[0] * std::sin(COEFFICIENT * OFFSET)                   ; // Addition of first point with wt=1
 
         for ( int i = 1 ; i < SAVEDCOLUMNS ; i += 2 ) sum += 4 * DataInTheGap[i] * std::sin(COEFFICIENT * (i + OFFSET)) ;
-
         for ( int i = 2 ; i < SAVEDCOLUMNS ; i += 2 ) sum += 2 * DataInTheGap[i] * std::sin(COEFFICIENT * (i + OFFSET)) ;
 
         sum -= DataInTheGap[SAVEDCOLUMNS - 1] * std::sin(COEFFICIENT * (SAVEDCOLUMNS - 1 + OFFSET)) ; // Subtraction of last point
@@ -1427,7 +1359,8 @@ void MagFieldUtils::UndoPad40Distortion( const float x[], float Xprime[], int Se
 
 }
 
-void MagFieldUtils::GetGLWallData ( const int select, float DataInTheGap[] )
+
+void MagFieldUtils::GetGLWallData(const int select, float DataInTheGap[])
 {
   //  The data were calculated on a grid with the following parameters.  The center of the gap is at point 5000.
   //
@@ -1866,20 +1799,18 @@ void MagFieldUtils::GetGLWallData ( const int select, float DataInTheGap[] )
       0.00466598,  0.00604298,  0.00730153,  0.00834322,  0.00908375,   0.0094582,  0.00942507,  0.00896876,  0.00810059,  0.00685796,
       0.00530207
     } ;
+
   const size_t thousandFloats = 1001 * sizeof(float);
 
   switch (select) {
-  case 3 : memcpy(DataInTheGap, output_113_113, thousandFloats); break;
-
-  case 2 : memcpy(DataInTheGap, output_diff_100, thousandFloats); break;
-
-  case 1 : memcpy(DataInTheGap, output_100_diff, thousandFloats); break;
-
-  case 0 :
-  default : memcpy(DataInTheGap, output_nowall_oldTPC, thousandFloats);
+    case 3 : memcpy(DataInTheGap, output_113_113, thousandFloats); break;
+    case 2 : memcpy(DataInTheGap, output_diff_100, thousandFloats); break;
+    case 1 : memcpy(DataInTheGap, output_100_diff, thousandFloats); break;
+    case 0 :
+    default: memcpy(DataInTheGap, output_nowall_oldTPC, thousandFloats);
   }
-
 }
+
 
 /// Clock distortion
 /*!
@@ -1913,10 +1844,6 @@ void MagFieldUtils::UndoClockDistortion( const float x[], float Xprime[], int Se
   Xprime[2] = x[2] ;
 
 }
-
-
-
-
 
 
 /// Membrane distortion
@@ -1960,10 +1887,6 @@ void MagFieldUtils::UndoMembraneDistortion( const float x[], float Xprime[], int
 }
 
 
-
-
-
-
 /// Endcap distortion
 /*!
 
@@ -2003,10 +1926,6 @@ void MagFieldUtils::UndoEndcapDistortion( const float x[], float Xprime[], int S
   // End of Deletion
 
 }
-
-
-
-
 
 
 /// IFC Shift Distortion
@@ -2092,12 +2011,7 @@ void MagFieldUtils::UndoIFCShiftDistortion( const float x[], float Xprime[], int
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
-
-
 
 
 /// Space Charge entry function
@@ -2122,7 +2036,6 @@ void MagFieldUtils::UndoIFCShiftDistortion( const float x[], float Xprime[], int
 */
 void MagFieldUtils::UndoSpaceChargeDistortion( const float x[], float Xprime[], int Sector )
 {
-
   if ((mDistortionMode & kSpaceCharge) && (mDistortionMode & kSpaceChargeR2)) {
     LOG_INFO << "MagFieldUtils ERROR **** Do not use kSpaceCharge and kSpaceChargeR2 at the same time\n" ;
     LOG_INFO << "MagFieldUtils ERROR **** These routines have overlapping functionality.\n" ;
@@ -2135,12 +2048,7 @@ void MagFieldUtils::UndoSpaceChargeDistortion( const float x[], float Xprime[], 
   else if (mDistortionMode & kSpaceChargeR2) {
     UndoSpaceChargeR2Distortion ( x, Xprime, Sector ) ;
   }
-
 }
-
-
-
-
 
 
 /// Space Charge Correction
@@ -2234,10 +2142,6 @@ void MagFieldUtils::UndoSpaceChargeR0Distortion( const float x[], float Xprime[]
 }
 
 
-
-
-
-
 /// 1/R**2 SpaceCharge Distortion
 /*!
   Space Charge distortion using space charge from a real event.  Any charge distribution can
@@ -2254,7 +2158,6 @@ void MagFieldUtils::UndoSpaceChargeR0Distortion( const float x[], float Xprime[]
 */
 void MagFieldUtils::UndoSpaceChargeR2Distortion( const float x[], float Xprime[], int Sector )
 {
-
   const int     ORDER       =    1 ;  // Linear interpolation = 1, Quadratic = 2
 
   float   Er_integral, Ephi_integral ;
@@ -2348,7 +2251,6 @@ void MagFieldUtils::UndoSpaceChargeR2Distortion( const float x[], float Xprime[]
         spaceR2Er[i][j] = save_Er[0] + (save_Er[1] - save_Er[0]) * (r - Rlist[ilow]) / GRIDSIZER ;
       }
     }
-
   }
 
   if (usingCartesian) Cart2Polar(x, r, phi);
@@ -2379,12 +2281,7 @@ void MagFieldUtils::UndoSpaceChargeR2Distortion( const float x[], float Xprime[]
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
-
-
 
 
 /// Abort Gap Cleaning Cycle space charge correction
@@ -2423,10 +2320,8 @@ void MagFieldUtils::UndoSpaceChargeR2Distortion( const float x[], float Xprime[]
 
   Original work by Gene VanBuren, Benjamin Kimelman and Jim Thomas
 */
-
 void MagFieldUtils::UndoAbortGapDistortion( const float x[], float Xprime[], int Sector, float TimeSinceDeposition )
 {
-
   const int       ORDER     =    1 ;   // Linear interpolation = 1, Quadratic = 2
 
   static  bool DoOnceLocal = true ;
@@ -2454,7 +2349,6 @@ void MagFieldUtils::UndoAbortGapDistortion( const float x[], float Xprime[], int
 
     if (AbortGapChargeSize == 0) { memcpy(Xprime, x, threeFloats);  return ; }
   }
-
 
   double fullDriftTime = TPC_Z0 / IonDriftVel;
 
@@ -2591,12 +2485,7 @@ void MagFieldUtils::UndoAbortGapDistortion( const float x[], float Xprime[], int
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2];
-
 }
-
-
-
-
 
 
 /// Shorted Ring Distortion
@@ -2805,12 +2694,7 @@ void MagFieldUtils::UndoShortedRingDistortion( const float x[], float Xprime[], 
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
-
-
 
 
 /// Gated Grid Voltage Error
@@ -2822,10 +2706,8 @@ void MagFieldUtils::UndoShortedRingDistortion( const float x[], float Xprime[], 
     Electrostatic Equations from SN0253 by Howard Wieman.
     Note that we use Howard's funny coordinate system where Z==0 at the GG.
 */
-
 void MagFieldUtils::UndoGGVoltErrorDistortion( const float x[], float Xprime[], int Sector )
 {
-
   const   int   ORDER     = 1     ;               // Linear interpolation = 1, Quadratic = 2
 
   float  Er_integral, Ephi_integral ;
@@ -2908,17 +2790,13 @@ void MagFieldUtils::UndoGGVoltErrorDistortion( const float x[], float Xprime[], 
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
 
 
 /// Interpolate a 2D table - 2D interpolation within a 2D TMatrix
 float MagFieldUtils::Interpolate2DTable( const int ORDER, const float x, const float y, const int nx, const int ny,
     const float XV[], const float YV[], const TMatrix &Array )
 {
-
   static  int jlow = 0, klow = 0 ;
   float save_Array[ORDER + 1]  ;
 
@@ -2926,11 +2804,9 @@ float MagFieldUtils::Interpolate2DTable( const int ORDER, const float x, const f
   mag_field_.Search( ny,  YV,  y,   klow  ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
   if ( klow < 0 ) klow = 0 ;
 
   if ( jlow + ORDER  >=    nx - 1 ) jlow =   nx - 1 - ORDER ;
-
   if ( klow + ORDER  >=    ny - 1 ) klow =   ny - 1 - ORDER ;
 
   for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
@@ -2939,14 +2815,13 @@ float MagFieldUtils::Interpolate2DTable( const int ORDER, const float x, const f
   }
 
   return ( mag_field_.Interpolate( &XV[jlow], save_Array, ORDER, x ) )   ;
-
 }
+
 
 /// Interpolate the E field map - 2D interpolation
 void MagFieldUtils::Interpolate2DEdistortion( const int ORDER, const float r, const float z,
     const float Er[EMap_nZ][EMap_nR], float &Er_value )
 {
-
   static  int jlow = 0, klow = 0 ;
   float save_Er[ORDER + 1] ;
 
@@ -2954,11 +2829,9 @@ void MagFieldUtils::Interpolate2DEdistortion( const int ORDER, const float r, co
   mag_field_.Search( EMap_nR,   eRList,  r,   klow   ) ;
 
   if ( jlow < 0 ) jlow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
   if ( klow < 0 ) klow = 0 ;
 
   if ( jlow + ORDER  >=    EMap_nZ - 1 ) jlow =   EMap_nZ - 1 - ORDER ;
-
   if ( klow + ORDER  >=    EMap_nR - 1 ) klow =   EMap_nR - 1 - ORDER ;
 
   for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
@@ -2966,15 +2839,14 @@ void MagFieldUtils::Interpolate2DEdistortion( const int ORDER, const float r, co
   }
 
   Er_value = mag_field_.Interpolate( &eZList[jlow], save_Er, ORDER, z )   ;
-
 }
+
 
 /// Interpolate the E field map - 3D interpolation
 void MagFieldUtils::Interpolate3DEdistortion( const int ORDER, const float r, const float phi, const float z,
     const float Er[EMap_nZ][EMap_nPhi][EMap_nR], const float Ephi[EMap_nZ][EMap_nPhi][EMap_nR],
     float &Er_value, float &Ephi_value )
 {
-
   static  int ilow = 0, jlow = 0, klow = 0 ;
   float save_Er[ORDER + 1],   saved_Er[ORDER + 1] ;
   float save_Ephi[ORDER + 1], saved_Ephi[ORDER + 1] ;
@@ -2984,16 +2856,12 @@ void MagFieldUtils::Interpolate3DEdistortion( const int ORDER, const float r, co
   mag_field_.Search( EMap_nR,   eRList,   r,   klow   ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
   if ( jlow < 0 ) jlow = 0 ;
-
   if ( klow < 0 ) klow = 0 ;
 
-  if ( ilow + ORDER  >=    EMap_nZ - 1 ) ilow =   EMap_nZ - 1 - ORDER ;
-
+  if ( ilow + ORDER  >=  EMap_nZ   - 1 ) ilow =   EMap_nZ - 1 - ORDER ;
   if ( jlow + ORDER  >=  EMap_nPhi - 1 ) jlow = EMap_nPhi - 1 - ORDER ;
-
-  if ( klow + ORDER  >=    EMap_nR - 1 ) klow =   EMap_nR - 1 - ORDER ;
+  if ( klow + ORDER  >=  EMap_nR   - 1 ) klow =   EMap_nR - 1 - ORDER ;
 
   for ( int i = ilow ; i < ilow + ORDER + 1 ; i++ ) {
     for ( int j = jlow ; j < jlow + ORDER + 1 ; j++ ) {
@@ -3007,7 +2875,6 @@ void MagFieldUtils::Interpolate3DEdistortion( const int ORDER, const float r, co
 
   Er_value     = mag_field_.Interpolate( &eZList[ilow], saved_Er, ORDER, z )    ;
   Ephi_value   = mag_field_.Interpolate( &eZList[ilow], saved_Ephi, ORDER, z )  ;
-
 }
 
 
@@ -3017,7 +2884,6 @@ float MagFieldUtils::Interpolate3DTable ( const int ORDER, const float x,    con
     const float XV[], const float YV[], const float ZV[],
     TMatrix** ArrayofArrays )
 {
-
   static  int ilow = 0, jlow = 0, klow = 0 ;
   float save_Array[ORDER + 1],  saved_Array[ORDER + 1] ;
 
@@ -3026,15 +2892,11 @@ float MagFieldUtils::Interpolate3DTable ( const int ORDER, const float x,    con
   mag_field_.Search( nz, ZV, z, klow   ) ;
 
   if ( ilow < 0 ) ilow = 0 ;   // artifact of Root's binsearch, returns -1 if out of range
-
   if ( jlow < 0 ) jlow = 0 ;
-
   if ( klow < 0 ) klow = 0 ;
 
   if ( ilow + ORDER  >=    nx - 1 ) ilow =   nx - 1 - ORDER ;
-
   if ( jlow + ORDER  >=    ny - 1 ) jlow =   ny - 1 - ORDER ;
-
   if ( klow + ORDER  >=    nz - 1 ) klow =   nz - 1 - ORDER ;
 
   for ( int k = klow ; k < klow + ORDER + 1 ; k++ ) {
@@ -3048,15 +2910,7 @@ float MagFieldUtils::Interpolate3DTable ( const int ORDER, const float x,    con
   }
 
   return ( mag_field_.Interpolate( &ZV[klow], saved_Array, ORDER, z ) )   ;
-
 }
-
-
-
-
-
-
-
 
 
 /// Solve Poisson's Equation by Relaxation Technique
@@ -3079,7 +2933,6 @@ float MagFieldUtils::Interpolate3DTable ( const int ORDER, const float x,    con
 void MagFieldUtils::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMatrix &EroverEzM,
                                         const int ITERATIONS )
 {
-
   const int    ROWS        =  ArrayVM.GetNrows() ;
   const int    COLUMNS     =  ArrayVM.GetNcols() ;
   const float  GRIDSIZER   =  (OFCRadius - IFCRadius) / (ROWS - 1) ;
@@ -3228,25 +3081,9 @@ void MagFieldUtils::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMatr
       }
     }
 
-
-    /* //JT test block for viewing histogams and solutions
-       TCanvas*  c1 =  new TCanvas("Volts","Volts",50,50,840,600) ;  // JT test
-       c1 -> cd() ;        // JT test
-       c1 -> Clear() ;
-       TH2F* h1  = new TH2F(ArrayVM)  ;  // JT test
-       h1 -> DrawCopy("lego") ;      // JT test
-       ArrayVM -> Draw("lego") ; // JT test
-       c1 -> Update() ;
-       LOG_INFO << "Hit any key to continue\n" ;  // JT test
-       char anychar ;    // JT test
-       cin  >> anychar ;   // JT test
-    */ //End JT test block
-
     // For asymmetric grid sizes, keep them coarse as long as possible to avoid excessive calculations
     if (i_one > j_one / 2) { i_one = i_one / 2 ; if ( i_one < 1 ) i_one = 1 ; }
-
     if (j_one > i_one    ) { j_one = j_one / 2 ; if ( j_one < 1 ) j_one = 1 ; }
-
   }
 
   float coef10, coef12 ;
@@ -3292,12 +3129,7 @@ void MagFieldUtils::PoissonRelaxation( TMatrix &ArrayVM, TMatrix &ChargeM, TMatr
       }
     }
   }
-
 }
-
-
-
-
 
 
 /// 3D - Solve Poisson's Equation in 3D by Relaxation Technique
@@ -3514,21 +3346,16 @@ void MagFieldUtils::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arra
                   // Note that this leaves a point at the upper left and lower right corners uninitialized.  Not a big deal.
                 }
               }
-
             }
           }
         }
-
       } // m phi slices for-loop
     } // k iterations for-loop
 
     // For asymmetric grid sizes, keep them coarse as long as possible to avoid excessive calculations
     if (iWillDivide) { i_one = i_one / 2 ; if ( i_one < 1 ) i_one = 1 ; }
-
     if (jWillDivide) { j_one = j_one / 2 ; if ( j_one < 1 ) j_one = 1 ; }
-
   }
-
 
   float coef10, coef11, coef12 ;
   coef10 = -0.5 / GRIDSIZER ;                // For differential in r
@@ -3578,9 +3405,6 @@ void MagFieldUtils::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arra
         }
       }
     }
-
-    // if ( m == 0 ) { TCanvas*  c1 =  new TCanvas("ErOverEz","ErOverEz",50,50,840,600) ;  c1 -> cd() ;
-    // ArrayofEroverEz[m]->Draw("surf") ; } // JT test
   }
 
   //Differentiate V(r) and solve for E(phi)
@@ -3636,20 +3460,12 @@ void MagFieldUtils::Poisson3DRelaxation( TMatrix** ArrayofArrayV, TMatrix** Arra
         }
       }
     }
-
-    // if ( m == 5 ) { TCanvas* c2 =  new TCanvas("ArrayE","ArrayE",50,50,840,600) ;  c2 -> cd() ;
-    // ArrayEM.Draw("surf") ; } // JT test
   }
-
 
   for ( int m = 0 ; m < PHISLICES ; m++ ) {
     ArrayofSumCharge[m] -> Delete() ;
   }
-
 }
-
-
-
 
 
 /// Convert from the old (Uniform) space charge correction to the new (1/R**2) space charge correction.
@@ -3687,7 +3503,6 @@ void MagFieldUtils::FixSpaceChargeDistortion ( const int Charge, const float x[3
     const Prime PrimaryOrGlobal, float x_new[3], float p_new[3],
     const unsigned int RowMask1, const unsigned int RowMask2, const float VertexError)
 {
-
   x_new[0] = x[0] ; x_new[1] = x[1] ; x_new[2] = x[2] ;          // Default is to do nothing
   p_new[0] = p[0] ; p_new[1] = p[1] ; p_new[2] = p[2] ;
   int sec;
@@ -3788,25 +3603,6 @@ void MagFieldUtils::FixSpaceChargeDistortion ( const int Charge, const float x[3
   FIT.SetParameter( 1, 0. );
   FIT.SetParameter( 2, 0. );
   gre.Fit("myFIT", "NQ") ;
-  /*
-  // Begin debugging plots
-  gre.Fit("myFIT","Q") ;  // Comment out previous gre.fit in order to see the fit on the plots
-  TCanvas* c1 = new TCanvas("A Simple Fit","The Fit", 250, 10, 700, 500) ;
-  c1  -> cd() ;
-  gre.Draw("A*") ;
-  c1  -> Update() ;
-
-  TCanvas* c2  = new TCanvas("The circles are OK","The circles ", 250, 800, 700, 500) ;
-  TGraph* gra  = new TGraph(index+1,Xtrack,Ytrack) ;
-  c2  -> cd() ;
-  gra -> SetMaximum(200) ;
-  gra -> SetMinimum(-200) ;
-  gra -> Draw("A*") ;  // Have to draw twice in order to get the Axis (?)
-  gra -> GetXaxis() -> SetLimits(-200.,200.) ;
-  gra -> Draw("A*") ;
-  c2  -> Update() ;
-  // End debugging plots
-  */
   double X0_new  =  X0 + FIT.GetParameter( 2 ) ;
   double Y0_new  =  Y0 + FIT.GetParameter( 1 ) ;
   double R0_new  =  R0 + FIT.GetParameter( 0 ) ;
@@ -3837,11 +3633,6 @@ void MagFieldUtils::FixSpaceChargeDistortion ( const int Charge, const float x[3
   p_new[2] *= Pt_new / ( Rotation * R0_new * count ) ;
 
 }
-
-
-
-
-
 
 
 /// Apply the (1/R**2) space charge correction to selected data from the microDSTs.
@@ -3891,7 +3682,6 @@ void MagFieldUtils::ApplySpaceChargeDistortion (const double sc, const int Charg
   const int   ROWS     = TPCROWS[sec - 1]  ;      // Total number of TPC rows per sector (Inner + Outer)
   const int   RefIndex =  7  ;        // Refindex 7 (TPCRow 8) is about where 1/R**2 has no effect on points (~97 cm radius).
   const int   MinHits  = 15  ;        // Minimum number of hits on a track.  If less than this, then no action taken.
-  const int   DEBUG    =  0  ;        // Turn on debugging statements and plots
 
   int    ChargeB ;
   float  B[3], Direction, xx[3], xxprime[3] ;
@@ -4009,23 +3799,6 @@ void MagFieldUtils::ApplySpaceChargeDistortion (const double sc, const int Charg
   gre.Fit("pol1", "Q") ;
   TF1* fit = gre.GetFunction("pol1" ) ;
 
-  if ( DEBUG ) {
-    // Begin debugging plots
-    TCanvas* c1  = new TCanvas("A Simple Fit", "The Fit", 250, 10, 700, 500) ;
-    c1  -> cd() ;
-    gre.Draw("A*") ;
-    c1  -> Update() ;
-    TCanvas* c2  = new TCanvas("The circles are OK", "The circles ", 250, 800, 700, 500) ;
-    TGraph* gra  = new TGraph( Index - PrimaryOrGlobal + 1, &Xprime[PrimaryOrGlobal], &Yprime[PrimaryOrGlobal] ) ;
-    c2  -> cd() ;
-    gra -> SetMaximum(200)  ;
-    gra -> SetMinimum(-200) ;
-    gra -> Draw("A*") ;  // Have to draw twice in order to get the Axis (?)
-    gra -> GetXaxis() -> SetLimits(-200., 200.) ;
-    gra -> Draw("A*") ;
-    c2  -> Update() ;
-  } // End debugging plots
-
   double X0_new  =  Xreference - ( fit->GetParameter(1) / ( 2.0 * fit->GetParameter(0) ) )  ;
   double Y0_new  =  Yreference + ( 1.0 / ( 2.0 * fit->GetParameter(0) ) ) ;
   double R0_new  =  std::sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
@@ -4072,7 +3845,6 @@ void MagFieldUtils::ApplySpaceChargeDistortion (const double sc, const int Charg
 
 /// PredictSpaceCharge - Input Physical-Signed DCA and get back spacecharge parameter plus a success or failure flag.
 /*!
-Add comments here.
 TPC Hits only.  Does not include SVT or SSD or any other inner tracking detectors.
 */
 int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, float VertexZ, float PseudoRapidity,
@@ -4082,7 +3854,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   const int   RefIndex         =   7  ;       // Refindex 7 (TPCRow 8) is about where 1/R**2 has no effect on points (~97 cm)
   const int   MinInnerTPCHits  =   5  ;       // Minimum number of hits on a track.  If less than this, then no action taken.
   const int   MinOuterTPCHits  =  10  ;       // Minimum number of hits on a track.  If less than this, then no action taken.
-  const int   DEBUG            =   0  ;       // Turn on debugging statements and plots
 
   unsigned int OneBit = 1 ;
   int InnerTPCHits = 0, OuterTPCHits = 0 ;
@@ -4232,23 +4003,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   gre.Fit("pol1", "Q") ;
   TF1* fit = gre.GetFunction("pol1" ) ;
 
-  if ( DEBUG ) {
-    // Begin debugging plots
-    TCanvas* c1  = new TCanvas("A Simple Fit", "The Fit", 250, 10, 700, 500) ;
-    c1  -> cd() ;
-    gre.Draw("A*") ;
-    c1  -> Update() ;
-    TCanvas* c2  = new TCanvas("The circles are OK", "The circles ", 250, 800, 700, 500) ;
-    TGraph* gra  = new TGraph( Index + 1, Xprime, Yprime ) ;
-    c2  -> cd() ;
-    gra -> SetMaximum(200)  ;
-    gra -> SetMinimum(-200) ;
-    gra -> Draw("A*") ;  // Have to draw twice in order to get the Axis (?)
-    gra -> GetXaxis() -> SetLimits(-200., 200.) ;
-    gra -> Draw("A*") ;
-    c2  -> Update() ;
-  } // End debugging plots
-
   double X0_new  =  Xreference - ( fit->GetParameter(1) / ( 2.0 * fit->GetParameter(0) ) )  ;
   double Y0_new  =  Yreference + ( 1.0 / ( 2.0 * fit->GetParameter(0) ) ) ;
   double R0_new  =  std::sqrt( (Xreference - X0_new) * (Xreference - X0_new) + (Yreference - Y0_new) * (Yreference - Y0_new) ) ;
@@ -4261,7 +4015,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   SpaceChargeR2 = tempSpaceChargeR2 ;
 
   return (0) ; // Success
-
 }
 
 
@@ -4304,7 +4057,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   const int   SSDLAYERS        =   1  ;       // Number of SSD layers
   const int   MinInnerTPCHits  =   5  ;       // Minimum number of hits on a track.  If less than this, then no action taken.
   const int   MinOuterTPCHits  =  10  ;       // Minimum number of hits on a track.  If less than this, then no action taken.
-  const int   DEBUG            =   0  ;       // Turn on debugging statements and plots
 
   const int   TPCOFFSET = INNERDETECTORS + SSDLAYERS + 1 ;   // Add one for the vertex in 0th position in RowMasks
   const int   BITS      = INNERDETECTORS + TPCROWS[sec - 1] + SSDLAYERS + 1 ; // Number of bits in the row masks (TPC Rows + etc.)
@@ -4357,8 +4109,10 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
 
   // but keep EWRatio that was previously defined
   if (DoOnce) {
-    xx[0] = TPCROWR[2][0]; xx[1] = 0; xx[2] = 50; // a dummy point in sector 3
-    DoDistortion ( xx, xxprime, 3 ) ;
+    xx[0] = TPCROWR[2][0];
+    xx[1] = 0;
+    xx[2] = 50; // a dummy point in sector 3
+    DoDistortion(xx, xxprime, 3) ;
   }
 
   int tempDistortionMode = mDistortionMode;
@@ -4513,23 +4267,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   double DCA_new = newDCA.GetParameter( 2 ) ;  // Negative means that (0,0) is inside the circle
   // End of circle fitting
 
-  if ( DEBUG ) {
-    // Begin debugging plots
-    TCanvas* c1  = new TCanvas("A Simple Fit", "The Fit", 250, 10, 700, 500) ;
-    TCanvas* c2  = new TCanvas("The circles are OK", "The circles ", 250, 800, 700, 500) ;
-    c1  -> cd() ;
-    gre.Draw("A*") ;
-    c1  -> Update() ;
-    TGraph* gra  = new TGraph( Index + 1, Xprime, Yprime ) ;
-    c2  -> cd() ;
-    gra -> SetMaximum(200)  ;
-    gra -> SetMinimum(-200) ;
-    //gra -> Draw("A*") ;  // Have to draw twice in order to get the Axis (?)
-    gra -> GetXaxis() -> SetLimits(-200., 200.) ;
-    gra -> Draw("A*") ;
-    c2  -> Update() ;
-  } // End debugging plots
-
   pSpace  =  (DCA * ChargeB) * SpaceChargeR2 / DCA_new ;    // Work with Physical-Signed DCA from Chain or MuDST
 
   // Restore settings for spacechargeR2
@@ -4538,7 +4275,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int sec, int Charge, float Pt, 
   mDistortionMode =  tempDistortionMode ;
 
   return (0) ; // Success
-
 }
 
 
@@ -4572,7 +4308,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int NHits, int Charge, float Pt
 
   const int   MinInnerTPCHits  =   5  ;       // Minimum number of hits on a track.  If less than this, then no action taken.
   const int   MinOuterTPCHits  =  10  ;       // Minimum number of hits on a track.  If less than this, then no action taken.
-  const int   DEBUG            =   0  ;       // Turn on debugging statements and plots
 
   pSpace  = 0 ;
 
@@ -4722,23 +4457,6 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int NHits, int Charge, float Pt
   double DCA_new = newDCA->GetParameter( 2 ) ;  // Negative means that (0,0) is inside the circle
   // End of circle fitting
 
-  if ( DEBUG ) {
-    // Begin debugging plots
-    TCanvas* c1  = new TCanvas("A Simple Fit", "The Fit", 250, 10, 700, 500) ;
-    TCanvas* c2  = new TCanvas("The circles are OK", "The circles ", 250, 800, 700, 500) ;
-    c1  -> cd() ;
-    gre.Draw("A*") ;
-    c1  -> Update() ;
-    TGraph* gra  = new TGraph( NHits, Xtrack, Ytrack ) ;
-    c2  -> cd() ;
-    gra -> SetMaximum(200)  ;
-    gra -> SetMinimum(-200) ;
-    //gra -> Draw("A*") ;  // Have to draw twice in order to get the Axis (?)
-    gra -> GetXaxis() -> SetLimits(-200., 200.) ;
-    gra -> Draw("A*") ;
-    c2  -> Update() ;
-  } // End debugging plots
-
   pSpace  =  (DCA * ChargeB) * SpaceChargeR2 / DCA_new ;    // Work with Physical-Signed DCA from Chain or MuDST
 
   // Restore settings for spacechargeR2
@@ -4747,15 +4465,10 @@ int MagFieldUtils::PredictSpaceChargeDistortion (int NHits, int Charge, float Pt
   mDistortionMode =  tempDistortionMode ;
 
   return (0) ; // Success
-
 }
 
 
-
-
-
 /// Check if integer is a power of 2
-
 int MagFieldUtils::IsPowerOfTwo(int i)
 {
   int j = 0;
@@ -4768,16 +4481,12 @@ int MagFieldUtils::IsPowerOfTwo(int i)
 }
 
 
-
-
-
 /// Calculate Sector Number from coordinate position if not already known.
 /*!
   Use this function only if sector number has not been passed into StMagUtilties by calling function.
   This function assumes that -z values are on the East end of the TPC.  This may not be true
   for pileup events.  SectorNumber from datatapes is better, if available.
 */
-
 void MagFieldUtils::SectorNumber( int &Sector, const float x[] )
 {
   if ( Sector > 0 ) return              ;  // Already valid
@@ -4785,6 +4494,8 @@ void MagFieldUtils::SectorNumber( int &Sector, const float x[] )
   float phi = (usingCartesian ? std::atan2(x[1], x[0]) : x[1]) ;
   SectorNumber( Sector, phi, x[2] )     ;
 }
+
+
 void MagFieldUtils::SectorNumber( int &Sector, float phi, const float z )
 {
   if ( Sector > 0 ) return              ;  // Already valid
@@ -4797,11 +4508,13 @@ void MagFieldUtils::SectorNumber( int &Sector, float phi, const float z )
   else if ( Sector == 0 ) Sector = 12   ;
 }
 
+
 /// Calculate Sector Side from Sector number (-1 for east, +1 for west)
 int MagFieldUtils::SectorSide( int &Sector, const float x[] )
 {
   return SectorSide(Sector, x[2]) ;
 }
+
 
 int MagFieldUtils::SectorSide( int &Sector, const float z )
 {
@@ -4828,9 +4541,6 @@ float MagFieldUtils::LimitZ( int &Sector, const float x[] )
 }
 
 
-
-
-
 /// Grid Leakage entry function
 /*!
   Call the appropriate GridLeak function based on distortion mode
@@ -4855,11 +4565,7 @@ void MagFieldUtils::UndoGridLeakDistortion( const float x[], float Xprime[], int
   else if (mDistortionMode & kFullGridLeak) {
     UndoFullGridLeakDistortion ( x, Xprime, Sector ) ;
   }
-
 }
-
-
-
 
 
 /// Grid Leakage Calculation
@@ -4871,7 +4577,6 @@ void MagFieldUtils::UndoGridLeakDistortion( const float x[], float Xprime[], int
 */
 void MagFieldUtils::Undo2DGridLeakDistortion( const float x[], float Xprime[], int Sector )
 {
-
   const  int     ORDER       =  1   ;  // Linear interpolation = 1, Quadratic = 2
   const  int     ROWS        =  513 ;  // ( 2**n + 1 )  eg. 65, 129, 257, 513, 1025  (513 or above for natural width gap)
   const  int     COLUMNS     =  129 ;  // ( 2**m + 1 )  eg. 65, 129, 257, 513
@@ -4969,12 +4674,7 @@ void MagFieldUtils::Undo2DGridLeakDistortion( const float x[], float Xprime[], i
   else { Xprime[0] = r; Xprime[1] = phi; }
 
   Xprime[2] = x[2] ;
-
 }
-
-
-
-
 
 
 /// 3D GridLeak Distortion Calculation
@@ -5188,9 +4888,6 @@ void MagFieldUtils::Undo3DGridLeakDistortion( const float x[], float Xprime[], i
   Xprime[2] = x[2] ;
 
 }
-
-
-
 
 
 /// Full GridLeak Distortion Calculation

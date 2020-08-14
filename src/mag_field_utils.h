@@ -12,9 +12,6 @@
 #include "TMatrix.h"
 #include "tpcrs/detail/mag_field.h"
 
-class TFile;
-class TNtuple;
-
 enum   EBField  { kUndefined = 0, kConstant = 1, kMapped = 2, kChain = 3 } ;
 enum   Prime    { IsPrimary = 0, IsGlobal = 1 } ;
 
@@ -55,7 +52,6 @@ enum   EBMapSizes {
   EMap_nPhi  =          13            // Number of Phi points in table ( add one for 360 == 0 )
 };
 
-class TDataSet ;
 class St_tpcHVPlanesC;
 class St_tpcCalibResolutionsC;
 class St_tpcHighVoltagesC;
@@ -63,7 +59,6 @@ class St_tpcOmegaTauC;
 class St_tpcGridLeakC;
 class St_spaceChargeCorC;
 class St_tpcChargeEventC;
-class TRandom;
 
 
 class MagFieldUtils
@@ -72,7 +67,7 @@ class MagFieldUtils
 
   const tpcrs::Configurator& cfg_;
   const CoordTransform& transform_;
-  tpcrs::detail::MagField mag_field_;
+  const tpcrs::detail::MagField mag_field_;
   St_spaceChargeCorC*        fSpaceCharge   ;
   St_spaceChargeCorC*        fSpaceChargeR2 ;
   St_tpcHighVoltagesC*       fTpcVolts      ;
@@ -198,8 +193,6 @@ class MagFieldUtils
   static   float ePhiList[EMap_nPhi] ;   // Note: These are initialized near CommonStart() in the .cxx file
   static   float eRList[EMap_nR]     ;
   static   float eZList[EMap_nZ]     ;
-  static   TNtuple* fgDoDistortion;
-  static   TNtuple* fgUnDoDistortion;
 
  public:
 
@@ -295,12 +288,10 @@ class MagFieldUtils
   float  CurrentSpaceChargeEWRatio() { return SpaceChargeEWRatio ; }
   bool   UpdateTPCHighVoltages();
   bool   UpdateShortedRing();
-  void     UseIterativeUndoDistortion(bool flag = true) { iterateDistortion = flag; }
+  void   UseIterativeUndoDistortion(bool flag = true) { iterateDistortion = flag; }
   float  GetConst_0() { return Const_0; }
   float  GetConst_1() { return Const_1; }
   float  GetConst_2() { return Const_2; }
-  static  void    SetDoDistortionT  (TFile* f = 0);
-  static  void    SetUnDoDistortionT(TFile* f = 0);
 
   void     Cart2Polar(const float* x, float &r, float &phi)
   {
