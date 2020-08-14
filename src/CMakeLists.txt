@@ -126,7 +126,7 @@ set(source_files
     particles/StZZeroBoson.cc
     coords.cpp
     mag_field.cpp
-    mag_field_utils.cpp
+    distorter.cpp
     dedx_correction.cpp
     dedx_parameterization.cpp
     simulator.cpp

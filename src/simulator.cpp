@@ -16,7 +16,6 @@
 #include "bichsel.h"
 #include "dedx_correction.h"
 #include "logger.h"
-#include "mag_field_utils.h"
 #include "math_funcs.h"
 #include "struct_containers.h"
 #include "track_helix.h"
@@ -38,7 +37,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
   cfg_(cfg),
   transform_(cfg_),
   digi_(cfg_),
-  mag_field_utils_(cfg_, transform_),
+  distorter_(cfg_),
   options_(0),
   dNdx_(),
   dNdx_log10_(),

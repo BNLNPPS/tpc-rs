@@ -8,12 +8,12 @@
 #include "TRandom.h"
 
 #include "tpcrs/tpcrs_core.h"
+#include "tpcrs/detail/distorter.h"
 #include "tpcrs/detail/mag_field.h"
 #include "coords.h"
 #include "dedx_correction.h"
 #include "struct_containers.h"
 #include "track_helix.h"
-#include "mag_field_utils.h"
 
 
 namespace tpcrs { namespace detail {
@@ -66,7 +66,7 @@ class Simulator
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
   tpcrs::DigiChannelMap digi_;
-  MagFieldUtils mag_field_utils_;
+  Distorter distorter_;
 
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI(double t, double t0, double tau_I, double tau_C);
@@ -336,10 +336,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
 
   // Distortions
   if (TESTBIT(options_, kDistortion)) {
-    float pos[3] = {(float ) coorLT.position.x, (float ) coorLT.position.y, (float ) coorLT.position.z};
-    float posMoved[3];
-    mag_field_utils_.DoDistortion(pos, posMoved, sector); // input pos[], returns posMoved[]
-    coorLT.position = {posMoved[0], posMoved[1], posMoved[2]};       // after distortions
+    coorLT.position = distorter_.Distort(coorLT.position);
     transform_.local_to_global(coorLT, xyzG);
   }
 
