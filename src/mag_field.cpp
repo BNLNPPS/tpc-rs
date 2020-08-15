@@ -233,7 +233,7 @@ void MagField::InterpolateField3D(float r, float z, float phi,
 /**
  * Interpolate a 3x2 table (quadratic) or a 2x2 table (linear)
  */
-float MagField::Interpolate(const float Xarray[], const float Yarray[], int order, const float x ) const
+float MagField::Interpolate(const float Xarray[], const float Yarray[], int order, const float x )
 {
   float y;
 

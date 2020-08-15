@@ -178,7 +178,7 @@ class Simulator
 template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized)
 {
-  MagField mag_field(cfg_, tpcrs::detail::MagField::MagFieldType::kMapped, cfg_.S<MagFactor>().ScaleFactor);
+  MagField mag_field(cfg_);
   return Digitize(first_hit, last_hit, digitized, mag_field);
 }
 

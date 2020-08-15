@@ -12,7 +12,9 @@ class MagField
 
   enum class MagFieldType {kConstant, kMapped};
 
-  MagField(const tpcrs::Configurator& cfg, MagFieldType field_type = MagFieldType::kMapped, double scale = 1);
+  MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, double scale);
+
+  MagField(const tpcrs::Configurator& cfg) : MagField(cfg, MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor) {}
 
 
   /**
@@ -47,7 +49,7 @@ class MagField
   void GetFieldValue3D(const float x[3], float B[3]) const;
 
   static void Search(int N, const float Xarray[], float x, int &low);
-  float Interpolate(const float Xarray[], const float Yarray[], int order, const float x) const;
+  static float Interpolate(const float Xarray[], const float Yarray[], int order, const float x);
 
  private:
 
