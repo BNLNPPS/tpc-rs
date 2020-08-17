@@ -17,6 +17,7 @@ float VoltagePadrow(int sector, int row, const Configurator& cfg);
 float GainCorrection(int sector, int row, const Configurator& cfg);
 float DriftVelocity(int sector, const Configurator& cfg);
 bool IsInner(int row, const Configurator& cfg);
+TPC::Half DetectorSide(int sector, const Configurator& cfg);
 double RadialDistanceAtRow(int row, const Configurator& cfg);
 
 }

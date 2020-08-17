@@ -674,19 +674,21 @@ float GainCorrection(int sector, int row, const tpcrs::Configurator& cfg)
 
 float DriftVelocity(int sector, const Configurator& cfg)
 {
-  using tpcrs::TPC;
-
-  TPC::Half half = (sector <= 12 ? TPC::Half::first : TPC::Half::second);
-
   const tpcDriftVelocity& dv = cfg.S<tpcDriftVelocity>();
   float drift_velocity;
 
-  if (half == TPC::Half::first)
+  if (DetectorSide(sector, cfg) == TPC::Half::first)
     drift_velocity = dv.laserDriftVelocityWest > 0 ? dv.laserDriftVelocityWest : dv.cathodeDriftVelocityWest;
   else
     drift_velocity = dv.laserDriftVelocityEast > 0 ? dv.laserDriftVelocityEast : dv.cathodeDriftVelocityEast;
 
   return 1e6 * drift_velocity;
+}
+
+
+TPC::Half DetectorSide(int sector, const Configurator& cfg)
+{
+  return sector <= 12 ? TPC::Half::first : TPC::Half::second;
 }
 
 
