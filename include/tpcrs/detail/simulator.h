@@ -132,7 +132,7 @@ class Simulator
 
   std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
 
-  Coords TransportToReadout(const Coords c, double OmegaTau, bool& missed_readout, bool& is_ground_wire);
+  Coords TransportToReadout(const Coords c, double omega_tau, bool& missed_readout, bool& is_ground_wire);
 
   double dEdxCorrection(const TrackSegment &segment);
 

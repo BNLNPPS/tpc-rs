@@ -758,10 +758,10 @@ void Simulator::LoopOverElectronsInCluster(
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
-  double OmegaTau = cfg_.S<TpcResponseSimulator>().OmegaTau *
+  double omega_tau = cfg_.S<TpcResponseSimulator>().OmegaTau *
                       segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
   double driftLength = std::abs(segment.coorLS.position.z);
-  double D = 1. + OmegaTau * OmegaTau;
+  double D = 1. + omega_tau * omega_tau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
   double SigmaT = cfg_.S<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
   double sigmaJitterX = tpcrs::IsInner(row, cfg_) ?  cfg_.S<TpcResponseSimulator>().SigmaJitterXI :
@@ -799,7 +799,7 @@ void Simulator::LoopOverElectronsInCluster(
     bool missed_readout = false;
     bool is_ground_wire = false;
 
-    Coords at_readout = TransportToReadout(xyzE.position, OmegaTau, missed_readout, is_ground_wire);
+    Coords at_readout = TransportToReadout(xyzE.position, omega_tau, missed_readout, is_ground_wire);
 
     if (missed_readout) continue;
 
@@ -905,7 +905,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 }
 
 
-Coords Simulator::TransportToReadout(const Coords c, double OmegaTau, bool& missed_readout, bool& is_ground_wire)
+Coords Simulator::TransportToReadout(const Coords c, double omega_tau, bool& missed_readout, bool& is_ground_wire)
 {
   Coords readout;
   missed_readout = false;
@@ -939,9 +939,9 @@ Coords Simulator::TransportToReadout(const Coords c, double OmegaTau, bool& miss
   int iGroundWire = int(std::abs(10.*dist2Grid));
   double distFocused = std::copysign(0.05 + 0.1 * iGroundWire, dist2Grid);
 
-  // OmegaTau near wires taken from comparison with data
-  double tanLorentz = (c.y < firstOuterSectorAnodeWire) ? OmegaTau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleI :
-                                                          OmegaTau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleO;
+  // omega_tau near wires taken from comparison with data
+  double tanLorentz = (c.y < firstOuterSectorAnodeWire) ? omega_tau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleI :
+                                                          omega_tau / cfg_.S<TpcResponseSimulator>().OmegaTauScaleO;
 
   readout.x = c.x + distFocused * tanLorentz; // tanLorentz near wires taken from comparison with data
   readout.z = c.z + std::abs(distFocused);
