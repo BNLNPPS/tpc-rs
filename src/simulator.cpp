@@ -37,7 +37,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
   cfg_(cfg),
   transform_(cfg_),
   digi_(cfg_),
-  distorter_(cfg_),
   options_(0),
   dNdx_(),
   dNdx_log10_(),

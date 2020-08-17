@@ -66,7 +66,6 @@ class Simulator
   const tpcrs::Configurator& cfg_;
   const CoordTransform transform_;
   tpcrs::DigiChannelMap digi_;
-  Distorter distorter_;
 
   static double shapeEI(double* x, double* par = 0);
   static double shapeEI(double t, double t0, double tau_I, double tau_C);
@@ -335,8 +334,10 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
   transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
 
   // Distortions
+  static Distorter distorter(cfg_, mag_field.ValueAt(Coords{0, 0, 0}).z);
+
   if (TESTBIT(options_, kDistortion)) {
-    coorLT.position = distorter_.Distort(coorLT.position);
+    coorLT.position = distorter.Distort(coorLT.position, coorLT.sector, mag_field);
     transform_.local_to_global(coorLT, xyzG);
   }
 
