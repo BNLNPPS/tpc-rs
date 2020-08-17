@@ -8,6 +8,7 @@
 #include "TRandom.h"
 
 #include "tpcrs/tpcrs_core.h"
+#include "tpcrs/detail/mag_field.h"
 #include "coords.h"
 #include "dedx_correction.h"
 #include "struct_containers.h"
@@ -35,8 +36,8 @@ class Simulator
 
  private:
 
-  template<typename InputIt, typename OutputIt1, typename OutputIt2>
-  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted);
+  template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field);
 
   struct TrackSegment {
     int charge;
@@ -110,10 +111,11 @@ class Simulator
   void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail);
   void SimulateAsic(std::vector<short>& ADC);
 
-  template<typename InputIt>
-  void CreateTrackSegments(InputIt, InputIt, std::vector<TrackSegment>&);
+  template<typename InputIt, typename MagField>
+  void CreateTrackSegments(InputIt, InputIt, std::vector<TrackSegment>&, const MagField& mag_field);
 
-  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit);
+  template<typename MagField>
+  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field);
 
   double CalcBaseGain(int sector, int row);
   double CalcLocalGain(const TrackSegment& segment);
@@ -176,7 +178,7 @@ class Simulator
 template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized)
 {
-  MagField mag_field(cfg_);
+  MagField mag_field(cfg_, tpcrs::detail::MagField::MagFieldType::kMapped, cfg_.S<MagFactor>().ScaleFactor);
   return Digitize(first_hit, last_hit, digitized, mag_field);
 }
 
@@ -185,7 +187,7 @@ template<typename InputIt, typename OutputIt, typename MagField>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field)
 {
   std::vector<tpcrs::DistortedHit> dummy;
-  Simulate(first_hit, last_hit, digitized, std::back_inserter(dummy));
+  Simulate(first_hit, last_hit, digitized, std::back_inserter(dummy), mag_field);
   return digitized;
 }
 
@@ -193,14 +195,15 @@ OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digit
 template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted)
 {
+  tpcrs::detail::MagField mag_field(cfg_);
   std::vector<tpcrs::DigiHit> dummy;
-  Simulate(first_hit, last_hit, std::back_inserter(dummy), distorted);
+  Simulate(first_hit, last_hit, std::back_inserter(dummy), distorted, mag_field);
   return distorted;
 }
 
 
-template<typename InputIt, typename OutputIt1, typename OutputIt2>
-void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted)
+template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
+void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field)
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -223,7 +226,7 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
     bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
 
     if (start_new_track || next_hit == last_hit) {
-      CreateTrackSegments(first_hit_on_track, next_hit, segments_in_sector);
+      CreateTrackSegments(first_hit_on_track, next_hit, segments_in_sector, mag_field);
       first_hit_on_track = next_hit;
 
       if ( (sector_boundary || next_hit == last_hit ) && segments_in_sector.size() != 0) {
@@ -288,12 +291,12 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 }
 
 
-template<typename InputIt>
-void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::vector<TrackSegment>& segments)
+template<typename InputIt, typename MagField>
+void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::vector<TrackSegment>& segments, const MagField& mag_field)
 {
   for (auto ihit = first_hit; ihit != last_hit; ++ihit)
   {
-    TrackSegment curr_segment = CreateTrackSegment(*ihit);
+    TrackSegment curr_segment = CreateTrackSegment(*ihit, mag_field);
 
     if (curr_segment.charge == 0) continue;
     if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > digi_.n_timebins) continue;
@@ -303,7 +306,8 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::ve
 }
 
 
-Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
+template<typename MagField>
+Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field)
 {
   int sector = hit.volume_id % 10000 / 100;
 
@@ -320,13 +324,12 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit)
   transform_.global_to_local(xyzG, coorLT, sector, coorS.row);
 
   // Get magnetic field at the hit position
-  float B_field[3];
-  mag_field_utils_.GetFieldValue(hit.x, B_field);
+  auto B_field = mag_field.ValueAt( Coords{hit.x[0], hit.x[1], hit.x[2]});
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
   StGlobalDirection dirG{pxyzG.unit()};
-  StGlobalDirection BG{B_field[0], B_field[1], B_field[2]};
+  StGlobalDirection BG{B_field.x, B_field.y, B_field.z};
   transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);
   transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
 
