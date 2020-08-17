@@ -372,18 +372,6 @@ struct St_tpcGridLeakC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcGridLea
   }
 };
 
-struct St_tpcHighVoltagesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHighVoltagesC, tpcHighVoltages> {
-  St_tpcHighVoltagesC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHighVoltagesC, tpcHighVoltages>(cfg) {}
-  float 	cathode(int i = 0)          {return Struct(i)->cathode;}
-  float 	gatedGridRef(int i = 0)     {return Struct(i)->gatedGridRef;}
-  float* 	gridLeakWallTip(int i = 0)  {return Struct(i)->gridLeakWallTip;}
-  float* 	gridLeakWallSide(int i = 0) {return Struct(i)->gridLeakWallSide;}
-  double      getCathodeVoltage()           {return cathode();}
-  double      getGGVoltage()                {return gatedGridRef();}
-  double      getGridLeakWallTip(int sector = 1)  {return gridLeakWallTip()[sector-1];}
-  double      getGridLeakWallSide(int sector = 1) {return gridLeakWallSide()[sector-1];}
-};
-
 struct St_tpcHVPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHVPlanesC, tpcHVPlanes> {
   St_tpcHVPlanesC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcHVPlanesC, tpcHVPlanes>(cfg) {}
 };
@@ -402,17 +390,6 @@ struct St_tpcMethaneInC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_tpcMethaneIn
 
 struct St_TpcMultiplicityC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcMultiplicityC, tpcCorrection> {
   St_TpcMultiplicityC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcMultiplicityC, tpcCorrection>(cfg) {}
-};
-
-struct St_tpcOmegaTauC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTauC, tpcOmegaTau> {
-  St_tpcOmegaTauC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcOmegaTauC, tpcOmegaTau>(cfg) {}
- public:
-  float 	tensorV1(int i = 0) 	     {return Struct(i)->tensorV1;}
-  float 	tensorV2(int i = 0) 	     {return Struct(i)->tensorV2;}
-  float 	getOmegaTauTensorV1()        {return tensorV1();}
-  float 	getOmegaTauTensorV2()        {return tensorV2();}
-  unsigned int        distortionCorrectionsMode(int i = 0)
-                                             {return Struct(i)->distortionCorrectionsMode;}
 };
 
 struct St_TpcPadCorrectionMDF : tpcrs::ConfigStruct<St_MDFCorrectionC, St_TpcPadCorrectionMDF, MDFCorrection> {

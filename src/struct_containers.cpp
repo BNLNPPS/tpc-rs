@@ -14,7 +14,6 @@ template<> std::string tpcrs::ConfigStruct<St_ ## STRUCT ## C, CLASS , STRUCT>::
 
 MakeChairInstance(TpcEffectivedX,Calibrations/tpc/TpcEffectivedX);
 MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
-MakeChairInstance(tpcOmegaTau,Calibrations/tpc/tpcOmegaTau);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowBC,Calibrations/tpc/TpcSecRowB);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowCC,Calibrations/tpc/TpcSecRowC);
 MakeChairInstance(tpcChargeEvent,Calibrations/tpc/tpcChargeEvent);
@@ -324,7 +323,6 @@ double St_MDFCorrectionC::EvalFactor(int k, int p, double x) const {
   return r;
 }
 
-MakeChairInstance(tpcHighVoltages,Calibrations/tpc/tpcHighVoltages);
 MakeChairInstance(tpcAnodeHV,Calibrations/tpc/tpcAnodeHV);
 
 void  St_tpcAnodeHVC::sockets(int sector, int padrow, int &e1, int &e2, float &f2) {
