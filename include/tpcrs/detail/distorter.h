@@ -70,8 +70,8 @@ class Distorter
     dcfg_(cfg, mag_field_z)
   {}
 
-  template<typename Vec3>
-  Vec3 Distort(Vec3 p) const;
+  template<typename Vec3, typename MagField>
+  Vec3 Distort(Vec3 p, int sector, const MagField& mag_field) const;
 
  private:
 
@@ -82,29 +82,67 @@ class Distorter
   DistorterConfigurator dcfg_;
 
   /** Distortion due to the shape of the magnetic field */
-  template<typename Vec3>
-  Vec3 DistortDueMagneticField(Vec3 p) const;
+  template<typename Vec3, typename MagField>
+  Vec3 DistortDueMagneticField(Vec3 p, int sector, const MagField& mag_field) const;
 };
 
 
-
-template<typename Vec3>
-Vec3 Distorter::Distort(Vec3 p) const
+template<typename Vec3, typename MagField>
+Vec3 Distorter::Distort(Vec3 p, int sector, const MagField& mag_field) const
 {
-  Vec3 p_prime{};
+  Vec3 p_prime = p;
 
   if ( distortions_.test(Distortions::kMagneticField) ) {
-    p_prime = DistortDueMagneticField(p);
+    p_prime = DistortDueMagneticField(p, sector, mag_field);
   }
 
   return p_prime;
 }
 
 
-template<typename Vec3>
-Vec3 Distorter::DistortDueMagneticField(Vec3 p) const
+/**
+ * Integrate backwards from TPC plane to the point the electron cluster was
+ * born.
+ */
+template<typename Vec3, typename MagField>
+Vec3 Distorter::DistortDueMagneticField(Vec3 p, int sector, const MagField& mag_field) const
 {
-  return p;
+  int sign = DetectorSide(sector, cfg_) == TPC::Half::first ? +1 : -1;
+
+  // Prepare for different readout planes
+  Vec3 p_prime{p.x, p.y, sign * dcfg_.readout_plane_z};
+
+  // Determine the number of steps and ah (to be about 1.0 cm), n_steps must be
+  // odd. ah carries the sign opposite of E (for forward integration)
+  double ah;
+  int n_steps;
+  for (n_steps = 5 ; n_steps < 1000 ; n_steps += 2 ) {
+    // Going Backwards! See note above.
+    ah = (p.z - sign * dcfg_.readout_plane_z) / (n_steps - 1);
+
+    if (std::abs(ah) < 1) break;
+  }
+
+  // Simpson's integration loop
+  int flag = 1;
+
+  for (int i = 1; i <= n_steps; ++i) {
+    if (i == n_steps) flag = 1 ;
+
+    p_prime.z += flag * (ah/3);
+
+    // Work in kGauss, cm, use Cartesian coordinates
+    auto B = mag_field.ValueAt(p_prime);
+
+    if (std::abs(B.z) > 0.001) {
+      p_prime.x += flag * (ah/3) * (dcfg_.const_2 * B.x - dcfg_.const_1 * B.y) / B.z;
+      p_prime.y += flag * (ah/3) * (dcfg_.const_2 * B.y + dcfg_.const_1 * B.x) / B.z;
+    }
+
+    flag = (flag != 4 ? 4 : 2);
+  }
+
+  return p_prime;
 }
 
 } }
