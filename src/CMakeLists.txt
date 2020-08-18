@@ -1,14 +1,5 @@
 configure_file(config.h.in config.h @ONLY)
 
-set(header_files
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/configurator.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/config_type.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/config_yaml.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/tpcrs_core.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/tpcrs.h
-    ${TPCRS_SOURCE_DIR}/include/tpcrs/detail/simulator.h
-)
-
 set(source_files
     particles/StParticleTable.cc
     particles/StParticleDefinition.cc
@@ -139,7 +130,7 @@ set(source_files
     track_helix.cpp
 )
 
-add_library(tpcrs ${header_files} ${source_files})
+add_library(tpcrs ${source_files})
 
 target_include_directories(tpcrs
     INTERFACE
@@ -183,7 +174,7 @@ set(data_files
 )
 
 install(DIRECTORY ${YAML_CPP_INSTALL_PREFIX}/include/yaml-cpp DESTINATION ${TPCRS_INC_INSTALL_DIR}/contrib)
+install(DIRECTORY ${TPCRS_SOURCE_DIR}/include/tpcrs/ DESTINATION ${TPCRS_INC_INSTALL_DIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h DESTINATION ${TPCRS_INC_INSTALL_DIR})
-install(FILES ${header_files} DESTINATION ${TPCRS_INC_INSTALL_DIR})
 install(FILES ${data_files}   DESTINATION ${TPCRS_DATA_INSTALL_DIR})
 install(FILES ${version_file} DESTINATION ${TPCRS_CMAKE_CONFIG_INSTALL_DIR})
