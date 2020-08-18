@@ -289,20 +289,6 @@ struct tpcCalibResolutions {
 	char comment[255]; /* comments */
 };
 
-/** Table of events depositing significant charge into the TPC;
-                    bunchCrossing is stored as 32bit pairs because no 64bit integer
-                    works with the database, i.e. the first bunch crissing is actually
-                    (eventBunchCrossingsHigh[0] << 32)  eventBunchCrossingsLow[0]
-                    with appropriate 32to64 conversion before bitshifting
- */
-struct tpcChargeEvent {
-	int nChargeEvents; /* number of charge events in this record */
-	unsigned int eventBunchCrossingsLow[4096]; /* number of bunches into the run when charge event occurred (32 low bits) */
-	unsigned int eventBunchCrossingsHigh[4096]; /* number of bunches into the run when charge event occurred (32 high bits) */
-	float eventCharges[4096]; /* metric of magnitude of charge deposited in TPC */
-	int badBunch; /* collider bunch where most of the charge events occurred */
-};
-
 /** Drift Distance depended correction
  type = 0 polymonical fit,                                        use only [min,max]
  type = 1 TChebyshev poly in range [min,max] => [-1,1]

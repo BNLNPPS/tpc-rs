@@ -16,7 +16,6 @@ MakeChairInstance(TpcEffectivedX,Calibrations/tpc/TpcEffectivedX);
 MakeChairInstance(tpcGridLeak,Calibrations/tpc/tpcGridLeak);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowBC,Calibrations/tpc/TpcSecRowB);
 MakeChairInstance2(TpcSecRowCor,St_TpcSecRowCC,Calibrations/tpc/TpcSecRowC);
-MakeChairInstance(tpcChargeEvent,Calibrations/tpc/tpcChargeEvent);
 MakeChairInstance(tpcSCGL,Calibrations/tpc/tpcSCGL);
 
 

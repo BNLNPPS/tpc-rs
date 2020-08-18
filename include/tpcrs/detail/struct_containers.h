@@ -190,32 +190,6 @@ struct St_TpcAvgPowerSupplyC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_TpcA
   float       AcChargeRowL(int sector = 1, int row = 1) {return AcChargeL(sector, tpcrs::ChannelFromRow(row));}
 };
 
-struct St_tpcChargeEventC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent> {
-  St_tpcChargeEventC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcChargeEventC, tpcChargeEvent>(cfg) {}
-  int nChargeEvents()                            {return Struct()->nChargeEvents;}
-  unsigned int* eventBunchCrossingsLow()         {return Struct()->eventBunchCrossingsLow;}
-  unsigned int* eventBunchCrossingsHigh()        {return Struct()->eventBunchCrossingsHigh;}
-  float* eventCharges()                          {return Struct()->eventCharges;}
-  int badBunch()                                 {return Struct()->badBunch;}
-
-  unsigned int eventBunchCrossingLow(int idx)    {return eventBunchCrossingsLow()[idx]; }
-  unsigned int eventBunchCrossingHigh(int idx)   {return eventBunchCrossingsHigh()[idx]; }
-  unsigned long long eventBunchCrossing(int idx) {return (((unsigned long long) (eventBunchCrossingHigh(idx))) << 32)
-                                                        + ((unsigned long long) (eventBunchCrossingLow(idx))); }
-  float eventCharge(int idx)                     {return eventCharges()[idx];}
-
-  TArrayF* getCharges() { return &localStoreCharges; }
-  TArrayD* getTimes() { return &localStoreTimesSinceCharges; }
-
- private:
-  int localSearchLowerIndex = 0;
-  int localSearchUpperIndex = -1;
-  float localStoreCharge = 0; //!
-  double localStoreTimeSinceCharge = 0; //!
-  TArrayF localStoreCharges; //!
-  TArrayD localStoreTimesSinceCharges; //!
-};
-
 struct St_tpcCorrectionC : tpcrs::IConfigStruct
 {
   virtual tpcCorrection* Struct(int i = 0) const = 0;

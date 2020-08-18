@@ -657,42 +657,6 @@ struct convert<tpcPadPlanes> {
 
 namespace YAML {
 template<>
-struct convert<tpcChargeEvent> {
-  static Node encode(const tpcChargeEvent& st) {
-    Node node;
-    
-    node["nChargeEvents"] = st.nChargeEvents;
-    node["eventBunchCrossingsLow"] = reinterpret_cast<const array<unsigned int, 4096>&>( st.eventBunchCrossingsLow );
-    node["eventBunchCrossingsLow"].SetStyle(YAML::EmitterStyle::Flow);
-    node["eventBunchCrossingsHigh"] = reinterpret_cast<const array<unsigned int, 4096>&>( st.eventBunchCrossingsHigh );
-    node["eventBunchCrossingsHigh"].SetStyle(YAML::EmitterStyle::Flow);
-    node["eventCharges"] = reinterpret_cast<const array<float, 4096>&>( st.eventCharges );
-    node["eventCharges"].SetStyle(YAML::EmitterStyle::Flow);
-    node["badBunch"] = st.badBunch;
-    return node;
-  };
-
-  static bool decode(const Node& node, tpcChargeEvent& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.nChargeEvents = node["nChargeEvents"].as<int>();
-    auto eventBunchCrossingsLow = node["eventBunchCrossingsLow"].as<array<unsigned int, 4096>>();
-    copy(begin(eventBunchCrossingsLow), end(eventBunchCrossingsLow), reinterpret_cast<unsigned int*>(st.eventBunchCrossingsLow));
-    auto eventBunchCrossingsHigh = node["eventBunchCrossingsHigh"].as<array<unsigned int, 4096>>();
-    copy(begin(eventBunchCrossingsHigh), end(eventBunchCrossingsHigh), reinterpret_cast<unsigned int*>(st.eventBunchCrossingsHigh));
-    auto eventCharges = node["eventCharges"].as<array<float, 4096>>();
-    copy(begin(eventCharges), end(eventCharges), reinterpret_cast<float*>(st.eventCharges));
-    st.badBunch = node["badBunch"].as<int>();
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
 struct convert<tpcDriftVelocity> {
   static Node encode(const tpcDriftVelocity& st) {
     Node node;
