@@ -421,17 +421,6 @@ float St_TpcAvgPowerSupplyC::AcChargeL(int sector, int channel) {
   return AcCharge(sector,channel)/Length[channel-1];
 }
 
-MakeChairInstance(tpcAnodeHVavg,Calibrations/tpc/tpcAnodeHVavg);
-
-
-float St_tpcAnodeHVavgC::voltage(int i) const {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().is_missing) {
-     LOG_ERROR << "St_tpcAnodeHVavgC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
-  }
-  return Struct(i)->voltage;
-}
-
-
 MakeChairInstance2(tpcCorrection,St_tpcGainCorrectionC,Calibrations/tpc/tpcGainCorrection);
 MakeChairInstance(TpcAvgCurrent,Calibrations/tpc/TpcAvgCurrent);
 
