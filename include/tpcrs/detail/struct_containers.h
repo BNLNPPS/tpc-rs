@@ -522,26 +522,3 @@ struct St_TpcZCorrectionBC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZCorre
 struct St_TpcZDCC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZDCC, tpcCorrection> {
   St_TpcZDCC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcZDCC, tpcCorrection>(cfg) {}
 };
-
-struct St_trigDetSumsC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>
-{
-  St_trigDetSumsC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_trigDetSumsC, trigDetSums>(cfg) {}
-  unsigned int 	timeOffset(int i = 0) 	{return Struct(i)->timeOffset;}
-  double 	ctbWest(int i = 0) 	        {return Struct(i)->ctbWest;}
-  double 	ctbEast(int i = 0) 	        {return Struct(i)->ctbEast;}
-  double 	ctbTOFp(int i = 0) 	        {return Struct(i)->ctbTOFp;}
-  double 	tofp(int i = 0) 	        {return Struct(i)->tofp;}
-  double 	zdcWest(int i = 0) 	        {return Struct(i)->zdcWest;}
-  double 	zdcEast(int i = 0) 	        {return Struct(i)->zdcEast;}
-  double 	zdcX(int i = 0) 	        {return Struct(i)->zdcX;}
-  double 	mult(int i = 0) 	        {return Struct(i)->mult;}
-  double 	L0(int i = 0) 	        {return Struct(i)->L0;}
-  double 	bbcX(int i = 0) 	        {return Struct(i)->bbcX;}
-  double 	bbcXctbTOFp(int i = 0) 	{return Struct(i)->bbcXctbTOFp;}
-  double 	bbcWest(int i = 0) 	        {return Struct(i)->bbcWest;}
-  double 	bbcEast(int i = 0) 	        {return Struct(i)->bbcEast;}
-  double 	bbcYellowBkg(int i = 0) 	{return Struct(i)->bbcYellowBkg;}
-  double 	bbcBlueBkg(int i = 0) 	{return Struct(i)->bbcBlueBkg;}
-  double 	pvpdWest(int i = 0) 	        {return Struct(i)->pvpdWest;}
-  double 	pvpdEast(int i = 0) 	        {return Struct(i)->pvpdEast;}
-};

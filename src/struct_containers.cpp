@@ -501,8 +501,6 @@ int St_tpcRDOMapC::rdo(int padrow, int pad) const {
   return rdo;
 }
 
-MakeChairInstance(trigDetSums, Calibrations/rich/trigDetSums);
-
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceChargeCor);
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
@@ -549,9 +547,7 @@ const TGeoHMatrix &St_SurveyC::GetMatrix(int i) {
 
 double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg)
   {
-    double scaleFactor = cfg.S<MagFactor>().ScaleFactor;
-    St_trigDetSumsC* scalers = &cfg.C<St_trigDetSumsC>();
-    if (! scalers ) return 0;
+    const trigDetSums& scalers = cfg.S<trigDetSums>();
 
     double coulombs = 0;
     bool use_powers = true;
@@ -559,22 +555,22 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
     for (int row=0;row< (int) GetNRows();row++) {
       double mult = 0;
       switch ((int) getSpaceChargeDetector(row)) {
-        case (0) : mult = scalers->mult(); break; // vpdx as of 2007-12-19
-        case (1) : mult = scalers->bbcX(); break;
-        case (2) : mult = scalers->zdcX(); break;
-        case (3) : mult = scalers->zdcEast()+scalers->zdcWest(); break;
-        case (4) : mult = scalers->bbcEast()+scalers->bbcWest(); break;
-        case (5) : mult = scalers->zdcEast(); break;
-        case (6) : mult = scalers->zdcWest(); break;
-        case (7) : mult = scalers->bbcEast(); break;
-        case (8) : mult = scalers->bbcWest(); break;
-        case (9) : mult = scalers->bbcYellowBkg(); break;
-        case (10): mult = scalers->bbcBlueBkg(); break;
-        case (11): mult = scalers->pvpdEast(); break;
-        case (12): mult = scalers->pvpdWest(); break;
-        case (13): mult = scalers->ctbTOFp(); break; // zdcx-no-killer as of 2011
-        case (14): mult = scalers->ctbEast(); break; // zdce-no-killer as of 2011
-        case (15): mult = scalers->ctbWest(); break; // zdcw-no-killer as of 2011
+        case (0) : mult = scalers.mult; break; // vpdx as of 2007-12-19
+        case (1) : mult = scalers.bbcX; break;
+        case (2) : mult = scalers.zdcX; break;
+        case (3) : mult = scalers.zdcEast + scalers.zdcWest; break;
+        case (4) : mult = scalers.bbcEast + scalers.bbcWest; break;
+        case (5) : mult = scalers.zdcEast; break;
+        case (6) : mult = scalers.zdcWest; break;
+        case (7) : mult = scalers.bbcEast; break;
+        case (8) : mult = scalers.bbcWest; break;
+        case (9) : mult = scalers.bbcYellowBkg; break;
+        case (10): mult = scalers.bbcBlueBkg; break;
+        case (11): mult = scalers.pvpdEast; break;
+        case (12): mult = scalers.pvpdWest; break;
+        case (13): mult = scalers.ctbTOFp; break; // zdcx-no-killer as of 2011
+        case (14): mult = scalers.ctbEast; break; // zdce-no-killer as of 2011
+        case (15): mult = scalers.ctbWest; break; // zdcw-no-killer as of 2011
 
         default  : mult = 0.;
       }
@@ -585,10 +581,11 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
         is_missing = false;
 
       double saturation = getSpaceChargeSatRate(row);
-      double correction = getSpaceChargeCorrection(scaleFactor,row);
+      double correction = getSpaceChargeCorrection(cfg.S<MagFactor>().ScaleFactor,row);
       double factor     = getSpaceChargeFactor(row);
       double offset     = getSpaceChargeOffset(row);
       double intens = (mult < saturation) ? mult : saturation;
+
       if (use_powers) coulombs += ::pow(intens-offset,factor) * correction ;
       else coulombs += factor * (intens-offset) * correction ;
     }
