@@ -57,6 +57,7 @@ template<> std::string ConfigNodeName<tpcPadGainT0>()         { return "Calibrat
 template<> std::string ConfigNodeName<tpcPadrowT0>()          { return "Calibrations/tpc/tpcPadrowT0"; };
 template<> std::string ConfigNodeName<tpcSectorT0offset>()    { return "Calibrations/tpc/tpcSectorT0offset"; };
 template<> std::string ConfigNodeName<TpcResponseSimulator>() { return "Calibrations/tpc/TpcResponseSimulator"; };
+template<> std::string ConfigNodeName<trgTimeOffset>()        { return "Conditions/trg/trgTimeOffset"; };
 template<> std::string ConfigNodeName<tpcDimensions>()        { return "Geometry/tpc/tpcDimensions"; };
 template<> std::string ConfigNodeName<tpcPadPlanes>()         { return "Geometry/tpc/tpcPadPlanes"; };
 template<> std::string ConfigNodeName<tpcWirePlanes>()        { return "Geometry/tpc/tpcWirePlanes"; };

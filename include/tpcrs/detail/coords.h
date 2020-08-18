@@ -388,7 +388,6 @@ struct CoordTransform
   TGeoHMatrix tpc2global_;
   std::vector<TGeoHMatrix> sector_rotations_;
 
-  float triggerTimeOffset() const { return cfg_.C<St_trgTimeOffsetC>().triggerTimeOffset(); }
   void SetTpcRotations();
 
   const TGeoHMatrix &TpcRot(int sector, int k)      const {return sector_rotations_[kTotalTpcSectorRotaions*(sector - 1) + k];}

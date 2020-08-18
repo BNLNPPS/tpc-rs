@@ -135,7 +135,9 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
 {
   if (row > cfg_.S<tpcPadPlanes>().padRows) row = cfg_.S<tpcPadPlanes>().padRows;
 
-  double trigT0 = triggerTimeOffset() * 1e6; // units are s
+  // TODO: Remove extra temporary when new reference is introduced for tests
+  float triggerTimeOffset = 1e-6 * cfg_.S<trgTimeOffset>().offset;
+  double trigT0 = triggerTimeOffset * 1e6; // units are s
   double elecT0 = cfg_.S<tpcElectronics>().tZero;    // units are us
   double sectT0 = cfg_.S<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
@@ -155,7 +157,9 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 {
   if (row > cfg_.S<tpcPadPlanes>().padRows) row = cfg_.S<tpcPadPlanes>().padRows;
 
-  double trigT0 = triggerTimeOffset() * 1e6; // units are s
+  // TODO: Remove extra temporary when new reference is introduced for tests
+  float triggerTimeOffset = 1e-6 * cfg_.S<trgTimeOffset>().offset;
+  double trigT0 = triggerTimeOffset * 1e6; // units are s
   double elecT0 = cfg_.S<tpcElectronics>().tZero;    // units are us
   double sectT0 = cfg_.S<tpcPadrowT0>(sector-1).T0[row-1];  // units are us
   double t0 = trigT0 + elecT0 + sectT0;
