@@ -329,7 +329,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
   StGlobalDirection dirG{pxyzG.unit()};
-  StGlobalDirection BG{B_field.x, B_field.y, B_field.z};
+  // TODO: Remove cast to float when new reference is introduced for tests
+  StGlobalDirection BG{float(B_field.x), float(B_field.y), float(B_field.z)};
   transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);
   transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
 
