@@ -53,7 +53,7 @@ StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigne
 
     if (!corrections_[k].Chair) continue;
 
-    if (!(options_ & (1u << k)) || corrections_[k].Chair->IsMarked()) {
+    if (!(options_ & (1u << k)) || corrections_[k].Chair->is_missing) {
       // correction is missing
       goto CLEAR;
     }

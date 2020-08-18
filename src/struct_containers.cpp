@@ -425,7 +425,7 @@ MakeChairInstance(tpcAnodeHVavg,Calibrations/tpc/tpcAnodeHVavg);
 
 
 float St_tpcAnodeHVavgC::voltage(int i) const {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().is_missing) {
      LOG_ERROR << "St_tpcAnodeHVavgC::voltage(" << i << " is called but the valid St_TpcAvgPowerSupplyC::instance() exists\n";
   }
   return Struct(i)->voltage;
@@ -465,7 +465,7 @@ int St_TpcAvgCurrentC::ChannelFromSocket(int socket) {
 
 
 float St_TpcAvgCurrentC::AcChargeL(int sector, int channel) {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().is_missing) {
     return cfg_.C<St_TpcAvgPowerSupplyC>().AcChargeL(sector,channel);
   }
   static float Length[8] = {
@@ -482,7 +482,7 @@ float St_TpcAvgCurrentC::AcChargeL(int sector, int channel) {
 
 
 float St_TpcAvgCurrentC::AvCurrent(int sector, int channel) {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().is_missing) {
     return cfg_.C<St_TpcAvgPowerSupplyC>().AvCurrent(sector,channel);
   }
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
@@ -491,7 +491,7 @@ float St_TpcAvgCurrentC::AvCurrent(int sector, int channel) {
 
 
 float St_TpcAvgCurrentC::AcCharge(int sector, int channel) {
-  if (! cfg_.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+  if (! cfg_.C<St_TpcAvgPowerSupplyC>().is_missing) {
     return cfg_.C<St_TpcAvgPowerSupplyC>().AcCharge(sector,channel);
   }
   return (sector > 0 && sector <= 24 && channel > 0 && channel <= 8) ?
@@ -592,9 +592,11 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
         default  : mult = 0.;
       }
       if (mult < 0) {
-        Mark();
+        is_missing = true;
         return 0; // Unphysical scaler rates will be uncorrected
-      } else UnMark();
+      } else
+        is_missing = false;
+
       double saturation = getSpaceChargeSatRate(row);
       double correction = getSpaceChargeCorrection(scaleFactor,row);
       double factor     = getSpaceChargeFactor(row);
@@ -623,7 +625,7 @@ int ChannelFromRow(int row)
 
 float VoltagePadrow(int sector, int row, const Configurator& cfg)
 {
-  if (! cfg.C<St_TpcAvgPowerSupplyC>().IsMarked()) {
+  if (! cfg.C<St_TpcAvgPowerSupplyC>().is_missing) {
     return cfg.C<St_TpcAvgPowerSupplyC>().voltagePadrow(sector,row);
   }
   int e1 = 0, e2 = 0;

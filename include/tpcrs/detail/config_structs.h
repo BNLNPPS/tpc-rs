@@ -13,17 +13,13 @@ namespace tpcrs {
 
 struct IConfigStruct
 {
-  bool IsMarked() const { return isMarked; };
-  void Mark(bool mark=true) { isMarked = mark; }
-  void UnMark() { isMarked = false; }
-
   void Initialize() {}
   virtual unsigned int GetNRows() const { return 0; }
   virtual ~IConfigStruct() = default;
   virtual std::string GetName() const { return "noname"; }
 
-  /// By default "Mark" this "table"/"chair" as "bad"
-  bool isMarked = true;
+  /// By default mark this structure as missing
+  bool is_missing = true;
 };
 
 
@@ -46,16 +42,14 @@ struct ConfigStruct : Base_t
     // Deal with optionally present structs
     if (!cfg_.YAML(name)) {
       rows_.push_back(Struct_t());
-      // Still create an object but "Mark" this "table"/"chair" as "bad"
-      IConfigStruct::Mark();
+      Base_t::is_missing = true;
     } else {
       try {
         rows_.push_back( cfg_.YAML(name).as< Struct_t >() );
-        IConfigStruct::UnMark();
       } catch (std::exception& e) {
         rows_ = cfg_.YAML(name).as< std::vector<Struct_t> >();
-        IConfigStruct::UnMark();
       }
+      Base_t::is_missing = false;
     }
 
     Base_t::Initialize();
