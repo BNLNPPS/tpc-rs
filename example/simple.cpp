@@ -28,6 +28,7 @@ int main(int argc, char **argv)
   ifstream data_file(arg_parser.get_value("-f"));
 
   tpcrs::Configurator cfg("simple", conf_file);
+  tpcrs::Simulator simulator(cfg);
 
   vector<tpcrs::SimulatedHit> simu_hits;
   tpcrs::SimulatedHit simu_hit;
@@ -36,10 +37,10 @@ int main(int argc, char **argv)
     simu_hits.push_back(simu_hit);
 
   vector<tpcrs::DistortedHit> dist_hits;
-  tpcrs::distort(begin(simu_hits), end(simu_hits), back_inserter(dist_hits), cfg);
+  tpcrs::distort(begin(simu_hits), end(simu_hits), back_inserter(dist_hits), simulator);
 
   vector<tpcrs::DigiHit> digi_hits;
-  tpcrs::digitize(begin(simu_hits), end(simu_hits), back_inserter(digi_hits), cfg);
+  tpcrs::digitize(begin(simu_hits), end(simu_hits), back_inserter(digi_hits), simulator);
 
   cout << "Converted "
     << simu_hits.size() << " simulated hits into "
