@@ -13,6 +13,7 @@
 namespace tpcrs {
 
 int ChannelFromRow(int row);
+int NumberOfPads(int row, const Configurator& cfg);
 float VoltagePadrow(int sector, int row, const Configurator& cfg);
 float GainCorrection(int sector, int row, const Configurator& cfg);
 float DriftVelocity(int sector, const Configurator& cfg);

@@ -101,7 +101,7 @@ double CoordTransform::padFromX(double x, int sector, int row) const
                          cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                          cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
 
-  int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
+  int npads = tpcrs::NumberOfPads(row, cfg_);
   double probablePad = (npads + 1.) / 2. - x / pitch;
 
   // CAUTION: pad cannot be <1
@@ -121,7 +121,7 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
                          cfg_.S<tpcPadPlanes>().innerSectorPadPitch :
                          cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
 
-  int npads = cfg_.C<St_tpcPadPlanesC>().numberOfPadsAtRow(row);
+  int npads = tpcrs::NumberOfPads(row, cfg_);
   double xPad = -pitch * (pad - (npads + 1.) / 2.);
 
   return xPad;

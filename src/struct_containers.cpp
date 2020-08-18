@@ -607,6 +607,13 @@ int ChannelFromRow(int row)
     return 8;
 }
 
+int NumberOfPads(int row, const Configurator& cfg)
+{
+  int n_inner_rows = cfg.S<tpcPadPlanes>().innerPadRows;
+  return tpcrs::IsInner(row, cfg) ? cfg.S<tpcPadPlanes>().innerPadsPerRow[row - 1] :
+                                    cfg.S<tpcPadPlanes>().outerPadsPerRow[row - 1 - n_inner_rows];
+}
+
 float VoltagePadrow(int sector, int row, const Configurator& cfg)
 {
   if (! cfg.C<St_TpcAvgPowerSupplyC>().is_missing) {
