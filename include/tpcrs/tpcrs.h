@@ -25,19 +25,19 @@ class Simulator : detail::Simulator
   Simulator(const tpcrs::Configurator& cfg) : detail::Simulator(cfg) {}
 
   template<typename InputIt, typename OutputIt>
-  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized)
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized) const
   {
     return detail::Simulator::Digitize(first_hit, last_hit, digitized);
   }
 
   template<typename InputIt, typename OutputIt, typename MagField>
-  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field)
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field) const
   {
     return detail::Simulator::Digitize(first_hit, last_hit, digitized, mag_field);
   }
 
   template<typename InputIt, typename OutputIt>
-  OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted)
+  OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const
   {
     return detail::Simulator::Distort(first_hit, last_hit, distorted);
   }

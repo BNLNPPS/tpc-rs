@@ -271,15 +271,15 @@ void Simulator::InitAlphaGainVariations(double t0IO[2])
 }
 
 
-double Simulator::GetNoPrimaryClusters(double betaGamma, int charge)
+double Simulator::GetNoPrimaryClusters(double betaGamma, int charge) const
 {
   double beta = betaGamma / std::sqrt(1.0 + betaGamma * betaGamma);
   double dNdx = 0;
 
   if (TESTBIT(options_, kBICHSEL))
-    dNdx = dNdx_.Interpolate(betaGamma);
+    dNdx = const_cast<TH1D*>(&dNdx_)->Interpolate(betaGamma);
   else if (TESTBIT(options_, kHEED))
-    dNdx = dNdx_log10_.Interpolate(std::log10(betaGamma));
+    dNdx = const_cast<TH1D*>(&dNdx_log10_)->Interpolate(std::log10(betaGamma));
 
   double Q_eff = std::abs(charge % 100);
 
@@ -367,7 +367,7 @@ double Simulator::Gatti(double x, double w, double h, double K3)
 }
 
 
-void Simulator::SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail)
+void Simulator::SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail) const
 {
   Altro altro_sim(last - first, &*first);
 
@@ -395,7 +395,7 @@ void Simulator::SimulateAltro(std::vector<short>::iterator first, std::vector<sh
 }
 
 
-void Simulator::SimulateAsic(std::vector<short>& ADC)
+void Simulator::SimulateAsic(std::vector<short>& ADC) const
 {
   int t1 = 0;
   int nSeqLo = 0;
@@ -605,7 +605,7 @@ double Simulator::Ec(double* x, double* p)
 }
 
 
-std::vector<float> Simulator::NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr)
+std::vector<float> Simulator::NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr) const
 {
   std::vector<float> rs;
 
@@ -622,7 +622,7 @@ std::vector<float> Simulator::NumberOfElectronsInCluster(const TF1& heed, float 
 }
 
 
-double Simulator::CalcBaseGain(int sector, int row)
+double Simulator::CalcBaseGain(int sector, int row) const
 {
   // switch between Inner / Outer Sector paramters
   int iowe = 0;
@@ -645,7 +645,7 @@ double Simulator::CalcBaseGain(int sector, int row)
 }
 
 
-double Simulator::CalcLocalGain(const TrackSegment& segment)
+double Simulator::CalcLocalGain(const TrackSegment& segment) const
 {
   double gain_base = CalcBaseGain(segment.Pad.sector, segment.Pad.row);
   double dedx_corr = dEdxCorrection(segment);
@@ -659,7 +659,7 @@ double Simulator::CalcLocalGain(const TrackSegment& segment)
 
 
 void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track, double gain_local,
-  ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum)
+  ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum) const
 {
   static const double m_e = .51099907e-3;
   static const double eV = 1e-9; // electronvolt in GeV
@@ -752,7 +752,7 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
 
 void Simulator::LoopOverElectronsInCluster(
   std::vector<float> rs, const TrackSegment &segment, ChargeContainer& binned_charge,
-  double xRange, Coords xyzC, double gain_local)
+  double xRange, Coords xyzC, double gain_local) const
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
@@ -781,7 +781,7 @@ void Simulator::LoopOverElectronsInCluster(
 
   for (int ie = 0; ie < rs.size(); ie++)
   {
-    double gain_gas = mPolya[io].GetRandom();
+    double gain_gas = const_cast<TF1F*>(&mPolya[io])->GetRandom();
     // transport to wire
     gRandom->Rannor(rX, rY);
     StTpcLocalSectorCoordinate xyzE{xyzC.x + rX * SigmaT,
@@ -822,7 +822,7 @@ void Simulator::LoopOverElectronsInCluster(
 
 
 void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, int rowMin, int rowMax,
-  TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas)
+  const TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas) const
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
@@ -903,7 +903,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 }
 
 
-Coords Simulator::TransportToReadout(const Coords c, double omega_tau, bool& missed_readout, bool& is_ground_wire)
+Coords Simulator::TransportToReadout(const Coords c, double omega_tau, bool& missed_readout, bool& is_ground_wire) const
 {
   Coords readout;
   missed_readout = false;
@@ -950,7 +950,7 @@ Coords Simulator::TransportToReadout(const Coords c, double omega_tau, bool& mis
 }
 
 
-double Simulator::dEdxCorrection(const TrackSegment &segment)
+double Simulator::dEdxCorrection(const TrackSegment &segment) const
 {
   static StTpcdEdxCorrection dEdx_correction_(cfg_);
 

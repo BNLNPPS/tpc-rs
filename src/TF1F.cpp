@@ -14,7 +14,7 @@ void TF1F::Save(double xmin, double xmax, double ymin, double ymax, double zmin,
 
 
 /// Get value corresponding to X in array of fSave values
-double TF1F::GetSaveL(double x)
+double TF1F::GetSaveL(double x) const
 {
   if (x < fXmin || x  > fXmax || fdX <= 0) return 0.;
 
@@ -23,7 +23,7 @@ double TF1F::GetSaveL(double x)
 }
 
 
-double TF1F::GetSaveL(int N, double x, double* y)
+double TF1F::GetSaveL(int N, double x, double* y) const
 {
   // Get values y[N] corresponding to x+i, i = [0, ..., N-1];
   //  memset(y, 0, N*sizeof(double));

@@ -24,18 +24,18 @@ class Simulator
   Simulator(const tpcrs::Configurator& cfg);
 
   template<typename InputIt, typename OutputIt>
-  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized);
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized) const;
 
   template<typename InputIt, typename OutputIt, typename MagField>
-  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field);
+  OutputIt Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field) const;
 
   template<typename InputIt, typename OutputIt>
-  OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted);
+  OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const;
 
  private:
 
   template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
-  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field);
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field) const;
 
   struct TrackSegment {
     int charge;
@@ -100,39 +100,39 @@ class Simulator
     return std::max( 0., 1 - 6.27594134307865925e+00 * std::exp(-2.87987e-01 * (x - 1.46222e+01)) );
   };
 
-  double GetNoPrimaryClusters(double betaGamma, int charge);
+  double GetNoPrimaryClusters(double betaGamma, int charge) const;
 
   template<typename OutputIt>
-  void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized);
+  void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const;
 
-  void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail);
-  void SimulateAsic(std::vector<short>& ADC);
+  void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail) const;
+  void SimulateAsic(std::vector<short>& ADC) const;
 
   template<typename InputIt, typename MagField>
-  void CreateTrackSegments(InputIt, InputIt, std::vector<TrackSegment>&, const MagField& mag_field);
+  void CreateTrackSegments(InputIt, InputIt, std::vector<TrackSegment>&, const MagField& mag_field) const;
 
   template<typename MagField>
-  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field);
+  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field) const;
 
-  double CalcBaseGain(int sector, int row);
-  double CalcLocalGain(const TrackSegment& segment);
+  double CalcBaseGain(int sector, int row) const;
+  double CalcLocalGain(const TrackSegment& segment) const;
 
   void SignalFromSegment(const TrackSegment& segment, TrackHelix track,
     double gain_local,
-    ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum);
+    ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum) const;
 
   void LoopOverElectronsInCluster(
     std::vector<float> rs, const TrackSegment& segment, ChargeContainer& binned_charge,
-    double xRange, Coords xyzC, double gain_local);
+    double xRange, Coords xyzC, double gain_local) const;
 
   void GenerateSignal(const TrackSegment &segment, Coords at_readout, int rowMin, int rowMax,
-                      TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas);
+                      const TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas) const;
 
-  std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr);
+  std::vector<float> NumberOfElectronsInCluster(const TF1& heed, float dE, float& dEr) const;
 
-  Coords TransportToReadout(const Coords c, double omega_tau, bool& missed_readout, bool& is_ground_wire);
+  Coords TransportToReadout(const Coords c, double omega_tau, bool& missed_readout, bool& is_ground_wire) const;
 
-  double dEdxCorrection(const TrackSegment &segment);
+  double dEdxCorrection(const TrackSegment &segment) const;
 
   using FuncParams_t = std::vector< std::pair<std::string, double> >;
 
@@ -172,7 +172,7 @@ class Simulator
 
 
 template<typename InputIt, typename OutputIt>
-OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized)
+OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized) const
 {
   MagField mag_field(cfg_);
   return Digitize(first_hit, last_hit, digitized, mag_field);
@@ -180,7 +180,7 @@ OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digit
 
 
 template<typename InputIt, typename OutputIt, typename MagField>
-OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field)
+OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field) const
 {
   std::vector<tpcrs::DistortedHit> dummy;
   Simulate(first_hit, last_hit, digitized, std::back_inserter(dummy), mag_field);
@@ -189,7 +189,7 @@ OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digit
 
 
 template<typename InputIt, typename OutputIt>
-OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted)
+OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const
 {
   tpcrs::detail::MagField mag_field(cfg_);
   std::vector<tpcrs::DigiHit> dummy;
@@ -199,7 +199,7 @@ OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distor
 
 
 template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
-void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field)
+void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field) const
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -288,7 +288,7 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 
 
 template<typename InputIt, typename MagField>
-void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::vector<TrackSegment>& segments, const MagField& mag_field)
+void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::vector<TrackSegment>& segments, const MagField& mag_field) const
 {
   for (auto ihit = first_hit; ihit != last_hit; ++ihit)
   {
@@ -303,7 +303,7 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::ve
 
 
 template<typename MagField>
-Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field)
+Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field) const
 {
   int sector = hit.volume_id % 10000 / 100;
 
@@ -356,7 +356,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
 
 
 template<typename OutputIt>
-void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized)
+void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const
 {
   double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
   double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;

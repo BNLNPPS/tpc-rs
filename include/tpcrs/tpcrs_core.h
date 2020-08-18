@@ -247,9 +247,9 @@ struct DigiChannelMap
     }
   }
 
-  int n_pads(int row)     { return num_pads_[row-1]; }
-  int total_pads(int row) { return num_pads_cumul_[row-1]; }
-  int total_timebins()    { return num_pads_cumul_[n_rows] * n_timebins; }
+  int n_pads(int row)     const { return num_pads_[row-1]; }
+  int total_pads(int row) const { return num_pads_cumul_[row-1]; }
+  int total_timebins()    const { return num_pads_cumul_[n_rows] * n_timebins; }
 
   int n_sectors;
   int n_rows;
