@@ -6,7 +6,7 @@ project(TPCRS-EXAMPLE LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(tpcrs 0.0.11 REQUIRED)
+find_package(tpcrs)
 
 add_executable(simple simple.cpp)
 target_link_libraries(simple tpcrs)
