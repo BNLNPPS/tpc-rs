@@ -52,7 +52,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
     TF1F("PolyaOuter;x = G/G_0;signal", polya, 0, 10, 3)
   },
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
-  dEdx_correction_(cfg_),
   alpha_gain_variations_()
 {
   //SETBIT(options_, kHEED);
@@ -954,6 +953,8 @@ Coords Simulator::TransportToReadout(const Coords c, double omega_tau, bool& mis
 
 double Simulator::dEdxCorrection(const TrackSegment &segment)
 {
+  static StTpcdEdxCorrection dEdx_correction_(cfg_);
+
   dEdxY2_t CdEdx{};
   CdEdx.DeltaZ  = 5.2;
   CdEdx.QRatio  = -2;

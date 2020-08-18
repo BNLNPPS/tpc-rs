@@ -11,7 +11,6 @@
 #include "tpcrs/detail/distorter.h"
 #include "tpcrs/detail/mag_field.h"
 #include "coords.h"
-#include "dedx_correction.h"
 #include "struct_containers.h"
 #include "track_helix.h"
 
@@ -168,7 +167,6 @@ class Simulator
   std::vector<TF1F>  mPadResponseFunction;
   std::vector<TF1F>  mPolya;
   TF1    mHeed;
-  StTpcdEdxCorrection dEdx_correction_;
 
   std::vector<double> alpha_gain_variations_;
 };
