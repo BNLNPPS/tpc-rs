@@ -550,7 +550,6 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
     const trigDetSums& scalers = cfg.S<trigDetSums>();
 
     double coulombs = 0;
-    bool use_powers = true;
 
     for (int row=0;row< (int) GetNRows();row++) {
       double mult = 0;
@@ -586,9 +585,13 @@ double St_spaceChargeCorC::getSpaceChargeCoulombs(const tpcrs::Configurator& cfg
       double offset     = getSpaceChargeOffset(row);
       double intens = (mult < saturation) ? mult : saturation;
 
-      if (use_powers) coulombs += ::pow(intens-offset,factor) * correction ;
-      else coulombs += factor * (intens-offset) * correction ;
+      bool use_powers = true;
+      if (use_powers)
+        coulombs += std::pow(intens-offset,factor) * correction ;
+      else
+        coulombs += factor * (intens-offset) * correction ;
     }
+
     return coulombs;
   }
 

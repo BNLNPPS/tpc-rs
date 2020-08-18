@@ -77,7 +77,7 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
 void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0, bool useTau) const
 {
   // useT0 = true for pad and false for cluster, useTau = true for data cluster and = false for MC
-  Coords  tmp{xFromPad(a.sector, a.row, a.pad), yFromRow(a.sector, a.row), 0};
+  Coords  tmp{xFromPad(a.sector, a.row, a.pad), tpcrs::RadialDistanceAtRow(a.row, cfg_), 0};
   double zoffset =  (a.row > cfg_.S<tpcPadPlanes>().innerPadRows) ? z_outer_offset_ : z_inner_offset_;
   double t0offset = useT0 ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][a.row-1][tpcrs::irint(a.pad)-1] : 0;
   t0offset *= timebin_width_;
@@ -105,11 +105,7 @@ double CoordTransform::padFromX(double x, int sector, int row) const
   double probablePad = (npads + 1.) / 2. - x / pitch;
 
   // CAUTION: pad cannot be <1
-  if (probablePad < 0.500001) {
-    probablePad = 0.500001;
-  }
-
-  return probablePad;
+  return probablePad < 0.500001 ? 0.500001 : probablePad;
 }
 
 
@@ -122,13 +118,9 @@ double CoordTransform::xFromPad(int sector, int row, double pad) const      // x
                          cfg_.S<tpcPadPlanes>().outerSectorPadPitch;
 
   int npads = tpcrs::NumberOfPads(row, cfg_);
-  double xPad = -pitch * (pad - (npads + 1.) / 2.);
 
-  return xPad;
+  return -pitch * (pad - (npads + 1.) / 2.);
 }
-// Coordinate from Row
-//
-//Local Transformation...
 
 
 double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
@@ -146,10 +138,9 @@ double CoordTransform::zFromTB(double tb, int sector, int row, int pad) const
   if (tpcrs::IsInner(row, cfg_)) l += 24;
 
   double tbx = tb + cfg_.S<tpcSectorT0offset>().t0[l-1];
-
   double time = t0 + tbx * timebin_width_;
-  double z = tpcrs::DriftVelocity(sector, cfg_) * 1e-6 * time;
-  return z;
+
+  return tpcrs::DriftVelocity(sector, cfg_) * 1e-6 * time;
 }
 
 
@@ -168,9 +159,7 @@ double CoordTransform::tBFromZ(double z, int sector, int row, int pad) const
 
   if (tpcrs::IsInner(row, cfg_)) l += 24;
 
-  double tb = (time - t0) / timebin_width_ - cfg_.S<tpcSectorT0offset>().t0[l-1];
-
-  return tb;
+  return (time - t0) / timebin_width_ - cfg_.S<tpcSectorT0offset>().t0[l-1];
 }
 
 
@@ -283,7 +272,7 @@ void CoordTransform::SetTpcRotations()
   //  StTpcLocalCoordinate  Tpc(position(x,y,z),sector,row);
   //  Pad2Tpc(sector,row).LocalToMaster(LS.position().xyz(), Tpc.postion().xyz())
   //  Flip transformation from Pad Coordinate system
-  //    (xFromPad(pad), yFromRow(row), DriftDistance(timebacket)) => (y, x, -z) : local sector CS => super sectoe CS
+  //    (xFromPad(pad), RadialDistanceAtRow(row), DriftDistance(timebacket)) => (y, x, -z) : local sector CS => super sectoe CS
   //
   //          (0 1  0 0  ) ( x )    ( y )
   //  Flip ;  (1 0  0 0  ) ( y ) =  ( x )

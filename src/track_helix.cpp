@@ -49,6 +49,7 @@ Coords TrackHelix::momentum(double B) const
   }
 }
 
+
 Coords TrackHelix::momentumAt(double S, double B) const
 {
   // Obtain phase-shifted momentum from phase-shift of origin
@@ -61,20 +62,20 @@ Coords TrackHelix::momentumAt(double S, double B) const
 double TrackHelix::geometricSignedDistance(double x, double y)
 {
   // Geometric signed distance
-  double thePath = this->pathLength(x, y);
-  Coords DCA2dPosition = this->at(thePath);
+  double thePath = pathLength(x, y);
+  Coords DCA2dPosition = at(thePath);
   DCA2dPosition.z = 0;
   Coords position{x, y, 0};
   Coords DCAVec = (DCA2dPosition - position);
   Coords momVec;
 
   // Deal with straight tracks
-  if (this->singularity_) {
-    momVec = this->at(1) - this->at(0);
+  if (singularity_) {
+    momVec = at(1) - at(0);
     momVec.z = 0;
   }
   else {
-    momVec = this->momentumAt(thePath, 1e13); // Don't care about Bmag.  Helicity is what matters.
+    momVec = momentumAt(thePath, 1e13); // Don't care about Bmag.  Helicity is what matters.
     momVec.z = 0;
   }
 
@@ -83,63 +84,61 @@ double TrackHelix::geometricSignedDistance(double x, double y)
   return theSign * DCAVec.perp();
 }
 
+
 double TrackHelix::curvatureSignedDistance(double x, double y)
 {
   // Protect against h_ = 0 or zero field
-  if (this->singularity_ || std::abs(this->h_) <= 0) {
-    return (this->geometricSignedDistance(x, y));
+  if (singularity_ || std::abs(h_) <= 0) {
+    return (geometricSignedDistance(x, y));
   }
   else {
-    return (this->geometricSignedDistance(x, y)) / (this->h_);
+    return (geometricSignedDistance(x, y)) / (h_);
   }
-
 }
+
 
 double TrackHelix::geometricSignedDistance(const Coords &pos)
 {
-  double sdca2d = this->geometricSignedDistance(pos.x, pos.y);
+  double sdca2d = geometricSignedDistance(pos.x, pos.y);
   double theSign = (sdca2d >= 0) ? 1. : -1.;
-  return (this->distance(pos)) * theSign;
+  return (distance(pos)) * theSign;
 }
+
 
 double TrackHelix::curvatureSignedDistance(const Coords &pos)
 {
-  double sdca2d = this->curvatureSignedDistance(pos.x, pos.y);
+  double sdca2d = curvatureSignedDistance(pos.x, pos.y);
   double theSign = (sdca2d >= 0) ? 1. : -1.;
-  return (this->distance(pos)) * theSign;
+  return (distance(pos)) * theSign;
 }
+
 
 void TrackHelix::setParameters(double c, double dip, double phase,
                             const Coords &o, int h)
 {
-  //
-  //  The order in which the parameters are set is important
-  //  since setCurvature might have to adjust the others.
-  //
+  // The order in which the parameters are set is important since setCurvature
+  // might have to adjust the others.
   h_ = (h >= 0) ? 1 : -1;  // Default is: positive particle
-  //             positive field
+
+  // positive field
   origin_   = o;
   setDipAngle(dip);
   setPhase(phase);
 
-  //
-  // Check for singularity and correct for negative curvature.
-  // May change h_ and phase_. Must therefore be set last.
-  //
+  // Check for singularity and correct for negative curvature. May change h_ and
+  // phase_. Must therefore be set last.
   setCurvature(c);
 
-  //
-  // For the case B=0, h is ill defined. In the following we
-  // always assume h = +1. Since phase = psi - h * pi/2
-  // we have to correct the phase in case h = -1.
-  // This assumes that the user uses the same h for phase
-  // as the one he passed to the constructor.
-  //
+  // For the case B=0, h is ill defined. In the following we always assume
+  // h = +1. Since phase = psi - h * pi/2 we have to correct the phase in case
+  // h = -1. This assumes that the user uses the same h for phase as the one he
+  // passed to the constructor.
   if (singularity_ && h_ == -1) {
     h_ = +1;
     setPhase(phase_ - M_PI);
   }
 }
+
 
 void TrackHelix::setCurvature(double val)
 {
@@ -157,6 +156,7 @@ void TrackHelix::setCurvature(double val)
     singularity_ = false;  // curved
 }
 
+
 void TrackHelix::setPhase(double val)
 {
   phase_       = val;
@@ -166,6 +166,7 @@ void TrackHelix::setPhase(double val)
   if (std::abs(phase_) > M_PI)
     phase_ = std::atan2(sin_phase_, cos_phase_);  // force range [-pi,pi]
 }
+
 
 void TrackHelix::setDipAngle(double val)
 {
@@ -177,39 +178,38 @@ void TrackHelix::setDipAngle(double val)
 
 double TrackHelix::fudgePathLength(const Coords &p) const
 {
-  double s;
   double dx = p.x - origin_.x;
   double dy = p.y - origin_.y;
+
+  double s;
 
   if (singularity_) {
     s = (dy * cos_phase_ - dx * sin_phase_) / cos_dip_angle_;
   }
   else {
-    s = std::atan2(dy * cos_phase_ - dx * sin_phase_,
-              1 / curvature_ + dx * cos_phase_ + dy * sin_phase_) /
-        (h_ * curvature_ * cos_dip_angle_);
+    s = std::atan2(        dy * cos_phase_ - dx * sin_phase_,
+          1 / curvature_ + dx * cos_phase_ + dy * sin_phase_) / (h_ * curvature_ * cos_dip_angle_);
   }
 
   return s;
 }
 
+
 double TrackHelix::distance(const Coords &p, bool scanPeriods) const
 {
-  return (this->at(pathLength(p, scanPeriods)) - p).mag();
+  return (at(pathLength(p, scanPeriods)) - p).mag();
 }
 
+
+/**
+ * Calculates the path length at the distance of closest approach between the
+ * helix and point p. For the case of B=0 (straight line) the path length can be
+ * calculated analytically. For B>0 there is unfortunately no easy solution to
+ * the problem. The Newton method is used to find the root of the referring
+ * equation. The 'fudgePathLength' serves as a starting value.
+ */
 double TrackHelix::pathLength(const Coords &p, bool scanPeriods) const
 {
-  //
-  //  Returns the path length at the distance of closest
-  //  approach between the helix and point p.
-  //  For the case of B=0 (straight line) the path length
-  //  can be calculated analytically. For B>0 there is
-  //  unfortunately no easy solution to the problem.
-  //  Here we use the Newton method to find the root of the
-  //  referring equation. The 'fudgePathLength' serves
-  //  as a starting value.
-  //
   double s;
   double dx = p.x - origin_.x;
   double dy = p.y - origin_.y;
@@ -219,80 +219,73 @@ double TrackHelix::pathLength(const Coords &p, bool scanPeriods) const
     s = cos_dip_angle_ * (cos_phase_ * dy - sin_phase_ * dx) +
         sin_dip_angle_ * dz;
   }
-  else { //
-    {
-      const double MaxPrecisionNeeded = 1e-4; // micrometer
-      const int    MaxIterations      = 100;
+  else {
+    const double MaxPrecisionNeeded = 1e-4; // micrometer
+    const int    MaxIterations      = 100;
 
-      //
-      // The math is taken from Maple with C(expr,optimized) and
-      // some hand-editing. It is not very nice but efficient.
-      //
-      double t34 = curvature_ * cos_dip_angle_ * cos_dip_angle_;
-      double t41 = sin_dip_angle_ * sin_dip_angle_;
-      double t6, t7, t11, t12, t19;
+    // The math is taken from Maple with C(expr,optimized) and some
+    // hand-editing. It is not very nice but efficient.
+    double t34 = curvature_ * cos_dip_angle_ * cos_dip_angle_;
+    double t41 = sin_dip_angle_ * sin_dip_angle_;
+    double t6, t7, t11, t12, t19;
 
-      //
-      // Get a first guess by using the dca in 2D. Since
-      // in some extreme cases we might be off by n periods
-      // we add (subtract) periods in case we get any closer.
-      //
-      s = fudgePathLength(p);
+    // Get a first guess by using the dca in 2D. Since in some extreme cases we
+    // might be off by n periods we add (subtract) periods in case we get any
+    // closer.
+    s = fudgePathLength(p);
 
-      if (scanPeriods) {
-        double ds = period();
-        int    j, jmin = 0;
-        double d, dmin = (at(s) - p).mag();
+    if (scanPeriods) {
+      double period_len = period();
+      int    j, jmin = 0;
+      double d, dmin = (at(s) - p).mag();
 
-        for (j = 1; j < MaxIterations; j++) {
-          if ((d = (at(s + j * ds) - p).mag()) < dmin) {
-            dmin = d;
-            jmin = j;
-          }
-          else
-            break;
+      for (j = 1; j < MaxIterations; j++) {
+        if ((d = (at(s + j * period_len) - p).mag()) < dmin) {
+          dmin = d;
+          jmin = j;
         }
-
-        for (j = -1; -j < MaxIterations; j--) {
-          if ((d = (at(s + j * ds) - p).mag()) < dmin) {
-            dmin = d;
-            jmin = j;
-          }
-          else
-            break;
-        }
-
-        if (jmin) s += jmin * ds;
+        else
+          break;
       }
 
-      //
-      // Newtons method:
-      // Stops after MaxIterations iterations or if the required
-      // precision is obtained. Whatever comes first.
-      //
-      double sOld = s;
-
-      for (int i = 0; i < MaxIterations; i++) {
-        t6  = phase_ + s * h_ * curvature_ * cos_dip_angle_;
-        t7  = std::cos(t6);
-        t11 = dx - (1 / curvature_) * (t7 - cos_phase_);
-        t12 = std::sin(t6);
-        t19 = dy - (1 / curvature_) * (t12 - sin_phase_);
-        s  -= (t11 * t12 * h_ * cos_dip_angle_ - t19 * t7 * h_ * cos_dip_angle_ -
-               (dz - s * sin_dip_angle_) * sin_dip_angle_) /
-              (t12 * t12 * cos_dip_angle_ * cos_dip_angle_ + t11 * t7 * t34 +
-               t7 * t7 * cos_dip_angle_ * cos_dip_angle_ +
-               t19 * t12 * t34 + t41);
-
-        if (std::abs(sOld - s) < MaxPrecisionNeeded) break;
-
-        sOld = s;
+      for (j = -1; -j < MaxIterations; j--) {
+        if ((d = (at(s + j * period_len) - p).mag()) < dmin) {
+          dmin = d;
+          jmin = j;
+        }
+        else
+          break;
       }
+
+      if (jmin) s += jmin * period_len;
+    }
+
+    // Newtons method:
+    // Stops after MaxIterations iterations or if the required precision is
+    // obtained. Whatever comes first.
+    double sOld = s;
+
+    for (int i = 0; i < MaxIterations; i++) {
+      t6  = phase_ + s * h_ * curvature_ * cos_dip_angle_;
+      t7  = std::cos(t6);
+      t11 = dx - (1 / curvature_) * (t7 - cos_phase_);
+      t12 = std::sin(t6);
+      t19 = dy - (1 / curvature_) * (t12 - sin_phase_);
+      s  -= (t11 * t12 * h_ * cos_dip_angle_ - t19 * t7 * h_ * cos_dip_angle_ -
+             (dz - s * sin_dip_angle_) * sin_dip_angle_) /
+            (t12 * t12 * cos_dip_angle_ * cos_dip_angle_ + t11 * t7 * t34 +
+             t7 * t7 * cos_dip_angle_ * cos_dip_angle_ +
+             t19 * t12 * t34 + t41);
+
+      if (std::abs(sOld - s) < MaxPrecisionNeeded) break;
+
+      sOld = s;
     }
   }
 
   return s;
 }
+
 
 std::pair<double, double> TrackHelix::pathLength(double r) const
 {
@@ -377,29 +370,28 @@ std::pair<double, double> TrackHelix::pathLength(double r) const
   return (value);
 }
 
+
 std::pair<double, double> TrackHelix::pathLength(double r, double x, double y)
 {
   double x0 = origin_.x;
   double y0 = origin_.y;
   origin_.x = x0 - x;
   origin_.y = y0 - y;
-  std::pair<double, double> result = this->pathLength(r);
+  std::pair<double, double> result = pathLength(r);
   origin_.x = x0;
   origin_.y = y0;
   return result;
 }
 
-double TrackHelix::pathLength(const Coords &r,
-                           const Coords &n) const
+
+/**
+ * Vector 'r' defines the position of the center and vector 'n' the normal
+ * vector of the plane.  For a straight line there is a simple analytical
+ * solution. For curvatures > 0 the root is determined by Newton method. In case
+ * no valid s can be found the max. largest value for s is returned.
+ */
+double TrackHelix::pathLength(const Coords &r, const Coords &n) const
 {
-  //
-  // Vector 'r' defines the position of the center and
-  // vector 'n' the normal vector of the plane.
-  // For a straight line there is a simple analytical
-  // solution. For curvatures > 0 the root is determined
-  // by Newton method. In case no valid s can be found
-  // the max. largest value for s is returned.
-  //
   double s;
 
   if (singularity_) {
@@ -474,13 +466,11 @@ double TrackHelix::pathLength(const Coords &r,
   return s;
 }
 
+
 std::pair<double, double>
 TrackHelix::pathLengths(const TrackHelix &h, double minStepSize, double minRange) const
 {
-  //
-  //	Cannot handle case where one is a helix
-  //  and the other one is a straight line.
-  //
+  // Cannot handle case where one is a helix and the other one is a straight line
   if (singularity_ != h.singularity_)
     return std::pair<double, double>(NoSolution, NoSolution);
 
@@ -505,9 +495,7 @@ TrackHelix::pathLengths(const TrackHelix &h, double minStepSize, double minRange
     return std::pair<double, double>(s1, s2);
   }
   else {
-    //
-    //  First step: get dca in the xy-plane as start value
-    //
+    // First step: get dca in the xy-plane as start value
     double dx = h.xcenter() - xcenter();
     double dy = h.ycenter() - ycenter();
     double dd = ::sqrt(dx * dx + dy * dy);
@@ -538,14 +526,12 @@ TrackHelix::pathLengths(const TrackHelix &h, double minStepSize, double minRange
       s = pathLength(x, y);
     }
 
-    //
-    //   Second step: scan in decreasing intervals around seed 's'
-    //   minRange and minStepSize are passed as arguments to the method.
-    //   They have default values defined in the header file.
-    //
-    double dmin              = h.distance(at(s));
-    double range             = std::max(2 * dmin, minRange);
-    double ds                = range / 10;
+    // Second step: scan in decreasing intervals around seed 's' minRange and
+    // minStepSize are passed as arguments to the method. They have default
+    // values defined in the header file.
+    double dmin  = h.distance(at(s));
+    double range = std::max(2 * dmin, minRange);
+    double ds    = range / 10;
     double slast = -999999, ss, d;
     s1 = s - range / 2.;
     s2 = s + range / 2.;
@@ -562,13 +548,10 @@ TrackHelix::pathLengths(const TrackHelix &h, double minStepSize, double minRange
         slast = ss;
       }
 
-      //
-      //  In the rare cases where the minimum is at the
-      //  the border of the current range we shift the range
-      //  and start all over, i.e we do not decrease 'ds'.
-      //  Else we decrease the search intervall around the
-      //  current minimum and redo the scan in smaller steps.
-      //
+      // In the rare cases where the minimum is at the the border of the current
+      // range we shift the range and start all over, i.e we do not decrease
+      // 'ds'.  Else we decrease the search intervall around the current minimum
+      // and redo the scan in smaller steps.
       if (s == s1) {
         d = 0.8 * (s2 - s1);
         s1 -= d;
@@ -603,6 +586,7 @@ void TrackHelix::moveOrigin(double s)
     setPhase(newPhase);
   }
 }
+
 
 int operator== (const TrackHelix &a, const TrackHelix &b)
 {

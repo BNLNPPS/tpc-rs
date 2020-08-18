@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <tuple>
 #include <vector>
 
 #include "tpcrs/configurator.h"
@@ -184,7 +185,8 @@ inline std::ostream& operator<<(std::ostream& os, const SimulatedHit& hit)
 
 
 /**
- * Expects a type similar to GeneratedHit
+ * Simulated hits must be sorted by sector, track id, and track length up to
+ * this hit
  */
 inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
 {

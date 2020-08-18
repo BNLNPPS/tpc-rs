@@ -389,30 +389,8 @@ struct St_tpcPadPlanesC : tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_tpcPadPla
   double 	outerSectorPadPlaneZ(int i = 0) {return Struct(i)->outerSectorPadPlaneZ;}
   int* 	innerPadsPerRow(int i = 0) 	 {return Struct(i)->innerPadsPerRow;}
   int* 	outerPadsPerRow(int i = 0) 	 {return Struct(i)->outerPadsPerRow;}
-  int         padsPerRow(int row = 1)
-  {
-    return (row <= innerPadRows()) ?
-           innerPadsPerRow()[row - 1] :
-           outerPadsPerRow()[row - 1 - innerPadRows()];
-  }
   double* 	innerRowRadii(int i = 0) 	 {return Struct(i)->innerRowRadii;}
   double* 	outerRowRadii(int i = 0) 	 {return Struct(i)->outerRowRadii;}
-  bool        isRowInRange(int row)          {return (row >= 1 && row <= padRows()) ? kTRUE : kFALSE;}
-  double      radialDistanceAtRow(int row)
-  {
-    if (! isRowInRange(row)) return 0;
-
-    if ( row <= innerPadRows() ) return innerRowRadii()[row - 1];
-    else                         return outerRowRadii()[row - 1 - innerPadRows()];
-  }
-  int   numberOfPadsAtRow(int row)
-  {
-    if (! isRowInRange(row)) return 0;
-
-    if ( row <= innerPadRows() ) return innerPadsPerRow()[row - 1];
-
-    return outerPadsPerRow()[row - 1 - innerPadRows()];
-  }
 };
 
 struct St_TpcPhiDirectionC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcPhiDirectionC, tpcCorrection> {

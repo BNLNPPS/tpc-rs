@@ -751,19 +751,19 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
 
 
 void Simulator::LoopOverElectronsInCluster(
-  std::vector<float> rs, const TrackSegment &segment, ChargeContainer& binned_charge,
+  const std::vector<float>& rs, const TrackSegment &segment, ChargeContainer& binned_charge,
   double xRange, Coords xyzC, double gain_local) const
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
   double omega_tau = cfg_.S<TpcResponseSimulator>().OmegaTau *
-                      segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
+                          segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
   double driftLength = std::abs(segment.coorLS.position.z);
   double D = 1. + omega_tau * omega_tau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
   double SigmaT = cfg_.S<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
   double sigmaJitterX = tpcrs::IsInner(row, cfg_) ?  cfg_.S<TpcResponseSimulator>().SigmaJitterXI :
-                                                cfg_.S<TpcResponseSimulator>().SigmaJitterXO;
+                                                     cfg_.S<TpcResponseSimulator>().SigmaJitterXO;
   if (sigmaJitterX > 0) {
     SigmaT = std::sqrt(SigmaT * SigmaT + sigmaJitterX * sigmaJitterX);
   }
@@ -827,7 +827,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
   double sigmaJitterT = (tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
-                                                cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
+                                                     cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
   for (unsigned row = rowMin; row <= rowMax; row++) {
 
@@ -841,13 +841,13 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
     double dT = bin - binT + cfg_.S<TpcResponseSimulator>().T0offset;
     dT += tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().T0offsetI :
-                                 cfg_.S<TpcResponseSimulator>().T0offsetO;
+                                      cfg_.S<TpcResponseSimulator>().T0offsetO;
 
     if (sigmaJitterT) dT += gRandom->Gaus(0, sigmaJitterT);
 
     InOut io = tpcrs::IsInner(row, cfg_) ? kInner : kOuter;
 
-    double delta_y = transform_.yFromRow(sector, row) - at_readout.y;
+    double delta_y = tpcrs::RadialDistanceAtRow(row, cfg_) - at_readout.y;
     double YDirectionCoupling = mChargeFraction[digi_.n_sectors*io + sector - 1].GetSaveL(delta_y);
 
     if (YDirectionCoupling < cfg_.S<ResponseSimulator>().min_signal) continue;

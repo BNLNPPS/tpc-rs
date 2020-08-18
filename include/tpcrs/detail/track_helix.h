@@ -125,7 +125,7 @@ class TrackHelix
                                         double minRange = 10) const;
 
   /// minimal distance between point and helix
-  double       distance(const Coords &p, bool scanPeriods = true) const;
+  double distance(const Coords &p, bool scanPeriods = true) const;
 
   /// move the origin along the helix to s which becomes then s=0
   void moveOrigin(double s);

@@ -131,10 +131,11 @@ CLEAR:
   }
 
   // Use only one ADC correction
-  if (corrections_[kAdcCorrection         ].Chair &&
-      corrections_[kAdcCorrectionMDF      ].Chair) {
+  if (corrections_[kAdcCorrection   ].Chair &&
+      corrections_[kAdcCorrectionMDF].Chair)
+  {
     LOG_ERROR << " \tTwo ADC corrections activated ? Keep active only AdcCorrectionMDF\n";
-    corrections_[kAdcCorrection         ].Chair = 0;
+    corrections_[kAdcCorrection     ].Chair = 0;
   }
 }
 

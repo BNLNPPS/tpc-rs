@@ -342,12 +342,6 @@ struct CoordTransform
   int rowFromLocalY(double y, int sector) const;
 
   double padFromX(double x, int sector, int row) const;
-
-  double yFromRow(int sector, int row) const
-  {
-    return tpcrs::RadialDistanceAtRow(row, cfg_);
-  }
-
   double xFromPad(int sector, int row, double pad) const;
 
  private:

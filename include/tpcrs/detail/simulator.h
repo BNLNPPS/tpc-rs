@@ -122,7 +122,7 @@ class Simulator
     ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum) const;
 
   void LoopOverElectronsInCluster(
-    std::vector<float> rs, const TrackSegment& segment, ChargeContainer& binned_charge,
+    const std::vector<float>& rs, const TrackSegment& segment, ChargeContainer& binned_charge,
     double xRange, Coords xyzC, double gain_local) const;
 
   void GenerateSignal(const TrackSegment &segment, Coords at_readout, int rowMin, int rowMax,
@@ -251,9 +251,9 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
       TrackHelix track(segment.dirLS.position,
                        segment.coorLS.position,
                        segment.BLS.position.z * 1e-14 * segment.charge, 1);
-      // Propagate track to middle of the pad row plane by the nominal center point and the normal
-      // in this sector coordinate system
-      double sR = track.pathLength({0, transform_.yFromRow(segment.Pad.sector, segment.Pad.row), 0}, {0, 1, 0});
+      // Propagate track to the middle of the pad row plane defined by the
+      // nominal center point and the normal in this sector coordinate system
+      double sR = track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
 
       // Update hit position based on the new track crossing the middle of pad row
       if (sR < 1e10) {
@@ -324,7 +324,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
   Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
-  StGlobalDirection dirG{pxyzG.unit()};
+  StGlobalDirection dirG{pxyzG.unit()}; // XXX Why scale the momentum?
   // TODO: Remove cast to float when new reference is introduced for tests
   StGlobalDirection BG{float(B_field.x), float(B_field.y), float(B_field.z)};
   transform_.global_to_local_sector_dir( dirG, segment.dirLS, sector, coorS.row);
