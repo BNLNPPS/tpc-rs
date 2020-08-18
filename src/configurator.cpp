@@ -64,7 +64,6 @@ template<> std::string ConfigNodeName<tpcWirePlanes>()        { return "Geometry
 template<> std::string ConfigNodeName<MagFactor>()            { return "RunLog/MagFactor"; };
 template<> std::string ConfigNodeName<starClockOnl>()         { return "RunLog/onl/starClockOnl"; };
 template<> std::string ConfigNodeName<tss_tsspar>()           { return "tpc/tsspars/tsspar"; };
-template<> std::string ConfigNodeName<iTPCSurvey>()           { return "Geometry/tpc/iTPCSurvey"; };
 
 
 }

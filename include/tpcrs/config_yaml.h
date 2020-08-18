@@ -1049,42 +1049,6 @@ struct convert<g2t_track> {
 
 namespace YAML {
 template<>
-struct convert<iTPCSurvey> {
-  static Node encode(const iTPCSurvey& st) {
-    Node node;
-    
-    node["Id"] = st.Id;
-    node["Angle"] = st.Angle;
-    node["dx"] = st.dx;
-    node["dy"] = st.dy;
-    node["ScaleX"] = st.ScaleX;
-    node["ScaleY"] = st.ScaleY;
-    node["comment"] = string(st.comment);
-    return node;
-  };
-
-  static bool decode(const Node& node, iTPCSurvey& st) {
-    if(!node.IsMap()) {
-      return false;
-    }
-    
-    st.Id = node["Id"].as<int>();
-    st.Angle = node["Angle"].as<float>();
-    st.dx = node["dx"].as<float>();
-    st.dy = node["dy"].as<float>();
-    st.ScaleX = node["ScaleX"].as<float>();
-    st.ScaleY = node["ScaleY"].as<float>();
-    auto comment = node["comment"].as<string>();
-    copy(begin(comment), end(comment), st.comment);
-    st.comment[comment.size()] ='\0';
-    return true;
-  }
-};
-}
-
-
-namespace YAML {
-template<>
 struct convert<TpcEffectivedX> {
   static Node encode(const TpcEffectivedX& st) {
     Node node;

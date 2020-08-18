@@ -124,17 +124,6 @@ struct g2t_vertex {
   float ge_x[3]; /* GEANT vertex coordinate (Cartesian) */
 };
 
-/** Survey data */
-struct iTPCSurvey {
-	int Id; 
-	float Angle; 
-	float dx; 
-	float dy; 
-	float ScaleX; 
-	float ScaleY; 
-	char comment[32]; 
-};
-
 struct MagFactor {
 	float ScaleFactor; 
 };

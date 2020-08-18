@@ -35,7 +35,6 @@ template<> std::string ConfigNodeName<tpcWirePlanes>();
 template<> std::string ConfigNodeName<MagFactor>();
 template<> std::string ConfigNodeName<starClockOnl>();
 template<> std::string ConfigNodeName<tss_tsspar>();
-template<> std::string ConfigNodeName<iTPCSurvey>();
 
 
 /**
