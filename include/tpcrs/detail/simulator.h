@@ -11,7 +11,6 @@
 #include "tpcrs/detail/distorter.h"
 #include "tpcrs/detail/mag_field.h"
 #include "coords.h"
-#include "struct_containers.h"
 #include "track_helix.h"
 
 
