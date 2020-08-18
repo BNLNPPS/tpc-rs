@@ -64,10 +64,6 @@ struct St_MDFCorrectionC : tpcrs::IConfigStruct {
 };
 
 
-enum StMagnetPolarity {eUnknownMField, eFullMFieldPolB, eHalfMFieldPolB,
-                       eZeroMField, eHalfMFieldPolA, eFullMFieldPolA
-                      };
-
 struct St_spaceChargeCorC : tpcrs::IConfigStruct {
   virtual spaceChargeCor* Struct(int i = 0) const = 0;
   double 	fullFieldB(int i = 0) 	{return Struct(i)->fullFieldB;}
