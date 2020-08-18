@@ -1,7 +1,6 @@
 #pragma once
 
-#include "config_structs.h"
-#include "struct_containers.h"
+#include "tpcrs/detail/config_structs.h"
 
 class dEdxY2_t;
 

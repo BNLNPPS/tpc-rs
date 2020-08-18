@@ -3,7 +3,7 @@
 #include "TString.h"
 
 #include "tpcrs/configurator.h"
-#include "coords.h"
+#include "tpcrs/detail/coords.h"
 #include "logger.h"
 #include "math_funcs.h"
 

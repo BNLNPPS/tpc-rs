@@ -1,7 +1,7 @@
 #include "bichsel.h"
 #include "dedx_correction.h"
 #include "logger.h"
-#include "struct_containers.h"
+#include "tpcrs/detail/struct_containers.h"
 
 
 StTpcdEdxCorrection::StTpcdEdxCorrection(const tpcrs::Configurator& cfg, unsigned options) :

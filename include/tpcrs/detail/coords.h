@@ -6,7 +6,7 @@
 
 #include "TGeoMatrix.h"
 
-#include "struct_containers.h"
+#include "tpcrs/detail/struct_containers.h"
 
 
 template<class T> struct ThreeVector

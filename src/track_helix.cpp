@@ -1,6 +1,6 @@
 #include <limits>
 
-#include "track_helix.h"
+#include "tpcrs/detail/track_helix.h"
 
 const double TrackHelix::NoSolution = 3.e+33;
 

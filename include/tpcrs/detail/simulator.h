@@ -3,15 +3,15 @@
 #include <vector>
 #include <utility>
 
-#include "TF1F.h"
 #include "TH1.h"
 #include "TRandom.h"
 
 #include "tpcrs/tpcrs_core.h"
+#include "tpcrs/detail/coords.h"
 #include "tpcrs/detail/distorter.h"
 #include "tpcrs/detail/mag_field.h"
-#include "coords.h"
-#include "track_helix.h"
+#include "tpcrs/detail/TF1F.h"
+#include "tpcrs/detail/track_helix.h"
 
 
 namespace tpcrs { namespace detail {

@@ -4,7 +4,7 @@
 #include "TF3.h"
 
 #include "logger.h"
-#include "struct_containers.h"
+#include "tpcrs/detail/struct_containers.h"
 
 #define MakeChairInstance(STRUCT,PATH) \
 template<> std::string tpcrs::ConfigStruct<tpcrs::IConfigStruct, St_ ## STRUCT ## C , STRUCT>::name(# PATH);

@@ -17,8 +17,7 @@
 #include "dedx_correction.h"
 #include "logger.h"
 #include "math_funcs.h"
-#include "struct_containers.h"
-#include "track_helix.h"
+#include "tpcrs/detail/struct_containers.h"
 
 namespace tpcrs { namespace detail {
 
