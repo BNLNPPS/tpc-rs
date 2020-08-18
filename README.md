@@ -61,6 +61,7 @@ help CMake to find the `tpcrs-config.cmake` file by setting
 
     cmake ../ -DCMAKE_PREFIX_PATH=<path/to/installed/share/tpc-rs-X.Y.Z>
 
+
 ## Basic Test
 
 Once the source code is built one can execute basic tests to verify the
@@ -71,6 +72,9 @@ provided with a pre-generated input and the corresponding output from the main
     cd tpc-rs/build
     ctest -R quick
     ctest -R long
+
+Note that the tests currently use reference values obtained with ROOT5 libraries
+and therefore, will fail if linked against ROOT6.
 
 
 ## How It Works
