@@ -106,6 +106,20 @@ inline SimulatedCharge& operator+= (SimulatedCharge& a, const SimulatedCharge& b
 }
 
 
+struct SimulatedChargeChannel
+{
+  DigiChannel channel;
+  float charge;
+  short track_id;
+};
+
+
+inline std::ostream& operator<<(std::ostream& os, const SimulatedChargeChannel& ch)
+{
+  return os << ch.channel << ' ' << ch.charge << ' ' << ch.track_id;
+}
+
+
 struct SimulatedHit
 {
   /// Unique id of the particle produced this hit. The simulated signal is
