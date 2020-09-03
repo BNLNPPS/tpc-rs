@@ -22,6 +22,12 @@ struct DigiChannel
 };
 
 
+inline std::ostream& operator<<(std::ostream& os, const DigiChannel& ch)
+{
+  return os << ch.sector << ' ' << ch.row << ' ' << ch.pad << ' ' << ch.timebin;
+}
+
+
 inline bool operator< (const DigiChannel& a, const DigiChannel& b)
 {
   return std::tie(a.sector, a.row, a.pad, a.timebin) <
@@ -52,6 +58,12 @@ struct DigiHit
 };
 
 
+inline std::ostream& operator<<(std::ostream& os, const DigiHit& hit)
+{
+  return os << hit.channel << ' ' << hit.adc << ' ' << hit.idt;
+}
+
+
 struct DistortedHit
 {
   /// Distorted position of the simulated hit at the center of a pad row layer
@@ -77,6 +89,12 @@ struct SimulatedCharge
   float charge;
   short track_id;
 };
+
+
+inline std::ostream& operator<<(std::ostream& os, const SimulatedCharge& ch)
+{
+  return os << ch.charge << ' ' << ch.track_id;
+}
 
 
 struct SimulatedHit
