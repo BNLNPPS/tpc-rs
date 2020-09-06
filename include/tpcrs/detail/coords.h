@@ -198,8 +198,8 @@ struct StTpcPadCoordinate
 {
   int   sector;
   int   row;
-  float pad;
-  float timeBucket;
+  double pad;
+  double timeBucket;
 };
 
 template<int dummy>
