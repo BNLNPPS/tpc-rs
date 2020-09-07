@@ -887,7 +887,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
         if (signal < cfg_.S<ResponseSimulator>().min_signal) continue;
 
-        binned_charge[index] += {signal, segment.simu_hit.track_id};
+        binned_charge[index] += {static_cast<float>(signal), static_cast<short>(segment.simu_hit.track_id)};
       } // time
     } // pad limits
   } // row limits
