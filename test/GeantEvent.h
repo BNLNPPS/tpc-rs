@@ -18,18 +18,18 @@
 
 struct DigitizedHit
 {
-  int sector;
-  int row;
-  int pad;
-  std::vector<short>  ADCs;
-  std::vector<unsigned short> IDTs;
+  unsigned int sector;
+  unsigned int row;
+  unsigned int pad;
+  std::vector<short> ADCs;
+  std::vector<short> IDTs;
 
   DigitizedHit() : sector(0), row(0), pad(0), ADCs(), IDTs() { }
 
-  DigitizedHit(int s, int r, int p, std::vector<short> adcs, std::vector<unsigned short> idts) :
+  DigitizedHit(int s, int r, int p, std::vector<short> adcs, std::vector<short> idts) :
     sector(s), row(r), pad(p), ADCs(adcs), IDTs(idts) { }
 
-  ClassDef(DigitizedHit, 1)
+  ClassDef(DigitizedHit, 2)
 };
 
 
@@ -61,11 +61,11 @@ struct GeantEvent
 
     for (auto digiHit : digiHits) {
 
-      for (int i = 0; i < digiHit.ADCs.size(); i++) {
-        if (!digiHit.ADCs[i] || !digiHit.IDTs[i]) continue;
+      for (unsigned int tb = 0; tb < digiHit.ADCs.size(); tb++) {
+        if (!digiHit.ADCs[tb] || !digiHit.IDTs[tb]) continue;
         diff.total++;
 
-        T  digi_inp{digiHit.sector, digiHit.row, digiHit.pad, i, digiHit.ADCs[i], digiHit.IDTs[i]};
+        T  digi_inp{digiHit.sector, digiHit.row, digiHit.pad, tb, digiHit.ADCs[tb], digiHit.IDTs[tb]};
         const T& digi_out = *dd_iter;
 
         if (digi_inp.channel < digi_out.channel) {
@@ -75,7 +75,7 @@ struct GeantEvent
         else if (digi_out.channel < digi_inp.channel) {
           diff.unmatched++;
           ++dd_iter;
-          i--;
+          tb--;
           continue;
         }
         else {
