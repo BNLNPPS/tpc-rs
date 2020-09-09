@@ -55,7 +55,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
 {
   //SETBIT(options_, kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
-  SETBIT(options_, kdEdxCorr);
   //SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
@@ -870,13 +869,11 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
       double gain = gain_local_gas;
       double dt = dT;
 
-      if ( !TESTBIT(options_, kGAINOAtALL) ) {
-        gain *= cfg_.S<tpcPadGainT0>().Gain[sector-1][row-1][pad-1];
+      gain *= cfg_.S<tpcPadGainT0>().Gain[sector-1][row-1][pad-1];
 
-        if (gain <= 0.0) continue;
+      if (gain <= 0.0) continue;
 
-        dt -= cfg_.S<tpcPadGainT0>().T0[sector-1][row-1][pad-1];
-      }
+      dt -= cfg_.S<tpcPadGainT0>().T0[sector-1][row-1][pad-1];
 
       double XYcoupling = gain * XDirectionCouplings[pad - padMin] * YDirectionCoupling;
 

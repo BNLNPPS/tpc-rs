@@ -54,10 +54,7 @@ class Simulator
   enum InOut {kInner = 0, kOuter = 1};
   enum EMode {kBICHSEL     = 1, /// Use Bichsel dE/dx model
               kHEED        = 6, /// Use Heed dE/dx model
-              kGAINOAtALL  = 2, /// Do not use GAIN at all
-              kdEdxCorr    = 3, /// Do use TpcdEdxCorrection
               kDistortion  = 4, /// Apply distortions
-              kNoToflight  = 5  /// Do not account for particle time of flight
              };
   enum {kPadMax = 32, kTimeBacketMax = 64};
 
