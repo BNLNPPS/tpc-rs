@@ -1539,6 +1539,7 @@ struct convert<ResponseSimulator> {
 
     node["min_signal"] = st.min_signal;
     node["electron_cutoff_energy"] = st.electron_cutoff_energy;
+    node["nominal_magnetic_field"] = st.nominal_magnetic_field;
     return node;
   };
 
@@ -1549,6 +1550,7 @@ struct convert<ResponseSimulator> {
 
     st.min_signal = node["min_signal"].as<double>();
     st.electron_cutoff_energy = node["electron_cutoff_energy"].as<double>();
+    st.nominal_magnetic_field = node["nominal_magnetic_field"].as<double>();
     return true;
   }
 };

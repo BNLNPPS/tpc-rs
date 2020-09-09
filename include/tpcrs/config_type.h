@@ -657,6 +657,7 @@ struct TpcResponseSimulator {
 struct ResponseSimulator {
   double min_signal;             /* (1e-4), */
   double electron_cutoff_energy; /* (e_cutoff), */
+  double nominal_magnetic_field;
 };
 
 /**

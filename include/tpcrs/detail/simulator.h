@@ -328,7 +328,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
   transform_.global_to_local_sector_dir(   BG, segment.BLS,   sector, coorS.row);
 
   // Distortions
-  static Distorter distorter(cfg_, mag_field.ValueAt(Coords{0, 0, 0}).z);
+  static Distorter distorter(cfg_);
 
   if (TESTBIT(options_, kDistortion)) {
     coorLT.position = distorter.Distort(coorLT.position, coorLT.sector, mag_field);

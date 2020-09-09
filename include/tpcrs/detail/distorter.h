@@ -10,7 +10,7 @@ namespace tpcrs { namespace detail {
 
 struct DistorterConfigurator
 {
-  DistorterConfigurator(const tpcrs::Configurator& cfg, double mag_field_z = 0)
+  DistorterConfigurator(const tpcrs::Configurator& cfg)
   {
     double cathode_voltage    = cfg.S<tpcHighVoltages>().cathode * 1000;
     double gated_grid_voltage = cfg.S<tpcHighVoltages>().gatedGridRef;
@@ -36,6 +36,9 @@ struct DistorterConfigurator
 
     // Electric Field (V/cm) Magnitude
     double electric_field = std::abs((cathode_voltage - gated_grid_voltage) / readout_plane_z);
+
+    // Nominal value of magnetic field
+    double mag_field_z = cfg.S<ResponseSimulator>().nominal_magnetic_field;
 
     // For an electron, omega_tau carries the sign opposite of B (mag_field_z)
     // B is in kGauss, the sign of B is important
@@ -64,10 +67,10 @@ class Distorter
     kMagneticField
   };
 
-  Distorter(const tpcrs::Configurator& cfg, double mag_field_z, Distortions distortions = Distortions::kNone) :
+  Distorter(const tpcrs::Configurator& cfg, Distortions distortions = Distortions::kNone) :
     cfg_(cfg),
     distortions_(distortions),
-    dcfg_(cfg, mag_field_z)
+    dcfg_(cfg)
   {}
 
   template<typename Vec3, typename MagField>
