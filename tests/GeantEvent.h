@@ -107,6 +107,49 @@ struct GeantEvent
     }
   }
 
+  template<typename D, typename T>
+  D Diff(const std::vector<T>& digi_data)
+  {
+    D diff{};
+
+    using DigiChannelType = decltype((T().channel));
+
+    auto dd_iter = begin(digi_data);
+
+    for (auto digiHit : digiHits) {
+
+      for (int i = 0; i < digiHit.ADCs.size(); i++) {
+        if (!digiHit.ADCs[i] || !digiHit.IDTs[i]) continue;
+        diff.total++;
+
+        DigiChannelType  channel_inp{digiHit.sector, digiHit.row, digiHit.pad, i};
+        const DigiChannelType& channel_out = dd_iter->channel;
+
+        if (channel_inp < channel_out) {
+          diff.unmatched++;
+
+
+          continue;
+        }
+        else if (channel_out < channel_inp) {
+          diff.unmatched++;
+
+          ++dd_iter;
+          i--;
+          continue;
+        }
+        else {
+          if (digiHit.ADCs[i] != dd_iter->adc || digiHit.IDTs[i] != dd_iter->idt) {
+            diff.unmatched++;
+          }
+        }
+        ++dd_iter;
+      }
+    }
+
+    return diff;
+  }
+
   void Print(std::ostream &os)
   {
     os << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
