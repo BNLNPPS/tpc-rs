@@ -49,17 +49,16 @@ function(ADD_TESTS tests)
         list(GET _test_arg_list 2 _label)
 
         if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-            list(GET _test_arg_list 5 _diff_lines)
+            list(GET _test_arg_list 5 _diff_expected)
         elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 4 AND ($<CONFIG:Debug> OR CMAKE_BUILD_TYPE STREQUAL "Debug"))
-            list(GET _test_arg_list 3 _diff_lines)
+            list(GET _test_arg_list 3 _diff_expected)
         else()
-            list(GET _test_arg_list 4 _diff_lines)
+            list(GET _test_arg_list 4 _diff_expected)
         endif()
 
         set(_test_name "${_name}_${_label}")
         set(_cmd "command time -f \"time: real %E user %U sys %S mem: max %M avg %K io %I %O\" ./test_tpcrs ${_test_args} &> log_${_test_name}")
-        set(_cmd "${_cmd} && diff -y --suppress-common-lines ${_name}_inp.log ${_name}_out.log")
-        set(_cmd "${_cmd} | wc -l | (read N; ((\"$N\" == ${_diff_lines})))")
+        set(_cmd "${_cmd}; ((\"$?\" == ${_diff_expected}))")
 
         add_test(NAME "${_test_name}" COMMAND bash -c "${_cmd}")
         set_tests_properties("${_test_name}" PROPERTIES LABELS "${_label}" TIMEOUT 5400)
@@ -68,30 +67,29 @@ function(ADD_TESTS tests)
 endfunction()
 
 # name nevents ecutoff label diff-32-Debug diff-32-Release diff-64
-# diff is in lines
 set(_tests
-"starY16_dAu200    2 quick 0 0  0"
-"starY15_pp200a    2 quick 0 0  0"
-"starY15_pp200b    1 quick 0 0  0"
-"starY14_AuAu200a  1 quick 0 0  0"
-"starY14_AuAu200b  2 quick 0 0  0"
-"starY14_He3Au200  1 quick 0 0  0"
-"starY12_pp500     1 quick 0 0  0"
-"starY11_pp500     3 quick 0 0  0"
-"starY10_AuAu11    1 quick 0 0  0"
+"starY16_dAu200    2 quick 0  0  0"
+"starY15_pp200a    2 quick 0  0  0"
+"starY15_pp200b    1 quick 0  0  0"
+"starY14_AuAu200a  1 quick 0  0  0"
+"starY14_AuAu200b  2 quick 0  0  0"
+"starY14_He3Au200  1 quick 0  0  0"
+"starY12_pp500     1 quick 0  0  0"
+"starY11_pp500     3 quick 0  0  0"
+"starY10_AuAu11    1 quick 0  0  0"
 #
-"starY16_dAu200   -1 long  0 0  0"
-"starY15_pp200a   -1 long  0 0  0"
-"starY15_pp200b   -1 long  4 5 16"
-"starY14_AuAu200a -1 long  2 3 15"
-"starY14_AuAu200b -1 long  0 0  6"
-"starY14_He3Au200 -1 long  0 2  3"
-"starY12_CuAu200  -1 long  2 6 28"
-"starY12_UU200    -1 long  1 8 24"
-"starY12_pp500    -1 long  0 0  3"
-"starY11_pp500    -1 long  0 0  0"
-"starY10_AuAu62   -1 long  2 2 14"
-"starY10_AuAu11   -1 long  0 2  7"
+"starY16_dAu200   -1 long  0  0  0"
+"starY15_pp200a   -1 long  0  0  0"
+"starY15_pp200b   -1 long 14 15 50"
+"starY14_AuAu200a -1 long  3  5 41"
+"starY14_AuAu200b -1 long  0  0 12"
+"starY14_He3Au200 -1 long  0  3  8"
+"starY12_CuAu200  -1 long  2 22 63"
+"starY12_UU200    -1 long  2 24 66"
+"starY12_pp500    -1 long  0  0 12"
+"starY11_pp500    -1 long  0  0  0"
+"starY10_AuAu62   -1 long  5  5 37"
+"starY10_AuAu11   -1 long  0  2 12"
 )
 
 add_tests("${_tests}")

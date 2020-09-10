@@ -34,26 +34,20 @@ int main(int argc, char **argv)
   trsTreeChain.AddFile( cfg.Locate(test_name + ".root").c_str() );
 
   GeantEvent* geantEvent_inp = new GeantEvent();
-  GeantEvent  geantEvent_out;
 
   trsTreeChain.SetBranchAddress("b", &geantEvent_inp);
 
-  std::ofstream logFile_inp(test_name + "_inp.log");
-  std::ofstream logFile_out(test_name + "_out.log");
-
   max_records = (max_records < 0 || max_records > trsTreeChain.GetEntries() ? trsTreeChain.GetEntries() : max_records);
+
+  struct Diff {
+    int total;
+    int unmatched;
+    Diff& operator +=(const Diff& b) { total += b.total; unmatched += b.unmatched; }
+  } counts{};
 
   for (int iRecord = 1; iRecord <= max_records; iRecord++)
   {
-    logFile_inp << "event: " << iRecord << "\n";
-    logFile_out << "event: " << iRecord << "\n";
-
     trsTreeChain.GetEntry(iRecord - 1);
-    geantEvent_inp->Print(logFile_inp);
-
-    geantEvent_out.hits     = geantEvent_inp->hits;
-    geantEvent_out.tracks   = geantEvent_inp->tracks;
-    geantEvent_out.vertices = geantEvent_inp->vertices;
 
     auto convert = [geantEvent_inp](const g2t_tpc_hit& hit) -> tpcrs::SimulatedHit
     {
@@ -69,13 +63,12 @@ int main(int argc, char **argv)
     std::vector<tpcrs::DigiHit>  digi_data;
     simulator.Digitize(std::begin(hits), std::end(hits), back_inserter(digi_data), mag_field);
 
-    geantEvent_out.Fill(digi_data);
-    geantEvent_out.Print(logFile_out);
+    counts += geantEvent_inp->Diff<Diff>(digi_data);
   }
 
   delete geantEvent_inp;
 
-  return EXIT_SUCCESS;
+  return counts.unmatched;
 }
 
 
