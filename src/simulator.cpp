@@ -36,7 +36,7 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
   cfg_(cfg),
   transform_(cfg_),
   digi_(cfg_),
-  options_(0),
+  dEdx_model_(dEdxModel::kBichsel),
   dNdx_(),
   dNdx_log10_(),
   dNdE_log10_(),
@@ -53,23 +53,18 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
   mHeed("Ec", Simulator::Ec, 0, 3.064 * cfg_.S<TpcResponseSimulator>().W, 1),
   alpha_gain_variations_()
 {
-  //SETBIT(options_, kHEED);
-  SETBIT(options_, kBICHSEL); // Default is Bichsel
+  if (dEdx_model_ == dEdxModel::kBichsel) {
+    TFile model_file(cfg_.Locate("dNdE_Bichsel.root").c_str());
+    dNdE_log10_ = *static_cast<TH1D*>(model_file.Get("dNdEL10"));
 
-  if (TESTBIT(options_, kBICHSEL)) {
-    TFile file_dNdE(cfg_.Locate("dNdE_Bichsel.root").c_str());
-    dNdE_log10_ = *static_cast<TH1D*>(file_dNdE.Get("dNdEL10"));
-
-    TFile file_dNdx(cfg_.Locate("dNdx_Bichsel.root").c_str());
-    dNdx_ = *static_cast<TH1D*>(file_dNdx.Get("dNdx"));
+    TFile model_file_2(cfg_.Locate("dNdx_Bichsel.root").c_str());
+    dNdx_ = *static_cast<TH1D*>(model_file_2.Get("dNdx"));
   }
-  else if (TESTBIT(options_, kHEED)) {
-    TFile datfile(cfg_.Locate("dNdx_Heed.root").c_str());
-    dNdE_log10_ = *static_cast<TH1D*>(datfile.Get("dNdEL10"));
-
-    TFile file_dNdx(cfg_.Locate("dNdx_Heed.root").c_str());
-    dNdx_log10_ = *static_cast<TH1D*>(file_dNdx.Get("dNdxL10"));
-  }
+  else if (dEdx_model_ == dEdxModel::kHeed) {
+    TFile model_file(cfg_.Locate("dNdx_Heed.root").c_str());
+    dNdE_log10_ = *static_cast<TH1D*>(model_file.Get("dNdEL10"));
+    dNdx_log10_ = *static_cast<TH1D*>(model_file.Get("dNdxL10"));
+  } // else ... need to throw an exception
 
   double t0IO[2];
   InitAlphaGainVariations(t0IO);
@@ -274,9 +269,9 @@ double Simulator::GetNoPrimaryClusters(double betaGamma, int charge) const
   double beta = betaGamma / std::sqrt(1.0 + betaGamma * betaGamma);
   double dNdx = 0;
 
-  if (TESTBIT(options_, kBICHSEL))
+  if (dEdx_model_ == dEdxModel::kBichsel)
     dNdx = const_cast<TH1D*>(&dNdx_)->Interpolate(betaGamma);
-  else if (TESTBIT(options_, kHEED))
+  else if (dEdx_model_ == dEdxModel::kHeed)
     dNdx = const_cast<TH1D*>(&dNdx_log10_)->Interpolate(std::log10(betaGamma));
 
   double Q_eff = std::abs(charge % 100);

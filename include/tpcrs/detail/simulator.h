@@ -52,9 +52,12 @@ class Simulator
   using ChargeContainer = std::vector<tpcrs::SimulatedCharge>;
 
   enum InOut {kInner = 0, kOuter = 1};
-  enum EMode {kBICHSEL     = 1, /// Use Bichsel dE/dx model
-              kHEED        = 6, /// Use Heed dE/dx model
-             };
+
+  enum class dEdxModel : unsigned {
+    kBichsel = 1,
+    kHeed = 2
+  };
+
   enum {kPadMax = 32, kTimeBacketMax = 64};
 
   const tpcrs::Configurator& cfg_;
@@ -145,7 +148,9 @@ class Simulator
 
   static TF1 fgTimeShape3[2];
   static TF1 fgTimeShape0[2];
-  int    options_;
+
+  /// dEdx model
+  dEdxModel dEdx_model_;
 
   /// The number of primary electrons per unit length as a function of
   /// beta*gamma
