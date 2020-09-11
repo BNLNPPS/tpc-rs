@@ -335,14 +335,14 @@ struct CoordTransform
     local_to_hardware(c, b, useT0, useTau);
   }
 
-  double tBFromZ(double z, int sector, int row, int pad = 0) const;
-  double zFromTB(double tb, int sector, int row, int pad = 0) const;
+  double ZToTime(double z, int sector, int row, int pad = 0) const;
+  double TimeToZ(double tb, int sector, int row, int pad = 0) const;
 
   // Raw Data (pad row timebin or drift L From tpc local sector Coordinates
-  int rowFromLocalY(double y, int sector) const;
+  int YToRow(double y, int sector) const;
 
-  double padFromX(double x, int sector, int row) const;
-  double xFromPad(int sector, int row, double pad) const;
+  double XToPad(double x, int sector, int row) const;
+  double PadToX(int sector, int row, double pad) const;
 
  private:
 

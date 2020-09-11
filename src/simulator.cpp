@@ -811,8 +811,8 @@ void Simulator::LoopOverElectronsInCluster(
     double yLmin  = at_readout.y - dY;
     double yLmax  = at_readout.y + dY;
 
-    int    rowMin = transform_.rowFromLocalY(yLmin, sector);
-    int    rowMax = transform_.rowFromLocalY(yLmax, sector);
+    int    rowMin = transform_.YToRow(yLmin, sector);
+    int    rowMax = transform_.YToRow(yLmax, sector);
 
     GenerateSignal(segment, at_readout, rowMin, rowMax,
                    &mShaperResponses[io][sector - 1], binned_charge, gain_local * gain_gas);
