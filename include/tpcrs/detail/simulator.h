@@ -259,7 +259,7 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
       // Update hit position based on the new track crossing the middle of pad row
       if (sR < 1e10) {
         segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-        transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
+        transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
       }
 
       int nP = 0;
@@ -347,7 +347,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
   }
 
   segment.coorLS.position.z = driftLength;
-  transform_.local_sector_to_hardware(segment.coorLS, segment.Pad, false, false); // don't use T0, don't use Tau
+  transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
 
   return segment;
 }

@@ -232,21 +232,21 @@ struct CoordTransform
   CoordTransform(const tpcrs::Configurator& cfg);
 
   // Raw Data <--> Tpc Local Sector Coordinates
-  void local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true) const;
-  void hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0 = false, bool useTau = true) const;
+  void local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b) const;
+  void hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b) const;
 
   // Raw Data <--> Tpc Local Coordinates
-  void local_to_hardware(const StTpcLocalCoordinate &a, StTpcPadCoordinate &b, bool useT0 = false, bool useTau = true) const
+  void local_to_hardware(const StTpcLocalCoordinate &a, StTpcPadCoordinate &b) const
   {
     StTpcLocalSectorCoordinate c;
     local_to_local_sector(a, c);
-    local_sector_to_hardware(c, b, useT0, useTau);
+    local_sector_to_hardware(c, b);
   }
 
-  void hardware_to_local(const StTpcPadCoordinate &a, StTpcLocalCoordinate &b, bool useT0 = false, bool useTau = true) const
+  void hardware_to_local(const StTpcPadCoordinate &a, StTpcLocalCoordinate &b) const
   {
     StTpcLocalSectorCoordinate c;
-    hardware_to_local_sector(a, c, useT0, useTau);
+    hardware_to_local_sector(a, c);
     local_sector_to_local(c, b);
   }
 
@@ -321,18 +321,18 @@ struct CoordTransform
   }
 
   // Raw Data <-->  Global Coordinate
-  void hardware_to_global(const StTpcPadCoordinate &a, StGlobalCoordinate &b, bool useT0 = false, bool useTau = true) const
+  void hardware_to_global(const StTpcPadCoordinate &a, StGlobalCoordinate &b) const
   {
     StTpcLocalCoordinate c;
-    hardware_to_local(a, c, useT0, useTau);
+    hardware_to_local(a, c);
     local_to_global(c, b);
   }
 
-  void global_to_hardware(const StGlobalCoordinate &a, StTpcPadCoordinate &b, int sector, int row, bool useT0 = false, bool useTau = true) const
+  void global_to_hardware(const StGlobalCoordinate &a, StTpcPadCoordinate &b, int sector, int row) const
   {
     StTpcLocalCoordinate c;
     global_to_local(a, c, sector, row);
-    local_to_hardware(c, b, useT0, useTau);
+    local_to_hardware(c, b);
   }
 
   double ZToTime(double z, int sector, int row, int pad = 0) const;

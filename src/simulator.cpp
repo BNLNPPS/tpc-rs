@@ -826,7 +826,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
     StTpcLocalSectorCoordinate xyzW{at_readout.x, at_readout.y, at_readout.z, sector, row};
     StTpcPadCoordinate Pad;
-    transform_.local_sector_to_hardware(xyzW, Pad, false, false); // don't use T0, don't use Tau
+    transform_.local_sector_to_hardware(xyzW, Pad);
     float bin = Pad.timeBucket;//L  - 1; // K
     int binT = tpcrs::irint(bin); //L bin;//K tpcrs::irint(bin);// J bin; // I tpcrs::irint(bin);
 

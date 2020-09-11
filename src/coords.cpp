@@ -52,9 +52,8 @@ CoordTransform::CoordTransform(const tpcrs::Configurator& cfg) :
 
 
 // Local Sector Coordnate <-> Tpc Raw Pad Coordinate
-void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b, bool useT0, bool useTau) const
+void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b) const
 {
-  // useT0 = true for pad and false for cluster, useTau = true for data cluster and  = false for MC
   int row = a.row;
 
   if (row < 1 || row > cfg_.S<tpcPadPlanes>().padRows)
@@ -62,32 +61,17 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
 
   double probablePad = XToPad(a.position.x, a.sector, a.row);
   double zoffset = (row > cfg_.S<tpcPadPlanes>().innerPadRows) ? z_outer_offset_ : z_inner_offset_;
-  double t0offset = (useT0 && a.sector >= 1 && a.sector <= 24) ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][row-1][tpcrs::irint(probablePad)-1] : 0;
-  t0offset *= timebin_width_;
+  double tb = ZToTime(a.position.z + zoffset, a.sector, row, probablePad);
 
-  if (!useT0 && useTau) // for cluster
-    t0offset -= 3.0 * cfg_.S<tss_tsspar>().tau;   // correct for convolution lagtime
-
-  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector, cfg_) * 1e-6;
-  double tb = ZToTime(a.position.z + zoffset - t0zoffset, a.sector, row, probablePad);
   b = StTpcPadCoordinate{a.sector, row, probablePad, tb};
 }
 
 
-void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b, bool useT0, bool useTau) const
+void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b) const
 {
-  // useT0 = true for pad and false for cluster, useTau = true for data cluster and = false for MC
   Coords  tmp{PadToX(a.sector, a.row, a.pad), tpcrs::RadialDistanceAtRow(a.row, cfg_), 0};
   double zoffset =  (a.row > cfg_.S<tpcPadPlanes>().innerPadRows) ? z_outer_offset_ : z_inner_offset_;
-  double t0offset = useT0 ? cfg_.S<tpcPadGainT0>().T0[a.sector-1][a.row-1][tpcrs::irint(a.pad)-1] : 0;
-  t0offset *= timebin_width_;
-
-  if (!useT0 && useTau) // for cluster
-    t0offset -= 3.0 * cfg_.S<tss_tsspar>().tau;   // correct for convolution lagtime
-
-  double t0zoffset = t0offset * tpcrs::DriftVelocity(a.sector, cfg_) * 1e-6;
-  //t0 offset -- DH  27-Mar-00
-  double z = TimeToZ(a.timeBucket, a.sector, a.row, a.pad) - zoffset + t0zoffset;
+  double z = TimeToZ(a.timeBucket, a.sector, a.row, a.pad) - zoffset;
   tmp.z = z;
   b = StTpcLocalSectorCoordinate{{tmp.x, tmp.y, tmp.z}, a.sector, a.row};
 }
