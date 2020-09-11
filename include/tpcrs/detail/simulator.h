@@ -54,7 +54,6 @@ class Simulator
   enum InOut {kInner = 0, kOuter = 1};
   enum EMode {kBICHSEL     = 1, /// Use Bichsel dE/dx model
               kHEED        = 6, /// Use Heed dE/dx model
-              kDistortion  = 4, /// Apply distortions
              };
   enum {kPadMax = 32, kTimeBacketMax = 64};
 
@@ -329,11 +328,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, 
 
   // Distortions
   static Distorter distorter(cfg_);
-
-  if (TESTBIT(options_, kDistortion)) {
-    coorLT.position = distorter.Distort(coorLT.position, coorLT.sector, mag_field);
-    transform_.local_to_global(coorLT, xyzG);
-  }
+  coorLT.position = distorter.Distort(coorLT.position, coorLT.sector, mag_field);
+  transform_.local_to_global(coorLT, xyzG);
 
   transform_.local_to_local_sector(coorLT, segment.coorLS);
 

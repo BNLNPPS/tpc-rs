@@ -17,6 +17,7 @@ class BitSet<Enum, true>
   BitSet() = default;
   BitSet(Enum value) : bits(1 << static_cast<std::size_t>(value)) {}
   BitSet(const BitSet& other) : bits(other.bits) {}
+  BitSet(unsigned long val) : bits(val) {}
 
   BitSet operator| (Enum value) const { BitSet result = *this; result.bits |= 1 << static_cast<std::size_t>(value); return result; }
   BitSet operator& (Enum value) const { BitSet result = *this; result.bits &= 1 << static_cast<std::size_t>(value); return result; }

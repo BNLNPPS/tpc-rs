@@ -63,11 +63,12 @@ class Distorter
  public:
 
   enum class Distortions : unsigned {
-    kNone = 0,
-    kMagneticField
+    kMagneticField = 1
   };
 
-  Distorter(const tpcrs::Configurator& cfg, Distortions distortions = Distortions::kNone) :
+  using EnabledDistortions = BitSet<Distortions>;
+
+  Distorter(const tpcrs::Configurator& cfg, EnabledDistortions distortions = 0) :
     cfg_(cfg),
     distortions_(distortions),
     dcfg_(cfg)
@@ -80,7 +81,7 @@ class Distorter
 
   const tpcrs::Configurator& cfg_;
 
-  BitSet<Distortions> distortions_;
+  EnabledDistortions distortions_;
 
   DistorterConfigurator dcfg_;
 
@@ -93,6 +94,8 @@ class Distorter
 template<typename Vec3, typename MagField>
 Vec3 Distorter::Distort(Vec3 p, int sector, const MagField& mag_field) const
 {
+  if (distortions_.none()) return p;
+
   Vec3 p_prime = p;
 
   if ( distortions_.test(Distortions::kMagneticField) ) {

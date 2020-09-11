@@ -55,7 +55,6 @@ Simulator::Simulator(const tpcrs::Configurator& cfg) :
 {
   //SETBIT(options_, kHEED);
   SETBIT(options_, kBICHSEL); // Default is Bichsel
-  //SETBIT(options_, kDistortion);
 
   if (TESTBIT(options_, kBICHSEL)) {
     TFile file_dNdE(cfg_.Locate("dNdE_Bichsel.root").c_str());
