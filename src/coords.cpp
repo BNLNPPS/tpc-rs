@@ -69,11 +69,11 @@ void CoordTransform::local_sector_to_hardware(const StTpcLocalSectorCoordinate &
 
 void CoordTransform::hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b) const
 {
-  Coords  tmp{PadToX(a.sector, a.row, a.pad), tpcrs::RadialDistanceAtRow(a.row, cfg_), 0};
+  double x = PadToX(a.sector, a.row, a.pad);
+  double y = tpcrs::RadialDistanceAtRow(a.row, cfg_);
   double zoffset =  (a.row > cfg_.S<tpcPadPlanes>().innerPadRows) ? z_outer_offset_ : z_inner_offset_;
   double z = TimeToZ(a.timeBucket, a.sector, a.row, a.pad) - zoffset;
-  tmp.z = z;
-  b = StTpcLocalSectorCoordinate{{tmp.x, tmp.y, tmp.z}, a.sector, a.row};
+  b = StTpcLocalSectorCoordinate{{x, y, z}, a.sector, a.row};
 }
 
 
@@ -282,7 +282,7 @@ void CoordTransform::SetTpcRotations()
     {
       TGeoHMatrix rotA; // After alignment
 
-      if (!sector) { // TPC Reference System
+      if (sector == 0) { // TPC Reference System
         double phi   = 0.0;                                           // -gamma large uncertainty, so set to 0
         double theta = cfg_.S<tpcGlobalPosition>().PhiXZ_geom * 180.0 / M_PI; // -beta
         double psi   = cfg_.S<tpcGlobalPosition>().PhiYZ_geom * 180.0 / M_PI; // -alpha
@@ -320,6 +320,7 @@ void CoordTransform::SetTpcRotations()
           rotA *= cfg_.C<StTpcSuperSectorPosition>().GetMatrix(sector - 1);
           break;
         }
+
         case kSupS2Glob:      // SupS => Tpc => Glob
           rotA = tpc2global_ * SupS2Tpc(sector);
           break;
@@ -355,10 +356,14 @@ void CoordTransform::SetTpcRotations()
 
       // Normalize
       double* r = rotA.GetRotationMatrix();
-      double norm;
-      TVector3 d(r[0], r[3], r[6]); norm = 1 / d.Mag(); d *= norm;
-      TVector3 t(r[2], r[5], r[8]); norm = 1 / t.Mag(); t *= norm;
+
+      TVector3 d(r[0], r[3], r[6]);
+      TVector3 t(r[2], r[5], r[8]);
       TVector3 n(r[1], r[4], r[7]);
+
+      d *= 1. / d.Mag();
+      t *= 1. / t.Mag();
+
       TVector3 c = d.Cross(t);
 
       if (c.Dot(n) < 0) c *= -1;
@@ -368,6 +373,7 @@ void CoordTransform::SetTpcRotations()
         d[1], c[1], t[1],
         d[2], c[2], t[2]
       };
+
       rotA.SetRotation(rot);
 
       const char* names[kTotalTpcSectorRotaions] = {
