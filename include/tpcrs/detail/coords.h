@@ -235,51 +235,10 @@ struct CoordTransform
   void local_sector_to_hardware(const StTpcLocalSectorCoordinate &a, StTpcPadCoordinate &b) const;
   void hardware_to_local_sector(const StTpcPadCoordinate &a, StTpcLocalSectorCoordinate &b) const;
 
-  // Raw Data <--> Tpc Local Coordinates
-  void local_to_hardware(const StTpcLocalCoordinate &a, StTpcPadCoordinate &b) const
-  {
-    StTpcLocalSectorCoordinate c;
-    local_to_local_sector(a, c);
-    local_sector_to_hardware(c, b);
-  }
-
-  void hardware_to_local(const StTpcPadCoordinate &a, StTpcLocalCoordinate &b) const
-  {
-    StTpcLocalSectorCoordinate c;
-    hardware_to_local_sector(a, c);
-    local_sector_to_local(c, b);
-  }
-
   // Tpc Local Sector <--> TPC Local
   void local_sector_to_local(const StTpcLocalSectorCoordinate &a, StTpcLocalCoordinate &b) const;
 
-  void local_sector_to_local_dir(const StTpcLocalSectorDirection &a, StTpcLocalDirection &b) const
-  {
-    Pad2Tpc(a.sector, a.row).LocalToMasterVect(a.position.xyz(), b.position.xyz());
-    b.sector = a.sector;
-    b.row = a.row;
-  }
-
-  void local_sector_to_global(const StTpcLocalSectorCoordinate &a, StGlobalCoordinate &b) const
-  {
-    StTpcLocalCoordinate c;
-    local_sector_to_local(a, c);
-    local_to_global(c, b);
-  }
-
-  void local_sector_to_global_dir(const StTpcLocalSectorDirection &a, StGlobalDirection &b) const
-  {
-    Pad2Glob(a.sector, a.row).LocalToMasterVect(a.position.xyz(), b.position.xyz());
-  }
-
   void local_to_local_sector(const StTpcLocalCoordinate &a, StTpcLocalSectorCoordinate &b) const;
-
-  void local_to_local_sector_dir(const StTpcLocalDirection &a, StTpcLocalSectorDirection &b) const
-  {
-    Pad2Tpc(a.sector, a.row).MasterToLocalVect(a.position.xyz(), b.position.xyz());
-    b.sector = a.sector;
-    b.row = a.row;
-  }
 
   void global_to_local_sector(const StGlobalCoordinate &a, StTpcLocalSectorCoordinate &b, int sector, int row) const
   {
@@ -318,21 +277,6 @@ struct CoordTransform
     tpc2global_.MasterToLocalVect(a.position.xyz(), b.position.xyz());
     b.sector = sector;
     b.row = row;
-  }
-
-  // Raw Data <-->  Global Coordinate
-  void hardware_to_global(const StTpcPadCoordinate &a, StGlobalCoordinate &b) const
-  {
-    StTpcLocalCoordinate c;
-    hardware_to_local(a, c);
-    local_to_global(c, b);
-  }
-
-  void global_to_hardware(const StGlobalCoordinate &a, StTpcPadCoordinate &b, int sector, int row) const
-  {
-    StTpcLocalCoordinate c;
-    global_to_local(a, c, sector, row);
-    local_to_hardware(c, b);
   }
 
   double ZToTime(double z, int sector, int row, int pad = 0) const;
@@ -402,11 +346,6 @@ struct CoordTransform
   const TGeoHMatrix &PadInner2Glob(int sector = 1)  const {return TpcRot(sector, kPadInner2Glob);}
   const TGeoHMatrix &PadOuter2Glob(int sector = 1)  const {return TpcRot(sector, kPadOuter2Glob);}
 
-  const TGeoHMatrix &SubS2SupS(int sector = 1, int row = 1) const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kSubSInner2SupS : kSubSOuter2SupS);}
-  const TGeoHMatrix &SubS2Tpc (int sector = 1, int row = 1) const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kSubSInner2Tpc  : kSubSOuter2Tpc );}
-  const TGeoHMatrix &SubS2Glob(int sector = 1, int row = 1) const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kSubSInner2Glob : kSubSOuter2Glob);}
-
-  const TGeoHMatrix &Pad2SupS(int sector = 1, int row = 1)  const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kPadInner2SupS : kPadOuter2SupS);}
   const TGeoHMatrix &Pad2Tpc (int sector = 1, int row = 1)  const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kPadInner2Tpc  : kPadOuter2Tpc );}
   const TGeoHMatrix &Pad2Glob(int sector = 1, int row = 1)  const {return TpcRot(sector, tpcrs::IsInner(row, cfg_) ? kPadInner2Glob : kPadOuter2Glob);}
 };

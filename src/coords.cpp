@@ -265,11 +265,6 @@ void CoordTransform::SetTpcRotations()
   //
   // Z_tpc is not changed during any sector transformation!!!
 
-  TGeoHMatrix mHalf[2] = {
-    TGeoHMatrix("Default for first half of TPC"),
-    TGeoHMatrix("Default for second half of TPC")
-  };
-
   TGeoHMatrix flip_matrix("flip");
   double Rotation[9] = {0, 1, 0,
                         1, 0, 0,
