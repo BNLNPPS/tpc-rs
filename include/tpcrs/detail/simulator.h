@@ -242,6 +242,9 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 
     for (TrackSegment& segment : segments_in_sector) {
 
+      if (segment.charge == 0) continue;
+      if (segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins) continue;
+
       // Calculate local gain corrected for dE/dx
       double gain_local = CalcLocalGain(segment);
       if (gain_local == 0) continue;
@@ -294,9 +297,6 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::ve
   for (auto ihit = first_hit; ihit != last_hit; ++ihit)
   {
     TrackSegment curr_segment = CreateTrackSegment(*ihit, mag_field);
-
-    if (curr_segment.charge == 0) continue;
-    if (curr_segment.Pad.timeBucket < 0 || curr_segment.Pad.timeBucket > digi_.n_timebins) continue;
 
     segments.push_back(curr_segment);
   }
