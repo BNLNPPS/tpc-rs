@@ -107,8 +107,8 @@ class Simulator
   void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail) const;
   void SimulateAsic(std::vector<short>& ADC) const;
 
-  template<typename InputIt, typename MagField>
-  void CreateTrackSegments(InputIt, InputIt, std::vector<TrackSegment>&, const MagField& mag_field) const;
+  template<typename InputIt, typename OutputIt, typename MagField>
+  void CreateTrackSegments(InputIt, InputIt, OutputIt, const MagField& mag_field) const;
 
   template<typename MagField>
   TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field) const;
@@ -223,7 +223,7 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
     bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
 
     if (start_new_track || next_hit == last_hit) {
-      CreateTrackSegments(first_hit_on_track, next_hit, segments_in_sector, mag_field);
+      CreateTrackSegments(first_hit_on_track, next_hit, std::back_inserter(segments_in_sector), mag_field);
       first_hit_on_track = next_hit;
 
       if ( (sector_boundary || next_hit == last_hit ) && segments_in_sector.size() != 0) {
@@ -291,14 +291,12 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 }
 
 
-template<typename InputIt, typename MagField>
-void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, std::vector<TrackSegment>& segments, const MagField& mag_field) const
+template<typename InputIt, typename OutputIt, typename MagField>
+void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputIt segments, const MagField& mag_field) const
 {
   for (auto ihit = first_hit; ihit != last_hit; ++ihit)
   {
-    TrackSegment curr_segment = CreateTrackSegment(*ihit, mag_field);
-
-    segments.push_back(curr_segment);
+    *segments = CreateTrackSegment(*ihit, mag_field);
   }
 }
 
