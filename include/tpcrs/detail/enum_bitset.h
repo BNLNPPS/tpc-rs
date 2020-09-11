@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include <limits>
 
 namespace tpcrs { namespace detail {
 
@@ -12,34 +13,39 @@ class BitSet;
 template<typename Enum>
 class BitSet<Enum, true>
 {
+ private:
+
+  using ue_t = typename std::underlying_type<Enum>::type;
+
  public:
 
   BitSet() = default;
-  BitSet(Enum value) : bits(1 << static_cast<std::size_t>(value)) {}
   BitSet(const BitSet& other) : bits(other.bits) {}
-  BitSet(unsigned long val) : bits(val) {}
+  BitSet(ue_t val) : bits(val) {}
 
-  BitSet operator| (Enum value) const { BitSet result = *this; result.bits |= 1 << static_cast<std::size_t>(value); return result; }
-  BitSet operator& (Enum value) const { BitSet result = *this; result.bits &= 1 << static_cast<std::size_t>(value); return result; }
-  BitSet operator^ (Enum value) const { BitSet result = *this; result.bits ^= 1 << static_cast<std::size_t>(value); return result; }
-  BitSet operator~ () const { BitSet result = *this; result.bits.flip(); return result; }
+  BitSet operator| (Enum value) const { BitSet result = *this; result.bits |= 1 << static_cast<ue_t>(value); return result; }
+  BitSet operator& (Enum value) const { BitSet result = *this; result.bits &= 1 << static_cast<ue_t>(value); return result; }
+  BitSet operator^ (Enum value) const { BitSet result = *this; result.bits ^= 1 << static_cast<ue_t>(value); return result; }
+  BitSet operator~ ()           const { BitSet result = *this; result.bits.flip(); return result; }
 
-  BitSet& operator|= (Enum value) { bits |= 1 << static_cast<std::size_t>(value); return *this; }
-  BitSet& operator&= (Enum value) { bits &= 1 << static_cast<std::size_t>(value); return *this; }
-  BitSet& operator^= (Enum value) { bits ^= 1 << static_cast<std::size_t>(value); return *this; }
+  BitSet& operator|= (Enum value) { bits |= 1 << static_cast<ue_t>(value); return *this; }
+  BitSet& operator&= (Enum value) { bits &= 1 << static_cast<ue_t>(value); return *this; }
+  BitSet& operator^= (Enum value) { bits ^= 1 << static_cast<ue_t>(value); return *this; }
 
   bool any() const { return bits.any(); }
   bool all() const { return bits.all(); }
   bool none() const { return bits.none(); }
   operator bool() const { return any(); }
 
-  bool test(Enum value) const { return bits.test(1 << static_cast<std::size_t>(value)); }
-  void set(Enum value) { bits.set(1 << static_cast<std::size_t>(value)); }
-  void unset(Enum value) { bits.reset(1 << static_cast<std::size_t>(value)); }
+  bool test(Enum value) const { return bits.test(1 << static_cast<ue_t>(value)); }
+  void set(Enum value) { bits.set(1 << static_cast<ue_t>(value)); }
+  void unset(Enum value) { bits.reset(1 << static_cast<ue_t>(value)); }
 
  private:
 
-  std::bitset<64> bits;
+  const static size_t N = std::numeric_limits<ue_t>::digits;
+
+  std::bitset<N> bits;
 };
 
 
