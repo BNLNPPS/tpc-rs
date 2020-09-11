@@ -507,11 +507,8 @@ MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
 MakeChairInstance(tpcFieldCageShort,Geometry/tpc/tpcFieldCageShort);
 MakeChairInstance(tpcHVPlanes,Geometry/tpc/tpcHVPlanes);
-MakeChairInstance2(Survey,StTpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPosition);
 MakeChairInstance2(Survey,StTpcOuterSectorPosition,Geometry/tpc/TpcOuterSectorPosition);
 MakeChairInstance2(Survey,StTpcSuperSectorPosition,Geometry/tpc/TpcSuperSectorPosition);
-MakeChairInstance2(Survey,StTpcHalfPosition,Geometry/tpc/TpcHalfPosition);
-MakeChairInstance2(Survey,StTpcPosition,Geometry/tpc/TpcPosition);
 
 St_SurveyC::St_SurveyC() : fRotations()  { }
 

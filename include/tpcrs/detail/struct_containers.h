@@ -425,11 +425,6 @@ struct St_TpcSpaceChargeC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcSpaceCh
   St_TpcSpaceChargeC(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcSpaceChargeC, tpcCorrection>(cfg) {}
 };
 
-// Inner part of sector to Super Sector
-struct StTpcInnerSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcInnerSectorPosition, Survey> {
-  StTpcInnerSectorPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcInnerSectorPosition, Survey>(cfg) {}
-};
-
 // Outer part of sector to Super Sector
 struct StTpcOuterSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcOuterSectorPosition, Survey> {
   StTpcOuterSectorPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcOuterSectorPosition, Survey>(cfg) {}
@@ -438,19 +433,6 @@ struct StTpcOuterSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcOuterSect
 // Extra rotation for whole Super Sector to half Tpc
 struct StTpcSuperSectorPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcSuperSectorPosition, Survey> {
   StTpcSuperSectorPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcSuperSectorPosition, Survey>(cfg) {}
-};
-
-// Extra rotation for half of Tpc  to Tpc
-struct StTpcHalfPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey> {
-  StTpcHalfPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcHalfPosition, Survey>(cfg) {}
-  const TGeoHMatrix  &GetEastMatrix() {return  GetMatrix(tpcrs::TPC::Half::first);}
-  const TGeoHMatrix  &GetWestMatrix() {return  GetMatrix(tpcrs::TPC::Half::second);}
-};
-
-// Global position of TPC in Magnet
-struct StTpcPosition : tpcrs::ConfigStruct<St_SurveyC, StTpcPosition, Survey> {
-  StTpcPosition(const tpcrs::Configurator& cfg) : tpcrs::ConfigStruct<St_SurveyC, StTpcPosition, Survey>(cfg) {}
-  const TGeoHMatrix  &GetMatrix() {return  St_SurveyC::GetMatrix(0);}
 };
 
 struct St_TpcTanLC : tpcrs::ConfigStruct<St_tpcCorrectionC, St_TpcTanLC, tpcCorrection> {
