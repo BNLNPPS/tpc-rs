@@ -505,7 +505,6 @@ MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR1C,Calibrations/rich/spaceCh
 MakeChairInstance2(spaceChargeCor,St_spaceChargeCorR2C,Calibrations/rich/spaceChargeCorR2);
 MakeChairInstance(tpcFieldCage,Geometry/tpc/tpcFieldCage);
 MakeChairInstance(tpcPadPlanes,Geometry/tpc/tpcPadPlanes);
-MakeChairInstance(tpcGlobalPosition,Geometry/tpc/tpcGlobalPosition);
 MakeChairInstance(tpcFieldCageShort,Geometry/tpc/tpcFieldCageShort);
 MakeChairInstance(tpcHVPlanes,Geometry/tpc/tpcHVPlanes);
 MakeChairInstance2(Survey,StTpcInnerSectorPosition,Geometry/tpc/TpcInnerSectorPosition);

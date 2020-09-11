@@ -288,16 +288,15 @@ void CoordTransform::SetTpcRotations()
       TGeoHMatrix rotA; // After alignment
 
       if (!sector) { // TPC Reference System
-        St_tpcGlobalPositionC& tpcGlobalPosition = cfg_.C<St_tpcGlobalPositionC>();
         double phi   = 0.0;                                           // -gamma large uncertainty, so set to 0
-        double theta = tpcGlobalPosition.PhiXZ_geom() * 180.0 / M_PI; // -beta
-        double psi   = tpcGlobalPosition.PhiYZ_geom() * 180.0 / M_PI; // -alpha
+        double theta = cfg_.S<tpcGlobalPosition>().PhiXZ_geom * 180.0 / M_PI; // -beta
+        double psi   = cfg_.S<tpcGlobalPosition>().PhiYZ_geom * 180.0 / M_PI; // -alpha
         rotA.RotateX(-psi);
         rotA.RotateY(-theta);
         rotA.RotateZ(-phi);
-        double transTpcRefSys[3] = {tpcGlobalPosition.LocalxShift(),
-                                    tpcGlobalPosition.LocalyShift(),
-                                    tpcGlobalPosition.LocalzShift() };
+        double transTpcRefSys[3] = {cfg_.S<tpcGlobalPosition>().LocalxShift,
+                                    cfg_.S<tpcGlobalPosition>().LocalyShift,
+                                    cfg_.S<tpcGlobalPosition>().LocalzShift };
         rotA.SetTranslation(transTpcRefSys);
       }
       else {

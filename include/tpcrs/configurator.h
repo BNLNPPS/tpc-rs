@@ -30,6 +30,7 @@ template<> std::string ConfigNodeName<tpcSectorT0offset>();
 template<> std::string ConfigNodeName<TpcResponseSimulator>();
 template<> std::string ConfigNodeName<trgTimeOffset>();
 template<> std::string ConfigNodeName<tpcDimensions>();
+template<> std::string ConfigNodeName<tpcGlobalPosition>();
 template<> std::string ConfigNodeName<tpcPadPlanes>();
 template<> std::string ConfigNodeName<tpcWirePlanes>();
 template<> std::string ConfigNodeName<MagFactor>();
