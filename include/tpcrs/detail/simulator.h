@@ -108,6 +108,9 @@ class Simulator
   void SimulateAsic(std::vector<short>& ADC) const;
 
   template<typename InputIt, typename OutputIt, typename MagField>
+  void CreateSegments(InputIt, InputIt, OutputIt&, const MagField& mag_field) const;
+
+  template<typename InputIt, typename OutputIt, typename MagField>
   void CreateTrackSegments(InputIt, InputIt, OutputIt, const MagField& mag_field) const;
 
   template<typename MagField>
@@ -202,38 +205,12 @@ OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distor
 template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
 void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field) const
 {
+  std::vector< std::vector<TrackSegment> > segments_by_sector(digi_.n_sectors);
+  CreateSegments(first_hit, last_hit, segments_by_sector, mag_field);
+
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-  std::vector< std::vector<TrackSegment> > segments_by_sector(digi_.n_sectors);
-  std::vector<TrackSegment> segments_in_sector;
-
-  auto first_hit_on_track = first_hit;
-  int curr_direction = 0; // 0 - increase no of row, 1 - decrease no of. row.
-
-  for (auto curr_hit = first_hit; curr_hit != last_hit; ++curr_hit)
-  {
-    auto next_hit = next(curr_hit);
-
-    int  next_direction  = next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
-    bool sector_boundary = next_hit->volume_id % 10000 / 100 !=
-                           curr_hit->volume_id % 10000 / 100;
-    bool track_boundary  = (next_hit->track_id != curr_hit->track_id || curr_hit->track_id == 0);
-
-    bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
-
-    if (start_new_track || next_hit == last_hit) {
-      CreateTrackSegments(first_hit_on_track, next_hit, std::back_inserter(segments_in_sector), mag_field);
-      first_hit_on_track = next_hit;
-
-      if ( (sector_boundary || next_hit == last_hit ) && segments_in_sector.size() != 0) {
-        segments_by_sector[(curr_hit->volume_id % 10000) / 100 - 1] = segments_in_sector;
-        segments_in_sector.clear();
-      }
-    }
-
-    curr_direction = next_direction;
-  }
 
   unsigned int sector = 1;
   for (auto segments_in_sector : segments_by_sector) {
@@ -287,6 +264,40 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
     }
 
     sector++;
+  }
+}
+
+
+template<typename InputIt, typename OutputIt, typename MagField>
+void Simulator::CreateSegments(InputIt first_hit, InputIt last_hit, OutputIt& segments_by_sector, const MagField& mag_field) const
+{
+  std::vector<TrackSegment> segments_in_sector;
+
+  auto first_hit_on_track = first_hit;
+  int curr_direction = 0; // 0 - increase no of row, 1 - decrease no of. row.
+
+  for (auto curr_hit = first_hit; curr_hit != last_hit; ++curr_hit)
+  {
+    auto next_hit = next(curr_hit);
+
+    int  next_direction  = next_hit->volume_id % 100 - curr_hit->volume_id % 100 >= 0 ? 0 : 1;
+    bool sector_boundary = next_hit->volume_id % 10000 / 100 !=
+                           curr_hit->volume_id % 10000 / 100;
+    bool track_boundary  = (next_hit->track_id != curr_hit->track_id || curr_hit->track_id == 0);
+
+    bool start_new_track = track_boundary || curr_direction != next_direction || sector_boundary;
+
+    if (start_new_track || next_hit == last_hit) {
+      CreateTrackSegments(first_hit_on_track, next_hit, std::back_inserter(segments_in_sector), mag_field);
+      first_hit_on_track = next_hit;
+
+      if ( (sector_boundary || next_hit == last_hit ) && segments_in_sector.size() != 0) {
+        segments_by_sector[(curr_hit->volume_id % 10000) / 100 - 1] = segments_in_sector;
+        segments_in_sector.clear();
+      }
+    }
+
+    curr_direction = next_direction;
   }
 }
 
