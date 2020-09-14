@@ -658,15 +658,15 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
   static const double eV = 1e-9; // electronvolt in GeV
   static const double cLog10 = std::log(10.);
 
-  double gamma = std::pow(10., segment.simu_hit->lgam) + 1;
+  double gamma = std::pow(10., segment.simu_hit.lgam) + 1;
   double betaGamma = std::sqrt(gamma * gamma - 1.);
   double eKin = -1;
-  Coords pxyzG{segment.simu_hit->px, segment.simu_hit->py, segment.simu_hit->pz};
+  Coords pxyzG{segment.simu_hit.px, segment.simu_hit.py, segment.simu_hit.pz};
   double bg = segment.mass > 0 ? pxyzG.mag() / segment.mass : 0;
 
   // special case of stopped electrons
-  if (segment.simu_hit->particle_id == 3 && segment.simu_hit->ds < 0.0050 && segment.simu_hit->de < 0) {
-    eKin = -segment.simu_hit->de;
+  if (segment.simu_hit.particle_id == 3 && segment.simu_hit.ds < 0.0050 && segment.simu_hit.de < 0) {
+    eKin = -segment.simu_hit.de;
     gamma = eKin / m_e + 1;
     bg = std::sqrt(gamma * gamma - 1.);
   }
@@ -689,8 +689,8 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
     Tmax = cfg_.S<ResponseSimulator>().electron_cutoff_energy;
 
   float dEr = 0;
-  double s_low   = -std::abs(segment.simu_hit->ds) / 2;
-  double s_upper =  std::abs(segment.simu_hit->ds) / 2;
+  double s_low   = -std::abs(segment.simu_hit.ds) / 2;
+  double s_upper =  std::abs(segment.simu_hit.ds) / 2;
   double newPosition = s_low;
 
   // generate electrons: No. of primary clusters per cm
@@ -887,7 +887,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
 
         if (signal < cfg_.S<ResponseSimulator>().min_signal) continue;
 
-        binned_charge[index] += {signal, segment.simu_hit->track_id};
+        binned_charge[index] += {signal, segment.simu_hit.track_id};
       } // time
     } // pad limits
   } // row limits
@@ -955,7 +955,7 @@ double Simulator::dEdxCorrection(const TrackSegment &segment) const
     CdEdx.edge += 1 - digi_.n_pads(segment.Pad.row);
 
   CdEdx.F.dE   = 1;
-  CdEdx.F.dx   = std::abs(segment.simu_hit->ds);
+  CdEdx.F.dx   = std::abs(segment.simu_hit.ds);
   CdEdx.xyz[0] = segment.coorLS.position.x;
   CdEdx.xyz[1] = segment.coorLS.position.y;
   CdEdx.xyz[2] = segment.coorLS.position.z;

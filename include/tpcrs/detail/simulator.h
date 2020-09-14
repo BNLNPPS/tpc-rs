@@ -40,7 +40,7 @@ class Simulator
   struct TrackSegment {
     int charge;
     double mass;
-    const tpcrs::SimulatedHit* simu_hit;
+    tpcrs::SimulatedHit simu_hit;
     /// The original coordinates of the hit with applied distortions
     StTpcLocalSectorCoordinate coorLS;
     StTpcLocalSectorDirection  dirLS;
@@ -306,9 +306,9 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
 {
   int sector = hit.volume_id % 10000 / 100;
 
-  TrackSegment segment;
+  TrackSegment segment{};
   StGlobalCoordinate xyzG{hit.x, hit.y, hit.z};
-  segment.simu_hit = &hit;
+  segment.simu_hit = hit;
   ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
   StTpcLocalSectorCoordinate coorS;
