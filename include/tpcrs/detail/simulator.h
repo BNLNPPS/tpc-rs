@@ -307,7 +307,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
   int sector = hit.volume_id % 10000 / 100;
 
   TrackSegment segment;
-  StGlobalCoordinate xyzG{hit.x[0], hit.x[1], hit.x[2]};
+  StGlobalCoordinate xyzG{hit.x, hit.y, hit.z};
   segment.simu_hit = &hit;
   ParticleProperties(hit.particle_id, segment.charge, segment.mass);
 
@@ -319,10 +319,10 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
   transform_.global_to_local(xyzG, coorLT, sector, coorS.row);
 
   // Get magnetic field at the hit position
-  auto B_field = mag_field.ValueAt( Coords{hit.x[0], hit.x[1], hit.x[2]});
+  auto B_field = mag_field.ValueAt( Coords{hit.x, hit.y, hit.z});
   // distortion and misalignment
   // replace pxy => direction and try linear extrapolation
-  Coords pxyzG{hit.p[0], hit.p[1], hit.p[2]};
+  Coords pxyzG{hit.px, hit.py, hit.pz};
   StGlobalDirection dirG{pxyzG.unit()}; // XXX Why scale the momentum?
   // TODO: Remove cast to float when new reference is introduced for tests
   StGlobalDirection BG{float(B_field.x), float(B_field.y), float(B_field.z)};

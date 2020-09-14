@@ -56,10 +56,10 @@ struct DistortedHit
 {
   /// Distorted position of the simulated hit at the center of a pad row layer
   /// in the global coordinate system
-  double x[3];
+  double x, y, z;
 
-  /// Distorted particle momentum at point x
-  double p[3];
+  /// Distorted particle momentum at point (x,y,z)
+  double px, py, pz;
 
   /// Energy deposited by the particle within pad row boundaries
   double de;
@@ -97,10 +97,10 @@ struct SimulatedHit
 
   /// Position of the simulated hit at the center of a pad row layer in the
   /// global coordinate system
-  double x[3];
+  double x, y, z;
 
   /// Local particle momentum at point x
-  double p[3];
+  double px, py, pz;
 
   /// Energy deposited by the particle within pad row boundaries. Not strictly
   /// necessary as it is used only in special cases such as "stopped electrons"
@@ -136,12 +136,12 @@ inline std::istream& operator>>(std::istream& is, SimulatedHit& hit)
      >> std::setw(6)      >> hit.track_id
      >> std::setw(p + 6)  >> hit.s
      >> std::setw(6)      >> hit.particle_id
-     >> std::setw(p + 6)  >> hit.x[0]
-     >> std::setw(p + 6)  >> hit.x[1]
-     >> std::setw(p + 6)  >> hit.x[2]
-     >> std::setw(p + 6)  >> hit.p[0]
-     >> std::setw(p + 6)  >> hit.p[1]
-     >> std::setw(p + 6)  >> hit.p[2]
+     >> std::setw(p + 6)  >> hit.x
+     >> std::setw(p + 6)  >> hit.y
+     >> std::setw(p + 6)  >> hit.z
+     >> std::setw(p + 6)  >> hit.px
+     >> std::setw(p + 6)  >> hit.py
+     >> std::setw(p + 6)  >> hit.pz
      >> std::scientific
      >> std::setw(p + 10) >> hit.de
      >> std::fixed
@@ -165,12 +165,12 @@ inline std::ostream& operator<<(std::ostream& os, const SimulatedHit& hit)
      << std::setw(6)      << hit.track_id
      << std::setw(p + 6)  << hit.s
      << std::setw(6)      << hit.particle_id
-     << std::setw(p + 6)  << hit.x[0]
-     << std::setw(p + 6)  << hit.x[1]
-     << std::setw(p + 6)  << hit.x[2]
-     << std::setw(p + 6)  << hit.p[0]
-     << std::setw(p + 6)  << hit.p[1]
-     << std::setw(p + 6)  << hit.p[2]
+     << std::setw(p + 6)  << hit.x
+     << std::setw(p + 6)  << hit.y
+     << std::setw(p + 6)  << hit.z
+     << std::setw(p + 6)  << hit.px
+     << std::setw(p + 6)  << hit.py
+     << std::setw(p + 6)  << hit.pz
      << std::scientific
      << std::setw(p + 10) << hit.de
      << std::fixed

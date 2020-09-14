@@ -661,7 +661,7 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
   double gamma = std::pow(10., segment.simu_hit->lgam) + 1;
   double betaGamma = std::sqrt(gamma * gamma - 1.);
   double eKin = -1;
-  Coords pxyzG{segment.simu_hit->p[0], segment.simu_hit->p[1], segment.simu_hit->p[2]};
+  Coords pxyzG{segment.simu_hit->px, segment.simu_hit->py, segment.simu_hit->pz};
   double bg = segment.mass > 0 ? pxyzG.mag() / segment.mass : 0;
 
   // special case of stopped electrons
