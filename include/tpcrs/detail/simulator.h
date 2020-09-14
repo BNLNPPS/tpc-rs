@@ -111,7 +111,7 @@ class Simulator
   void CreateTrackSegments(InputIt, InputIt, OutputIt, const MagField& mag_field) const;
 
   template<typename MagField>
-  TrackSegment CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field) const;
+  TrackSegment CreateTrackSegment(const tpcrs::SimulatedHit& hit, const MagField& mag_field) const;
 
   double CalcBaseGain(int sector, int row) const;
   double CalcLocalGain(const TrackSegment& segment) const;
@@ -302,7 +302,7 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputI
 
 
 template<typename MagField>
-Simulator::TrackSegment Simulator::CreateTrackSegment(tpcrs::SimulatedHit& hit, const MagField& mag_field) const
+Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit& hit, const MagField& mag_field) const
 {
   int sector = hit.volume_id % 10000 / 100;
 
