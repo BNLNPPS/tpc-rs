@@ -211,11 +211,10 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-
+  int nHitsInTheSector = 0;
+  ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
   unsigned int sector = 1;
   for (auto segments_in_sector : segments_by_sector) {
-    int nHitsInTheSector = 0;
-    ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
     for (TrackSegment& segment : segments_in_sector) {
 
@@ -261,6 +260,8 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 
     if (nHitsInTheSector) {
       DigitizeSector(sector, binned_charge, digitized);
+      ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
+      nHitsInTheSector = 0;
     }
 
     sector++;
