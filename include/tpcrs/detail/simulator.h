@@ -213,10 +213,12 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 
   int nHitsInTheSector = 0;
   ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
-  unsigned int sector = 1;
+  unsigned int sector = 0;
   for (auto segments_in_sector : segments_by_sector) {
 
     for (TrackSegment& segment : segments_in_sector) {
+
+      sector = segment.simu_hit.volume_id % 10000 / 100;
 
       if (segment.charge == 0) continue;
       if (segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins) continue;
@@ -263,8 +265,6 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
       ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
       nHitsInTheSector = 0;
     }
-
-    sector++;
   }
 }
 
