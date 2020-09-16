@@ -34,8 +34,8 @@ class Simulator
 
  private:
 
-  template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
-  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field) const;
+  template<typename InputIt, typename OutputIt1, typename MagField>
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, const MagField& mag_field) const;
 
   struct TrackSegment {
     int charge;
@@ -187,8 +187,7 @@ OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digit
 template<typename InputIt, typename OutputIt, typename MagField>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field) const
 {
-  std::vector<tpcrs::DistortedHit> dummy;
-  Simulate(first_hit, last_hit, digitized, std::back_inserter(dummy), mag_field);
+  Simulate(first_hit, last_hit, digitized, mag_field);
   return digitized;
 }
 
@@ -204,10 +203,11 @@ OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distor
 }
 
 
-template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
-void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field) const
+template<typename InputIt, typename OutputIt1, typename MagField>
+void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, const MagField& mag_field) const
 {
-  std::vector<TrackSegment> segments = CreateTrackSegments(first_hit, last_hit, distorted, mag_field);
+  std::vector<tpcrs::DistortedHit> dummy;
+  TrackSegments segments = CreateTrackSegments(first_hit, last_hit, std::back_inserter(dummy), mag_field);
 
   SimulateCharge(segments, digitized);
 }
