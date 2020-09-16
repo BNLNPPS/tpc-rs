@@ -193,8 +193,9 @@ template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const
 {
   tpcrs::detail::MagField mag_field(cfg_);
-  std::vector<tpcrs::DigiHit> dummy;
-  Simulate(first_hit, last_hit, std::back_inserter(dummy), distorted, mag_field);
+
+  TrackSegments dummy = CreateTrackSegments(first_hit, last_hit, distorted, mag_field);
+
   return distorted;
 }
 
