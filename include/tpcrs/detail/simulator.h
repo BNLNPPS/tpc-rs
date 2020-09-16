@@ -103,7 +103,7 @@ class Simulator
   double GetNoPrimaryClusters(double betaGamma, int charge) const;
 
   template<typename OutputIt>
-  ChargeContainer SimulateCharge(const TrackSegments& segments, OutputIt digitized) const;
+  void SimulateCharge(const TrackSegments& segments, OutputIt digitized) const;
 
   template<typename OutputIt>
   void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const;
@@ -281,7 +281,7 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
 
 
 template<typename OutputIt>
-Simulator::ChargeContainer Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized) const
+void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized) const
 {
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
@@ -343,8 +343,6 @@ Simulator::ChargeContainer Simulator::SimulateCharge(const TrackSegments& segmen
       ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
     }
   }
-
-  return binned_charge;
 }
 
 
