@@ -369,7 +369,7 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
 
     for (int i=0; i != digi_.n_timebins; ++i, ++bc, ++adcs_iter)
     {
-      int adc = int(bc->Sum / gain + gRandom->Gaus(ped, pedRMS) - ped);
+      int adc = int(bc->charge / gain + gRandom->Gaus(ped, pedRMS) - ped);
       // Zero negative values
       adc = adc & ~(adc >> 31);
       // Select minimum between adc and 1023, i.e. overflow at 1023
@@ -390,7 +390,7 @@ void Simulator::DigitizeSector(unsigned int sector, const ChargeContainer& binne
   for (auto bc = binned_charge.begin(); bc != binned_charge.end(); ++bc, ++ch, ++adcs_iter)
   {
     if (*adcs_iter == 0) continue;
-    *digitized = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->TrackId};
+    *digitized = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->track_id};
   }
 }
 

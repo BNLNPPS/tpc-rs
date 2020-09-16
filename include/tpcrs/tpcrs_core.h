@@ -74,8 +74,8 @@ struct DistortedHit
 
 struct SimulatedCharge
 {
-  float Sum;
-  short TrackId;
+  float charge;
+  short track_id;
 };
 
 
@@ -198,9 +198,9 @@ inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
 
 inline SimulatedCharge& operator+= (SimulatedCharge& a, const SimulatedCharge& b)
 {
-  a.Sum += b.Sum;
-  if (a.TrackId != b.TrackId && a.Sum < 2 * b.Sum)
-    a.TrackId = b.TrackId;
+  a.charge += b.charge;
+  if (a.track_id != b.track_id && a.charge < 2 * b.charge)
+    a.track_id = b.track_id;
   return a;
 }
 
