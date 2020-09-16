@@ -260,14 +260,6 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 
     SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
-      *distorted = tpcrs::DistortedHit{
-        {segment.coorLS.position.x, segment.coorLS.position.y, segment.coorLS.position.z},
-        {segment.dirLS.position.x,  segment.dirLS.position.y,  segment.dirLS.position.z},
-        dESum * 1e-9, // electronvolt in GeV
-        dSSum,
-        nP
-      };
-
     if (boundary) {
       DigitizeSector(curr_sector, binned_charge, digitized);
       ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
