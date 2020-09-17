@@ -8,6 +8,7 @@
 
 #include "tpcrs/tpcrs_core.h"
 #include "tpcrs/detail/coords.h"
+#include "tpcrs/detail/digitizer.h"
 #include "tpcrs/detail/distorter.h"
 #include "tpcrs/detail/mag_field.h"
 #include "tpcrs/detail/TF1F.h"
@@ -277,6 +278,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
 template<typename OutputIt>
 void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized) const
 {
+  static Digitizer digitizer(cfg_);
+
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
@@ -293,7 +296,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
     {
       if (boundary) {
-        Digitize(curr_sector, binned_charge, digitized);
+        digitizer.Digitize(curr_sector, binned_charge, digitized);
         ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
       }
       continue;
@@ -304,7 +307,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     if (gain_local == 0)
     {
       if (boundary) {
-        Digitize(curr_sector, binned_charge, digitized);
+        digitizer.Digitize(curr_sector, binned_charge, digitized);
         ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
       }
       continue;
@@ -333,7 +336,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
     if (boundary) {
-      Digitize(curr_sector, binned_charge, digitized);
+      digitizer.Digitize(curr_sector, binned_charge, digitized);
       ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
     }
   }
