@@ -116,6 +116,7 @@ set(source_files
     particles/StXicZero.cc
     particles/StZZeroBoson.cc
     coords.cpp
+    digitizer.cpp
     mag_field.cpp
     dedx_correction.cpp
     dedx_parameterization.cpp
