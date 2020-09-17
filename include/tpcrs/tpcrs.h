@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tpcrs/tpcrs_core.h"
+#include "tpcrs/detail/digitizer.h"
 #include "tpcrs/detail/mag_field.h"
 #include "tpcrs/detail/simulator.h"
 
@@ -40,6 +41,20 @@ class Simulator : detail::Simulator
   OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const
   {
     return detail::Simulator::Distort(first_hit, last_hit, distorted);
+  }
+};
+
+
+class Digitizer : detail::Digitizer
+{
+ public:
+
+  Digitizer(const tpcrs::Configurator& cfg) : detail::Digitizer(cfg) {}
+
+  template<typename InputIt, typename OutputIt>
+  OutputIt Digitize(unsigned sector, InputIt first_channel, InputIt last_channel, OutputIt digitized) const
+  {
+    return detail::Digitizer::Digitize(sector, first_channel, last_channel, digitized);
   }
 };
 
