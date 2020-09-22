@@ -221,13 +221,15 @@ OutputIt digitize(InputIt first_hit, InputIt last_hit, OutputIt d_first, const S
 
 struct DigiChannelMap
 {
-  DigiChannelMap(const Configurator& cfg, DigiChannel first = {1, 1, 1, 1}, DigiChannel last = {2, 1, 1, 1}) :
-    channels(),
+  DigiChannelMap(const Configurator& cfg, unsigned int sector = 1) :
     n_sectors(cfg.S<tpcDimensions>().numberOfSectors),
     n_rows(cfg.S<tpcPadPlanes>().innerPadRows + cfg.S<tpcPadPlanes>().outerPadRows),
     n_timebins(cfg.S<tpcElectronics>().numberOfTimeBins),
+    channels(),
     num_pads_(),
-    num_pads_cumul_(n_rows + 1, 0)
+    num_pads_cumul_(n_rows + 1, 0),
+    first_{},
+    last_ {}
   {
     num_pads_.insert(std::end(num_pads_), cfg.S<tpcPadPlanes>().innerPadsPerRow,
                                           cfg.S<tpcPadPlanes>().innerPadsPerRow + cfg.S<tpcPadPlanes>().innerPadRows),
@@ -236,17 +238,34 @@ struct DigiChannelMap
 
     std::partial_sum(std::begin(num_pads_), std::end(num_pads_), std::begin(num_pads_cumul_)+1);
 
-    DigiChannel channel = first;
-    while ( !(channel == last) )
+    first_ = {sector && sector <= n_sectors ? sector : 1, 1, 1, 1};
+    last_  = {sector && sector <= n_sectors ? sector : n_sectors, n_rows, n_pads(n_rows), n_timebins};
+
+    for (auto ch = first(); !(last() < ch); next(ch))
     {
-      channels.push_back(channel);
-
-      channel.timebin++;
-
-      if (channel.timebin > n_timebins) { channel.timebin = 1; channel.pad++; }
-      if (channel.pad > num_pads_[channel.row-1]) { channel.pad = 1; channel.row++; }
-      if (channel.row > n_rows) { channel.row = 1; channel.sector++; }
+      channels.push_back(ch);
     }
+  }
+
+  DigiChannel first() { return first_; }
+  DigiChannel last() { return last_; }
+
+  void next(DigiChannel& ch) const
+  {
+    ch.timebin++;
+
+    if (ch.timebin > n_timebins) { ch.timebin = 1; ch.pad++; }
+    if (ch.pad > num_pads_[ch.row-1]) { ch.pad = 1; ch.row++; }
+    if (ch.row > n_rows) { ch.row = 1; ch.sector++; }
+  }
+
+  void prev(DigiChannel& ch) const
+  {
+    ch.timebin--;
+
+    if (ch.timebin < 1) { ch.pad--; ch.timebin = n_timebins; }
+    if (ch.pad < 1) { ch.row--; ch.pad = num_pads_[ch.row - 1]; }
+    if (ch.row < 1) { ch.sector--; ch.row = n_rows; }
   }
 
   int n_pads(int row)     const { return num_pads_[row-1]; }
@@ -263,6 +282,9 @@ struct DigiChannelMap
 
   std::vector<int> num_pads_;
   std::vector<int> num_pads_cumul_;
+
+  DigiChannel first_;
+  DigiChannel last_;
 };
 
 }
