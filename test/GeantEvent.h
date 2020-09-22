@@ -65,7 +65,7 @@ struct GeantEvent
         if (!digiHit.ADCs[tb] || !digiHit.IDTs[tb]) continue;
         diff.total++;
 
-        T  digi_inp{digiHit.sector, digiHit.row, digiHit.pad, tb, digiHit.ADCs[tb], digiHit.IDTs[tb]};
+        T  digi_inp{digiHit.sector, digiHit.row, digiHit.pad, tb+1, digiHit.ADCs[tb], digiHit.IDTs[tb]};
         const T& digi_out = *dd_iter;
 
         if (digi_inp.channel < digi_out.channel) {

@@ -221,7 +221,7 @@ OutputIt digitize(InputIt first_hit, InputIt last_hit, OutputIt d_first, const S
 
 struct DigiChannelMap
 {
-  DigiChannelMap(const Configurator& cfg, DigiChannel first = {1, 1, 1, 0}, DigiChannel last = {2, 1, 1, 0}) :
+  DigiChannelMap(const Configurator& cfg, DigiChannel first = {1, 1, 1, 1}, DigiChannel last = {2, 1, 1, 1}) :
     channels(),
     n_sectors(cfg.S<tpcDimensions>().numberOfSectors),
     n_rows(cfg.S<tpcPadPlanes>().innerPadRows + cfg.S<tpcPadPlanes>().outerPadRows),
@@ -243,7 +243,7 @@ struct DigiChannelMap
 
       channel.timebin++;
 
-      if (channel.timebin > n_timebins - 1) { channel.timebin = 0; channel.pad++; }
+      if (channel.timebin > n_timebins) { channel.timebin = 1; channel.pad++; }
       if (channel.pad > num_pads_[channel.row-1]) { channel.pad = 1; channel.row++; }
       if (channel.row > n_rows) { channel.row = 1; channel.sector++; }
     }
