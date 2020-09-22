@@ -281,6 +281,12 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
 
   ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
+  auto reset_at_boundary = [this](unsigned sector, ChargeContainer& binned_charge, OutputIt digitized)
+  {
+    digitizer.Digitize(sector, begin(binned_charge), end(binned_charge), digitized);
+    ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
+  };
+
   for (auto segment_iter = begin(segments); segment_iter != end(segments); ++segment_iter)
   {
     auto segment = *segment_iter;
@@ -291,10 +297,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
 
     if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
     {
-      if (boundary) {
-        digitizer.Digitize(curr_sector, begin(binned_charge), end(binned_charge), digitized);
-        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-      }
+      if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
       continue;
     }
 
@@ -302,10 +305,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     double gain_local = CalcLocalGain(segment);
     if (gain_local == 0)
     {
-      if (boundary) {
-        digitizer.Digitize(curr_sector, begin(binned_charge), end(binned_charge), digitized);
-        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-      }
+      if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
       continue;
     }
 
@@ -331,10 +331,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
 
     SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
-    if (boundary) {
-      digitizer.Digitize(curr_sector, begin(binned_charge), end(binned_charge), digitized);
-      ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-    }
+    if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
   }
 }
 
