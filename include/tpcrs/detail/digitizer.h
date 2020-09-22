@@ -19,6 +19,9 @@ class Digitizer
     digi_(cfg)
   {}
 
+  template<typename InputIt, typename OutputIt>
+  OutputIt Digitize(InputIt first_channel, InputIt last_channel, OutputIt digitized) const;
+
   template<typename OutputIt>
   void Digitize(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const;
 
@@ -30,6 +33,76 @@ class Digitizer
   const tpcrs::Configurator& cfg_;
   tpcrs::DigiChannelMap digi_;
 };
+
+
+template<typename InputIt, typename OutputIt>
+OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, OutputIt digitized) const
+{
+  static DigiChannelMap digi(cfg_, 0);
+
+  double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
+  double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
+
+  auto ch_charge = first_channel;
+  std::vector<short> ADCs_(digi.n_timebins, 0);
+  std::vector<short> IDTs_(digi.n_timebins, 0);
+
+  auto digitize = [ped, pedRMS](float charge, double gain) -> int
+  {
+    int adc = int(charge / gain + gRandom->Gaus(ped, pedRMS) - ped);
+    // Zero negative values
+    adc = adc & ~(adc >> 31);
+    // Select minimum between adc and 1023, i.e. overflow at 1023
+    adc = adc - !(((adc - 1023) >> 31) & 0x1) * (adc - 1023);
+    return adc;
+  };
+
+  for (auto ch = digi.first(); !(digi.last() < ch); )
+  {
+    double gain = cfg_.S<tpcPadGainT0>().Gain[ch.sector-1][ch.row-1][ch.pad-1];
+
+    // Go to the next pad
+    if (gain <= 0) {
+      digi.next_pad(ch);
+      continue;
+    }
+
+    if (ch < ch_charge->channel || ch_charge == last_channel)
+    { // digitize zero signal and continue
+      ADCs_[ch.timebin-1] = digitize(0, gain);
+      IDTs_[ch.timebin-1] = ch_charge->track_id;
+    }
+    else if (ch_charge->channel < ch)
+    {
+      // Skip channels with charges due to zero gain
+      while(ch_charge->channel < ch)
+        ++ch_charge;
+    }
+    else // equal channels
+    {
+      // digitize non-zero signal from ch_charge
+      ADCs_[ch.timebin-1] = digitize(ch_charge->charge, gain);
+      IDTs_[ch.timebin-1] = ch_charge->track_id;
+      ++ch_charge;
+    }
+
+    // Pad boundary
+    if (ch.timebin == digi.n_timebins)
+    {
+      SimulateAltro(std::begin(ADCs_), std::end(ADCs_), true);
+
+      for (unsigned int tb = 1; tb != digi.n_timebins; ++tb)
+      {
+        if (ADCs_[tb-1] == 0) continue;
+        *digitized = tpcrs::DigiHit{ch.sector, ch.row, ch.pad, tb, ADCs_[tb-1], IDTs_[tb-1]};
+      }
+    }
+
+    digi.next(ch);
+  }
+
+  return digitized;
+}
 
 
 template<typename OutputIt>
