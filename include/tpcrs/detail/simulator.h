@@ -174,8 +174,7 @@ class Simulator
 template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized) const
 {
-  MagField mag_field(cfg_);
-  return Digitize(first_hit, last_hit, digitized, mag_field);
+  return Digitize(first_hit, last_hit, digitized, MagField(cfg_));
 }
 
 
@@ -190,10 +189,7 @@ OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digit
 template<typename InputIt, typename OutputIt>
 OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const
 {
-  tpcrs::detail::MagField mag_field(cfg_);
-
-  TrackSegments dummy = CreateTrackSegments(first_hit, last_hit, distorted, mag_field);
-
+  TrackSegments dummy = CreateTrackSegments(first_hit, last_hit, distorted, MagField(cfg_));
   return distorted;
 }
 

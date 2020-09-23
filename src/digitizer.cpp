@@ -13,11 +13,11 @@ void Digitizer::SimulateAltro(std::vector<short>::iterator first, std::vector<sh
     //        ConfigAltro(ONBaselineCorrection1, ONTailcancellation, ONBaselineCorrection2, ONClipping, ONZerosuppression)
     altro_sim.ConfigAltro(                    0,                  1,                     0,          1,                 1);
     altro_sim.ConfigTailCancellationFilter(cfg_.S<tpcAltroParams>().Altro_K1,
-                                        cfg_.S<tpcAltroParams>().Altro_K2,
-                                        cfg_.S<tpcAltroParams>().Altro_K3,
-                                        cfg_.S<tpcAltroParams>().Altro_L1,
-                                        cfg_.S<tpcAltroParams>().Altro_L2,
-                                        cfg_.S<tpcAltroParams>().Altro_L3);
+                                           cfg_.S<tpcAltroParams>().Altro_K2,
+                                           cfg_.S<tpcAltroParams>().Altro_K3,
+                                           cfg_.S<tpcAltroParams>().Altro_L1,
+                                           cfg_.S<tpcAltroParams>().Altro_L2,
+                                           cfg_.S<tpcAltroParams>().Altro_L3);
   }
   else {
     altro_sim.ConfigAltro(0, 0, 0, 1, 1);

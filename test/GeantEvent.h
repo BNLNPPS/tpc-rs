@@ -1,19 +1,9 @@
 #ifndef GeantEvent_h
 #define GeantEvent_h
 
-#include <cstring>
-#include <iomanip>
-#include <iostream>
-#include <iterator>
-#include <limits>
-#include <sstream>
 #include <vector>
-
 #include "Rtypes.h"
-
 #include "tpcrs/config_type.h"
-
-#define __MaxNumberOfTimeBins__ 512
 
 
 struct DigitizedHit
@@ -75,11 +65,11 @@ struct GeantEvent
         else if (digi_out.channel < digi_inp.channel) {
           diff.unmatched++;
           ++dd_iter;
-          tb--;
+          tb--; // i.e. do not increment before next iteration
           continue;
         }
         else {
-          if (digi_inp.adc != digi_out.adc || digi_inp.idt != digi_out.idt) {
+          if (digi_inp.adc != digi_out.adc || digi_inp.track_id != digi_out.track_id) {
             diff.unmatched++;
           }
         }

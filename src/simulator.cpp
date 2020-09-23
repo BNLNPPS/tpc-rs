@@ -692,8 +692,7 @@ void Simulator::LoopOverElectronsInCluster(
 {
   int sector = segment.Pad.sector;
   int row    = segment.Pad.row;
-  double omega_tau = cfg_.S<TpcResponseSimulator>().OmegaTau *
-                          segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
+  double omega_tau = cfg_.S<TpcResponseSimulator>().OmegaTau * segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
   double driftLength = std::abs(segment.coorLS.position.z);
   double D = 1. + omega_tau * omega_tau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);

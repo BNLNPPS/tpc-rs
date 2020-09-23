@@ -19,7 +19,7 @@ class Digitizer
   {}
 
   template<typename InputIt, typename OutputIt>
-  OutputIt Digitize(InputIt first_channel, InputIt last_channel, OutputIt digitized) const;
+  OutputIt Digitize(InputIt first_ch, InputIt last_ch, OutputIt digitized) const;
 
   template<typename InputIt, typename OutputIt>
   OutputIt Digitize(unsigned int sector, InputIt first_ch, InputIt last_ch, OutputIt digitized) const;
@@ -45,14 +45,14 @@ class Digitizer
 
 
 template<typename InputIt, typename OutputIt>
-OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, OutputIt digitized) const
+OutputIt Digitizer::Digitize(InputIt first_ch, InputIt last_ch, OutputIt digitized) const
 {
   static DigiChannelMap digi(cfg_, 0);
 
   double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
   double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
 
-  auto ch_charge = first_channel;
+  auto ch_charge = first_ch;
   std::vector<short> ADCs_(digi.n_timebins, 0);
   std::vector<short> IDTs_(digi.n_timebins, 0);
 
@@ -66,7 +66,7 @@ OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, Output
       continue;
     }
 
-    if (ch < ch_charge->channel || ch_charge == last_channel)
+    if (ch < ch_charge->channel || ch_charge == last_ch)
     { // digitize zero signal and continue
       ADCs_[ch.timebin-1] = ChargeToAdc(0, gain, ped, pedRMS);
       IDTs_[ch.timebin-1] = ch_charge->track_id;
@@ -112,7 +112,7 @@ OutputIt Digitizer::Digitize(unsigned int sector, InputIt first_ch, InputIt last
 
   std::vector<short> ADCs_(digi_.total_timebins(), 0);
 
-  auto bc = first_ch;
+  auto ch_charge = first_ch;
   auto adcs_iter = ADCs_.begin();
 
   for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += digi_.n_timebins)
@@ -120,13 +120,13 @@ OutputIt Digitizer::Digitize(unsigned int sector, InputIt first_ch, InputIt last
     double gain = cfg_.S<tpcPadGainT0>().Gain[sector-1][ch->row-1][ch->pad-1];
 
     if (gain <= 0) {
-      bc        += digi_.n_timebins;
+      ch_charge += digi_.n_timebins;
       adcs_iter += digi_.n_timebins;
       continue;
     }
 
-    for (int i=0; i != digi_.n_timebins; ++i, ++bc, ++adcs_iter)
-      *adcs_iter = ChargeToAdc(bc->charge, gain, ped, pedRMS);
+    for (int i=0; i != digi_.n_timebins; ++i, ++ch_charge, ++adcs_iter)
+      *adcs_iter = ChargeToAdc(ch_charge->charge, gain, ped, pedRMS);
   }
 
   for (auto adcs_iter = ADCs_.begin(); adcs_iter != ADCs_.end(); adcs_iter += digi_.n_timebins)
@@ -137,10 +137,10 @@ OutputIt Digitizer::Digitize(unsigned int sector, InputIt first_ch, InputIt last
   auto ch = digi_.channels.begin();
   adcs_iter = ADCs_.begin();
 
-  for (auto bc = first_ch; bc != last_ch; ++bc, ++ch, ++adcs_iter)
+  for (auto ch_charge = first_ch; ch_charge != last_ch; ++ch_charge, ++ch, ++adcs_iter)
   {
     if (*adcs_iter == 0) continue;
-    *digitized = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->track_id};
+    *digitized = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, ch_charge->track_id};
   }
 }
 

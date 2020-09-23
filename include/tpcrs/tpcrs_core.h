@@ -54,13 +54,13 @@ struct DigiHit
 {
   DigiChannel channel;
   short adc;
-  short idt;
+  short track_id;
 };
 
 
 inline std::ostream& operator<<(std::ostream& os, const DigiHit& hit)
 {
-  return os << hit.channel << ' ' << hit.adc << ' ' << hit.idt;
+  return os << hit.channel << ' ' << hit.adc << ' ' << hit.track_id;
 }
 
 
@@ -94,6 +94,15 @@ struct SimulatedCharge
 inline std::ostream& operator<<(std::ostream& os, const SimulatedCharge& ch)
 {
   return os << ch.charge << ' ' << ch.track_id;
+}
+
+
+inline SimulatedCharge& operator+= (SimulatedCharge& a, const SimulatedCharge& b)
+{
+  a.charge += b.charge;
+  if (a.track_id != b.track_id && a.charge < 2 * b.charge)
+    a.track_id = b.track_id;
+  return a;
 }
 
 
@@ -211,15 +220,6 @@ inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
   int lhs_sector = (lhs.volume_id % 10000) / 100;
   int rhs_sector = (rhs.volume_id % 10000) / 100;
   return std::tie(lhs_sector, lhs.track_id, lhs.s) < std::tie(rhs_sector, rhs.track_id, rhs.s);
-}
-
-
-inline SimulatedCharge& operator+= (SimulatedCharge& a, const SimulatedCharge& b)
-{
-  a.charge += b.charge;
-  if (a.track_id != b.track_id && a.charge < 2 * b.charge)
-    a.track_id = b.track_id;
-  return a;
 }
 
 
