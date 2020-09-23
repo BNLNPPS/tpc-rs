@@ -259,6 +259,13 @@ struct DigiChannelMap
     if (ch.row > n_rows) { ch.row = 1; ch.sector++; }
   }
 
+  void next_pad(DigiChannel& ch) const
+  {
+    ch.timebin = 1; ch.pad++;
+    if (ch.pad > num_pads_[ch.row-1]) { ch.pad = 1; ch.row++; }
+    if (ch.row > n_rows) { ch.row = 1; ch.sector++; }
+  }
+
   void prev(DigiChannel& ch) const
   {
     ch.timebin--;
