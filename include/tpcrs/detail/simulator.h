@@ -113,8 +113,8 @@ class Simulator
   template<typename InputIt, typename OutputIt, typename MagField>
   void CreateTrackSegments(InputIt, InputIt, OutputIt, const MagField& mag_field) const;
 
-  template<typename MagField>
-  TrackSegment CreateTrackSegment(const tpcrs::SimulatedHit& hit, const MagField& mag_field) const;
+  template<typename OutputIt, typename MagField>
+  TrackSegment CreateTrackSegment(const tpcrs::SimulatedHit& hit, OutputIt distorted, const MagField& mag_field) const;
 
   double CalcBaseGain(int sector, int row) const;
   double CalcLocalGain(const TrackSegment& segment) const;
@@ -313,8 +313,8 @@ void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputI
 }
 
 
-template<typename MagField>
-Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit& hit, const MagField& mag_field) const
+template<typename OutputIt, typename MagField>
+Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit& hit, OutputIt distorted, const MagField& mag_field) const
 {
   int sector = hit.volume_id % 10000 / 100;
 
@@ -347,6 +347,11 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
   transform_.local_to_global(coorLT, xyzG);
 
   transform_.local_to_local_sector(coorLT, segment.coorLS);
+
+  *distorted = tpcrs::DistortedHit{
+    xyzG.position.x, xyzG.position.y, xyzG.position.z,
+    dirG.position.x, dirG.position.y, dirG.position.z
+  };
 
   double driftLength = segment.coorLS.position.z + hit.tof * tpcrs::DriftVelocity(sector, cfg_);
 
