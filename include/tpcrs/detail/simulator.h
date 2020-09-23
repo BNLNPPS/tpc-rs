@@ -210,43 +210,57 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
 
-  int nHitsInTheSector = 0;
   ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
-  unsigned int sector = 0;
-  for (auto segments_in_sector : segments_by_sector) {
 
-    for (TrackSegment& segment : segments_in_sector) {
+  for (auto segment_iter = begin(segments); segment_iter != end(segments); ++segment_iter)
+  {
+    auto segment = *segment_iter;
+    unsigned curr_sector =      segment_iter ->simu_hit.volume_id % 10000 / 100;
+    unsigned next_sector = next(segment_iter)->simu_hit.volume_id % 10000 / 100;
 
-      sector = segment.simu_hit.volume_id % 10000 / 100;
+    bool boundary = next_sector != curr_sector;
 
-      if (segment.charge == 0) continue;
-      if (segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins) continue;
-
-      // Calculate local gain corrected for dE/dx
-      double gain_local = CalcLocalGain(segment);
-      if (gain_local == 0) continue;
-
-      // Initialize propagation
-      // Magnetic field BField must be in kilogauss
-      // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-      TrackHelix track(segment.dirLS.position,
-                       segment.coorLS.position,
-                       segment.BLS.position.z * 1e-14 * segment.charge, 1);
-      // Propagate track to the middle of the pad row plane defined by the
-      // nominal center point and the normal in this sector coordinate system
-      double sR = track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
-
-      // Update hit position based on the new track crossing the middle of pad row
-      if (sR < 1e10) {
-        segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-        transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
+    if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
+    {
+      if (boundary) {
+        DigitizeSector(curr_sector, binned_charge, digitized);
+        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
       }
+      continue;
+    }
 
-      int nP = 0;
-      double dESum = 0;
-      double dSSum = 0;
+    // Calculate local gain corrected for dE/dx
+    double gain_local = CalcLocalGain(segment);
+    if (gain_local == 0)
+    {
+      if (boundary) {
+        DigitizeSector(curr_sector, binned_charge, digitized);
+        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
+      }
+      continue;
+    }
 
-      SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
+    // Initialize propagation
+    // Magnetic field BField must be in kilogauss
+    // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
+    TrackHelix track(segment.dirLS.position,
+                     segment.coorLS.position,
+                     segment.BLS.position.z * 1e-14 * segment.charge, 1);
+    // Propagate track to the middle of the pad row plane defined by the
+    // nominal center point and the normal in this sector coordinate system
+    double sR = track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
+
+    // Update hit position based on the new track crossing the middle of pad row
+    if (sR < 1e10) {
+      segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
+      transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
+    }
+
+    int nP = 0;
+    double dESum = 0;
+    double dSSum = 0;
+
+    SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
       *distorted = tpcrs::DistortedHit{
         {segment.coorLS.position.x, segment.coorLS.position.y, segment.coorLS.position.z},
@@ -256,13 +270,9 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
         nP
       };
 
-      nHitsInTheSector++;
-    } // end do loop over segments for a given particle
-
-    if (nHitsInTheSector) {
-      DigitizeSector(sector, binned_charge, digitized);
+    if (boundary) {
+      DigitizeSector(curr_sector, binned_charge, digitized);
       ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-      nHitsInTheSector = 0;
     }
   }
 }
