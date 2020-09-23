@@ -57,8 +57,6 @@ struct GeantEvent
   {
     D diff{};
 
-    using DigiChannelType = decltype((T().channel));
-
     auto dd_iter = begin(digi_data);
 
     for (auto digiHit : digiHits) {
@@ -67,24 +65,21 @@ struct GeantEvent
         if (!digiHit.ADCs[i] || !digiHit.IDTs[i]) continue;
         diff.total++;
 
-        DigiChannelType  channel_inp{digiHit.sector, digiHit.row, digiHit.pad, i};
-        const DigiChannelType& channel_out = dd_iter->channel;
+        T  digi_inp{digiHit.sector, digiHit.row, digiHit.pad, i, digiHit.ADCs[i], digiHit.IDTs[i]};
+        const T& digi_out = *dd_iter;
 
-        if (channel_inp < channel_out) {
+        if (digi_inp.channel < digi_out.channel) {
           diff.unmatched++;
-
-
           continue;
         }
-        else if (channel_out < channel_inp) {
+        else if (digi_out.channel < digi_inp.channel) {
           diff.unmatched++;
-
           ++dd_iter;
           i--;
           continue;
         }
         else {
-          if (digiHit.ADCs[i] != dd_iter->adc || digiHit.IDTs[i] != dd_iter->idt) {
+          if (digi_inp.adc != digi_out.adc || digi_inp.idt != digi_out.idt) {
             diff.unmatched++;
           }
         }
