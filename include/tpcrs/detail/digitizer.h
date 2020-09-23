@@ -8,7 +8,6 @@
 
 namespace tpcrs { namespace detail {
 
-using ChargeContainer = std::vector<tpcrs::SimulatedCharge>;
 
 class Digitizer
 {
@@ -22,8 +21,8 @@ class Digitizer
   template<typename InputIt, typename OutputIt>
   OutputIt Digitize(InputIt first_channel, InputIt last_channel, OutputIt digitized) const;
 
-  template<typename OutputIt>
-  void Digitize(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const;
+  template<typename InputIt, typename OutputIt>
+  OutputIt Digitize(unsigned int sector, InputIt first_ch, InputIt last_ch, OutputIt digitized) const;
 
  private:
 
@@ -105,15 +104,15 @@ OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, Output
 }
 
 
-template<typename OutputIt>
-void Digitizer::Digitize(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const
+template<typename InputIt, typename OutputIt>
+OutputIt Digitizer::Digitize(unsigned int sector, InputIt first_ch, InputIt last_ch, OutputIt digitized) const
 {
   double pedRMS = cfg_.S<TpcResponseSimulator>().AveragePedestalRMSX;
   double ped = cfg_.S<TpcResponseSimulator>().AveragePedestal;
 
-  std::vector<short> ADCs_(binned_charge.size(), 0);
+  std::vector<short> ADCs_(digi_.total_timebins(), 0);
 
-  auto bc = binned_charge.begin();
+  auto bc = first_ch;
   auto adcs_iter = ADCs_.begin();
 
   for (auto ch = digi_.channels.begin(); ch != digi_.channels.end(); ch += digi_.n_timebins)
@@ -146,7 +145,7 @@ void Digitizer::Digitize(unsigned int sector, const ChargeContainer& binned_char
   auto ch = digi_.channels.begin();
   adcs_iter = ADCs_.begin();
 
-  for (auto bc = binned_charge.begin(); bc != binned_charge.end(); ++bc, ++ch, ++adcs_iter)
+  for (auto bc = first_ch; bc != last_ch; ++bc, ++ch, ++adcs_iter)
   {
     if (*adcs_iter == 0) continue;
     *digitized = tpcrs::DigiHit{sector, ch->row, ch->pad, ch->timebin, *adcs_iter, bc->track_id};

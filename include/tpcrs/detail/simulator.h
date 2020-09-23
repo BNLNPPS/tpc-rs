@@ -296,7 +296,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
     {
       if (boundary) {
-        digitizer.Digitize(curr_sector, binned_charge, digitized);
+        digitizer.Digitize(curr_sector, begin(binned_charge), end(binned_charge), digitized);
         ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
       }
       continue;
@@ -307,7 +307,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     if (gain_local == 0)
     {
       if (boundary) {
-        digitizer.Digitize(curr_sector, binned_charge, digitized);
+        digitizer.Digitize(curr_sector, begin(binned_charge), end(binned_charge), digitized);
         ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
       }
       continue;
@@ -336,7 +336,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
 
     if (boundary) {
-      digitizer.Digitize(curr_sector, binned_charge, digitized);
+      digitizer.Digitize(curr_sector, begin(binned_charge), end(binned_charge), digitized);
       ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
     }
   }
