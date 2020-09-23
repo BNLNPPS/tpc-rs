@@ -37,10 +37,10 @@ int main(int argc, char **argv)
     simu_hits.push_back(simu_hit);
 
   vector<tpcrs::DistortedHit> dist_hits;
-  tpcrs::distort(begin(simu_hits), end(simu_hits), back_inserter(dist_hits), simulator);
+  simulator.Distort(begin(simu_hits), end(simu_hits), back_inserter(dist_hits));
 
   vector<tpcrs::DigiHit> digi_hits;
-  tpcrs::digitize(begin(simu_hits), end(simu_hits), back_inserter(digi_hits), simulator);
+  simulator.Digitize(begin(simu_hits), end(simu_hits), back_inserter(digi_hits));
 
   cout << "Converted "
     << simu_hits.size() << " simulated hits into "

@@ -237,20 +237,6 @@ inline bool operator< (const SimulatedHit& lhs, const SimulatedHit& rhs)
 }
 
 
-template<typename InputIt, typename OutputIt, typename Simulator>
-OutputIt distort(InputIt first_hit, InputIt last_hit, OutputIt d_first, const Simulator& simu)
-{
-  return simu.Distort(first_hit, last_hit, d_first);
-}
-
-
-template<typename InputIt, typename OutputIt, typename Simulator>
-OutputIt digitize(InputIt first_hit, InputIt last_hit, OutputIt d_first, const Simulator& simu)
-{
-  return simu.Digitize(first_hit, last_hit, d_first);
-}
-
-
 struct DigiChannelMap
 {
   DigiChannelMap(const Configurator& cfg, int sector = 1) :
