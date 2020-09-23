@@ -50,6 +50,7 @@ class Simulator
   };
 
   using ChargeContainer = std::vector<tpcrs::SimulatedCharge>;
+  using TrackSegments   = std::vector<TrackSegment>;
 
   enum InOut {kInner = 0, kOuter = 1};
 
@@ -100,6 +101,9 @@ class Simulator
   };
 
   double GetNoPrimaryClusters(double betaGamma, int charge) const;
+
+  template<typename OutputIt>
+  ChargeContainer SimulateCharge(const TrackSegments& segments, OutputIt digitized) const;
 
   template<typename OutputIt>
   void DigitizeSector(unsigned int sector, const ChargeContainer& binned_charge, OutputIt digitized) const;
@@ -205,66 +209,7 @@ void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitize
 {
   std::vector<TrackSegment> segments = CreateTrackSegments(first_hit, last_hit, distorted, mag_field);
 
-  static int nCalls = 0;
-  gRandom->SetSeed(2345 + nCalls++);
-
-  ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
-
-  for (auto segment_iter = begin(segments); segment_iter != end(segments); ++segment_iter)
-  {
-    auto segment = *segment_iter;
-    unsigned curr_sector =      segment_iter ->simu_hit.volume_id % 10000 / 100;
-    unsigned next_sector = next(segment_iter)->simu_hit.volume_id % 10000 / 100;
-
-    bool boundary = next_sector != curr_sector;
-
-    if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
-    {
-      if (boundary) {
-        DigitizeSector(curr_sector, binned_charge, digitized);
-        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-      }
-      continue;
-    }
-
-    // Calculate local gain corrected for dE/dx
-    double gain_local = CalcLocalGain(segment);
-    if (gain_local == 0)
-    {
-      if (boundary) {
-        DigitizeSector(curr_sector, binned_charge, digitized);
-        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-      }
-      continue;
-    }
-
-    // Initialize propagation
-    // Magnetic field BField must be in kilogauss
-    // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-    TrackHelix track(segment.dirLS.position,
-                     segment.coorLS.position,
-                     segment.BLS.position.z * 1e-14 * segment.charge, 1);
-    // Propagate track to the middle of the pad row plane defined by the
-    // nominal center point and the normal in this sector coordinate system
-    double sR = track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
-
-    // Update hit position based on the new track crossing the middle of pad row
-    if (sR < 1e10) {
-      segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-      transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
-    }
-
-    int nP = 0;
-    double dESum = 0;
-    double dSSum = 0;
-
-    SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
-
-    if (boundary) {
-      DigitizeSector(curr_sector, binned_charge, digitized);
-      ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
-    }
-  }
+  SimulateCharge(segments, digitized);
 }
 
 
@@ -332,6 +277,74 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
   transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
 
   return segment;
+}
+
+
+template<typename OutputIt>
+Simulator::ChargeContainer Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized) const
+{
+  static int nCalls = 0;
+  gRandom->SetSeed(2345 + nCalls++);
+
+  ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
+
+  for (auto segment_iter = begin(segments); segment_iter != end(segments); ++segment_iter)
+  {
+    auto segment = *segment_iter;
+    unsigned curr_sector =      segment_iter ->simu_hit.volume_id % 10000 / 100;
+    unsigned next_sector = next(segment_iter)->simu_hit.volume_id % 10000 / 100;
+
+    bool boundary = next_sector != curr_sector;
+
+    if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
+    {
+      if (boundary) {
+        DigitizeSector(curr_sector, binned_charge, digitized);
+        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
+      }
+      continue;
+    }
+
+    // Calculate local gain corrected for dE/dx
+    double gain_local = CalcLocalGain(segment);
+    if (gain_local == 0)
+    {
+      if (boundary) {
+        DigitizeSector(curr_sector, binned_charge, digitized);
+        ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
+      }
+      continue;
+    }
+
+    // Initialize propagation
+    // Magnetic field BField must be in kilogauss
+    // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
+    TrackHelix track(segment.dirLS.position,
+                     segment.coorLS.position,
+                     segment.BLS.position.z * 1e-14 * segment.charge, 1);
+    // Propagate track to the middle of the pad row plane defined by the
+    // nominal center point and the normal in this sector coordinate system
+    double sR = track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
+
+    // Update hit position based on the new track crossing the middle of pad row
+    if (sR < 1e10) {
+      segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
+      transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
+    }
+
+    int nP = 0;
+    double dESum = 0;
+    double dSSum = 0;
+
+    SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
+
+    if (boundary) {
+      DigitizeSector(curr_sector, binned_charge, digitized);
+      ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
+    }
+  }
+
+  return binned_charge;
 }
 
 
