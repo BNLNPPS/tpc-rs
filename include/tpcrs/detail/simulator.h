@@ -205,8 +205,7 @@ OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distor
 template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
 void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, OutputIt2 distorted, const MagField& mag_field) const
 {
-  std::vector< std::vector<TrackSegment> > segments_by_sector(digi_.n_sectors);
-  CreateSegments(first_hit, last_hit, segments_by_sector, mag_field);
+  std::vector<TrackSegment> segments = CreateTrackSegments(first_hit, last_hit, distorted, mag_field);
 
   static int nCalls = 0;
   gRandom->SetSeed(2345 + nCalls++);
