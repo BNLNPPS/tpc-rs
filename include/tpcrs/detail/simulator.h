@@ -111,7 +111,7 @@ class Simulator
   void CreateSegments(InputIt, InputIt, OutputIt&, const MagField& mag_field) const;
 
   template<typename InputIt, typename OutputIt, typename MagField>
-  void CreateTrackSegments(InputIt, InputIt, OutputIt, const MagField& mag_field) const;
+  TrackSegments CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputIt distorted, const MagField& mag_field) const;
 
   template<typename OutputIt, typename MagField>
   TrackSegment CreateTrackSegment(const tpcrs::SimulatedHit& hit, OutputIt distorted, const MagField& mag_field) const;
@@ -304,12 +304,14 @@ void Simulator::CreateSegments(InputIt first_hit, InputIt last_hit, OutputIt& se
 
 
 template<typename InputIt, typename OutputIt, typename MagField>
-void Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputIt segments, const MagField& mag_field) const
+Simulator::TrackSegments Simulator::CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputIt distorted, const MagField& mag_field) const
 {
-  for (auto ihit = first_hit; ihit != last_hit; ++ihit)
+  TrackSegments segments;
+  for (auto curr_hit = first_hit; curr_hit != last_hit; ++curr_hit)
   {
-    *segments = CreateTrackSegment(*ihit, mag_field);
+    segments.push_back( CreateTrackSegment(*curr_hit, distorted, mag_field) );
   }
+  return segments;
 }
 
 
