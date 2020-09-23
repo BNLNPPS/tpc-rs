@@ -6,14 +6,14 @@ add_executable(test_tpcrs
 root_generate_dictionary(
     test_tpcrs_dict
     include/tpcrs/config_type.h
-    tests/GeantEvent.h
-    LINKDEF tests/LinkDef.h
+    test/GeantEvent.h
+    LINKDEF test/LinkDef.h
     OPTIONS -I${CMAKE_SOURCE_DIR}/include/ -I${YAML_CPP_INSTALL_PREFIX}/include
     INCDIRS ${CMAKE_SOURCE_DIR}
 )
 
 target_include_directories(test_tpcrs PRIVATE ${ROOT_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/tests
+    ${CMAKE_SOURCE_DIR}/test
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/include
     ${YAML_CPP_INSTALL_PREFIX}/include
@@ -37,7 +37,7 @@ ExternalProject_Add(
     PREFIX            ${CMAKE_BINARY_DIR}/contrib
     CONFIGURE_COMMAND ""
     BUILD_COMMAND     ""
-    INSTALL_COMMAND   ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/${TEST_DATA_DIR} ${CMAKE_BINARY_DIR}/tests/data
+    INSTALL_COMMAND   ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/${TEST_DATA_DIR} ${CMAKE_BINARY_DIR}/test/data
 )
 
 

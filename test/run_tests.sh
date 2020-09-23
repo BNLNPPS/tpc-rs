@@ -69,7 +69,7 @@ pids=""
 for test_id in $TESTS
 do
     test_args=ARGS_$test_id
-    (command time -o $dir/$BASHPID ./tests/test_tpcrs $test_id ${!test_args} &> log_${test_id} && diff ${test_id}_inp.log ${test_id}_out.log &> /dev/null) &
+    (command time -o $dir/$BASHPID ./test/test_tpcrs $test_id ${!test_args} &> log_${test_id} && diff ${test_id}_inp.log ${test_id}_out.log &> /dev/null) &
     pid=$!
     pids+=" $pid"
     declare PID_$pid=$test_id

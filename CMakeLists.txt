@@ -67,7 +67,7 @@ include(cmake/ExternalProject_yaml-cpp.cmake)
 add_subdirectory(src)
 if(BUILD_TESTING)
     enable_testing()
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif()
 
 # Install additional files such as README, LICENSE, etc.
