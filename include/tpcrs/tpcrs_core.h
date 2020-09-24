@@ -221,7 +221,7 @@ OutputIt digitize(InputIt first_hit, InputIt last_hit, OutputIt d_first, const S
 
 struct DigiChannelMap
 {
-  DigiChannelMap(const Configurator& cfg, unsigned int sector = 1) :
+  DigiChannelMap(const Configurator& cfg, int sector = 1) :
     n_sectors(cfg.S<tpcDimensions>().numberOfSectors),
     n_rows(cfg.S<tpcPadPlanes>().innerPadRows + cfg.S<tpcPadPlanes>().outerPadRows),
     n_timebins(cfg.S<tpcElectronics>().numberOfTimeBins),
@@ -238,8 +238,8 @@ struct DigiChannelMap
 
     std::partial_sum(std::begin(num_pads_), std::end(num_pads_), std::begin(num_pads_cumul_)+1);
 
-    first_ = {sector && sector <= n_sectors ? sector : 1, 1, 1, 1};
-    last_  = {sector && sector <= n_sectors ? sector : n_sectors, n_rows, n_pads(n_rows), n_timebins};
+    first_ = {unsigned(sector && sector <= n_sectors ? sector : 1), 1, 1, 1};
+    last_  = {unsigned(sector && sector <= n_sectors ? sector : n_sectors), unsigned(n_rows), unsigned(n_pads(n_rows)), unsigned(n_timebins)};
 
     for (auto ch = first(); !(last() < ch); next(ch))
     {
