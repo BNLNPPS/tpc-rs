@@ -594,7 +594,7 @@ double Simulator::CalcLocalGain(const TrackSegment& segment) const
 }
 
 
-void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track, double gain_local,
+void Simulator::SignalFromSegment(const TrackSegment& segment, double gain_local,
   ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum) const
 {
   static const double m_e = .51099907e-3;
@@ -678,7 +678,7 @@ void Simulator::SignalFromSegment(const TrackSegment& segment, TrackHelix track,
 
     if (!rs.size()) continue;
 
-    Coords xyzC = track.at(newPosition);
+    Coords xyzC = segment.track.at(newPosition);
 
     LoopOverElectronsInCluster(rs, segment, binned_charge, xRange, xyzC, gain_local);
   }
@@ -690,10 +690,10 @@ void Simulator::LoopOverElectronsInCluster(
   const std::vector<float>& rs, const TrackSegment &segment, ChargeContainer& binned_charge,
   double xRange, Coords xyzC, double gain_local) const
 {
-  int sector = segment.Pad.sector;
-  int row    = segment.Pad.row;
+  int sector = segment.Pad2.sector;
+  int row    = segment.Pad2.row;
   double omega_tau = cfg_.S<TpcResponseSimulator>().OmegaTau * segment.BLS.position.z / 5.0; // from diffusion 586 um / 106 um at B = 0/ 5kG
-  double driftLength = std::abs(segment.coorLS.position.z);
+  double driftLength = std::abs(segment.coorLS2.position.z);
   double D = 1. + omega_tau * omega_tau;
   double SigmaL = cfg_.S<TpcResponseSimulator>().longitudinalDiffusion * std::sqrt(driftLength);
   double SigmaT = cfg_.S<TpcResponseSimulator>().transverseDiffusion * std::sqrt(driftLength / D);
@@ -759,8 +759,8 @@ void Simulator::LoopOverElectronsInCluster(
 void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, int rowMin, int rowMax,
   const TF1F* shaper, ChargeContainer& binned_charge, double gain_local_gas) const
 {
-  int sector = segment.Pad.sector;
-  int row    = segment.Pad.row;
+  int sector = segment.Pad2.sector;
+  int row    = segment.Pad2.row;
   double sigmaJitterT = (tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                      cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 

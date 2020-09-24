@@ -44,10 +44,13 @@ class Simulator
     tpcrs::SimulatedHit simu_hit;
     /// The original coordinates of the hit with applied distortions
     StTpcLocalSectorCoordinate coorLS;
+    StTpcLocalSectorCoordinate coorLS2;
     StTpcLocalSectorDirection  dirLS;
     StTpcLocalSectorDirection  BLS;
     /// Hardware coordinates corresponding to the local to the sector `coorLS`
     StTpcPadCoordinate Pad;
+    StTpcPadCoordinate Pad2;
+    TrackHelix track;
   };
 
   using ChargeContainer = std::vector<tpcrs::SimulatedCharge>;
@@ -115,7 +118,7 @@ class Simulator
   double CalcBaseGain(int sector, int row) const;
   double CalcLocalGain(const TrackSegment& segment) const;
 
-  void SignalFromSegment(const TrackSegment& segment, TrackHelix track,
+  void SignalFromSegment(const TrackSegment& segment,
     double gain_local,
     ChargeContainer& binned_charge, int& nP, double& dESum, double& dSSum) const;
 
@@ -267,6 +270,20 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
   segment.coorLS.position.z = driftLength;
   transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
 
+  // Magnetic field BField must be in kilogauss
+  // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
+  segment.track = TrackHelix(segment.dirLS.position, segment.coorLS.position, segment.BLS.position.z * 1e-14, segment.charge);
+  // Propagate track to the middle of the pad row plane defined by the
+  // nominal center point and the normal in this sector coordinate system
+  double s = segment.track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
+  // Save updated hit position based on the new track crossing the middle of pad row
+  segment.Pad2 = segment.Pad;
+  segment.coorLS2 = segment.coorLS;
+  if (s != TrackHelix::NoSolution) {
+    segment.coorLS2.position = {segment.track.at(s).x, segment.track.at(s).y, segment.track.at(s).z};
+    transform_.local_sector_to_hardware(segment.coorLS2, segment.Pad2);
+  }
+
   return segment;
 }
 
@@ -309,30 +326,15 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
       continue;
     }
 
-    // Initialize propagation
-    // Magnetic field BField must be in kilogauss
-    // kilogauss = 1e-1*tesla = 1e-1*(volt*second/meter2) = 1e-1*(1e-6*1e-3*1/1e4) = 1e-14
-    TrackHelix track(segment.dirLS.position,
-                     segment.coorLS.position,
-                     segment.BLS.position.z * 1e-14 * segment.charge, 1);
-    // Propagate track to the middle of the pad row plane defined by the
-    // nominal center point and the normal in this sector coordinate system
-    double sR = track.pathLength({0, tpcrs::RadialDistanceAtRow(segment.Pad.row, cfg_), 0}, {0, 1, 0});
-
-    // Update hit position based on the new track crossing the middle of pad row
-    if (sR < 1e10) {
-      segment.coorLS.position = {track.at(sR).x, track.at(sR).y, track.at(sR).z};
-      transform_.local_sector_to_hardware(segment.coorLS, segment.Pad);
-    }
-
     int nP = 0;
     double dESum = 0;
     double dSSum = 0;
 
-    SignalFromSegment(segment, track, gain_local, binned_charge, nP, dESum, dSSum);
+    SignalFromSegment(segment, gain_local, binned_charge, nP, dESum, dSSum);
 
     if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
   }
 }
+
 
 } }
