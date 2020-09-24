@@ -35,8 +35,8 @@ class Simulator
 
  private:
 
-  template<typename InputIt, typename OutputIt1, typename MagField>
-  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, const MagField& mag_field) const;
+  template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
+  void Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 charges, OutputIt2 digitized, const MagField& mag_field) const;
 
   struct TrackSegment {
     int charge;
@@ -106,8 +106,8 @@ class Simulator
 
   double GetNoPrimaryClusters(double betaGamma, int charge) const;
 
-  template<typename OutputIt>
-  void SimulateCharge(const TrackSegments& segments, OutputIt digitized) const;
+  template<typename OutputIt1, typename OutputIt2>
+  void SimulateCharge(const TrackSegments& segments, OutputIt1 charges, OutputIt2 digitized) const;
 
   template<typename InputIt, typename OutputIt, typename MagField>
   TrackSegments CreateTrackSegments(InputIt first_hit, InputIt last_hit, OutputIt distorted, const MagField& mag_field) const;
@@ -184,7 +184,8 @@ OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digit
 template<typename InputIt, typename OutputIt, typename MagField>
 OutputIt Simulator::Digitize(InputIt first_hit, InputIt last_hit, OutputIt digitized, const MagField& mag_field) const
 {
-  Simulate(first_hit, last_hit, digitized, mag_field);
+  std::vector<tpcrs::SimulatedChargeChannel> dummy;
+  Simulate(first_hit, last_hit, std::back_inserter(dummy), digitized, mag_field);
   return digitized;
 }
 
@@ -197,13 +198,13 @@ OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distor
 }
 
 
-template<typename InputIt, typename OutputIt1, typename MagField>
-void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 digitized, const MagField& mag_field) const
+template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
+void Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt1 charges, OutputIt2 digitized, const MagField& mag_field) const
 {
   std::vector<tpcrs::DistortedHit> dummy;
   TrackSegments segments = CreateTrackSegments(first_hit, last_hit, std::back_inserter(dummy), mag_field);
 
-  SimulateCharge(segments, digitized);
+  SimulateCharge(segments, charges, digitized);
 }
 
 
@@ -288,8 +289,8 @@ Simulator::TrackSegment Simulator::CreateTrackSegment(const tpcrs::SimulatedHit&
 }
 
 
-template<typename OutputIt>
-void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized) const
+template<typename OutputIt1, typename OutputIt2>
+void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt1 charges, OutputIt2 digitized) const
 {
   static Digitizer digitizer(cfg_);
 
@@ -298,8 +299,23 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
 
   ChargeContainer binned_charge(digi_.total_timebins(), {0, 0});
 
-  auto reset_at_boundary = [this](unsigned sector, ChargeContainer& binned_charge, OutputIt digitized)
+  // Fill container with zero suppressed charges
+  auto suppress_zeros = [this](unsigned sector, ChargeContainer::const_iterator first, ChargeContainer::const_iterator last, OutputIt1 charges)
   {
+    DigiChannel channel{sector, 1, 1, 1};
+    while (first != last) {
+      if (first->charge != 0) {
+        *charges = {channel, first->charge, first->track_id};
+        ++charges;
+      }
+      ++first;
+      digi_.next(channel);
+    }
+  };
+
+  auto reset_at_boundary = [this, suppress_zeros](unsigned sector, ChargeContainer& binned_charge, OutputIt1 charges, OutputIt2 digitized)
+  {
+    suppress_zeros(sector, begin(binned_charge), end(binned_charge), charges);
     digitizer.Digitize(sector, begin(binned_charge), end(binned_charge), digitized);
     ChargeContainer(digi_.total_timebins(), {0, 0}).swap(binned_charge);
   };
@@ -314,7 +330,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
 
     if (segment.charge == 0 || segment.Pad.timeBucket < 0 || segment.Pad.timeBucket > digi_.n_timebins)
     {
-      if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
+      if (boundary) reset_at_boundary(curr_sector, binned_charge, charges, digitized);
       continue;
     }
 
@@ -322,7 +338,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
     double gain_local = CalcLocalGain(segment);
     if (gain_local == 0)
     {
-      if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
+      if (boundary) reset_at_boundary(curr_sector, binned_charge, charges, digitized);
       continue;
     }
 
@@ -332,7 +348,7 @@ void Simulator::SimulateCharge(const TrackSegments& segments, OutputIt digitized
 
     SignalFromSegment(segment, gain_local, binned_charge, nP, dESum, dSSum);
 
-    if (boundary) reset_at_boundary(curr_sector, binned_charge, digitized);
+    if (boundary) reset_at_boundary(curr_sector, binned_charge, charges, digitized);
   }
 }
 
