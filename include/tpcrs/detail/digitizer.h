@@ -29,6 +29,16 @@ class Digitizer
   void SimulateAltro(std::vector<short>::iterator first, std::vector<short>::iterator last, bool cancel_tail) const;
   void SimulateAsic(std::vector<short>& ADC) const;
 
+  int ChargeToAdc(float charge, double gain, double ped, double pedRMS) const
+  {
+    int adc = int(charge / gain + gRandom->Gaus(ped, pedRMS) - ped);
+    // Zero negative values
+    adc = adc & ~(adc >> 31);
+    // Select minimum between adc and 1023, i.e. overflow at 1023
+    adc = adc - !(((adc - 1023) >> 31) & 0x1) * (adc - 1023);
+    return adc;
+  }
+
   const tpcrs::Configurator& cfg_;
   tpcrs::DigiChannelMap digi_;
 };
@@ -46,16 +56,6 @@ OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, Output
   std::vector<short> ADCs_(digi.n_timebins, 0);
   std::vector<short> IDTs_(digi.n_timebins, 0);
 
-  auto digitize = [ped, pedRMS](float charge, double gain) -> int
-  {
-    int adc = int(charge / gain + gRandom->Gaus(ped, pedRMS) - ped);
-    // Zero negative values
-    adc = adc & ~(adc >> 31);
-    // Select minimum between adc and 1023, i.e. overflow at 1023
-    adc = adc - !(((adc - 1023) >> 31) & 0x1) * (adc - 1023);
-    return adc;
-  };
-
   for (auto ch = digi.first(); !(digi.last() < ch); )
   {
     double gain = cfg_.S<tpcPadGainT0>().Gain[ch.sector-1][ch.row-1][ch.pad-1];
@@ -68,7 +68,7 @@ OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, Output
 
     if (ch < ch_charge->channel || ch_charge == last_channel)
     { // digitize zero signal and continue
-      ADCs_[ch.timebin-1] = digitize(0, gain);
+      ADCs_[ch.timebin-1] = ChargeToAdc(0, gain, ped, pedRMS);
       IDTs_[ch.timebin-1] = ch_charge->track_id;
     }
     else if (ch_charge->channel < ch)
@@ -80,7 +80,7 @@ OutputIt Digitizer::Digitize(InputIt first_channel, InputIt last_channel, Output
     else // equal channels
     {
       // digitize non-zero signal from ch_charge
-      ADCs_[ch.timebin-1] = digitize(ch_charge->charge, gain);
+      ADCs_[ch.timebin-1] = ChargeToAdc(ch_charge->charge, gain, ped, pedRMS);
       IDTs_[ch.timebin-1] = ch_charge->track_id;
       ++ch_charge;
     }
@@ -126,15 +126,7 @@ OutputIt Digitizer::Digitize(unsigned int sector, InputIt first_ch, InputIt last
     }
 
     for (int i=0; i != digi_.n_timebins; ++i, ++bc, ++adcs_iter)
-    {
-      int adc = int(bc->charge / gain + gRandom->Gaus(ped, pedRMS) - ped);
-      // Zero negative values
-      adc = adc & ~(adc >> 31);
-      // Select minimum between adc and 1023, i.e. overflow at 1023
-      adc = adc - !(((adc - 1023) >> 31) & 0x1) * (adc - 1023);
-
-      *adcs_iter = adc;
-    }
+      *adcs_iter = ChargeToAdc(bc->charge, gain, ped, pedRMS);
   }
 
   for (auto adcs_iter = ADCs_.begin(); adcs_iter != ADCs_.end(); adcs_iter += digi_.n_timebins)
