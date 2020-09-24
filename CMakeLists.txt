@@ -5,7 +5,7 @@ project(TPCRS LANGUAGES CXX)
 include(CTest)
 
 set(TPCRS_VERSION_MAJOR 0 CACHE STRING "major version of tpc-rs" FORCE)
-set(TPCRS_VERSION_MINOR 1 CACHE STRING "minor version of tpc-rs" FORCE)
+set(TPCRS_VERSION_MINOR 2 CACHE STRING "minor version of tpc-rs" FORCE)
 set(TPCRS_VERSION_PATCH 0 CACHE STRING "patch version of tpc-rs" FORCE)
 set(TPCRS_VERSION "${TPCRS_VERSION_MAJOR}.${TPCRS_VERSION_MINOR}.${TPCRS_VERSION_PATCH}" CACHE STRING "version of tpc-rs" FORCE)
 
