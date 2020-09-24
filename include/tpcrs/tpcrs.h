@@ -42,6 +42,12 @@ class Simulator : detail::Simulator
   {
     return detail::Simulator::Distort(first_hit, last_hit, distorted);
   }
+
+  template<typename InputIt, typename OutputIt>
+  OutputIt Simulate(InputIt first_hit, InputIt last_hit, OutputIt charges) const
+  {
+    return detail::Simulator::Simulate(first_hit, last_hit, charges);
+  }
 };
 
 

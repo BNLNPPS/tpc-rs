@@ -33,6 +33,9 @@ class Simulator
   template<typename InputIt, typename OutputIt>
   OutputIt Distort(InputIt first_hit, InputIt last_hit, OutputIt distorted) const;
 
+  template<typename InputIt, typename OutputIt>
+  OutputIt Simulate(InputIt first_hit, InputIt last_hit, OutputIt charges) const;
+
  private:
 
   template<typename InputIt, typename OutputIt1, typename OutputIt2, typename MagField>
@@ -195,6 +198,15 @@ OutputIt Simulator::Distort(InputIt first_hit, InputIt last_hit, OutputIt distor
 {
   TrackSegments dummy = CreateTrackSegments(first_hit, last_hit, distorted, MagField(cfg_));
   return distorted;
+}
+
+
+template<typename InputIt, typename OutputIt>
+OutputIt Simulator::Simulate(InputIt first_hit, InputIt last_hit, OutputIt charges) const
+{
+  std::vector<tpcrs::DigiHit> dummy;
+  Simulate(first_hit, last_hit, charges, std::back_inserter(dummy), MagField(cfg_));
+  return charges;
 }
 
 
