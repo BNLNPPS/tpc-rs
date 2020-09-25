@@ -1,8 +1,18 @@
 [![Build Status](https://travis-ci.org/bnlnpps/tpc-rs.svg?branch=master)](https://travis-ci.org/bnlnpps/tpc-rs)
+[![License: LGPL v2.1+](https://img.shields.io/badge/License-LGPL%20v2.1+-blue.svg)](https://www.gnu.org/licenses/lgpl.html)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4050393.svg)](https://doi.org/10.5281/zenodo.4050393)
+
 
 **tpc-rs** is a C++ library to simulate and digitize the signal produced by
 charged particles traversing the sensitive volume of a Time Projection Chamber
 (TPC).
+
+If you find this project helpful please consider starring the [tpc-rs repository
+on github](https://github.com/bnlnpps/tpc-rs). In case you use this library in
+your research please cite the specific version as 
+
+    Dmitri Smirnov. (<release date>). Time Projection Chamber Response Simulator
+    (Version vX.Y.Z). http://doi.org/10.5281/zenodo.4050393
 
 
 ## Quick Start
