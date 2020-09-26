@@ -119,7 +119,6 @@ set(source_files
     digitizer.cpp
     mag_field.cpp
     dedx_correction.cpp
-    dedx_parameterization.cpp
     simulator.cpp
     altro.cpp
     TF1F.cpp

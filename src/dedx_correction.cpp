@@ -1,4 +1,3 @@
-#include "bichsel.h"
 #include "dedx_correction.h"
 #include "logger.h"
 #include "tpcrs/detail/struct_containers.h"

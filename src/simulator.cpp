@@ -12,7 +12,6 @@
 #include "particles/StParticleTable.hh"
 #include "particles/StParticleDefinition.hh"
 #include "tpcrs/configurator.h"
-#include "bichsel.h"
 #include "dedx_correction.h"
 #include "logger.h"
 #include "math_funcs.h"
