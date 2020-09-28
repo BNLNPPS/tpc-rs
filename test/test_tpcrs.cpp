@@ -23,9 +23,6 @@ int main(int argc, char **argv)
   // Process 2nd optional argument
   int max_records(argc > 2 ? std::atoi(argv[2]) : -1);
 
-  std::cout << "test_name:   " << test_name << "\n"
-            << "max_records: " << max_records << "\n";
-
   tpcrs::Configurator cfg(test_name);
   tpcrs::Simulator simulator(cfg);
   tpcrs::MagField mag_field(cfg);
@@ -38,6 +35,9 @@ int main(int argc, char **argv)
   trsTreeChain.SetBranchAddress("b", &geantEvent_inp);
 
   max_records = (max_records < 0 || max_records > trsTreeChain.GetEntries() ? trsTreeChain.GetEntries() : max_records);
+
+  std::cout << "test name: " << test_name << "\n"
+            << "records: " << max_records << " of " << trsTreeChain.GetEntries() << "\n";
 
   struct Diff {
     int total;
@@ -67,6 +67,9 @@ int main(int argc, char **argv)
   }
 
   delete geantEvent_inp;
+
+  std::cout << "hits total: " << counts.total << '\n'
+            << "hits unmatched: " << counts.unmatched << '\n';
 
   return counts.unmatched;
 }
