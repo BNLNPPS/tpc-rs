@@ -74,8 +74,11 @@ set(_tests
 "starY14_AuAu200a  1 quick 0  0  0"
 "starY14_AuAu200b  2 quick 0  0  0"
 "starY14_He3Au200  1 quick 0  0  0"
+"starY12_CuAu200   1 quick 0  0 17"
+"starY12_UU200     1 quick 0  0 25"
 "starY12_pp500     1 quick 0  0  0"
 "starY11_pp500     3 quick 0  0  0"
+"starY10_AuAu62    1 quick 0  0 24"
 "starY10_AuAu11    1 quick 0  0  0"
 #
 "starY16_dAu200   -1 long  0  0  0"
