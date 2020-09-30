@@ -97,7 +97,7 @@ void MagField::ReadField()
     for ( int j = 0 ; j < nZ ; j++ ) {
       for ( int k = 0 ; k < nR ; k++ ) {
         fgets  ( cname, sizeof(cname), magfile ) ;
-        sscanf ( cname, " %f %f %f %f ", &Radius[k], &ZList[j], &Br[j][k], &Bz[j][k] ) ;
+        sscanf ( cname, " %f %f %f %f ", &R_[k], &Z_[j], &Br[j][k], &Bz[j][k] ) ;
       }
     }
   } else {
@@ -164,22 +164,22 @@ void MagField::InterpolateField2D(double r, double z, double &Br_value, double &
   float save_Br[2];
   float save_Bz[2];
 
-  Search(nZ, ZList,  float(z), jlow);
-  Search(nR, Radius, float(r), klow);
+  Search(nZ, Z_, float(z), jlow);
+  Search(nR, R_, float(r), klow);
 
   if (jlow < 0) jlow = 0;
   if (klow < 0) klow = 0;
 
-  if (jlow + 1 >= nZ - 1) jlow = nZ - 2;
-  if (klow + 1 >= nR - 1) klow = nR - 2;
+  if (jlow > nZ - 2) jlow = nZ - 2;
+  if (klow > nR - 2) klow = nR - 2;
 
   for (int j = jlow; j < jlow + 2; j++) {
-    save_Br[j - jlow] = Interpolate( &Radius[klow], &Br[j][klow], r )   ;
-    save_Bz[j - jlow] = Interpolate( &Radius[klow], &Bz[j][klow], r )   ;
+    save_Br[j - jlow] = Interpolate( &R_[klow], &Br[j][klow], r )   ;
+    save_Bz[j - jlow] = Interpolate( &R_[klow], &Bz[j][klow], r )   ;
   }
 
-  Br_value = fscale * Interpolate( &ZList[jlow], save_Br, z )   ;
-  Bz_value = fscale * Interpolate( &ZList[jlow], save_Bz, z )   ;
+  Br_value = fscale * Interpolate( &Z_[jlow], save_Br, z )   ;
+  Bz_value = fscale * Interpolate( &Z_[jlow], save_Bz, z )   ;
 }
 
 
@@ -207,9 +207,9 @@ void MagField::InterpolateField3D(float r, float z, float phi,
   if ( jlow < 0 ) jlow = 0 ;
   if ( klow < 0 ) klow = 0 ;
 
-  if ( ilow + 1  >=  nPhi - 1 ) ilow = nPhi - 2 ;
-  if ( jlow + 1  >=    nZ - 1 ) jlow =   nZ - 2 ;
-  if ( klow + 1  >=    nR - 1 ) klow =   nR - 2 ;
+  if ( ilow > nPhi - 2 ) ilow = nPhi - 2 ;
+  if ( jlow >   nZ - 2 ) jlow =   nZ - 2 ;
+  if ( klow >   nR - 2 ) klow =   nR - 2 ;
 
   for ( int i = ilow ; i < ilow + 2 ; i++ ) {
     for ( int j = jlow ; j < jlow + 2 ; j++ ) {
@@ -232,16 +232,16 @@ void MagField::InterpolateField3D(float r, float z, float phi,
 /**
  * Linear interpolation
  */
-float MagField::Interpolate(const float Xarray[], const float Yarray[], const float x )
+float MagField::Interpolate(const float xs[2], const float ys[2], const float x)
 {
-  return Yarray[0] + ( Yarray[1] - Yarray[0] ) * ( x - Xarray[0] ) / ( Xarray[1] - Xarray[0] ) ;
+  return ys[0] + ( ys[1] - ys[0] ) * ( x - xs[0] ) / ( xs[1] - xs[0] ) ;
 }
 
 
 /**
  * Search an ordered table by starting at the most recently used point
  */
-void MagField::Search(int N, const float Xarray[], float x, int &low)
+void MagField::Search(const int N, const float Xarray[], const float x, int &low)
 {
   long high ;
   int  ascend = 0, increment = 1 ;

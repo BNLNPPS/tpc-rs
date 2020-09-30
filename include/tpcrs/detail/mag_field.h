@@ -25,22 +25,22 @@ class MagField
   {
     Vec3 B{};
 
-    double Br_value = 0;
-    double Bz_value = 0;
+    double B_r = 0;
+    double B_z = 0;
     double r = std::sqrt(p.x*p.x + p.y*p.y);
     double z = p.z;
 
     // within map
-    if (z >= ZList[0] && z <= ZList[nZ - 1] && r <= Radius[nR - 1])
+    if (z >= Z_[0] && z <= Z_[nZ - 1] && r <= R_[nR - 1])
     {
-      InterpolateField2D(r, z, Br_value, Bz_value);
+      InterpolateField2D(r, z, B_r, B_z);
 
       if (r != 0) {
-        B.x = Br_value * (p.x / r) ;
-        B.y = Br_value * (p.y / r) ;
+        B.x = B_r * (p.x / r) ;
+        B.y = B_r * (p.y / r) ;
       }
 
-      B.z = Bz_value;
+      B.z = B_z;
     }
 
     return B;
@@ -48,8 +48,8 @@ class MagField
 
   void GetFieldValue3D(const float x[3], float B[3]) const;
 
-  static void Search(int N, const float Xarray[], float x, int &low);
-  static float Interpolate(const float Xarray[], const float Yarray[], const float x);
+  static void Search(const int N, const float Xarray[], const float x, int &low);
+  static float Interpolate(const float xs[2], const float ys[2], const float x);
 
  private:
 
@@ -57,7 +57,7 @@ class MagField
   void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
   void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value) const;
 
-  enum ESmFSizes {nZ = 57, nR = 28, nPhi = 37};
+  enum ESmFSizes {nR = 28, nZ = 57, nPhi = 37};
 
   const tpcrs::Configurator& cfg_;
 
@@ -66,10 +66,9 @@ class MagField
   /// Defined by the value of MagFactor.ScaleFactor in Configurator
   double scale_factor_;
 
-  float Bz[nZ][nR], Br[nZ][nR] ;
-  float Radius[nR], ZList[nZ] ;
-  float Bz3D[nPhi][nZ][nR], Br3D[nPhi][nZ][nR], Bphi3D[nPhi][nZ][nR] ;
-  float R3D[nR], Z3D[nZ], Phi3D[nPhi] ;
+  float R_[nR], Z_[nZ], Bz[nZ][nR], Br[nZ][nR];
+
+  float R3D[nR], Z3D[nZ], Phi3D[nPhi], Bz3D[nPhi][nZ][nR], Br3D[nPhi][nZ][nR], Bphi3D[nPhi][nZ][nR];
 };
 
 } }
