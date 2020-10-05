@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 project(TPCRS-EXAMPLE LANGUAGES CXX)
 
 # Request a compiler with c++11 support
-set(CMAKE_CXX_STANDARD 11)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(tpcrs)
