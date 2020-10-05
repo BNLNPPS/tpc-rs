@@ -16,7 +16,9 @@ OPTION(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libr
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 # A compiler with c++11 support is required
-set(CMAKE_CXX_STANDARD 11)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # This library depends on ROOT
