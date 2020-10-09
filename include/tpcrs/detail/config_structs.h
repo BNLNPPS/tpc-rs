@@ -45,9 +45,9 @@ struct ConfigStruct : Base_t
       Base_t::is_missing = true;
     } else {
       try {
-        rows_.push_back( cfg_.YAML(name).as< Struct_t >() );
+        rows_.push_back( cfg_.YAML(name).template as< Struct_t >() );
       } catch (std::exception& e) {
-        rows_ = cfg_.YAML(name).as< std::vector<Struct_t> >();
+        rows_ = cfg_.YAML(name).template as< std::vector<Struct_t> >();
       }
       Base_t::is_missing = false;
     }
@@ -65,5 +65,11 @@ struct ConfigStruct : Base_t
 
   const Configurator& cfg_;
 };
+
+// suppress warnings in clang (and CLING)
+#if defined(__clang__) || defined(__CLING__)
+template< typename Base_t, typename Chair_t, typename Struct_t >
+  std::string ConfigStruct< Base_t, Chair_t, Struct_t >::name{};
+#endif
 
 }
