@@ -63,17 +63,3 @@ jobs:
     - dist: trusty
       env: CMAKE_BUILD_TYPE=Debug
       <<: *shared_trusty_job
-
-    - dist: xenial
-      env: CMAKE_BUILD_TYPE=Release
-      <<: *shared_xenial_job
-    - dist: xenial
-      env: CMAKE_BUILD_TYPE=Debug
-      <<: *shared_xenial_job
-
-    - dist: bionic
-      env: CMAKE_BUILD_TYPE=Release
-      <<: *shared_bionic_job
-    - dist: bionic
-      env: CMAKE_BUILD_TYPE=Debug
-      <<: *shared_bionic_job
