@@ -764,7 +764,7 @@ void Simulator::GenerateSignal(const TrackSegment &segment, Coords at_readout, i
   double sigmaJitterT = (tpcrs::IsInner(row, cfg_) ? cfg_.S<TpcResponseSimulator>().SigmaJitterTI :
                                                      cfg_.S<TpcResponseSimulator>().SigmaJitterTO);
 
-  for (unsigned row = rowMin; row <= rowMax; row++) {
+  for (int row = rowMin; row <= rowMax; row++) {
 
     StTpcLocalSectorCoordinate xyzW{at_readout.x, at_readout.y, at_readout.z, sector, row};
     StTpcPadCoordinate Pad;
