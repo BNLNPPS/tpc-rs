@@ -61,5 +61,8 @@ jobs:
       env: CMAKE_BUILD_TYPE=Release
       <<: *shared_trusty_job
     - dist: trusty
+      env: CMAKE_BUILD_TYPE=Release && CC=clang && CXX=clang++
+      <<: *shared_trusty_job
+    - dist: trusty
       env: CMAKE_BUILD_TYPE=Debug
       <<: *shared_trusty_job
