@@ -93,7 +93,7 @@ OutputIt Digitizer::Digitize(InputIt first_ch, InputIt last_ch, OutputIt digitiz
       for (unsigned int tb = 1; tb != digi.n_timebins; ++tb)
       {
         if (ADCs_[tb-1] == 0) continue;
-        *digitized = tpcrs::DigiHit{ch.sector, ch.row, ch.pad, tb, ADCs_[tb-1], IDTs_[tb-1]};
+        *digitized = tpcrs::DigiHit{{ch.sector, ch.row, ch.pad, tb}, ADCs_[tb-1], IDTs_[tb-1]};
       }
     }
 
