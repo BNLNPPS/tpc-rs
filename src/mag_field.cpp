@@ -26,39 +26,6 @@ MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, doub
 
 
 /**
- * B field in Cartesian coordinates - 3D field
- */
-void MagField::GetFieldValue3D(const float x[3], float B[3]) const
-{
-  float Br_value = 0;
-  float Bz_value = 0;
-  float Bphi_value = 0;
-
-  float r = std::sqrt(x[0] * x[0] + x[1] * x[1]);
-  float z = x[2];
-  float phi;
-
-  if ( r != 0.0 ) {
-    phi = std::atan2( x[1], x[0] );
-
-    if (phi < 0) phi += 2 * M_PI;           // Table uses phi from 0 to 2*Pi
-
-    InterpolateField3D(r, z, phi, Br_value, Bz_value, Bphi_value);
-    B[0] = Br_value * (x[0] / r) - Bphi_value * (x[1] / r);
-    B[1] = Br_value * (x[1] / r) + Bphi_value * (x[0] / r);
-    B[2] = Bz_value;
-  }
-  else {
-    phi = 0 ;
-    InterpolateField3D(r, z, phi, Br_value, Bz_value, Bphi_value);
-    B[0] = Br_value;
-    B[1] = Bphi_value;
-    B[2] = Bz_value;
-  }
-}
-
-
-/**
  * Read the electric and magnetic field maps stored on disk
  */
 void MagField::ReadField()

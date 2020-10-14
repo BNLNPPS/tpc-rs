@@ -46,8 +46,6 @@ class MagField
     return B;
   }
 
-  void GetFieldValue3D(const float x[3], float B[3]) const;
-
   static void Search(const int N, const float Xarray[], const float x, int &low);
   static float Interpolate(const float xs[2], const float ys[2], const float x);
 
