@@ -1,8 +1,8 @@
-STAR Bfield Maps by Foley, Love, & Trentalange 
-Full Field in the NORMAL direction: October 1998
-57 steps in Z
-28 steps in R
-   R      Z      Br       Bz 
+# STAR Bfield Maps by Foley, Love, & Trentalange
+# Full Field in the NORMAL direction: October 1998
+# 57 steps in Z
+# 28 steps in R
+#    R      Z      Br       Bz
   14.5 -280.0  -113.41  4586.19
   17.0 -280.0  -133.89  4595.82
   24.5 -280.0  -183.71  4633.57

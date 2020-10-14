@@ -1,8 +1,8 @@
-STAR Bfield Maps by Foley, Love, & Trentalange 
-Constant Field in the NORMAL direction: October 1998
-57 steps in Z
-28 steps in R
-   R      Z      Br       Bz 
+# STAR Bfield Maps by Foley, Love, & Trentalange
+# Constant Field in the NORMAL direction: October 1998
+# 57 steps in Z
+# 28 steps in R
+#    R      Z      Br       Bz
   14.5 -280.0     0.0   4979.00
   17.0 -280.0     0.0   4979.00
   24.5 -280.0     0.0   4979.00

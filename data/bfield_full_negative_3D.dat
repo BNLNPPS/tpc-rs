@@ -1,9 +1,9 @@
-STAR Bfield Maps by Foley, Love, & Trentalange (gauss,cm,degrees)
-Full Field in the REVERSED direction: October 1998
-57 steps in Z
-28 steps in R
-37 steps in Phi
-   R      Z      Phi    Br      Bz        Bphi
+# STAR Bfield Maps by Foley, Love, & Trentalange (gauss,cm,degrees)
+# Full Field in the REVERSED direction: October 1998
+# 57 steps in Z
+# 28 steps in R
+# 37 steps in Phi
+#    R      Z      Phi    Br      Bz        Bphi
   14.5 -280.0    0.0   113.78 -4586.31    0.00
   17.0 -280.0    0.0   133.13 -4595.97   -0.00
   24.5 -280.0    0.0   184.68 -4632.80   -0.28
