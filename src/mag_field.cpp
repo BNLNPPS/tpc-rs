@@ -109,15 +109,17 @@ void MagField::ReadValues()
  */
 void MagField::InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const
 {
+  using namespace std;
+
   // Scale maps to work in kGauss, cm
   float fscale = 0.001 * scale_factor_;
 
-  static int jlow = 0, klow = 0 ;
   float save_Br[2];
   float save_Bz[2];
 
-  Search(nZ, Z_, float(z), jlow);
-  Search(nR, R_, float(r), klow);
+
+  int jlow = distance(begin(c2_), lower_bound(begin(c2_), end(c2_), float(z))) - 1;
+  int klow = distance(begin(c1_), lower_bound(begin(c1_), end(c1_), float(r))) - 1;
 
   if (jlow < 0) jlow = 0;
   if (klow < 0) klow = 0;
@@ -126,12 +128,12 @@ void MagField::InterpolateField2D(double r, double z, double &Br_value, double &
   if (klow > nR - 2) klow = nR - 2;
 
   for (int j = jlow; j < jlow + 2; j++) {
-    save_Br[j - jlow] = Interpolate( &R_[klow], &Br[j][klow], r )   ;
-    save_Bz[j - jlow] = Interpolate( &R_[klow], &Bz[j][klow], r )   ;
+    save_Br[j - jlow] = Interpolate( &c1_[klow], &v1_[j*nR + klow], r );
+    save_Bz[j - jlow] = Interpolate( &c1_[klow], &v2_[j*nR + klow], r );
   }
 
-  Br_value = fscale * Interpolate( &Z_[jlow], save_Br, z )   ;
-  Bz_value = fscale * Interpolate( &Z_[jlow], save_Bz, z )   ;
+  Br_value = fscale * Interpolate( &c2_[jlow], save_Br, z );
+  Bz_value = fscale * Interpolate( &c2_[jlow], save_Bz, z );
 }
 
 
