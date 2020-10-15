@@ -23,7 +23,6 @@ MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, doub
   field_type_(field_type),
   scale_factor_(scale)
 {
-  ReadField();
   ReadValues();
 }
 
@@ -102,100 +101,6 @@ void MagField::ReadValues()
 
   copy(begin(s1), end(s1), back_inserter(c1_));
   copy(begin(s2), end(s2), back_inserter(c2_));
-}
-
-
-/**
- * Read the electric and magnetic field maps stored on disk
- */
-void MagField::ReadField()
-{
-  FILE*    magfile, *b3Dfile ;
-  std::string filename, filename3D ;
-
-  if ( field_type_ == MagFieldType::kMapped ) {                  	// Mapped field values
-    if ( scale_factor_ > 0 ) {
-      filename   = "bfield_full_positive_2D.dat" ;
-      filename3D = "bfield_full_positive_3D.dat" ;
-    }
-    else {
-      filename   = "bfield_full_negative_2D.dat" ;
-      filename3D = "bfield_full_negative_3D.dat" ;
-      // The values read from file already reflect the sign
-      scale_factor_ = std::abs(scale_factor_);
-    }
-  }
-  else if ( field_type_ == MagFieldType::kConstant ) {           // Constant field values
-    filename = "const_full_positive_2D.dat" ;
-  }
-
-  std::string MapLocation = cfg_.Locate(filename);
-  magfile = fopen(MapLocation.c_str(), "r") ;
-
-  if (magfile)
-  {
-    char cname[128] ;
-    fgets(cname, sizeof(cname), magfile);    // Read comment lines at begining of file
-    fgets(cname, sizeof(cname), magfile);
-    fgets(cname, sizeof(cname), magfile);
-    fgets(cname, sizeof(cname), magfile);
-    fgets(cname, sizeof(cname), magfile);
-
-    for ( int j = 0 ; j < nZ ; j++ ) {
-      for ( int k = 0 ; k < nR ; k++ ) {
-        fgets  ( cname, sizeof(cname), magfile ) ;
-        sscanf ( cname, " %f %f %f %f ", &R_[k], &Z_[j], &Br[j][k], &Bz[j][k] ) ;
-      }
-    }
-  } else {
-    LOG_ERROR << "MagField: File " << MapLocation << " not found\n";
-    exit(1);
-  }
-
-  fclose(magfile) ;
-
-  MapLocation = cfg_.Locate(filename3D);
-  b3Dfile = fopen(MapLocation.c_str(), "r") ;
-
-  if (b3Dfile)
-  {
-    char cname[128] ;
-    // Read comment lines at begining of file
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;
-    fgets  ( cname, sizeof(cname), b3Dfile ) ;
-
-    for ( int i = 0 ; i < nPhi ; i++ ) {
-      for ( int j = 0 ; j < nZ ; j++ ) {
-        for ( int k = 0 ; k < nR ; k++ ) {
-          fgets  ( cname, sizeof(cname), b3Dfile ) ;
-          sscanf ( cname, " %f %f %f %f %f %f ",
-                   &R3D[k], &Z3D[j], &Phi3D[i], &Br3D[i][j][k], &Bz3D[i][j][k], &Bphi3D[i][j][k] ) ;
-          Phi3D[i] *= M_PI / 180. ;   // Convert to Radians  phi = 0 to 2*Pi
-        }
-      }
-    }
-  }
-  else if ( field_type_ == MagFieldType::kConstant )             // Constant field values
-  {
-    for ( int i = 0 ; i < nPhi ; i++ ) {
-      for ( int j = 0 ; j < nZ ; j++ ) {
-        for ( int k = 0 ; k < nR ; k++ ) {
-          Br3D[i][j][k] = Br[j][k] ;
-          Bz3D[i][j][k] = Bz[j][k] ;
-          Bphi3D[i][j][k] = 0 ;
-        }
-      }
-    }
-  } else {
-    LOG_ERROR << "MagField: File " << MapLocation << " not found\n";
-    exit(1);
-  }
-
-  fclose(b3Dfile) ;
 }
 
 
