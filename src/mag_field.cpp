@@ -1,5 +1,7 @@
-#include <string>
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include "tpcrs/configurator.h"
 #include "tpcrs/detail/mag_field.h"
@@ -22,6 +24,84 @@ MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, doub
   scale_factor_(scale)
 {
   ReadField();
+  ReadValues();
+}
+
+
+void MagField::ReadValues()
+{
+  using namespace std;
+
+  string file_name;
+
+  if ( field_type_ == MagFieldType::kMapped ) {                    // Mapped field values
+    if ( scale_factor_ > 0 ) {
+      file_name   = "bfield_full_positive_2D.dat" ;
+    }
+    else {
+      file_name   = "bfield_full_negative_2D.dat" ;
+      // The values read from file already reflect the sign
+      scale_factor_ = abs(scale_factor_);
+    }
+  }
+  else if ( field_type_ == MagFieldType::kConstant ) {           // Constant field values
+    file_name = "const_full_positive_2D.dat" ;
+  }
+
+  file_name = cfg_.Locate(file_name);
+  ifstream file(file_name);
+
+  if (file)
+    cout << "mag field file opened: " << file_name << '\n';
+  else
+    cerr << "mag field file not available: " << file_name << '\n';
+
+  // A wrapper to read Nan and inf values from a string
+  struct istringstream_ : istringstream
+  {
+    istringstream_(string s) : istringstream(s) {};
+    istringstream_& operator>> (double& d)
+    {
+      string s;
+      *this >> s;
+      d = stod(s);
+      return *this;
+    }
+  };
+
+  // Temporary containers to store sorted unique values
+  set<float> s1;
+  set<float> s2;
+  set<float> s3;
+
+  string line; 
+  while (getline(file, line))
+  {
+    size_t comment_indx = line.find_first_of('#');
+    auto   comment_iter = (comment_indx == string::npos ? end(line) : begin(line) + comment_indx);
+
+    line.erase(comment_iter, end(line));
+    istringstream_ iss(line);
+
+    // Skip lines with less than 4 words
+    if (distance(istream_iterator<string>(iss), istream_iterator<string>()) < 4) continue;
+
+    // First clear the stream then rewind. The order is important
+    iss.clear();
+    iss.seekg(0);
+
+    double c1, c2, v1, v2;
+
+    iss >> c1 >> c2 >> v1 >> v2;
+
+    s1.insert(c1);
+    s2.insert(c2);
+    v1_.push_back(v1);
+    v2_.push_back(v2);
+  }
+
+  copy(begin(s1), end(s1), back_inserter(c1_));
+  copy(begin(s2), end(s2), back_inserter(c2_));
 }
 
 

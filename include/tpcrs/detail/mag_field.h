@@ -31,7 +31,7 @@ class MagField
     double z = p.z;
 
     // within map
-    if (z >= Z_[0] && z <= Z_[nZ - 1] && r <= R_[nR - 1])
+    if (z >= c2_[0] && z <= c2_[nZ - 1] && r <= c1_[nR - 1])
     {
       InterpolateField2D(r, z, B_r, B_z);
 
@@ -52,6 +52,7 @@ class MagField
  private:
 
   void ReadField();
+  void ReadValues();
   void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
   void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value) const;
 
@@ -67,6 +68,15 @@ class MagField
   float R_[nR], Z_[nZ], Bz[nZ][nR], Br[nZ][nR];
 
   float R3D[nR], Z3D[nZ], Phi3D[nPhi], Bz3D[nPhi][nZ][nR], Br3D[nPhi][nZ][nR], Bphi3D[nPhi][nZ][nR];
+
+
+  std::vector<float> c1_;
+  std::vector<float> c2_;
+  std::vector<float> c3_;
+
+  std::vector<float> v1_;
+  std::vector<float> v2_;
+  std::vector<float> v3_;
 };
 
 } }
