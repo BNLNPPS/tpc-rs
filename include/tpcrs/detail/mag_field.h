@@ -61,11 +61,6 @@ class MagField
   /// Defined by the value of MagFactor.ScaleFactor in Configurator
   double scale_factor_;
 
-  float R_[nR], Z_[nZ], Bz[nZ][nR], Br[nZ][nR];
-
-  float R3D[nR], Z3D[nZ], Phi3D[nPhi], Bz3D[nPhi][nZ][nR], Br3D[nPhi][nZ][nR], Bphi3D[nPhi][nZ][nR];
-
-
   std::vector<float> c1_;
   std::vector<float> c2_;
   std::vector<float> c3_;
