@@ -53,7 +53,6 @@ class MagField
 
   void ReadValues();
   void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
-  void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value) const;
 
   const tpcrs::Configurator& cfg_;
 

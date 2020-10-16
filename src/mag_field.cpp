@@ -140,52 +140,6 @@ void MagField::InterpolateField2D(double r, double z, double &Br_value, double &
 
 
 /**
- * Interpolate the B field map - 3D interpolation
- */
-void MagField::InterpolateField3D(float r, float z, float phi,
-                                  float &Br_value, float &Bz_value, float &Bphi_value) const
-{
-  // Scale maps to work in kGauss, cm
-  float fscale = 0.001 * scale_factor_;
-
-  static  int ilow = 0, jlow = 0, klow = 0 ;
-  float save_Br[2],   saved_Br[2] ;
-  float save_Bz[2],   saved_Bz[2] ;
-  float save_Bphi[2], saved_Bphi[2] ;
-
-  if (r < 0) return;
-
-  Search(nPhi, Phi3D, phi, ilow);
-  Search(nZ,   Z3D,   z,   jlow);
-  Search(nR,   R3D,   r,   klow);
-
-  if ( ilow < 0 ) ilow = 0 ;
-  if ( jlow < 0 ) jlow = 0 ;
-  if ( klow < 0 ) klow = 0 ;
-
-  if ( ilow > nPhi - 2 ) ilow = nPhi - 2 ;
-  if ( jlow >   nZ - 2 ) jlow =   nZ - 2 ;
-  if ( klow >   nR - 2 ) klow =   nR - 2 ;
-
-  for ( int i = ilow ; i < ilow + 2 ; i++ ) {
-    for ( int j = jlow ; j < jlow + 2 ; j++ ) {
-      save_Br[j - jlow]   = Interpolate( &R3D[klow], &Br3D[i][j][klow], r )   ;
-      save_Bz[j - jlow]   = Interpolate( &R3D[klow], &Bz3D[i][j][klow], r )   ;
-      save_Bphi[j - jlow] = Interpolate( &R3D[klow], &Bphi3D[i][j][klow], r ) ;
-    }
-
-    saved_Br[i - ilow]   = Interpolate( &Z3D[jlow], save_Br, z )   ;
-    saved_Bz[i - ilow]   = Interpolate( &Z3D[jlow], save_Bz, z )   ;
-    saved_Bphi[i - ilow] = Interpolate( &Z3D[jlow], save_Bphi, z ) ;
-  }
-
-  Br_value   = fscale * Interpolate( &Phi3D[ilow], saved_Br, phi )   ;
-  Bz_value   = fscale * Interpolate( &Phi3D[ilow], saved_Bz, phi )   ;
-  Bphi_value = fscale * Interpolate( &Phi3D[ilow], saved_Bphi, phi ) ;
-}
-
-
-/**
  * Linear interpolation
  */
 float MagField::Interpolate(const float xs[2], const float ys[2], const float x)
