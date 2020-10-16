@@ -31,7 +31,7 @@ class MagField
     double z = p.z;
 
     // within map
-    if (z >= c2_[0] && z <= c2_[nZ - 1] && r <= c1_[nR - 1])
+    if (z >= c2_.front() && z <= c2_.back() && r <= c1_.back())
     {
       InterpolateField2D(r, z, B_r, B_z);
 
@@ -54,8 +54,6 @@ class MagField
   void ReadValues();
   void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
   void InterpolateField3D(float r, float z, float phi, float &Br_value, float &Bz_value, float &Bphi_value) const;
-
-  enum ESmFSizes {nR = 28, nZ = 57, nPhi = 37};
 
   const tpcrs::Configurator& cfg_;
 

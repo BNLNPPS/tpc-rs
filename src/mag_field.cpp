@@ -117,6 +117,8 @@ void MagField::InterpolateField2D(double r, double z, double &Br_value, double &
   float save_Br[2];
   float save_Bz[2];
 
+  int nR = c1_.size();
+  int nZ = c2_.size();
 
   int jlow = distance(begin(c2_), lower_bound(begin(c2_), end(c2_), float(z))) - 1;
   int klow = distance(begin(c1_), lower_bound(begin(c1_), end(c1_), float(r))) - 1;
