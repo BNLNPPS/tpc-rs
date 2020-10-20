@@ -18,10 +18,8 @@ namespace tpcrs { namespace detail {
  * This code works in kGauss, cm - but note that the field maps read from files
  * are expected to be in gauss, cm.
  */
-MagField::MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, double scale) :
-  cfg_(cfg),
-  field_type_(field_type),
-  scale_factor_(scale)
+MagField::MagField(const tpcrs::Configurator& cfg) :
+  cfg_(cfg)
 {
   ReadValues();
 }
@@ -31,22 +29,7 @@ void MagField::ReadValues()
 {
   using namespace std;
 
-  string file_name;
-
-  if ( field_type_ == MagFieldType::kMapped ) {                    // Mapped field values
-    if ( scale_factor_ > 0 ) {
-      file_name   = "bfield_full_positive_2D.dat" ;
-    }
-    else {
-      file_name   = "bfield_full_negative_2D.dat" ;
-      // The values read from file already reflect the sign
-      scale_factor_ = abs(scale_factor_);
-    }
-  }
-  else if ( field_type_ == MagFieldType::kConstant ) {           // Constant field values
-    file_name = "const_full_positive_2D.dat" ;
-  }
-
+  string file_name(cfg_.S<ResponseSimulator>().mag_field_file);
   file_name = cfg_.Locate(file_name);
   ifstream file(file_name);
 
@@ -112,7 +95,7 @@ void MagField::InterpolateField2D(double r, double z, double &Br_value, double &
   using namespace std;
 
   // Scale maps to work in kGauss, cm
-  float fscale = 0.001 * scale_factor_;
+  float fscale = cfg_.S<ResponseSimulator>().mag_field_scale;
 
   float save_Br[2];
   float save_Bz[2];

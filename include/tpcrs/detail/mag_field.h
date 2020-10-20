@@ -10,12 +10,7 @@ class MagField
 {
  public:
 
-  enum class MagFieldType {kConstant, kMapped};
-
-  MagField(const tpcrs::Configurator& cfg, MagFieldType field_type, double scale);
-
-  MagField(const tpcrs::Configurator& cfg) : MagField(cfg, MagFieldType::kMapped, cfg.S<MagFactor>().ScaleFactor) {}
-
+  MagField(const tpcrs::Configurator& cfg);
 
   /**
    * Returns the value of magnetic field in Cartesian coordinates
@@ -54,11 +49,6 @@ class MagField
   void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
 
   const tpcrs::Configurator& cfg_;
-
-  MagFieldType field_type_;
-
-  /// Defined by the value of MagFactor.ScaleFactor in Configurator
-  double scale_factor_;
 
   std::vector<float> c1_;
   std::vector<float> c2_;
