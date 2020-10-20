@@ -2,6 +2,7 @@
 
 #include "tpcrs/tpcrs_core.h"
 #include "tpcrs/detail/digitizer.h"
+#include "tpcrs/detail/distorter.h"
 #include "tpcrs/detail/mag_field.h"
 #include "tpcrs/detail/simulator.h"
 
@@ -16,6 +17,20 @@ class MagField : detail::MagField
 
   template<typename Vec3>
   Vec3 ValueAt(Vec3 p) const { return detail::MagField::ValueAt(p); }
+};
+
+
+class Distorter : detail::Distorter
+{
+ public:
+
+  Distorter(const tpcrs::Configurator& cfg) : detail::Distorter(cfg) {}
+
+  template<typename Vec3, typename MagField>
+  Vec3 Distort(Vec3 p, int sector, const MagField& mag_field) const
+  {
+    return detail::Distorter::Distort(p, sector, mag_field);
+  }
 };
 
 
