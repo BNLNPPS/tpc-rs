@@ -37,9 +37,9 @@ class BitSet<Enum, true>
   bool none() const { return bits.none(); }
   operator bool() const { return any(); }
 
-  bool test(Enum value) const { return bits.test(1 << static_cast<ue_t>(value)); }
-  void set(Enum value) { bits.set(1 << static_cast<ue_t>(value)); }
-  void unset(Enum value) { bits.reset(1 << static_cast<ue_t>(value)); }
+  bool test(Enum value) const { return bits.test(static_cast<ue_t>(value)); }
+  void set(Enum value) { bits.set(static_cast<ue_t>(value)); }
+  void unset(Enum value) { bits.reset(static_cast<ue_t>(value)); }
 
  private:
 
