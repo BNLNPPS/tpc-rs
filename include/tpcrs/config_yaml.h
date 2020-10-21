@@ -1540,6 +1540,10 @@ struct convert<ResponseSimulator> {
     node["min_signal"] = st.min_signal;
     node["electron_cutoff_energy"] = st.electron_cutoff_energy;
     node["nominal_magnetic_field"] = st.nominal_magnetic_field;
+    node["nominal_electric_field"] = st.nominal_electric_field;
+    node["readout_plane_z"] = st.readout_plane_z;
+    node["mag_field_file"] = st.mag_field_file;
+    node["mag_field_scale"] = st.mag_field_scale;
     return node;
   };
 
@@ -1551,6 +1555,10 @@ struct convert<ResponseSimulator> {
     st.min_signal = node["min_signal"].as<double>();
     st.electron_cutoff_energy = node["electron_cutoff_energy"].as<double>();
     st.nominal_magnetic_field = node["nominal_magnetic_field"].as<double>();
+    st.nominal_electric_field = node["nominal_electric_field"].as<double>();
+    st.readout_plane_z = node["readout_plane_z"].as<double>();
+    st.mag_field_file = node["mag_field_file"].as<string>();
+    st.mag_field_scale = node["mag_field_scale"].as<double>();
     return true;
   }
 };

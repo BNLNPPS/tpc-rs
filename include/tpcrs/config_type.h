@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 struct asic_thresholds {
   int thresh_lo;
   int thresh_hi;
@@ -658,6 +660,10 @@ struct ResponseSimulator {
   double min_signal;             /* (1e-4), */
   double electron_cutoff_energy; /* (e_cutoff), */
   double nominal_magnetic_field;
+  double nominal_electric_field;
+  double readout_plane_z;
+  std::string mag_field_file;
+  double mag_field_scale;
 };
 
 /**
