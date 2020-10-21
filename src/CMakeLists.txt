@@ -170,6 +170,7 @@ set(data_files
     ${TPCRS_SOURCE_DIR}/data/bfield_full_negative_3D.dat
     ${TPCRS_SOURCE_DIR}/data/bfield_full_positive_2D.dat
     ${TPCRS_SOURCE_DIR}/data/bfield_full_positive_3D.dat
+    ${TPCRS_SOURCE_DIR}/data/bfield_sphenix_test_2D.dat
     ${TPCRS_SOURCE_DIR}/data/const_full_positive_2D.dat
     ${TPCRS_SOURCE_DIR}/data/dNdE_Bichsel.root
     ${TPCRS_SOURCE_DIR}/data/dNdx_Bichsel.root
