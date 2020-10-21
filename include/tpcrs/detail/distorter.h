@@ -12,15 +12,14 @@ struct DistorterConfigurator
 {
   DistorterConfigurator(const tpcrs::Configurator& cfg)
   {
-    double cathode_voltage    = cfg.S<tpcHighVoltages>().cathode * 1000;
-    double gated_grid_voltage = cfg.S<tpcHighVoltages>().gatedGridRef;
-
     double tensorV1 = cfg.S<tpcOmegaTau>().tensorV1;
     double tensorV2 = cfg.S<tpcOmegaTau>().tensorV2;
 
     double drift_velocity = 1e-6 * tpcrs::DriftVelocity(24, cfg);
 
-    readout_plane_z = cfg.S<tpcPadPlanes>().outerSectorPadPlaneZ - cfg.S<tpcWirePlanes>().outerSectorGatingGridPadSep;
+    // Distance to the pad readout plane should be equivalent to
+    // tpcPadPlanes.outerSectorPadPlaneZ - tpcWirePlanes.outerSectorGatingGridPadSep
+    readout_plane_z = cfg.S<ResponseSimulator>().readout_plane_z;
 
     // Theoretically, omega_tau is defined as
     //
@@ -34,15 +33,16 @@ struct DistorterConfigurator
     // tensorV2 is the drift velocity tensor term in the direction perpendicular
     // to Z and ExB
 
-    // Electric Field (V/cm) Magnitude
-    double electric_field = std::abs((cathode_voltage - gated_grid_voltage) / readout_plane_z);
+    // Electric field (V/cm) magnitude, i.e. should be equivalent to
+    // |(cathode_voltage - gated_grid_voltage) / readout_plane_z|;
+    double ele_field_z = cfg.S<ResponseSimulator>().nominal_electric_field;
 
     // Nominal value of magnetic field
     double mag_field_z = cfg.S<ResponseSimulator>().nominal_magnetic_field;
 
     // For an electron, omega_tau carries the sign opposite of B (mag_field_z)
     // B is in kGauss, the sign of B is important
-    omega_tau = -10.0 * mag_field_z * drift_velocity / electric_field;
+    omega_tau = -10.0 * mag_field_z * drift_velocity / ele_field_z;
 
     const_0 = 1. / (1. +  tensorV2 * tensorV2 * omega_tau * omega_tau);
     const_1 = tensorV1 * omega_tau / (1. + tensorV1 * tensorV1 * omega_tau * omega_tau);
