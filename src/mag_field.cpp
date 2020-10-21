@@ -111,44 +111,23 @@ void MagField::ReadValues()
 /**
  * Interpolate the B field map - 2D interpolation
  */
-void MagField::InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const
+void MagField::InterpolateField2D(const double r, const double z, double &Br, double &Bz) const
 {
   using namespace std;
 
-  // Scale maps to work in kGauss, cm
-  float fscale = cfg_.S<ResponseSimulator>().mag_field_scale;
+  int rlow = distance(begin(c1_), lower_bound(begin(c1_), end(c1_), float(r))) - 1;
+  int zlow = distance(begin(c2_), lower_bound(begin(c2_), end(c2_), float(z))) - 1;
 
-  float save_Br[2];
-  float save_Bz[2];
+  float scale = cfg_.S<ResponseSimulator>().mag_field_scale;
 
   int nR = c1_.size();
   int nZ = c2_.size();
 
-  int jlow = distance(begin(c2_), lower_bound(begin(c2_), end(c2_), float(z))) - 1;
-  int klow = distance(begin(c1_), lower_bound(begin(c1_), end(c1_), float(r))) - 1;
+  float pr = (float(r) - c1_[rlow]) / (c1_[rlow+1] - c1_[rlow]);
+  float pz = (float(z) - c2_[zlow]) / (c2_[zlow+1] - c2_[zlow]);
 
-  if (jlow < 0) jlow = 0;
-  if (klow < 0) klow = 0;
-
-  if (jlow > nZ - 2) jlow = nZ - 2;
-  if (klow > nR - 2) klow = nR - 2;
-
-  for (int j = jlow; j < jlow + 2; j++) {
-    save_Br[j - jlow] = Interpolate( &c1_[klow], &v1_[j*nR + klow], r );
-    save_Bz[j - jlow] = Interpolate( &c1_[klow], &v2_[j*nR + klow], r );
-  }
-
-  Br_value = fscale * Interpolate( &c2_[jlow], save_Br, z );
-  Bz_value = fscale * Interpolate( &c2_[jlow], save_Bz, z );
-}
-
-
-/**
- * Linear interpolation
- */
-float MagField::Interpolate(const float xs[2], const float ys[2], const float x)
-{
-  return ys[0] + ( ys[1] - ys[0] ) * ( x - xs[0] ) / ( xs[1] - xs[0] ) ;
+  Br = scale * Interpolator<float>::Bilinear(pr, pz, &v1_[zlow*nR + rlow], &v1_[(zlow + 1)*nR + rlow]);
+  Bz = scale * Interpolator<float>::Bilinear(pr, pz, &v2_[zlow*nR + rlow], &v2_[(zlow + 1)*nR + rlow]);
 }
 
 } }

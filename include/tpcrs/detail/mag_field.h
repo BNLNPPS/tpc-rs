@@ -41,12 +41,10 @@ class MagField
     return B;
   }
 
-  static float Interpolate(const float xs[2], const float ys[2], const float x);
-
  private:
 
   void ReadValues();
-  void InterpolateField2D(double r, double z, double &Br_value, double &Bz_value) const;
+  void InterpolateField2D(const double r, const double z, double &Br, double &Bz) const;
 
   const tpcrs::Configurator& cfg_;
 
