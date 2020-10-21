@@ -59,4 +59,63 @@ class MagField
   std::vector<float> v3_;
 };
 
+
+template<typename T>
+struct Interpolator
+{
+  /**
+   * Linear interpolation at point p
+   *
+   *        (vx0)            (vx1)
+   *     --o---------o------o------
+   *       |         |      |      x
+   *       0         p      1
+   *
+   */
+  static T Linear(const T px, const T vx[2]);
+
+  /**
+   * Bilinear interpolation at point p
+   *
+   *     y
+   *       |
+   *       |
+   *    1--o----------------o
+   *       |(vy0)    |      |(vy1)
+   *       |         |      |
+   *   py--|---------p------|
+   *       |         |      |
+   *       |         |      |
+   *       |         |      |
+   *    0--o----------------o------
+   *       |(vx0)    |      |(vx1) x
+   *       0         px     1
+   *
+   */
+  static T Bilinear(const T px, const T py, const T vx[2], const T vy[2]);
+
+  /**
+   * Trilinear interpolation at point p
+   *
+   *            o----------------o
+   *           /|(vz2)          /|(vz3)
+   *     y    / |              / |
+   *       | /  |             /  |
+   *       |/   |            /   |
+   *    1--o----------------o    |
+   *  (vy0)|    |/     (vy1)|    |
+   *       | 1--o-----------|----o
+   *       |   / (vz0)      |   / (vz1)
+   *       |  /             |  /
+   *       | /              | /
+   *       |/               |/
+   *    0--o----------------o------
+   *      /|(vx0)           |(vx1) x
+   *   z / 0                1
+   *
+   */
+  static T Trilinear(const T px, const T py, const T pz, const T vx[2], const T vy[2], const T vz[4]);
+};
+
+
 } }

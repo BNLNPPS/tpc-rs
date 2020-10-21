@@ -11,6 +11,27 @@
 namespace tpcrs { namespace detail {
 
 
+template<>
+float Interpolator<float>::Linear(const float px, const float vx[2])
+{
+  return vx[0] + (vx[1] - vx[0]) * px;
+}
+
+template<>
+float Interpolator<float>::Bilinear(const float px, const float py, const float vx[2], const float vy[2])
+{
+  float v_tmp[2] = { Linear(px, vx), Linear(px, vy), };
+  return Linear(py, v_tmp);
+}
+
+template<>
+float Interpolator<float>::Trilinear(const float px, const float py, const float pz, const float vx[2], const float vy[2], const float vz[4])
+{
+  float v_tmp[2] = { Bilinear(px, py, vx, vy), Bilinear(px, py, vz, vz+2) };
+  return Linear(pz, v_tmp);
+}
+
+
 /**
  * Reads the magnetic field map from a file and scales it according to a scale
  * factor provided during instantiation. The field map accuracy = 1 G.
