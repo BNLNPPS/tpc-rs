@@ -70,7 +70,10 @@ struct Interpolator
    *       0         p      1
    *
    */
-  static T Linear(const T px, const T vx[2]);
+  static T Linear(const T px, const T vx[2])
+  {
+    return vx[0] + (vx[1] - vx[0]) * px;
+  }
 
   /**
    * Bilinear interpolation at point p
@@ -90,7 +93,11 @@ struct Interpolator
    *       0         px     1
    *
    */
-  static T Bilinear(const T px, const T py, const T vx[2], const T vy[2]);
+  static T Bilinear(const T px, const T py, const T vx[2], const T vy[2])
+  {
+    T v_tmp[2] = { Linear(px, vx), Linear(px, vy), };
+    return Linear(py, v_tmp);
+  }
 
   /**
    * Trilinear interpolation at point p
@@ -112,7 +119,11 @@ struct Interpolator
    *   z / 0                1
    *
    */
-  static T Trilinear(const T px, const T py, const T pz, const T vx[2], const T vy[2], const T vz[4]);
+  static T Trilinear(const T px, const T py, const T pz, const T vx[2], const T vy[2], const T vz[4])
+  {
+    T v_tmp[2] = { Bilinear(px, py, vx, vy), Bilinear(px, py, vz, vz+2) };
+    return Linear(pz, v_tmp);
+  }
 };
 
 

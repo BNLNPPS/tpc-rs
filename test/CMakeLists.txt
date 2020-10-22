@@ -83,16 +83,16 @@ set(_tests
 #
 "starY16_dAu200   -1 long  0  0  0"
 "starY15_pp200a   -1 long  0  0  0"
-"starY15_pp200b   -1 long 14 15 50"
+"starY15_pp200b   -1 long 15 33 50"
 "starY14_AuAu200a -1 long  3  5 41"
 "starY14_AuAu200b -1 long  0  0 12"
-"starY14_He3Au200 -1 long  0  3  8"
-"starY12_CuAu200  -1 long  2 22 63"
-"starY12_UU200    -1 long  2 24 66"
+"starY14_He3Au200 -1 long  3  2  8"
+"starY12_CuAu200  -1 long 22 13 63"
+"starY12_UU200    -1 long 21 10 66"
 "starY12_pp500    -1 long  0  0 12"
 "starY11_pp500    -1 long  0  0  0"
-"starY10_AuAu62   -1 long  5  5 37"
-"starY10_AuAu11   -1 long  0  2 12"
+"starY10_AuAu62   -1 long  5  9 37"
+"starY10_AuAu11   -1 long  2  2 12"
 )
 
 add_tests("${_tests}")
