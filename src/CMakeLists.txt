@@ -182,3 +182,8 @@ install(DIRECTORY ${TPCRS_SOURCE_DIR}/include/tpcrs/ DESTINATION ${TPCRS_INC_INS
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h DESTINATION ${TPCRS_INC_INSTALL_DIR})
 install(FILES ${data_files}   DESTINATION ${TPCRS_DATA_INSTALL_DIR})
 install(FILES ${version_file} DESTINATION ${TPCRS_CMAKE_CONFIG_INSTALL_DIR})
+# Create a high level soft link to the privately installed yaml-cpp dependency.
+# This may conflict with an existing installation of yaml-cpp but provided as
+# requested anyway. See https://github.com/bnlnpps/tpc-rs/issues/15
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink tpcrs/contrib/yaml-cpp \
+    ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/yaml-cpp)")
