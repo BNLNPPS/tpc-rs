@@ -406,13 +406,13 @@ int Altro::multiply36(int P, int N)
   long long temp = 0;
   long long AX = 0;
   temp = (long long)P * (long long)N;
-  AX = (( mask(temp, 35, 18) + ((long long)(-P) << 18) ) + mask(temp, 17, 0));
+  AX = (( mask_35_18(temp) + ((long long)(-P) << 18) ) + mask_17_0(temp));
 
-  if ( maskandshift(N, 17, 17) == 1) {
-    retval = ((maskandshift(AX, 35, 35) << 17) + maskandshift(AX, 32, 16));
+  if ( maskandshift_17_17(N) == 1) {
+    retval = (maskandshift_35_35(AX) << 17) + maskandshift_32_16(AX);
   }
   else {
-    retval = maskandshift(temp, 32, 16);
+    retval = maskandshift_32_16(temp);
   }
 
   return retval;
@@ -450,19 +450,19 @@ void Altro::TailCancellationFilter_FixedPoint(int K1, int K2, int K3, int L1, in
     din = channelShort[i];
 
     din = (din << 2);
-    c1n             = mask( (mask(din, 17, 0) + multiply36(K1, mask(c1o, 17, 0)) ), 17, 0);
-    d1              = mask( (mask(c1n, 17, 0) - multiply36(L1, mask(c1o, 17, 0)) ), 17, 0);
+    c1n             = mask_17_0( (mask_17_0(din) + multiply36(K1, mask_17_0(c1o)) ));
+    d1              = mask_17_0( (mask_17_0(c1n) - multiply36(L1, mask_17_0(c1o)) ));
     //d1              = mask( (mask(c1n,17,0) + mask(~multiply36(L1,mask(c1o,17,0))+1,17,0) ) ,17,0);
 
-    c2n             = mask( (mask(d1, 17, 0) + multiply36(K2, mask(c2o, 17, 0)) ), 17, 0);
-    d2              = mask( (mask(c2n, 17, 0) - multiply36(L2, mask(c2o, 17, 0)) ), 17, 0);
+    c2n             = mask_17_0( (mask_17_0(d1)  + multiply36(K2, mask_17_0(c2o)) ));
+    d2              = mask_17_0( (mask_17_0(c2n) - multiply36(L2, mask_17_0(c2o)) ));
     //d2              = mask( (mask(c2n,17,0) + mask(~multiply36(L2,mask(c2o,17,0))+1,17,0) ) ,17,0);
 
-    c3n             = mask( (mask(d2, 17, 0) + multiply36(K3, mask(c3o, 17, 0)) ), 17, 0);
-    dout            = mask( (mask(c3n, 17, 0) - multiply36(L3, mask(c3o, 17, 0)) ), 17, 0);
+    c3n             = mask_17_0( (mask_17_0(d2)  + multiply36(K3, mask_17_0(c3o)) ));
+    dout            = mask_17_0( (mask_17_0(c3n) - multiply36(L3, mask_17_0(c3o)) ));
     //dout            = mask( (mask(c3n,17,0) + mask(~multiply36(L3,mask(c3o,17,0))+1,17,0) ) ,17,0);
 
-    if ( (maskandshift(dout, 2, 2) == 1) || (maskandshift(dout, 1, 1) == 1)) {
+    if ( maskandshift_2_2(dout) == 1 || maskandshift_1_1(dout) == 1) {
       bit = 1;
     }
     else {
@@ -471,12 +471,12 @@ void Altro::TailCancellationFilter_FixedPoint(int K1, int K2, int K3, int L1, in
 
     dout = ((dout >> 3) << 1) + bit;
 
-    if (maskandshift(dout, 15, 15) == 1) {
+    if (maskandshift_15_15(dout) == 1) {
       //is needed to get the correct coding when getting negative results
-      dout = -mask((-mask(dout, 9, 0)), 9, 0);
+      dout = -mask_9_0(-mask_9_0(dout));
     }
     else {
-      dout = mask(dout, 9, 0);
+      dout = mask_9_0(dout);
     }
 
     channelShort[i] = (short) dout;

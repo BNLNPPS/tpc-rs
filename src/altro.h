@@ -106,5 +106,36 @@ class Altro
   short GetKeepChannel(int i);
   int multiply36(int P, int N);
   long long mask(long long in, int left, int right);
+
+  /// Precalculated masks based on the algorithm implemented in
+  /// `Altro::mask(long long, int left, int right)` and invoked with fixed
+  /// values for the `left` and `right` arguments.
+  ///@{
+  /// left=9, right=0
+  long long mask_9_0(long long in)   { return in & 0b000000000000000000000000001111111111; }
+  /// left=17, right=0
+  long long mask_17_0(long long in)  { return in & 0b000000000000000000111111111111111111; }
+  /// left=35, right=18
+  long long mask_35_18(long long in) { return in & 0b111111111111111111000000000000000000; }
+  ///@}
+
   long long maskandshift(long long in, int left, int right);
+
+  /// Precalculated masks based on the algorithm implemented in
+  /// `Altro::maskandshift(long long, int left, int right)` and invoked with
+  /// fixed values for the `left` and `right` arguments.
+  ///@{
+  /// left=1, right=1
+  long long maskandshift_1_1(long long in)   { return (in >>  1) & 0b000000000000000001; }
+  /// left=2, right=2
+  long long maskandshift_2_2(long long in)   { return (in >>  2) & 0b000000000000000001; }
+  /// left=15, right=15
+  long long maskandshift_15_15(long long in) { return (in >> 15) & 0b000000000000000001; }
+  /// left=17, right=17
+  long long maskandshift_17_17(long long in) { return (in >> 17) & 0b000000000000000001; }
+  /// left=35, right=35
+  long long maskandshift_35_35(long long in) { return (in >> 35) & 0b000000000000000001; }
+  /// left=32, right=16
+  long long maskandshift_32_16(long long in) { return (in >> 16) & 0b011111111111111111; }
+  ///@}
 };
